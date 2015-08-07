@@ -4,9 +4,11 @@ Bulk Rename Utility for GNU/Linux
 
 #Usage:
 
-`$projectName Directory/File/Path [options]`
+```
+rnm Directory/File/Path [options]
+```
 
-One of the options of [-ns] or [-nsf] is mandatory
+One of the options of [-ns] or [-nsf] is mandatory. Filename globbing is allwed.
 
 options:
 
@@ -71,6 +73,19 @@ Search String     : A string that is used to search for files with matching
 Index Field Length: An integer value defining the field length of index.
                     empty field will be filled with 0's. For example, if
                     the value is 3, then index will be 001, 002, 003, etc..
+                    
+        
+        
+Example:
+
+```
+rnm ./New*/* -ns /i/.ext  (globbing is allowed)
+rnm "./New Folder" -ns /id//dc/.ext
+rnm ./New* -ns /id/.ext -ss "regex"
+rnm -nsf filepath -ns /n//id/.ext
+rnm -nsf filepath
+etc...
+```
 
 
 #Things to care:
