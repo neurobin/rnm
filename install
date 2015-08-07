@@ -1,0 +1,6 @@
+#!/bin/bash
+cd "$(dirname "$BASH_SOURCE")"
+sudo -ks<<EOF
+cp ./rnm /usr/bin/rnm
+chmod 755 /usr/bin/rnm
+EOF

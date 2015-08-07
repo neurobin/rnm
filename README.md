@@ -55,17 +55,19 @@ One of the options of `[-ns]` or `[-nsf]` is mandatory. Filename globbing is all
                     any file is skipped renaming in order
                     to reserve the index for that skipped file
                 
-**Name String       :** A string which is parsed to create name for new files.
+**Name String       :** A string, that is parsed to create names for new files. It can fixed name which can be modified for different files in runtime.
                     Name sting is parsed by the following rules:
                     
 1. `/i/` in name string will be replaced with index.
 2. `/ir/` in name string will be replaced with reserved index.
 3. `/id/` in name string will be replaced with directory index (index inside a directory).
 4. `/idr/` in name string will be replaced with reserved directory index
-5. `/n/` in name string will be replaced with filename without extention.
-6. `/fn/` in name string will be replaced with full name of the files.
-7. `/l/` in name string will be replaced with line number from list file.
+5. `/n/` in name string will be replaced with filename without extention. If used with `-nsf` option, the filename will be the name taken from the *Name String File*.
+6. `/fn/` in name string will be replaced with full name of the files. If used with `-nsf` option, full name will be the name taken from the *Name String File*.
+7. `/l/` in name string will be replaced with line number from *Name String File*.
 8. `/dc/` in name string will be replaced with directory count
+
+**Name String File  :** A file which contains a list of name string (one per line) to be applied to the new files.
      
 **Search String     :** A string that is used to search for files with matching
                     filenames against the search string. By default it is
@@ -82,6 +84,8 @@ One of the options of `[-ns]` or `[-nsf]` is mandatory. Filename globbing is all
 ###Example:
 
 ```
+rnm file -ns new_file
+rnm folder -ns "New Folder" -oD
 rnm ./New*/* -ns /i/.ext  (globbing is allowed)
 rnm "./New Folder" -ns /id//dc/.ext
 rnm ./New* -ns /id/.ext -ss "regex"

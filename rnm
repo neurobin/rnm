@@ -103,7 +103,7 @@ quiet=false
 index=1
 c=1
 ln=1
-sF=False
+sF=false
 allY=false
 y=false
 ifl=0
@@ -126,18 +126,18 @@ dirOnly=false
 getAbsolutePath(){
 shopt -s extglob globstar
     [[ -d $1 && $1 != "" ]] && { cd "$1"; echo "$(pwd -P)"; } || 
-    { [[ -d $(dirname "$1") && $1 != "" ]] && cd "$(dirname "$1")" || exit 129; printf "%s\n" "$(pwd -P)/$(basename "$1")"; }
+    { [[ -d $(dirname "$1") && $1 != "" ]] && cd "$(dirname "$1")" || exit 1; printf "%s\n" "$(pwd -P)/$(basename "$1")"; }
 }
 
 showRenameInfo(){
 printf "%s\n" "
-Path:               $dir
-Name String:        $nameString
-Name String File:   $nameStringFile
-Regex (find):       $searchString
-Bash regex:         $bashSearchString
-Recurse Depth:      $dp (0 means unlimited)
-Index Field Length: $ifl
+*****Rename Info*****
+Name String        : $nameString
+Name String File   : $nameStringFile
+Regex (find)       : $searchString
+Bash regex         : $bashSearchString
+Recurse Depth      : $dp (0 means unlimited)
+Index Field Length : $ifl
 "
 }
 
@@ -168,29 +168,29 @@ for((i=0;i<"${#optarr[@]}";i++));do
         ;;
         "-h"|"--help")
         printf "%s\n" "$helpMessage"
-        exit 171
+        exit 2
         ;;
         "-v")
         printf "%s\n" "$versionInfo"
-        exit 175
+        exit 3
         ;;
         "-i")
         c="${optarr[$(($i+1))]}"
         index="$c"
-        [[ ! $index =~ ^-?[0-9]+$ ]] && { printf "%s\n" "Index must be an integer">/dev/stderr;exit 180; }
+        [[ ! $index =~ ^-?[0-9]+$ ]] && { printf "%s\n" "Index must be an integer" >/dev/stderr;exit 4; }
         index="$(trimZeroFromInteger "$index" )"
         c=$index;ir=$c;
         skipcount=true
         ;;
         "-ifl")
         ifl="${optarr[$(($i+1))]}"
-        [[ ! $ifl =~ ^[0-9]+$ ]] && { printf "%s\n" "Index field length must be a positive integer">/dev/stderr;exit 187; }
+        [[ ! $ifl =~ ^[0-9]+$ ]] && { printf "%s\n" "Index field length must be a positive integer" >/dev/stderr;exit 5; }
         ifl="$(trimZeroFromInteger "$ifl")"
         skipcount=true
         ;;
         "-di")
         di="${optarr[$(($i+1))]}"
-        [[ ! $di =~ ^-?[0-9]+$ ]] && { printf "%s\n" "Index must be an integer">/dev/stderr;exit 193; }
+        [[ ! $di =~ ^-?[0-9]+$ ]] && { printf "%s\n" "Index must be an integer" >/dev/stderr;exit 6; }
         di="$(trimZeroFromInteger "$di")"
         dri=$di
         dirIndex=$di
@@ -199,7 +199,7 @@ for((i=0;i<"${#optarr[@]}";i++));do
         ;;
         "-l")
         ln="${optarr[$(($i+1))]}"
-        [[ ! $ln =~ ^[0-9]+$ ]] && { printf "%s\n" "Starting line must be a positive integer">/dev/stderr;exit 202; }
+        [[ ! $ln =~ ^[0-9]+$ ]] && { printf "%s\n" "Starting line must be a positive integer" >/dev/stderr;exit 7; }
         ln="$(trimZeroFromInteger "$ln")"
         skipcount=true
         ;;
@@ -214,26 +214,26 @@ for((i=0;i<"${#optarr[@]}";i++));do
         "-ss")
         searchString="${optarr[$(($i+1))]}"
         skipcount=true
-        [[ $searchString == "" ]] && { printf "%s\n" "---Search string can't be empty. Try without -ss" >/dev/stderr;exit 217; }
+        [[ $searchString == "" ]] && { printf "%s\n" "---Search string can't be empty." >/dev/stderr;exit 8; }
         
         ;;
         "-ns")
         nameString="${optarr[$(($i+1))]}"
         skipcount=true
-        [[ $nameString == "" ]] && { printf "%s\n" "---Name string can't be empty. Try without -ss" >/dev/stderr;exit 223; }
+        [[ $nameString == "" ]] && { printf "%s\n" "---Name string can't be empty." >/dev/stderr;exit 9; }
         
         ;;
         "-nsf")
         nameStringFile="${optarr[$(($i+1))]}"
         skipcount=true
-        [[ -f $nameStringFile && ! -L $nameStringFile ]] || { printf "%s\n" "---File not found: $nameStringFile" >/dev/stderr;exit 229; }
+        [[ -f $nameStringFile && ! -L $nameStringFile ]] || { printf "%s\n" "---File not found: $nameStringFile" >/dev/stderr;exit 10; }
         
        
         ;;
         "-dp")
         dp="${optarr[$(($i+1))]}"
         skipcount=true
-        [[ ! $dp =~ ^[0-9]+$ ]] && { printf "%s\n" "Depth mush be an integer and >=1">/dev/stderr;exit 236; }
+        [[ ! $dp =~ ^[0-9]+$ ]] && { printf "%s\n" "Depth mush be an integer and >=1" >/dev/stderr;exit 11; }
         dp="$(trimZeroFromInteger "$dp")"
         ;;
         "-D")
@@ -251,10 +251,10 @@ done
 ###################################### Opt Parse End #####################################################
 ##########################################################################################################
 
-[[ "${#filearr[@]}" == "0"  ]] && { printf "%s\n" "---No file/directory path specified"; exit 254; }
+[[ "${#filearr[@]}" == "0"  ]] && { printf "%s\n" "---No file/directory path specified" >/dev/stderr; exit 12; }
 
 
-[[ "$nameString" == "" && "$nameStringFile" == "" ]] && { printf "%s\n" "---One of the options: -ns or -nsf is mandatory"; exit 257; } 
+[[ "$nameString" == "" && "$nameStringFile" == "" ]] && { printf "%s\n" "---One of the options: -ns or -nsf is mandatory" >/dev/stderr; exit 13; } 
 
 
 
@@ -296,9 +296,9 @@ dri=$dirReservedIndex
 
 ###### Checking validity of $dir ############
 dir="$(getAbsolutePath "$dir")"
-[[ $dir == "" ]] && { printf "%s\n" "---Make sure directory/file path is given and is correct" >/dev/stderr;exit 299; }
-[[ -e $dir && ! -L $dir ]] || { printf "%s\n" "---No such file or directory: $dir" >/dev/stderr;exit 300; }
-[[ $dir == $(pwd -P) || $dir == $(getAbsolutePath "$BASH_SOURCE") ]] && { printf "%s\n" "---Choose a file/directory path other than the one where the script itself resides" >/dev/stderr;exit 301; }
+[[ $dir == "" ]] && { printf "%s\n" "---Make sure directory/file path is given and is correct" >/dev/stderr;exit 14; }
+[[ -e $dir && ! -L $dir ]] || { printf "%s\n" "---No such file or directory: $dir" >/dev/stderr;exit 15; }
+[[ $dir == $(pwd -P) || $dir == $(getAbsolutePath "$BASH_SOURCE") ]] && { printf "%s\n" "---Choose a file/directory path other than the one where the script itself resides" >/dev/stderr;exit 16; }
 #echo "$PWD $dir $BASH_SOURCE"
 #############################################
 
@@ -381,7 +381,7 @@ if ! $singleMode && ! $rd && ! $dirOnly;then
                     break
                     ;;
                 "Exit")
-                    exit 384
+                    exit 17
                     ;;
                 *)
                     echo "Invalid option"
@@ -393,14 +393,14 @@ if ! $singleMode && ! $rd && ! $dirOnly;then
     if ! $allY;then
         if $y; then
             
-            if [[ ! -e "$dir/$name" ]]; then  mv "$file" "$dir/$name"; ((mvc++));  else  echo "---Filename confusion occured" >/dev/stderr;exit 396;fi
+            if [[ ! -e "$dir/$name" ]]; then  mv "$file" "$dir/$name"; ((mvc++));  else  echo "---Filename confusion occured" >/dev/stderr;exit 18;fi
         else
             ((ir++));((dri++))
             continue
         fi
     else
         
-        if [[ ! -e "$dir/$name" ]]; then  mv "$file" "$dir/$name"; ((mvc++));  else  echo "---Filename confusion occured" >/dev/stderr;exit 403;fi
+        if [[ ! -e "$dir/$name" ]]; then  mv "$file" "$dir/$name"; ((mvc++));  else  echo "---Filename confusion occured" >/dev/stderr;exit 19;fi
     fi
     ((c++));((di++));((ir++));((dri++));
   done
@@ -417,7 +417,7 @@ if ! $singleMode && ! $rd && ! $dirOnly;then
         if ! $rd;then [[ ! -f $file ]] && continue; fi
         dir="$(dirname "$file")"
         dir="$(getAbsolutePath "$dir")"
-        fname="$(sed -n "${ln}s/.*/&/p" $nameStringFile || { echo "---sed error"  >/dev/stderr;exit 420; })"
+        fname="$(sed -n "${ln}s/.*/&/p" $nameStringFile || { echo "---sed error"  >/dev/stderr;exit 20; })"
         fname="${fname//\\/}"
         fnamewe="${fname%.*}"
         index="$c"
@@ -460,7 +460,7 @@ if ! $singleMode && ! $rd && ! $dirOnly;then
                     break
                     ;;
                 "Exit")
-                    exit 463
+                    exit 21
                     ;;
                 *)
                     echo "Invalid option"
@@ -472,14 +472,14 @@ if ! $singleMode && ! $rd && ! $dirOnly;then
         if ! $allY;then
           if $y; then
             
-            if [[ ! -e "$dir/$name" ]]; then  mv "$file" "$dir/$name"; ((mvc++));  else  echo "---Filename confusion occured" >/dev/stderr;exit 475;fi
+            if [[ ! -e "$dir/$name" ]]; then  mv "$file" "$dir/$name"; ((mvc++));  else  echo "---Filename confusion occured" >/dev/stderr;exit 22;fi
           else
             ((ir++));((dri++));((ln++))
             continue
           fi
         else
         
-        if [[ ! -e "$dir/$name" ]]; then  mv "$file" "$dir/$name"; ((mvc++));  else  echo "---Filename confusion occured" >/dev/stderr;exit 482;fi
+        if [[ ! -e "$dir/$name" ]]; then  mv "$file" "$dir/$name"; ((mvc++));  else  echo "---Filename confusion occured" >/dev/stderr;exit 23;fi
         fi
        ((ln++));((c++));((di++));((ir++));((dri++));
     done
@@ -537,7 +537,7 @@ else
                     break
                     ;;
                 "Exit")
-                    exit 540
+                    exit 24
                     ;;
                 *)
                     echo "Invalid option"
@@ -548,13 +548,13 @@ else
         fi
         if ! $allY;then
           if $y; then
-            if [[ ! -e "$dir/$name" ]]; then  mv "$file" "$dir/$name"; ((mvc++));  else  echo "---Filename confusion occured" >/dev/stderr;exit 551;fi
+            if [[ ! -e "$dir/$name" ]]; then  mv "$file" "$dir/$name"; ((mvc++));  else  echo "---Filename confusion occured" >/dev/stderr;exit 25;fi
           else
             ((ir++));((dri++))
             continue
           fi
         else
-        if [[ ! -e "$dir/$name" ]]; then  mv "$file" "$dir/$name"; ((mvc++));  else  echo "---Filename confusion occured" >/dev/stderr;exit 557;fi
+        if [[ ! -e "$dir/$name" ]]; then  mv "$file" "$dir/$name"; ((mvc++));  else  echo "---Filename confusion occured" >/dev/stderr;exit 26;fi
         fi
         ((c++));((di++));((ir++));((dri++));
     
@@ -562,7 +562,7 @@ else
     
     
     if [[ "$nameStringFile" != "" ]]; then
-        fname="$(sed -n "${ln}s/.*/&/p" $nameStringFile || { echo "---sed error"  >/dev/stderr;exit 565; })"
+        fname="$(sed -n "${ln}s/.*/&/p" $nameStringFile || { echo "---sed error"  >/dev/stderr;exit 27; })"
         fname="${fname//\\/}"
         fnamewe="${fname%.*}"
         index="$c"
@@ -605,7 +605,7 @@ else
                     break
                     ;;
                 "Exit")
-                    exit 608
+                    exit 28
                     ;;
                 *)
                     echo "Invalid option"
@@ -616,13 +616,13 @@ else
         fi
         if ! $allY;then
           if $y; then
-            if [[ ! -e "$dir/$name" ]]; then  mv "$file" "$dir/$name"; ((mvc++));  else  echo "---Filename confusion occured" >/dev/stderr;exit 619;fi
+            if [[ ! -e "$dir/$name" ]]; then  mv "$file" "$dir/$name"; ((mvc++));  else  echo "---Filename confusion occured" >/dev/stderr;exit 29;fi
           else
             ((ir++));((dri++));((ln++))
             continue
           fi
         else
-            if [[ ! -e "$dir/$name" ]]; then  mv "$file" "$dir/$name"; ((mvc++));  else  echo "---Filename confusion occured" >/dev/stderr;exit 625;fi
+            if [[ ! -e "$dir/$name" ]]; then  mv "$file" "$dir/$name"; ((mvc++));  else  echo "---Filename confusion occured" >/dev/stderr;exit 30;fi
         fi
         ((ln++));((c++));((di++));((ir++));((dri++));
     fi
