@@ -1,5 +1,5 @@
 # rnm
-Bulk Rename Utility for GNU/Linux written in Bash scripting language. Therefore the use of this script/tool depends on Bash. It uses `mv` and `sed` to rename and take filename from input file. Files and folders can be passed as command line argument to rename in bulk according to some naming scheme (Name String).
+Bulk Rename Utility for GNU/Linux written in Bash scripting language. Therefore the use of this script/tool depends on Bash. It uses `mv` and `sed` to rename and take filename from input file. Files and folders can be passed as command line arguments to rename them in bulk according to some naming scheme (Name String).
 
 
 
