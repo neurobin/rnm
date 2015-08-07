@@ -25,7 +25,7 @@ options:
 6. `-nsf` : Name string file. File containing name string (one per line).
 7. `-l`   : Line number in name string file.
 
-8. `-ss`  : Search string
+8. `-ss`  : Search string.
      String that will be used to search for files with matching names.
      Regex is allowed (posix compliant extended regex).
      
