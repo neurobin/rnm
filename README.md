@@ -18,9 +18,9 @@ options:
 
 
 5. `-ns`  : Name string
-     /i in name string will be replaced with index.
-     /n in name string will be replaced with filename without extention.
-     /nf in name string will be replaced with full name of the files.
+    1. /i in name string will be replaced with index.
+    2. /n in name string will be replaced with filename without extention.
+    3. /nf in name string will be replaced with full name of the files.
      
 6. `-nsf` : Name string file. File containing name string (one per line).
 7. `-l`   : Line number in name string file.
@@ -46,5 +46,5 @@ options:
 #Things to care:
 
 1. Newline in file or folder name is not supported. Make sure your folder doesn't contain any file/folder with new line.
-2. All options should always be separated by space. -vy won't mean two option `-v` and `-y`, rather it will mean a single option `-vy`.
+2. All options should always be separated by space. -vy won't mean two option: `-v` and `-y`, rather it will mean a single option `-vy`.
 
