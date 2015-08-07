@@ -10,20 +10,20 @@ rnm Directory/File/Path [options]
 
 One of the options of `[-ns]` or `[-nsf]` is mandatory. Filename globbing is allowed.
 
-##options:
+##Options:
 
-`-h`, `--help`: Show help menu
+`-h`, `--help`: Show help menu.
 
-`-i`  : Starting index
+`-i`  : Starting index.
 `-ifl` : Index field length. not occupied field will be
        filled with 0's.
 
-`-ns`  : Name string
+`-ns`  : Name string.
      
 `-nsf` : Name string file. File containing name string (one per line).
 `-l`   : Line number in name string file.
 
-`-ss` : Search string
+`-ss` : Search string.
      String that will be used to search for files with matching names.
      Regex is allowed (posix compliant extended regex).
      
@@ -43,11 +43,11 @@ One of the options of `[-ns]` or `[-nsf]` is mandatory. Filename globbing is all
        
 `-oD`  : Apply rename on directory only. 
 
-`-y`   : Confirm Yes to all
+`-y`   : Confirm Yes to all.
 
-`-v`   : Version info
+`-v`   : Version info.
 
-`-q`   : Quiet operation
+`-q`   : Quiet operation.
 
 ##Technical Terms:
 
@@ -75,6 +75,8 @@ One of the options of `[-ns]` or `[-nsf]` is mandatory. Filename globbing is all
                     empty field will be filled with 0's. For example, if
                     the value is 3, then index will be 001, 002, 003, etc..
                     
+**Directory Index   :** Index inside a directory i.e for every new directory
+                     index is counted from the start.
         
         
 ###Example:
