@@ -1,0 +1,499 @@
+#!/bin/bash
+
+shopt -s extglob
+
+##########################################################################################################
+projectName="renf"
+version="1.0.0"
+authorName="Jahidul Hamid"
+authorEmail="jahidulhamid@yahoo.com"
+bugReportURL="http://github.com/neurobin/$projectName/issues"
+versionInfo="
+Rename Utility: $projectName
+Version:        $version
+Author:         $authorName
+Author Email:   $authorEmail
+Bug Report:     $bugReportURL
+License:        GNU GPL public license v3
+"
+helpMessage="
+************** $projectName $version *******************
+
+Usage: $projectName Directory/File/Path [options]
+
+options:
+
+-h, --help: Show help menu
+
+-i   : Starting index
+-ri  : Reserve index. Index will be incremented always,
+       i.e index will be reserved for skipped file
+-ifl : Index field length. not occupied field will be
+       filled with 0's.
+
+
+-ns  : Name string
+     %i in name string will be replaced with index.
+     %n in name string will be replaced with filename without extention.
+     %nf in name string will be replaced with full name of the files.
+     
+-nsf : Name string file. File containing name string (one per line).
+-l   : Line number in name string file.
+
+-ss  : Search string
+     String that will be used to search for files with matching names.
+     Regex is allowed (posix compliant extended regex).
+     
+
+-sF  : Fixed search string (not treated as regex).
+
+-dp  : Depth of folder. 0 means unlimited depth i.e all files and subdirectories will
+       be included. Other values may be 1 2 3 etc...
+       Default depth is 1.
+
+-y   : Confirm Yes to all
+
+-v   : Version info
+
+-q   : Quiet operation
+"
+##########################################################################################################
+###### Global Variables ###########
+
+singleMode=false
+listFile=""
+nameString=""
+searchString=""
+searchStringFile=""
+ext=""
+opts=('Only this file' 'Not this file' 'Confirm for All' 'Exit')
+PS3="Choice: "
+
+ri=false
+quiet=false
+index=1
+c=1
+ln=1
+sF=False
+allY=false
+y=false
+ifl=0
+dp=1
+mvc=0
+
+##########################################################################################################
+##########################################################################################################
+###### Funtions ############
+####
+
+getAbsolutePath(){
+shopt -s extglob globstar
+    [[ -d $1 ]] && { cd "$1"; echo "$(pwd -P)"; } || 
+    { [[ -d $(dirname "$1") ]] && cd "$(dirname "$1")" || exit 1; printf "%s\n" "$(pwd -P)/$(basename "$1")"; }
+}
+
+showRenameInfo(){
+printf "%s\n" "
+Path:               $dir
+Name String:        $nameString
+Name String File:   $nameStringFile
+Search String:      $searchString
+Recurse Depth:      $dp (0 means unlimited)
+Index Field Length: $ifl
+"
+}
+
+##########################################################################################################
+########################################### Opt Parse ####################################################
+
+optarr=("$@")
+skipcount=false;
+posargcount=0;
+
+
+for((i=0;i<"${#optarr[@]}";i++));do
+    if $skipcount;then skipcount=false;continue;fi
+    case "${optarr[$i]}" in
+        "-y")
+        allY=true
+        ;;
+        "-h"|"--help")
+        printf "%s\n" "$helpMessage"
+        exit 2
+        ;;
+        "-v")
+        printf "%s\n" "$versionInfo"
+        exit 3
+        ;;
+        "-i")
+        c="${optarr[$(($i+1))]}"
+        index="$c"
+        [[ ! $index =~ ^-?[0-9]+$ ]] && { printf "%s\n" "Index must be an integer">/dev/stderr;exit 4; }
+        index="$(echo $index |sed "s/^\(-*\)0*\([1-9]\)/\1\2/;s/^\(-*\)0*$/\10/")"
+        skipcount=true
+        ;;
+        "-ri")
+        ri=true
+        skipcount=false
+        
+        ;;
+        "-ifl")
+        ifl="${optarr[$(($i+1))]}"
+        [[ ! $ifl =~ ^[0-9]+$ ]] && { printf "%s\n" "Index field length must be a positive integer">/dev/stderr;exit 5; }
+        ifl="$(echo $ifl |sed "s/^0*\([1-9]\)/\1/;s/^0*$/0/")"
+        skipcount=true
+        ;;
+        "-l")
+        ln="${optarr[$(($i+1))]}"
+        [[ ! $ln =~ ^[0-9]+$ ]] && { printf "%s\n" "Starting line must be a positive integer">/dev/stderr;exit 6; }
+        ln="$(echo $ln |sed "s/^0*\([1-9]\)/\1/;s/^0*$/0/")"
+        skipcount=true
+        ;;
+        "-q")
+        quiet=true
+        
+        ;;
+        "-sF")
+        sF=true
+        
+        ;;
+        "-ss")
+        searchString="${optarr[$(($i+1))]}"
+        skipcount=true
+        [[ $searchString == "" ]] && { printf "%s\n" "---Search string can't be empty. Try without -ss" >/dev/stderr;exit 7; }
+        
+        ;;
+        "-ns")
+        nameString="${optarr[$(($i+1))]}"
+        skipcount=true
+        [[ $nameString == "" ]] && { printf "%s\n" "---Name string can't be empty. Try without -ss" >/dev/stderr;exit 8; }
+        
+        ;;
+        "-nsf")
+        nameStringFile="${optarr[$(($i+1))]}"
+        skipcount=true
+        [[ -f $nameStringFile && ! -L $nameStringFile ]] || { printf "%s\n" "---File not found: $nameStringFile" >/dev/stderr;exit 9; }
+        
+       
+        ;;
+        "-dp")
+        dp="${optarr[$(($i+1))]}"
+        skipcount=true
+        [[ ! $dp =~ ^[0-9]+$ ]] && { printf "%s\n" "Depth mush be an integer and >=1">/dev/stderr;exit 10; }
+        dp="$(echo $dp |sed "s/^0*//;s/^0*$/0/")"
+        ;;
+        *)
+        [[ $posargcount == "0" ]] && { 
+        dir="${optarr[$i]}";posargcount=1;
+        
+        } ||
+        {
+        printf "%s\n" "
+---Invalid argument: ${optarr[$i]} at position: $(($i+1))
+Run '$projectName -h' or '$projectName --help' for help
+" >/dev/stderr
+        exit 11
+        }
+        
+        ;;
+     esac
+done
+
+###################################### Opt Parse End #####################################################
+##########################################################################################################
+
+
+###### Checking validity of $dir ############
+dir="$(getAbsolutePath "$dir")"
+[[ $dir == "" ]] && { printf "%s\n" "---Make sure directory/file path is given and is correct" >/dev/stderr;exit 12; }
+[[ -e $dir && ! -L $dir ]] || { printf "%s\n" "---No such file or directory: $dir" >/dev/stderr;exit 13; }
+[[ $dir == $(pwd -P) || $dir == $(getAbsolutePath "$BASH_SOURCE") ]] && { printf "%s\n" "---Choose a file/directory path other than the one where the script itself resides" >/dev/stderr;exit 14; }
+#echo "$PWD $dir $BASH_SOURCE"
+#############################################
+
+###Checking single mode
+
+[[ -f $dir ]] && singleMode=true || singleMode=false
+
+
+
+##################################### Various checks ###################################################
+
+
+if [[ $nameStringFile != "" ]];then
+    nameStringFile="$(getAbsolutePath "$nameStringFile")"
+fi
+
+[[ $searchString == "" ]] && searchString=".*" || {
+if $sF;then 
+    searchString="$(echo $searchString |sed "s/\*/\\\*/g")"
+else
+    searchString=".*$searchString.*"
+    searchString="${searchString/#\.\*^/\\.\/}"
+    searchString="${searchString/%$\.\*/}"
+fi
+}
+
+
+##################################### Various checks End ###################################################
+
+if ! $quiet;then
+    showRenameInfo
+fi
+
+
+
+if ! $singleMode;then
+ ## Gettings file names
+ cd "$dir"
+ if $sF;then
+  if [[ $dp == "0" ]];then
+     IFS=$'\n' files=($(find . ! -path .  -name "$searchString"))
+  else
+     IFS=$'\n' files=($(find . -maxdepth $dp ! -path .  -name "$searchString"))
+  fi
+ else
+  if [[ $dp == "0" ]];then
+     IFS=$'\n' files=($(find . ! -path .  -regextype posix-extended -regex "$searchString"))
+  else
+     IFS=$'\n' files=($(find . -maxdepth $dp ! -path .  -regextype posix-extended -regex "$searchString"))
+  fi
+ fi
+ ####################################### renfn #############################################################
+ 
+ ###Sanitize name string
+ nameString="$(echo $nameString |sed "s#\\\##g")"
+ 
+ ###
+ 
+
+ if [[ "$nameString" != "" && "$nameStringFile" == "" ]]; then
+  
+  for file in "${files[@]}";do
+    [[ ! -f $file ]] && continue
+    index="$c"
+    if [[ $ifl != "" ]]; then index="$(printf "%0${ifl}d\n" $c)";fi
+    fname="${file##*/}"
+    fname="$(echo $fname |sed "s:\\\::g")"
+    fname="$(echo $fname |sed "s#:\|&#\\\\&#g")"
+    fnamewe="${fname%.*}"
+    name="$(echo $nameString |sed "s:/i:$index:g;s:/n:$fnamewe:g;s:/fn:$fname:g;s:^$:$fname:g" )"
+    name="$(echo $name |sed "s:/::g;s:\\\::g")"
+    if ! $quiet; then echo "${file#./}" "-->" "${name}";fi
+    if ! $allY;then
+        printf "\nConfirm Moving file:\n\n"
+        select opt in "${opts[@]}";do
+            case "$opt" in
+                "Only this file")
+                    y=true
+                    allY=false
+                    break
+                    ;;
+                "Not this file")
+                    y=false
+                    allY=false
+                    break
+                    ;;
+                "Confirm for All")
+                    allY=true
+                    break
+                    ;;
+                "All N")
+                    exit 0
+                    ;;
+                "Exit")
+                    exit 0
+                    ;;
+                *)
+                    echo "Invalid option"
+                    ;;
+                
+            esac
+        done
+        fi
+    if ! $allY;then
+        if $y; then
+            
+            if [[ ! -e "./$name" ]]; then  mv "$file" "./$name"; ((mvc++));  else  echo "---Filename confusion occured" >/dev/stderr;exit 15;fi
+        else
+            if $ri;then ((c++)); fi
+            continue
+        fi
+    else
+        
+        if [[ ! -e "./$name" ]]; then  mv "$file" "./$name"; ((mvc++));  else  echo "---Filename confusion occured" >/dev/stderr;exit 16;fi
+    fi
+    ((c++))
+  done
+
+ fi
+ ####################################### renfn end ##########################################################
+ 
+ 
+ if [[ "$nameStringFile" != "" ]]; then
+ 
+    
+    for file in "${files[@]}";do
+    
+        [[ ! -f $file ]] && continue
+        
+        fname="$(sed -n "${ln}s/.*/&/p" $nameStringFile || { echo "---sed error"  >/dev/stderr;exit 17; })"
+        fname="$(echo $fname |sed "s:\\\::g")"
+        fname="$(echo $fname |sed "s#:\|&#\\\\&#g")"
+        fnamewe="${fname%.*}"
+        index="$c"
+        if [[ $ifl != "" ]];then index="$(printf "%0${ifl}d\n" $c)";fi
+        if="$ln"
+        if [[ $ifl != "" ]];then if="$(printf "%0${ifl}d\n" $ln)";fi
+        name="$(echo $nameString |sed "s:/i:$index:g;s:/n:$fnamewe:g;s:/fn:$fname:g;s:^$:$fname:g;s:/l:$if:g" )"
+        name="$(echo $name |sed "s:/::g;s:\\\::g")"
+        if ! $quiet; then echo "${file#./} --> ${name}"; fi
+        if ! $allY;then
+          printf "\nConfirm Moving file:\n\n"
+          select opt in "${opts[@]}";do
+            case "$opt" in
+                "Only this file")
+                    y=true
+                    allY=false
+                    break
+                    ;;
+                "Not this file")
+                    y=false
+                    allY=false
+                    break
+                    ;;
+                "Confirm for All")
+                    allY=true
+                    break
+                    ;;
+                "All N")
+                    exit 0
+                    ;;
+                "Exit")
+                    exit 0
+                    ;;
+                *)
+                    echo "Invalid option"
+                    ;;
+                
+            esac
+          done
+        fi
+        if ! $allY;then
+          if $y; then
+            
+            if [[ ! -e "./$name" ]]; then  mv "$file" "./$name"; ((mvc++));  else  echo "---Filename confusion occured" >/dev/stderr;exit 18;fi
+          else
+            if $ri;then ((c++)); ((ln++)); fi
+            continue
+          fi
+        else
+        
+        if [[ ! -e "./$name" ]]; then  mv "$file" "./$name"; ((mvc++));  else  echo "---Filename confusion occured" >/dev/stderr;exit 19;fi
+        fi
+        ((ln++));((c++))
+    done
+ 
+ 
+ fi
+ 
+ 
+### Now single mode
+else
+    opts=("Yes" "No")
+    file="$dir"
+    dir="$(dirname "$file")"
+    if [[ "$nameString" != "" && "$nameStringFile" == "" ]]; then
+        index="$c"
+        if [[ $ifl != "" ]]; then index="$(printf "%0${ifl}d\n" $c)";fi
+        fname="${file##*/}"
+        fname="$(echo $fname |sed "s:\\\::g")"
+        fname="$(echo $fname |sed "s#:\|&#\\\\&#g")"
+        fnamewe="${fname%.*}"
+        name="$(echo $nameString |sed "s:/i:$index:g;s:/n:$fnamewe:g;s:/fn:$fname:g;s:^$:$fname:g" )"
+        name="$(echo $name |sed "s:/::g;s:\\\::g")"
+        if ! $quiet; then echo "${file##*/} --> ${name}"; fi
+        if ! $allY;then
+          printf "\nConfirm Renaming file:\n\n"
+          select opt in "${opts[@]}";do
+            case "$opt" in
+                "Yes")
+                    y=true
+                    allY=false
+                    break
+                    ;;
+                "No")
+                    y=false
+                    allY=false
+                    break
+                    ;;
+                *)
+                    echo "Invalid option"
+                    ;;
+                
+            esac
+          done
+        fi
+        if ! $allY;then
+          if $y; then
+            if [[ ! -e "$dir/$name" ]]; then  mv "$file" "$dir/$name"; ((mvc++));  else  echo "---Filename confusion occured" >/dev/stderr;exit 20;fi
+          fi
+        else
+        if [[ ! -e "$dir/$name" ]]; then  mv "$file" "$dir/$name"; ((mvc++));  else  echo "---Filename confusion occured" >/dev/stderr;exit 21;fi
+        fi
+    
+    
+    fi
+    
+    
+    if [[ "$nameStringFile" != "" ]]; then
+        fname="$(sed -n "${ln}s/.*/&/p" $nameStringFile || { echo "---sed error"  >/dev/stderr;exit 22; })"
+        fname="$(echo $fname |sed "s:\\\::g")"
+        fname="$(echo $fname |sed "s#:\|&#\\\\&#g")"
+        fnamewe="${fname%.*}"
+        index="$c"
+        if [[ $ifl != "" ]];then index="$(printf "%0${ifl}d\n" $c)";fi
+        if="$ln"
+        if [[ $ifl != "" ]];then if="$(printf "%0${ifl}d\n" $ln)";fi
+        name="$(echo $nameString |sed "s:/i:$index:g;s:/n:$fnamewe:g;s:/fn:$fname:g;s:^$:$fname:g;s:/l:$if:g" )"
+        name="$(echo $name |sed "s:/::g;s:\\\::g")"
+        if ! $quiet; then echo "${file##*/} --> ${name}"; fi
+        if ! $allY;then
+          printf "\nConfirm Renaming file:\n\n"
+          select opt in "${opts[@]}";do
+            case "$opt" in
+                "Yes")
+                    y=true
+                    allY=false
+                    break
+                    ;;
+                "No")
+                    y=false
+                    allY=false
+                    break
+                    ;;
+                *)
+                    echo "Invalid option"
+                    ;;
+                
+            esac
+          done
+        fi
+        if ! $allY;then
+          if $y; then
+            if [[ ! -e "$dir/$name" ]]; then  mv "$file" "$dir/$name"; ((mvc++));  else  echo "---Filename confusion occured" >/dev/stderr;exit 23;fi
+          fi
+        else
+        if [[ ! -e "$dir/$name" ]]; then  mv "$file" "$dir/$name"; ((mvc++));  else  echo "---Filename confusion occured" >/dev/stderr;exit 24;fi
+        fi
+        
+    fi
+
+ 
+ 
+fi
+if ! $quiet;then
+printf "%s\n" "
+*** $mvc file/s renamed ***
+"
+fi
