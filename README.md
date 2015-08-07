@@ -8,9 +8,9 @@ Bulk Rename Utility for GNU/Linux
 rnm Directory/File/Path [options]
 ```
 
-One of the options of [-ns] or [-nsf] is mandatory. Filename globbing is allwed.
+One of the options of `[-ns]` or `[-nsf]` is mandatory. Filename globbing is allowed.
 
-options:
+##options:
 
 `-h`, `--help`: Show help menu
 
@@ -49,34 +49,35 @@ options:
 
 `-q`   : Quiet operation
 
-Technical Terms:
+##Technical Terms:
 
-Reserved Index    : Index will be incremented even if 
+**Reserved Index    :** Index will be incremented even if 
                     any file is skipped renaming in order
                     to reserve the index for that skipped file
                 
-Name String       : A string which is parsed to create name for new files.
+**Name String       :** A string which is parsed to create name for new files.
                     Name sting is parsed by the following rules:
-     `/i/` in name string will be replaced with index.
-     `/ir/` in name string will be replaced with reserved index.
-     `/id/` in name string will be replaced with directory index (index inside a directory).
-     `/idr/` in name string will be replaced with reserved directory index
-     `/n/` in name string will be replaced with filename without extention.
-     `/fn/` in name string will be replaced with full name of the files.
-     `/l/` in name string will be replaced with line number from list file.
-     `/dc/` in name string will be replaced with directory count
+                    
+1. `/i/` in name string will be replaced with index.
+2. `/ir/` in name string will be replaced with reserved index.
+3. `/id/` in name string will be replaced with directory index (index inside a directory).
+4. `/idr/` in name string will be replaced with reserved directory index
+5. `/n/` in name string will be replaced with filename without extention.
+6. `/fn/` in name string will be replaced with full name of the files.
+7. `/l/` in name string will be replaced with line number from list file.
+8. `/dc/` in name string will be replaced with directory count
      
-Search String     : A string that is used to search for files with matching
+**Search String     :** A string that is used to search for files with matching
                     filenames against the search string. By default it is
                     a regex if -sF option is not used.
                  
-Index Field Length: An integer value defining the field length of index.
+**Index Field Length:** An integer value defining the field length of index.
                     empty field will be filled with 0's. For example, if
                     the value is 3, then index will be 001, 002, 003, etc..
                     
         
         
-Example:
+###Example:
 
 ```
 rnm ./New*/* -ns /i/.ext  (globbing is allowed)
