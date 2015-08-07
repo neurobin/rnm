@@ -67,7 +67,7 @@ One of the options of `[-ns]` or `[-nsf]` is mandatory.
                     any file is skipped renaming in order
                     to reserve the index for that skipped file
                 
-**Name String       :** A string, that is parsed to create names for new files. It can fixed name which can be modified for different files in runtime.
+**Name String       :** A string, that is parsed to create names for new files. It can be fixed name which then can be modified for different files at runtime.
                     Name sting is parsed by the following rules:
                     
 1. `/i/` in name string will be replaced with index.
