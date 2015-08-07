@@ -298,7 +298,7 @@ dri=$dirReservedIndex
 dir="$(getAbsolutePath "$dir")"
 [[ $dir == "" ]] && { printf "%s\n" "---Make sure directory/file path is given and is correct" >/dev/stderr;exit 14; }
 [[ -e $dir && ! -L $dir ]] || { printf "%s\n" "---No such file or directory: $dir" >/dev/stderr;exit 15; }
-[[ $dir == $(pwd -P) || $dir == $(getAbsolutePath "$BASH_SOURCE") ]] && { printf "%s\n" "---Choose a file/directory path other than the one where the script itself resides" >/dev/stderr;exit 16; }
+[[ $dir == $(pwd -P) || $dir == $(getAbsolutePath "$BASH_SOURCE") ]] && { printf "%s\n" "---You can't choose current directory or the directory where rnm resides (It is considered unsafe and thus disabled). If you still want to do it on current directory, Try ./* instead of ./" >/dev/stderr;exit 16; }
 #echo "$PWD $dir $BASH_SOURCE"
 #############################################
 
