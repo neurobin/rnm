@@ -123,10 +123,21 @@ dirOnly=false
 ###### Funtions ############
 ####
 
-getAbsolutePath(){
-shopt -s extglob globstar
-    [[ -d $1 && $1 != "" ]] && { cd "$1"; echo "$(pwd -P)"; } || 
-    { [[ -d $(dirname "$1") && $1 != "" ]] && cd "$(dirname "$1")" || exit 1; printf "%s\n" "$(pwd -P)/$(basename "$1")"; }
+function getAbsolutePath() {
+shopt -s globstar
+dir="$(dirname "$1")"
+base="$(basename "$1")"
+if [[ -d "$1" && "$1" != "" ]]; then
+    cd "$1"
+    echo "$PWD"
+    return
+elif [[ -d "$dir" && "$1" != "" ]];then
+    cd "$dir"
+    echo "$PWD/$base"
+    return
+
+fi
+
 }
 
 showRenameInfo(){
@@ -297,7 +308,7 @@ dri=$dirReservedIndex
 ###### Checking validity of $dir ############
 dir="$(getAbsolutePath "$dir")"
 [[ $dir == "" ]] && { printf "%s\n" "---Make sure directory/file path is given and is correct" >/dev/stderr;exit 14; }
-[[ -e $dir && ! -L $dir ]] || { printf "%s\n" "---No such file or directory: $dir" >/dev/stderr;exit 15; }
+[[ -e $dir ]] || { printf "%s\n" "---No such file or directory: $dir" >/dev/stderr;exit 15; }
 [[ $dir == $(pwd -P) || $dir == $(getAbsolutePath "$BASH_SOURCE") ]] && { printf "%s\n" "---You can't choose current directory or the directory where rnm resides (It is considered unsafe and thus disabled). If you still want to do it on current directory, Try ./* instead of ./" >/dev/stderr;exit 16; }
 #echo "$PWD $dir $BASH_SOURCE"
 #############################################
@@ -312,22 +323,26 @@ dir="$(getAbsolutePath "$dir")"
 
 if ! $singleMode && ! $rd && ! $dirOnly;then
  ## Gettings file names
- 
+
  cd "$dir"
  if $sF;then
   if [[ $dp == "0" ]];then
-     IFS=$'\n' files=($(find . ! -path .  -name "$searchString"))
+     IFS=$'\n' files=($(find $PWD ! -path .  -name "$searchString"))
   else
-     IFS=$'\n' files=($(find . -maxdepth $dp ! -path .  -name "$searchString"))
+     IFS=$'\n' files=($(find $PWD -maxdepth $dp ! -path .  -name "$searchString"))
   fi
  else
   if [[ $dp == "0" ]];then
-     IFS=$'\n' files=($(find . ! -path .  -regextype posix-extended -regex "$searchString"))
+     IFS=$'\n' files=($(find $PWD ! -path .  -regextype posix-extended -regex "$searchString"))
   else
-     IFS=$'\n' files=($(find . -maxdepth $dp ! -path .  -regextype posix-extended -regex "$searchString"))
+     IFS=$'\n' files=($(find $PWD -maxdepth $dp ! -path .  -regextype posix-extended -regex "$searchString"))
   fi
  fi
+cd ..
  ####################################### renfn #############################################################
+ 
+
+ 
  
  ###Sanitize name string
  nameString="${nameString//\\/}"
@@ -340,7 +355,6 @@ if ! $singleMode && ! $rd && ! $dirOnly;then
   for file in "${files[@]}";do
     if ! $rd;then [[ ! -f $file ]] && continue; fi
     dir="$(dirname "$file")"
-    dir="$(getAbsolutePath "$dir")"
     index="$c"
     if [[ $ifl != "" ]]; then 
         index="$(printf "%0${ifl}d\n" $c)"
@@ -416,7 +430,6 @@ if ! $singleMode && ! $rd && ! $dirOnly;then
     
         if ! $rd;then [[ ! -f $file ]] && continue; fi
         dir="$(dirname "$file")"
-        dir="$(getAbsolutePath "$dir")"
         fname="$(sed -n "${ln}s/.*/&/p" $nameStringFile || { echo "---sed error"  >/dev/stderr;exit 20; })"
         fname="${fname//\\/}"
         fnamewe="${fname%.*}"
@@ -491,10 +504,9 @@ if ! $singleMode && ! $rd && ! $dirOnly;then
 else
     
     di=$c;dri=$ir;
-    file="$dir"
+    file="$(getAbsolutePath "$dir")"
     [[ "$(basename "$file")" =~ $bashSearchString ]] || continue
     dir="$(dirname "$file")"
-    dir="$(getAbsolutePath "$dir")"
     if [[ "$nameString" != "" && "$nameStringFile" == "" ]]; then
         index="$c"
         if [[ $ifl != "" ]]; then 
