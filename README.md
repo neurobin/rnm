@@ -2,6 +2,14 @@
 Bulk Rename Utility for GNU/Linux
 
 
+
+#Install:
+
+1. Give the <span class="quote">install</span> file execution permission.
+2. Run it or just drag and dropt it on terminal.
+
+
+
 #Usage:
 
 ```
@@ -35,8 +43,8 @@ One of the options of `[-ns]` or `[-nsf]` is mandatory. Filename globbing is all
        Default depth is 1.
        
 `-D`   : Apply rename on direcotry as well as on files.
-       This is a peculier option and slightly confusing to users.
-       no subdirectories will be renamed i.e only file and folders on the
+       This is a peculier option and may seem slightly confusing.
+       No subdirectories will be renamed i.e only file and folders on the
        current directory. If only one directory is passed as the argument,
        that directory will be renamed not any file or folder inside that
        directory.
@@ -99,4 +107,5 @@ etc...
 
 1. Newline in file or folder name is not supported. Make sure your folder doesn't contain any file/folder with new line.
 2. All options should always be separated by space. -vy won't mean two option: `-v` and `-y`, rather it will mean a single option `-vy`.
+3. Any non option argument will be treated as file or directory path. For example in <pre><code>rnm file1 file2 -- -ns fd</code></pre>`file1`, `file2` and `--` will be taken as file paths.
 
