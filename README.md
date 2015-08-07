@@ -1,11 +1,11 @@
 # rnm
-Bulk Rename Utility for GNU/Linux written in Bash scripting language. Therefore the use of this script/tool depends on Bash. It uses `mv` and `sed` to rename and take filename from input file. Files and folders can be passed as command line arguments to rename them in bulk according to some naming scheme (Name String).
+Bulk Rename Utility for GNU/Linux written in Bash scripting language. Therefore the use of this script/tool depends on Bash. It uses `mv` and `sed` to rename and take filename from input file. GNU/Linux utility <span class="quote">find</span> and Bash filename globbing is used to search and iterate through files. Files and folders can be passed as command line arguments to rename them in bulk according to some naming scheme (Name String).
 
 
 
 #Install:
 
-1. Give the <span class="quote">install</span> file execution permission.
+1. Give the <span class="quote">install</span> file execution permission and
 2. Run it or just drag and dropt it on terminal.
 
 
@@ -51,7 +51,11 @@ One of the options of `[-ns]` or `[-nsf]` is mandatory.
        
 `-oD`  : Apply rename on directory only. 
 
+`-ed`  : Apply rename on files only, exclude any and all directory and their contents.
+
 `-y`   : Confirm Yes to all.
+
+`-f`, `--force`: Force rename
 
 `-v`   : Version info.
 
@@ -108,4 +112,5 @@ etc...
 1. Newline in file or folder name is not supported. Make sure your folder doesn't contain any file/folder with new line.
 2. All options should always be separated by space. For Example: `-vy` won't mean two option `-v` and `-y`, rather it will mean a single option `-vy`.
 3. Any non option argument will be treated as file or directory path. For example in <pre><code>rnm file1 file2 -- -ns fd</code></pre>`file1`, `file2` and `--` will be taken as file paths.
+4. Be wary of filename globbing. Command like `rnm ./*` will take all files and folders as arguments and thus the files and immediate contents (by default) of the folders will be subject to rename operation. If you don't want to rename any folder contents (when the folder is passed as an argument), use `-ed` option to exclude any and all directory which have mistakenly or deliberately passed as arguments.
 

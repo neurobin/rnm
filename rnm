@@ -56,7 +56,11 @@ options:
        
 -oD  : Apply rename on directory only. 
 
+-ed  : Apply rename on files only, exclude any and all directory and their contents.
+
 -y   : Confirm Yes to all
+
+-f, --force: Force rename
 
 -v   : Version info
 
@@ -117,6 +121,8 @@ dc=1
 dirIndex=1
 dirReservedIndex=1
 dirOnly=false
+force=false
+ed=false
 
 ##########################################################################################################
 ##########################################################################################################
@@ -253,6 +259,12 @@ for((i=0;i<"${#optarr[@]}";i++));do
         "-oD")
         dirOnly=true
         ;;
+        "-ed")
+        ed=true
+        ;;
+        "-f"|"--force")
+        force=true
+        ;;
         *)
         filearr+=("${optarr[$i]}")
         ;;
@@ -302,6 +314,7 @@ fi
 
 for dir in "${filearr[@]}";do
 if $dirOnly;then [[ ! -d $dir ]] && continue; fi
+if $ed;then [[ -d $dir ]] && continue; fi
 di=$dirIndex
 dri=$dirReservedIndex
 
@@ -406,15 +419,22 @@ cd ..
         fi
     if ! $allY;then
         if $y; then
-            
-            if [[ ! -e "$dir/$name" ]]; then  mv "$file" "$dir/$name"; ((mvc++));  else  echo "---Filename confusion occured" >/dev/stderr;exit 18;fi
+            if $force;then
+                if [[ ! -e "$dir/$name" ]]; then  mv -f "$file" "$dir/$name"; ((mvc++));  else  echo "---Filename confusion occured" >/dev/stderr;exit 18;fi
+            else
+                if [[ ! -e "$dir/$name" ]]; then  mv "$file" "$dir/$name"; ((mvc++));  else  echo "---Filename confusion occured" >/dev/stderr;exit 18;fi
+            fi
         else
             ((ir++));((dri++))
             continue
         fi
     else
         
-        if [[ ! -e "$dir/$name" ]]; then  mv "$file" "$dir/$name"; ((mvc++));  else  echo "---Filename confusion occured" >/dev/stderr;exit 19;fi
+        if $force;then
+            if [[ ! -e "$dir/$name" ]]; then  mv -f "$file" "$dir/$name"; ((mvc++));  else  echo "---Filename confusion occured" >/dev/stderr;exit 18;fi
+        else
+            if [[ ! -e "$dir/$name" ]]; then  mv "$file" "$dir/$name"; ((mvc++));  else  echo "---Filename confusion occured" >/dev/stderr;exit 18;fi
+        fi
     fi
     ((c++));((di++));((ir++));((dri++));
   done
@@ -485,14 +505,22 @@ cd ..
         if ! $allY;then
           if $y; then
             
-            if [[ ! -e "$dir/$name" ]]; then  mv "$file" "$dir/$name"; ((mvc++));  else  echo "---Filename confusion occured" >/dev/stderr;exit 22;fi
+              if $force;then
+                  if [[ ! -e "$dir/$name" ]]; then  mv -f "$file" "$dir/$name"; ((mvc++));  else  echo "---Filename confusion occured" >/dev/stderr;exit 18;fi
+              else
+                  if [[ ! -e "$dir/$name" ]]; then  mv "$file" "$dir/$name"; ((mvc++));  else  echo "---Filename confusion occured" >/dev/stderr;exit 18;fi
+              fi
           else
             ((ir++));((dri++));((ln++))
             continue
           fi
         else
-        
-        if [[ ! -e "$dir/$name" ]]; then  mv "$file" "$dir/$name"; ((mvc++));  else  echo "---Filename confusion occured" >/dev/stderr;exit 23;fi
+       
+            if $force;then
+                if [[ ! -e "$dir/$name" ]]; then  mv -f "$file" "$dir/$name"; ((mvc++));  else  echo "---Filename confusion occured" >/dev/stderr;exit 18;fi
+            else
+                if [[ ! -e "$dir/$name" ]]; then  mv "$file" "$dir/$name"; ((mvc++));  else  echo "---Filename confusion occured" >/dev/stderr;exit 18;fi
+            fi
         fi
        ((ln++));((c++));((di++));((ir++));((dri++));
     done
@@ -560,13 +588,21 @@ else
         fi
         if ! $allY;then
           if $y; then
-            if [[ ! -e "$dir/$name" ]]; then  mv "$file" "$dir/$name"; ((mvc++));  else  echo "---Filename confusion occured" >/dev/stderr;exit 25;fi
+              if $force;then
+                  if [[ ! -e "$dir/$name" ]]; then  mv -f "$file" "$dir/$name"; ((mvc++));  else  echo "---Filename confusion occured" >/dev/stderr;exit 18;fi
+              else
+                  if [[ ! -e "$dir/$name" ]]; then  mv "$file" "$dir/$name"; ((mvc++));  else  echo "---Filename confusion occured" >/dev/stderr;exit 18;fi
+              fi
           else
             ((ir++));((dri++))
             continue
           fi
         else
-        if [[ ! -e "$dir/$name" ]]; then  mv "$file" "$dir/$name"; ((mvc++));  else  echo "---Filename confusion occured" >/dev/stderr;exit 26;fi
+            if $force;then
+                if [[ ! -e "$dir/$name" ]]; then  mv -f "$file" "$dir/$name"; ((mvc++));  else  echo "---Filename confusion occured" >/dev/stderr;exit 18;fi
+            else
+                if [[ ! -e "$dir/$name" ]]; then  mv "$file" "$dir/$name"; ((mvc++));  else  echo "---Filename confusion occured" >/dev/stderr;exit 18;fi
+            fi
         fi
         ((c++));((di++));((ir++));((dri++));
     
@@ -628,13 +664,21 @@ else
         fi
         if ! $allY;then
           if $y; then
-            if [[ ! -e "$dir/$name" ]]; then  mv "$file" "$dir/$name"; ((mvc++));  else  echo "---Filename confusion occured" >/dev/stderr;exit 29;fi
+              if $force;then
+                  if [[ ! -e "$dir/$name" ]]; then  mv -f "$file" "$dir/$name"; ((mvc++));  else  echo "---Filename confusion occured" >/dev/stderr;exit 18;fi
+              else
+                  if [[ ! -e "$dir/$name" ]]; then  mv "$file" "$dir/$name"; ((mvc++));  else  echo "---Filename confusion occured" >/dev/stderr;exit 18;fi
+              fi
           else
             ((ir++));((dri++));((ln++))
             continue
           fi
         else
-            if [[ ! -e "$dir/$name" ]]; then  mv "$file" "$dir/$name"; ((mvc++));  else  echo "---Filename confusion occured" >/dev/stderr;exit 30;fi
+            if $force;then
+                if [[ ! -e "$dir/$name" ]]; then  mv -f "$file" "$dir/$name"; ((mvc++));  else  echo "---Filename confusion occured" >/dev/stderr;exit 18;fi
+            else
+                if [[ ! -e "$dir/$name" ]]; then  mv "$file" "$dir/$name"; ((mvc++));  else  echo "---Filename confusion occured" >/dev/stderr;exit 18;fi
+            fi
         fi
         ((ln++));((c++));((di++));((ir++));((dri++));
     fi
