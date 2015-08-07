@@ -16,7 +16,7 @@ Bulk Rename Utility for GNU/Linux
 rnm Directory/File/Path [options]
 ```
 
-One of the options of `[-ns]` or `[-nsf]` is mandatory. Filename globbing is allowed.
+One of the options of `[-ns]` or `[-nsf]` is mandatory.
 
 ##Options:
 
