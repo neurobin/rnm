@@ -4,43 +4,73 @@ Bulk Rename Utility for GNU/Linux
 
 #Usage:
 
-`rnm Directory/File/Path [options]`
+`$projectName Directory/File/Path [options]`
+
+One of the options of [-ns] or [-nsf] is mandatory
 
 options:
 
-1. `-h`, `--help`: Show help menu
+`-h`, `--help`: Show help menu
 
-2. `-i`   : Starting index
-3. `-ri`  : Reserve index. Index will be incremented always,
-       i.e index will be reserved for skipped file
-4. `-ifl` : Index field length. not occupied field will be
+`-i`  : Starting index
+`-ifl` : Index field length. not occupied field will be
        filled with 0's.
 
-
-5. `-ns`  : Name string
-    1. `/i` in name string will be replaced with index.
-    2. `/n` in name string will be replaced with filename without extention.
-    3. `/nf` in name string will be replaced with full name of the files.
+`-ns`  : Name string
      
-6. `-nsf` : Name string file. File containing name string (one per line).
-7. `-l`   : Line number in name string file.
+`-nsf` : Name string file. File containing name string (one per line).
+`-l`   : Line number in name string file.
 
-8. `-ss`  : Search string.
+`-ss` : Search string
      String that will be used to search for files with matching names.
      Regex is allowed (posix compliant extended regex).
      
 
-9. `-sF`  : Fixed search string (not treated as regex).
+`-sF` : Fixed search string (not treated as regex).
 
-10. `-dp`  : Depth of folder. 0 means unlimited depth i.e all files and subdirectories will
+`-dp`  : Depth of folder. 0 means unlimited depth i.e all files and subdirectories will
        be included. Other values may be 1 2 3 etc...
        Default depth is 1.
+       
+`-D`   : Apply rename on direcotry as well as on files.
+       This is a peculier option and slightly confusing to users.
+       no subdirectories will be renamed i.e only file and folders on the
+       current directory. If only one directory is passed as the argument,
+       that directory will be renamed not any file or folder inside that
+       directory.
+       
+`-oD`  : Apply rename on directory only. 
 
-11. `-y`   : Confirm Yes to all
+`-y`   : Confirm Yes to all
 
-12. `-v`   : Version info
+`-v`   : Version info
 
-13. `-q`   : Quiet operation
+`-q`   : Quiet operation
+
+Technical Terms:
+
+Reserved Index    : Index will be incremented even if 
+                    any file is skipped renaming in order
+                    to reserve the index for that skipped file
+                
+Name String       : A string which is parsed to create name for new files.
+                    Name sting is parsed by the following rules:
+     `/i/` in name string will be replaced with index.
+     `/ir/` in name string will be replaced with reserved index.
+     `/id/` in name string will be replaced with directory index (index inside a directory).
+     `/idr/` in name string will be replaced with reserved directory index
+     `/n/` in name string will be replaced with filename without extention.
+     `/fn/` in name string will be replaced with full name of the files.
+     `/l/` in name string will be replaced with line number from list file.
+     `/dc/` in name string will be replaced with directory count
+     
+Search String     : A string that is used to search for files with matching
+                    filenames against the search string. By default it is
+                    a regex if -sF option is not used.
+                 
+Index Field Length: An integer value defining the field length of index.
+                    empty field will be filled with 0's. For example, if
+                    the value is 3, then index will be 001, 002, 003, etc..
 
 
 #Things to care:
