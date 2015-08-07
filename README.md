@@ -6,7 +6,7 @@ Bulk Rename Utility for GNU/Linux written in Bash scripting language. Therefore 
 #Install:
 
 1. Give the <span class="quote">install</span> file execution permission and
-2. Run it or just drag and dropt it on terminal.
+2. Run it or just drag and dropt it on terminal and hit <kbd>Enter</kbd>.
 
 
 
