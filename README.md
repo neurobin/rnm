@@ -106,6 +106,6 @@ etc...
 #Things to care:
 
 1. Newline in file or folder name is not supported. Make sure your folder doesn't contain any file/folder with new line.
-2. All options should always be separated by space. -vy won't mean two option: `-v` and `-y`, rather it will mean a single option `-vy`.
+2. All options should always be separated by space. For Example: `-vy` won't mean two option `-v` and `-y`, rather it will mean a single option `-vy`.
 3. Any non option argument will be treated as file or directory path. For example in <pre><code>rnm file1 file2 -- -ns fd</code></pre>`file1`, `file2` and `--` will be taken as file paths.
 
