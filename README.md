@@ -1,5 +1,5 @@
 # rnm
-Bulk Rename Utility for GNU/Linux
+Bulk Rename Utility for GNU/Linux written in Bash scripting language. Therefore the use of this script/tool depends on Bash. Used system tools are `mv` and `sed`.
 
 
 
