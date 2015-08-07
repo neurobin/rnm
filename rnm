@@ -3,7 +3,7 @@
 shopt -s extglob
 
 ##########################################################################################################
-projectName="renf"
+projectName="rnm"
 version="1.0.0"
 authorName="Jahidul Hamid"
 authorEmail="jahidulhamid@yahoo.com"
