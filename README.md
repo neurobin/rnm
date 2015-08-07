@@ -4,7 +4,7 @@ Bulk Rename Utility for GNU/Linux
 
 #Usage:
 
-`$projectName Directory/File/Path [options]`
+`rnm Directory/File/Path [options]`
 
 options:
 
@@ -18,9 +18,9 @@ options:
 
 
 5. `-ns`  : Name string
-     %i in name string will be replaced with index.
-     %n in name string will be replaced with filename without extention.
-     %nf in name string will be replaced with full name of the files.
+     /i in name string will be replaced with index.
+     /n in name string will be replaced with filename without extention.
+     /nf in name string will be replaced with full name of the files.
      
 6. `-nsf` : Name string file. File containing name string (one per line).
 7. `-l`   : Line number in name string file.

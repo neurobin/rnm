@@ -33,9 +33,9 @@ options:
 
 
 -ns  : Name string
-     %i in name string will be replaced with index.
-     %n in name string will be replaced with filename without extention.
-     %nf in name string will be replaced with full name of the files.
+     /i in name string will be replaced with index.
+     /n in name string will be replaced with filename without extention.
+     /nf in name string will be replaced with full name of the files.
      
 -nsf : Name string file. File containing name string (one per line).
 -l   : Line number in name string file.
