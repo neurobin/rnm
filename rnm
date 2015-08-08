@@ -281,6 +281,8 @@ done
 
 
 
+SelfPath="$(getAbsolutePath "$BASH_SOURCE")"
+
 ##################################### Various checks ###################################################
 
 
@@ -322,7 +324,7 @@ dri=$dirReservedIndex
 dir="$(getAbsolutePath "$dir")"
 [[ $dir == "" ]] && { printf "%s\n" "---Make sure directory/file path is given and is correct" >/dev/stderr;exit 14; }
 [[ -e $dir ]] || { printf "%s\n" "---No such file or directory: $dir" >/dev/stderr;exit 15; }
-[[ $dir == $(pwd -P) || $dir == $(getAbsolutePath "$BASH_SOURCE") ]] && { printf "%s\n" "---You can't choose current directory or the directory where rnm resides (It is considered unsafe and thus disabled). If you still want to do it on current directory, Try ./* instead of ./" >/dev/stderr;exit 16; }
+[[ $dir == $(pwd -P) ]] && { printf "%s\n" "---You can't pass current directory as argument (It is considered unsafe and thus disabled). If you still want to do it on current directory, Try ./* instead of ./" >/dev/stderr;exit 16; }
 #echo "$PWD $dir $BASH_SOURCE"
 #############################################
 
@@ -366,22 +368,26 @@ cd ..
  if [[ "$nameString" != "" && "$nameStringFile" == "" ]]; then
   
   for file in "${files[@]}";do
+    [[ "$file" == "$SelfPath" ]] && { echo "...Can't rename myself" >/dev/stderr;continue; }
     if ! $rd;then [[ ! -f $file ]] && continue; fi
     dir="$(dirname "$file")"
     index="$c"
+    di1=$di
+    dri1=$dri
+    ir1=$ir
     if [[ $ifl != "" ]]; then 
         index="$(printf "%0${ifl}d\n" $c)"
-        di="$(printf "%0${ifl}d\n" $di)"
-        dri="$(printf "%0${ifl}d\n" $dri)"
-        ir="$(printf "%0${ifl}d\n" $ir)"
+        di1="$(printf "%0${ifl}d\n" $di)"
+        dri1="$(printf "%0${ifl}d\n" $dri)"
+        ir1="$(printf "%0${ifl}d\n" $ir)"
     fi
     fname="${file##*/}"
     fname="${fname//\\/}"
     fnamewe="${fname%.*}"
-    name="${nameString//\/idr\//$dri}"
+    name="${nameString//\/idr\//$dri1}"
     [[ $nameString == "" ]] && name="$fname"
-    name="${name//\/id\//$di}"
-    name="${name//\/ir\//$ir}"
+    name="${name//\/id\//$di1}"
+    name="${name//\/ir\//$ir1}"
     name="${name//\/i\//$index}"
     name="${name//\/n\//$fnamewe}"
     name="${name//\/fn\//$fname}"
@@ -447,7 +453,7 @@ cd ..
  
     
     for file in "${files[@]}";do
-    
+        [[ "$file" == "$SelfPath" ]] && { echo "...Can't rename myself" >/dev/stderr;continue; }
         if ! $rd;then [[ ! -f $file ]] && continue; fi
         dir="$(dirname "$file")"
         fname="$(sed -n "${ln}s/.*/&/p" $nameStringFile || { echo "---sed error"  >/dev/stderr;exit 20; })"
@@ -455,17 +461,20 @@ cd ..
         fnamewe="${fname%.*}"
         index="$c"
         if="$ln"
+        di1=$di
+        dri1=$dri
+        ir1=$ir
         if [[ $ifl != "" ]];then 
             index="$(printf "%0${ifl}d\n" $c)"
             if="$(printf "%0${ifl}d\n" $ln)"
-            di="$(printf "%0${ifl}d\n" $di)"
-            dri="$(printf "%0${ifl}d\n" $dri)"
-            ir="$(printf "%0${ifl}d\n" $ir)"
+            di1="$(printf "%0${ifl}d\n" $di)"
+            dri1="$(printf "%0${ifl}d\n" $dri)"
+            ir1="$(printf "%0${ifl}d\n" $ir)"
         fi
-        name="${nameString//\/idr/$dri}"
+        name="${nameString//\/idr/$dri1}"
         [[ $nameString == "" ]] && name="$fname"
-        name="${name//\/id\//$di}"
-        name="${name//\/ir\//$ir}"
+        name="${name//\/id\//$di1}"
+        name="${name//\/ir\//$ir1}"
         name="${name//\/i\//$index}"
         name="${name//\/n\//$fnamewe}"
         name="${name//\/fn\//$fname}"
@@ -533,23 +542,27 @@ else
     
     di=$c;dri=$ir;
     file="$(getAbsolutePath "$dir")"
+    [[ "$file" == "$SelfPath" ]] && { echo "...Can't rename myself" >/dev/stderr; continue; }
     [[ "$(basename "$file")" =~ $bashSearchString ]] || continue
     dir="$(dirname "$file")"
     if [[ "$nameString" != "" && "$nameStringFile" == "" ]]; then
         index="$c"
+        di1=$di
+        dri1=$dri
+        ir1=$ir
         if [[ $ifl != "" ]]; then 
             index="$(printf "%0${ifl}d\n" $c)"
-            di="$(printf "%0${ifl}d\n" $di)"
-            dri="$(printf "%0${ifl}d\n" $dri)"
-            ir="$(printf "%0${ifl}d\n" $ir)"
+            di1="$(printf "%0${ifl}d\n" $di)"
+            dri1="$(printf "%0${ifl}d\n" $dri)"
+            ir1="$(printf "%0${ifl}d\n" $ir)"
         fi
         fname="${file##*/}"
         fname="${fname//\\/}"
         fnamewe="${fname%.*}"
-        name="${nameString//\/idr\//$dri}"
+        name="${nameString//\/idr\//$dri1}"
         [[ $nameString == "" ]] && name="$fname"
-        name="${name//\/id\//$di}"
-        name="${name//\/ir\//$ir}"
+        name="${name//\/id\//$di1}"
+        name="${name//\/ir\//$ir1}"
         name="${name//\/i\//$index}"
         name="${name//\/n\//$fnamewe}"
         name="${name//\/fn\//$fname}"
@@ -615,17 +628,20 @@ else
         fnamewe="${fname%.*}"
         index="$c"
         if="$ln"
+        di1=$di
+        dri1=$dri
+        ir1=$ir
         if [[ $ifl != "" ]];then 
             index="$(printf "%0${ifl}d\n" $c)"
             if="$(printf "%0${ifl}d\n" $ln)"
-            di="$(printf "%0${ifl}d\n" $di)"
-            dri="$(printf "%0${ifl}d\n" $dri)"
-            ir="$(printf "%0${ifl}d\n" $ir)"
+            di1="$(printf "%0${ifl}d\n" $di)"
+            dri1="$(printf "%0${ifl}d\n" $dri)"
+            ir1="$(printf "%0${ifl}d\n" $ir)"
         fi
-        name="${nameString//\/idr\//$dri}"
+        name="${nameString//\/idr\//$dri1}"
         [[ $nameString == "" ]] && name="$fname"
-        name="${name//\/id\//$di}"
-        name="${name//\/ir\//$ir}"
+        name="${name//\/id\//$di1}"
+        name="${name//\/ir\//$ir1}"
         name="${name//\/i\//$index}"
         name="${name//\/n\//$fnamewe}"
         name="${name//\/fn\//$fname}"
