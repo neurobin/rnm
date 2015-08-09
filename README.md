@@ -9,7 +9,7 @@ Bulk Rename Utility for GNU/Linux written in Bash scripting language. Therefore,
 2. Undo functionality (`rnm -u`).
 3. Multiple directories and files can be passed as command line arguments.
 4. File name can be modified at runtime by passing a *Name String* as argument.
-5. Selective rename is possible by passing a *Search String* as argument which will take only the files that matches the search string ( *Search String* is a [regex] (https://en.wikipedia.org/wiki/Regular_expression) by default). To use a fixed string use the `-sF` option.
+5. Selective rename is possible by passing a *Search String* as argument which will take only the files that matches the search string ( *Search String* is a <a href="https://en.wikipedia.org/wiki/Regular_expression">regex</a> by default). To use a fixed string use the `-sF` option.
 6. Name can be taken from a file too. And these names (taken from a file) can be modified with *Name String* at runtime.
 7. Name can be taken from a file according to starting line number (`-l` or `-sl`) and ending line number (`-el`).
 
