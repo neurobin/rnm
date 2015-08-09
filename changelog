@@ -1,10 +1,10 @@
 #ChangeLog:
 
-###1.0.0: Sat 14 Aug 2015
+###`1.0.0`: <span class="light-quote">Sat 14 Aug 2015</span>
 
 **Birth of rnm**
     
-###2.0.0: Sun Aug  9 23:18:00 BDT 2015
+###`2.0.0`: <span class="light-quote">Sun Aug  9 23:18:00 BDT 2015</span>
 
 1. Added undo feature.
 2. Added end index feature and end line number feature.
