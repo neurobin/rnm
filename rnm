@@ -27,14 +27,23 @@ options:
 
 -h, --help: Show help menu
 
--i   : Starting index
+-i,-si   : Starting index
+-ei  : End index i.e index to stop renaming from.
+       Note that directory index /id/ will renew in each directory
+       i.e in each directory rename will be performed from start index
+       to end index.
 -ifl : Index field length. not occupied field will be
        filled with 0's.
 
 -ns  : Name string
      
 -nsf : Name string file. File containing name string (one per line).
--l   : Line number in name string file.
+       [-nsf /hist/] i.e a value passed /hist/ as Name string file, will
+       try to take the file from history.
+-l,-sl   : Start Line number in name string file.
+-li  : Same as -l, except line number will be decremented in each iteration.
+-el  : End line number. Line number to stop renaming from.
+-eli : Same as -el, except line number will be decremented in each iteration.
 
 -ss  : Search string
      String that will be used to search for files with matching names.
@@ -47,20 +56,23 @@ options:
        be included. Other values may be 1 2 3 etc...
        Default depth is 1.
        
--D   : Apply rename on direcotry as well as on files.
-       This is a peculier option and slightly confusing to users.
-       no subdirectories will be renamed i.e only file and folders on the
+-D   : Directories and files both will be treated in the same way,
+       i.e apply rename on direcotry as well as on files.
+       This is a peculier option and may seem slightly confusing.
+       No subdirectories will be renamed i.e only file and folders on the
        current directory. If only one directory is passed as the argument,
        that directory will be renamed not any file or folder inside that
        directory.
        
--oD  : Apply rename on directory only. 
+-oD  : Apply rename on directory only. No subdirectories.
 
 -ed  : Apply rename on files only, exclude any and all directory and their contents.
 
 -y   : Confirm Yes to all
 
 -f, --force: Force rename
+
+-u, -U, --undo: Undo renaming
 
 -v   : Version info
 
@@ -82,6 +94,12 @@ Name String       : A string which is parsed to create name for new files.
      /fn/ in name string will be replaced with full name of the files.
      /l/ in name string will be replaced with line number from list file.
      /dc/ in name string will be replaced with directory count
+     /-i/ in name string will be replaced with inverse index.
+     /-ir/ in name string will be replaced with iverse reserved index.
+  In general - in the above replacement rules (applies to indexes excluding /l/ and /dc/)
+  will mean inverse index conforming to their meaning.
+  
+Inverse Index     : Decrementing index.
      
 Search String     : A string that is used to search for files with matching
                     filenames against the search string. By default it is
@@ -102,6 +120,11 @@ searchStringFile=""
 ext=""
 opts=('Only this file' 'Not this file' 'Confirm for All' 'Exit')
 PS3="Choice: "
+logdir=$HOME/.neurobin/rnm
+errorlog="$logdir/errors.log"
+outlog="$logdir/out.log"
+renamedfilelog="$logdir/rfl.log.tmp"
+rnmfilelog="$logdir/rfl.log"
 
 quiet=false
 index=1
@@ -120,9 +143,19 @@ dri=1
 dc=1
 dirIndex=1
 dirReservedIndex=1
+InverseDirIndex=-1
+InverseDirReservedIndex=-1
 dirOnly=false
 force=false
 ed=false
+undo=false
+invi=-1
+invir=-1
+invdi=-1
+invdri=-1
+InverseLine=false
+ei=""
+eln=""
 
 ##########################################################################################################
 ##########################################################################################################
@@ -136,14 +169,14 @@ base="$(basename "$1")"
 if [[ -d "$1" && "$1" != "" ]]; then
     cd "$1"
     echo "$PWD"
-    return
+    return 0
 elif [[ -d "$dir" && "$1" != "" ]];then
     cd "$dir"
     echo "$PWD/$base"
-    return
+    return 0
 
 fi
-
+return 1
 }
 
 showRenameInfo(){
@@ -168,6 +201,34 @@ var="${BASH_REMATCH[1]}${BASH_REMATCH[2]}"
 echo "$var"
 }
 
+validPath(){
+ivp=("$logdir" "$logdir/" "$HOME/.neurobin/" "$HOME/.neurobin" "$errorlog" "$rnmfilelog" "$renamedfilelog" "$outlog" "$BASH_SOURCE" "/" "$logdir/nsf.list" "$nmsf" "" )
+for p in "${ivp[@]}";do
+[[ "$p" == "$1" ]]  && { echo "$(echo "W: Renaming not permitted: $p" |tee /dev/stderr)" "....@$(date)" |tee -a "$outlog" "$errorlog" >/dev/null;return 1; }
+done
+return 0
+}
+
+chkFile(){
+
+[[ -f "$1" ]] || { echo "$(echo "E: File not found: $1" |tee /dev/stderr)" "....@$(date)" |tee -a "$errorlog" >/dev/null;return 1; }
+return 0
+
+}
+
+chkDir(){
+
+[[ -d "$1" ]] || { echo "$(echo "E: Directory not found: $1" |tee /dev/stderr)" "....@$(date)" |tee -a "$errorlog" >/dev/null;return 1; }
+return 0
+
+}
+
+chkPath(){
+
+[[ -e "$1" ]] || { echo "$(echo "E: No such file or directory: $1" |tee /dev/stderr)" "....@$(date)" |tee -a "$errorlog" >/dev/null;return 1; }
+return 0
+
+}
 
 ##########################################################################################################
 ########################################### Opt Parse ####################################################
@@ -191,33 +252,61 @@ for((i=0;i<"${#optarr[@]}";i++));do
         printf "%s\n" "$versionInfo"
         exit 3
         ;;
-        "-i")
+        "-i"|"-si")
         c="${optarr[$(($i+1))]}"
         index="$c"
-        [[ ! $index =~ ^-?[0-9]+$ ]] && { printf "%s\n" "Index must be an integer" >/dev/stderr;exit 4; }
+        [[ ! $index =~ ^-?[0-9]+$ ]] && { echo "$(printf "%s\n" "E: Index must be an integer" |tee /dev/stderr)" "    @$(date)" |tee -a  "$errorlog" >/dev/null;exit 4; }
         index="$(trimZeroFromInteger "$index" )"
-        c=$index;ir=$c;
+        c=$index;ir=$c;invir=$c;invi=$c;
+        skipcount=true
+        ;;
+        "-ei")
+        ei="${optarr[$(($i+1))]}"
+        [[ ! $ei =~ ^-?[0-9]+$ ]] && { echo "$(printf "%s\n" "E: Index must be an integer" |tee /dev/stderr)" "    @$(date)" |tee -a  "$errorlog" >/dev/null;exit 4; }
+        ei="$(trimZeroFromInteger "$ei" )"
         skipcount=true
         ;;
         "-ifl")
         ifl="${optarr[$(($i+1))]}"
-        [[ ! $ifl =~ ^[0-9]+$ ]] && { printf "%s\n" "Index field length must be a positive integer" >/dev/stderr;exit 5; }
+        [[ ! $ifl =~ ^[0-9]+$ ]] && { echo "$(printf "%s\n" "E: Index field length must be a positive integer" |tee /dev/stderr)" "    @$(date)" |tee -a  "$errorlog" >/dev/null;exit 5; }
         ifl="$(trimZeroFromInteger "$ifl")"
         skipcount=true
         ;;
         "-di")
         di="${optarr[$(($i+1))]}"
-        [[ ! $di =~ ^-?[0-9]+$ ]] && { printf "%s\n" "Index must be an integer" >/dev/stderr;exit 6; }
+        [[ ! $di =~ ^-?[0-9]+$ ]] && { echo "$(printf "%s\n" "E: Index must be an integer" |tee /dev/stderr)" "    @$(date)" |tee -a  "$errorlog" >/dev/null;exit 6; }
         di="$(trimZeroFromInteger "$di")"
-        dri=$di
+        dri=$di;invdri=$di;invdi=$di;
         dirIndex=$di
         dirReservedIndex=$di
+        InverseDirIndex=$di
+        InverseDirReservedIndex=$di
         skipcount=true
         ;;
-        "-l")
+        "-l"|"-sl")
         ln="${optarr[$(($i+1))]}"
-        [[ ! $ln =~ ^[0-9]+$ ]] && { printf "%s\n" "Starting line must be a positive integer" >/dev/stderr;exit 7; }
+        [[ ! $ln =~ ^[0-9]+$ ]] && { echo "$(printf "%s\n" "E: Starting line must be a positive integer" |tee /dev/stderr)" "    @$(date)" |tee -a  "$errorlog" >/dev/null;exit 7; }
         ln="$(trimZeroFromInteger "$ln")"
+        skipcount=true
+        ;;
+        "-li")
+        ln="${optarr[$(($i+1))]}"
+        [[ ! $ln =~ ^[0-9]+$ ]] && { echo "$(printf "%s\n" "E: Starting line must be a positive integer" |tee /dev/stderr)" "    @$(date)" |tee -a  "$errorlog" >/dev/null;exit 7; }
+        ln="$(trimZeroFromInteger "$ln")"
+        InverseLine=true
+        skipcount=true
+        ;;
+        "-el")
+        eln="${optarr[$(($i+1))]}"
+        [[ ! $eln =~ ^[0-9]+$ ]] && { echo "$(printf "%s\n" "E: Starting line must be a positive integer" |tee /dev/stderr)" "    @$(date)" |tee -a  "$errorlog" >/dev/null;exit 7; }
+        eln="$(trimZeroFromInteger "$eln")"
+        skipcount=true
+        ;;
+        "-eli")
+        eln="${optarr[$(($i+1))]}"
+        [[ ! $eln =~ ^[0-9]+$ ]] && { echo "$(printf "%s\n" "E: Starting line must be a positive integer" |tee /dev/stderr)" "    @$(date)" |tee -a  "$errorlog" >/dev/null;exit 7; }
+        eln="$(trimZeroFromInteger "$eln")"
+        InverseLine=true
         skipcount=true
         ;;
         "-q")
@@ -231,26 +320,26 @@ for((i=0;i<"${#optarr[@]}";i++));do
         "-ss")
         searchString="${optarr[$(($i+1))]}"
         skipcount=true
-        [[ $searchString == "" ]] && { printf "%s\n" "---Search string can't be empty." >/dev/stderr;exit 8; }
+        [[ $searchString == "" ]] && { echo "$(printf "%s\n" "E: Search string can not be empty." |tee /dev/stderr)" "    @$(date)" |tee -a  "$errorlog" >/dev/null;exit 8; }
         
         ;;
         "-ns")
         nameString="${optarr[$(($i+1))]}"
         skipcount=true
-        [[ $nameString == "" ]] && { printf "%s\n" "---Name string can't be empty." >/dev/stderr;exit 9; }
+        [[ $nameString == "" ]] && { echo "$(printf "%s\n" "E: Name string can not be empty." |tee /dev/stderr)" "    @$(date)" |tee -a  "$errorlog" >/dev/null;exit 9; }
         
         ;;
         "-nsf")
         nameStringFile="${optarr[$(($i+1))]}"
         skipcount=true
-        [[ -f $nameStringFile && ! -L $nameStringFile ]] || { printf "%s\n" "---File not found: $nameStringFile" >/dev/stderr;exit 10; }
+        [[ -f $nameStringFile && ! -L $nameStringFile || $nameStringFile == "/hist/" ]] || { echo "$(printf "%s\n" "E: File not found: $nameStringFile" |tee /dev/stderr)" "    @$(date)" |tee -a  "$errorlog" >/dev/null;exit 10; }
         
        
         ;;
         "-dp")
         dp="${optarr[$(($i+1))]}"
         skipcount=true
-        [[ ! $dp =~ ^[0-9]+$ ]] && { printf "%s\n" "Depth mush be an integer and >=1" >/dev/stderr;exit 11; }
+        [[ ! $dp =~ ^[0-9]+$ ]] && { echo "$(printf "%s\n" "E: Depth mush be an integer and >=1" |tee /dev/stderr)" "    @$(date)" |tee -a  "$errorlog" >/dev/null;exit 11; }
         dp="$(trimZeroFromInteger "$dp")"
         ;;
         "-D")
@@ -265,6 +354,9 @@ for((i=0;i<"${#optarr[@]}";i++));do
         "-f"|"--force")
         force=true
         ;;
+        "-u"|"-U"|"--undo")
+        undo=true
+        ;;
         *)
         filearr+=("${optarr[$i]}")
         ;;
@@ -272,22 +364,130 @@ for((i=0;i<"${#optarr[@]}";i++));do
 done
 
 ###################################### Opt Parse End #####################################################
-##########################################################################################################
-
-[[ "${#filearr[@]}" == "0"  ]] && { printf "%s\n" "---No file/directory path specified" >/dev/stderr; exit 12; }
-
-
-[[ "$nameString" == "" && "$nameStringFile" == "" ]] && { printf "%s\n" "---One of the options: -ns or -nsf is mandatory" >/dev/stderr; exit 13; } 
-
-
-
+###Some other global variables
 SelfPath="$(getAbsolutePath "$BASH_SOURCE")"
+
+##########################################################################################################
+##Generating a directory to keep logs
+
+printf "" > "$renamedfilelog"
+mkdir -p "$logdir"
+printf "%s\n" "\\*** rnm output log printed. Includes warning and normal outputs. Errors are not printed here, see errors.log for error ***\\" > "$outlog"
+
+
+
+
+
+if  $undo;then
+
+if [[ ! -f "$rnmfilelog" ]]; then
+    if [[ -f "$rnmfilelog.old" ]]; then
+        echo "$(printf "%s\n" "E: Required log file (rfl.log) missing. Make sure this utility has been run before with successful rename. You may use old log file though, but it is not recommended." |tee /dev/stderr)" "....@$(date)" |tee -a "$errorlog"  >/dev/null;
+        read -e -p "Use old log file?[Y/n]: " yn
+        [[ $yn =~ ^[Yy]$ ]] && mv -f "$rnmfilelog.old" "$rnmfilelog" || exit 2
+    else
+        echo "$(printf "%s\n" "E: Required log file (rfl.log) missing. Make sure this utility has been run before with successful rename." |tee /dev/stderr)" "....@$(date)" |tee -a "$errorlog" >/dev/null
+        exit 2
+    fi
+
+
+
+fi
+
+  IFS=$'\n' infiles=($(sed -nr "s/\\\([^\\\]*)\\\[^\\\]*\\\([^\\\]*)\\\.*/\2/p" "$rnmfilelog"))
+  IFS=$'\n' outfiles=($(sed -nr "s/\\\([^\\\]*)\\\[^\\\]*\\\([^\\\]*)\\\.*/\1/p" "$rnmfilelog"))
+
+  cp "$rnmfilelog" "$rnmfilelog.old"
+
+  for((i=0;i<"${#infiles[@]}";i++));do
+  
+  outfile="${outfiles[$i]}"
+  infile="${infiles[$i]}"
+  if ! validPath "$outfile" && ! validPath "$infile";then continue;fi
+  [[ ! -e "$infile" || -L "$infile" ]] && { echo "$(echo "E: Undo failed. No such file or directory: $infile" |tee /dev/stderr)" "....@$(date)" |tee -a "$errorlog" >/dev/null; continue; }
+    if ! $quiet; then printf "%s\t%s\t%s\n" "$infile" "-->" "$outfile";fi
+    if ! $allY;then
+        printf "\nConfirm Undo Operation:\n\n"
+        select opt in "${opts[@]}";do
+            case "$opt" in
+                "Only this file")
+                    y=true
+                    allY=false
+                    break
+                    ;;
+                "Not this file")
+                    y=false
+                    allY=false
+                    break
+                    ;;
+                "Confirm for All")
+                    allY=true
+                    break
+                    ;;
+                "Exit")
+                    exit 17
+                    ;;
+                *)
+                    echo "Invalid option"
+                    ;;
+                
+            esac
+        done
+        fi
+    if ! $allY;then
+        if $y; then
+            if $force;then
+                if [[ ! -e "$outfile" ]]; then  mv -f "$infile" "$outfile"; ((mvc++)); printf "\\%s\\ \t--->\t\\%s\\ \t@%s\n" "$infile" "$outfile" "$(date)" | tee -a  "$renamedfilelog" "$outlog" >/dev/null; cat "$renamedfilelog" > "$rnmfilelog";  else  echo "$(echo "E: Filename confusion occured" |tee /dev/stderr)" "    @$(date)" |tee -a  "$errorlog" >/dev/null;exit 18;fi
+            else
+                if [[ ! -e "$outfile" ]]; then  mv "$infile" "$outfile"; ((mvc++)); printf "\\%s\\ \t--->\t\\%s\\ \t@%s\n" "$infile" "$outfile" "$(date)" | tee -a  "$renamedfilelog" "$outlog" >/dev/null; cat "$renamedfilelog" > "$rnmfilelog";  else  echo "$(echo "E: Filename confusion occured" |tee /dev/stderr)" "    @$(date)" |tee -a  "$errorlog" >/dev/null;exit 18;fi
+            fi
+        else
+            continue
+        fi
+    else
+        
+        if $force;then
+            if [[ ! -e "$outfile" ]]; then  mv -f "$infile" "$outfile"; ((mvc++)); printf "\\%s\\ \t--->\t\\%s\\ \t@%s\n" "$infile" "$outfile" "$(date)" | tee -a  "$renamedfilelog" "$outlog" >/dev/null; cat "$renamedfilelog" > "$rnmfilelog";  else  echo "$(echo "E: Filename confusion occured" |tee /dev/stderr)" "    @$(date)" |tee -a  "$errorlog" >/dev/null;exit 18;fi
+        else
+            if [[ ! -e "$outfile" ]]; then  mv "$infile" "$outfile"; ((mvc++)); printf "\\%s\\ \t--->\t\\%s\\ \t@%s\n" "$infile" "$outfile" "$(date)" | tee -a  "$renamedfilelog" "$outlog" >/dev/null; cat "$renamedfilelog" > "$rnmfilelog";  else  echo "$(echo "E: Filename confusion occured" |tee /dev/stderr)" "    @$(date)" |tee -a  "$errorlog" >/dev/null;exit 18;fi
+        fi
+    fi
+
+  done
+if ! $quiet;then
+    printf "%s\n" "
+*** Undo operation done on $mvc file/s ***
+"
+fi
+
+exit
+fi
+
+
+[[ "${#filearr[@]}" == "0"  ]] && { echo "$(printf "%s\n" "E: No file/directory path specified" |tee /dev/stderr)" "    @$(date)" |tee -a  "$errorlog"  >/dev/null; exit 12; }
+
+
+[[ "$nameString" == "" && "$nameStringFile" == "" ]] && { echo "$(printf "%s\n" "E: One of the options: -ns or -nsf is mandatory" |tee /dev/stderr)" "    @$(date)" |tee -a  "$errorlog" >/dev/null; exit 13; } 
+
+
+
+
 
 ##################################### Various checks ###################################################
 
 
 if [[ $nameStringFile != "" ]];then
+  if [[ "$nameStringFile" != "/hist/" ]];then 
+    tmpf="$nameStringFile"
     nameStringFile="$(getAbsolutePath "$nameStringFile")"
+    [[ "$nameStringFile" == "" ]] && { echo "$(echo "E: Name string file not found: $tmpf" |tee /dev/stderr)" "....@$(date)" |tee -a "$errorlog" >/dev/null;exit 2; }
+    nmsf="$nameStringFile"  # used in validPath function
+    cp "$nameStringFile" "$logdir/nsf.list"
+    nameStringFile="$logdir/nsf.list"
+  else
+    if chkFile "$logdir/nsf.list";then nameStringFile="$logdir/nsf.list";else exit 2;fi;
+    
+  fi
 fi
 
 [[ $searchString == "" ]] && { searchString=".*";bashSearchString=".*"; } || {
@@ -315,16 +515,20 @@ fi
 
 
 for dir in "${filearr[@]}";do
+
 if $dirOnly;then [[ ! -d $dir ]] && continue; fi
 if $ed;then [[ -d $dir ]] && continue; fi
+
 di=$dirIndex
 dri=$dirReservedIndex
-
+invdi=$InverseDirIndex
+invdri=$InverseDirReservedIndex
 ###### Checking validity of $dir ############
 dir="$(getAbsolutePath "$dir")"
-[[ $dir == "" ]] && { printf "%s\n" "---Make sure directory/file path is given and is correct" >/dev/stderr;exit 14; }
-[[ -e $dir ]] || { printf "%s\n" "---No such file or directory: $dir" >/dev/stderr;exit 15; }
-[[ $dir == $(pwd -P) ]] && { printf "%s\n" "---You can't pass current directory as argument (It is considered unsafe and thus disabled). If you still want to do it on current directory, Try ./* instead of ./" >/dev/stderr;exit 16; }
+if ! validPath "$dir";then continue;fi
+[[ $dir == "" ]] && { echo $(printf "%s\n" "E: Make sure directory/file path is given and is correct" |tee /dev/stderr)"    @$(date)" |tee -a  "$errorlog" >/dev/null;exit 14; }
+[[ -e $dir ]] || { echo "$(printf "%s\n" "E: No such file or directory: $dir" |tee /dev/stderr)" "    @$(date)" |tee -a  "$errorlog" >/dev/null;exit 15; }
+[[ $dir == $(pwd -P) ]] && { echo "$(printf "%s\n" "E: You can't pass current directory as argument (It's considered unsafe and thus disabled). If you still want to do it on current directory, Try ./* instead of ./" |tee /dev/stderr)" "    @$(date)" |tee -a  "$errorlog" >/dev/null;exit 16; }
 #echo "$PWD $dir $BASH_SOURCE"
 #############################################
 
@@ -368,35 +572,54 @@ cd ..
  if [[ "$nameString" != "" && "$nameStringFile" == "" ]]; then
   
   for file in "${files[@]}";do
-    [[ "$file" == "$SelfPath" ]] && { echo "...Can't rename myself" >/dev/stderr;continue; }
+    [[ "$ei" == "$c" || "$ei" == "$ir" || "$ei" == "$invi" || "$ei" == "$invir" ]] && continue
+    [[ "$file" == "$SelfPath" ]] && { echo "$(echo "W: Could not rename myself" |tee /dev/stderr)" "    @$(date)" |tee -a  "$errorlog" "$outlog" >/dev/null;continue; }
     if ! $rd;then [[ ! -f $file ]] && continue; fi
+    if ! validPath "$file";then continue;fi
     dir="$(dirname "$file")"
     index="$c"
     di1=$di
     dri1=$dri
     ir1=$ir
+    
+    invi1=$invi
+    invir1=$invir
+    invdi1=$invdi
+    invdri1=$invdri
+    
     if [[ $ifl != "" ]]; then 
-        index="$(printf "%0${ifl}d\n" $c)"
-        di1="$(printf "%0${ifl}d\n" $di)"
-        dri1="$(printf "%0${ifl}d\n" $dri)"
-        ir1="$(printf "%0${ifl}d\n" $ir)"
+            index="$(printf "%0${ifl}d\n" $c)"
+            di1="$(printf "%0${ifl}d\n" $di)"
+            dri1="$(printf "%0${ifl}d\n" $dri)"
+            ir1="$(printf "%0${ifl}d\n" $ir)"
+            invi1="$(printf "%0${ifl}d\n" $invi)"
+            invir1="$(printf "%0${ifl}d\n" $invir)"
+            invdi1="$(printf "%0${ifl}d\n" $invdi)"
+            invdri1="$(printf "%0${ifl}d\n" $invdri)"
     fi
     fname="${file##*/}"
     fname="${fname//\\/}"
     fnamewe="${fname%.*}"
-    name="${nameString//\/idr\//$dri1}"
+    name="$nameString"
     [[ $nameString == "" ]] && name="$fname"
+    name="${name//\/n\//$fnamewe}"
+    name="${name//\/fn\//$fname}"
+    name="${name//\/idr\//$dri1}"
     name="${name//\/id\//$di1}"
     name="${name//\/ir\//$ir1}"
     name="${name//\/i\//$index}"
-    name="${name//\/n\//$fnamewe}"
-    name="${name//\/fn\//$fname}"
     name="${name//\/dc\//$dc}"
+        name="${name//\/-i\//$invi1}"
+        name="${name//\/-ir\//$invir1}"
+        name="${name//\/-id\//$invdi1}"
+        name="${name//\/-idr\//$invdri1}"
     name="${name//\//}"
     name="${name//\\/}"
-    if ! $quiet; then printf "%s\t%s\t%s\n" "$dir/${file##*/}" "-->" "$dir/${name}";fi
+    
+    if ! validPath "$dir/$name";then continue;fi
+    if ! $quiet; then printf "%s\t%s\t%s\n" "$file" "-->" "$dir/$name";fi
     if ! $allY;then
-        printf "\nConfirm Moving file:\n\n"
+        printf "\nConfirm renaming file:\n\n"
         select opt in "${opts[@]}";do
             case "$opt" in
                 "Only this file")
@@ -426,23 +649,23 @@ cd ..
     if ! $allY;then
         if $y; then
             if $force;then
-                if [[ ! -e "$dir/$name" ]]; then  mv -f "$file" "$dir/$name"; ((mvc++));  else  echo "---Filename confusion occured" >/dev/stderr;exit 18;fi
+                if [[ ! -e "$dir/$name" ]]; then  mv -f "$file" "$dir/$name"; ((mvc++)); printf "\\%s\\ \t--->\t\\%s\\ \t@%s\n" "$file" "$dir/$name" "$(date)" | tee -a  "$renamedfilelog" "$outlog" >/dev/null; cat "$renamedfilelog" > "$rnmfilelog";  else  echo "$(echo "E: Filename confusion occured" |tee /dev/stderr)" "    @$(date)" |tee -a  "$errorlog" >/dev/null;exit 18;fi
             else
-                if [[ ! -e "$dir/$name" ]]; then  mv "$file" "$dir/$name"; ((mvc++));  else  echo "---Filename confusion occured" >/dev/stderr;exit 18;fi
+                if [[ ! -e "$dir/$name" ]]; then  mv "$file" "$dir/$name"; ((mvc++)); printf "\\%s\\ \t--->\t\\%s\\ \t@%s\n" "$file" "$dir/$name" "$(date)" | tee -a  "$renamedfilelog" "$outlog" >/dev/null; cat "$renamedfilelog" > "$rnmfilelog";  else  echo "$(echo "E: Filename confusion occured" |tee /dev/stderr)" "    @$(date)" |tee -a  "$errorlog" >/dev/null;exit 18;fi
             fi
         else
-            ((ir++));((dri++))
+            ((ir++));((invir--));((dri++));((invdri--))
             continue
         fi
     else
         
         if $force;then
-            if [[ ! -e "$dir/$name" ]]; then  mv -f "$file" "$dir/$name"; ((mvc++));  else  echo "---Filename confusion occured" >/dev/stderr;exit 18;fi
+            if [[ ! -e "$dir/$name" ]]; then  mv -f "$file" "$dir/$name"; ((mvc++)); printf "\\%s\\ \t--->\t\\%s\\ \t@%s\n" "$file" "$dir/$name" "$(date)" | tee -a  "$renamedfilelog" "$outlog" >/dev/null; cat "$renamedfilelog" > "$rnmfilelog";  else  echo "$(echo "E: Filename confusion occured" |tee /dev/stderr)" "    @$(date)" |tee -a  "$errorlog" >/dev/null;exit 18;fi
         else
-            if [[ ! -e "$dir/$name" ]]; then  mv "$file" "$dir/$name"; ((mvc++));  else  echo "---Filename confusion occured" >/dev/stderr;exit 18;fi
+            if [[ ! -e "$dir/$name" ]]; then  mv "$file" "$dir/$name"; ((mvc++)); printf "\\%s\\ \t--->\t\\%s\\ \t@%s\n" "$file" "$dir/$name" "$(date)" | tee -a  "$renamedfilelog" "$outlog" >/dev/null; cat "$renamedfilelog" > "$rnmfilelog";  else  echo "$(echo "E: Filename confusion occured" |tee /dev/stderr)" "    @$(date)" |tee -a  "$errorlog" >/dev/null;exit 18;fi
         fi
     fi
-    ((c++));((di++));((ir++));((dri++));
+    ((c++));((invi--));((di++));((invdi--));((ir++));((invir--));((dri++));((invdri--));
   done
 
  fi
@@ -453,38 +676,59 @@ cd ..
  
     
     for file in "${files[@]}";do
-        [[ "$file" == "$SelfPath" ]] && { echo "...Can't rename myself" >/dev/stderr;continue; }
+        [[ "$ei" == "$c" || "$ei" == "$ir" || "$ei" == "$invi" || "$ei" == "$invir" ]] && continue
+        [[ "$file" == "$SelfPath" ]] && { echo "$(echo "W: Could not rename myself" |tee /dev/stderr)" "    @$(date)" |tee -a  "$errorlog" "$outlog" >/dev/null;continue; }
         if ! $rd;then [[ ! -f $file ]] && continue; fi
+        if ! validPath "$file";then continue;fi
         dir="$(dirname "$file")"
-        fname="$(sed -n "${ln}s/.*/&/p" $nameStringFile || { echo "---sed error"  >/dev/stderr;exit 20; })"
+        
+        (( $ln != $eln && $ln > 0 )) && fname="$(sed -n "${ln}s/.*/&/p" $nameStringFile || { echo "$(echo "E: sed error"  |tee /dev/stderr)" "    @$(date)" |tee -a  "$errorlog" >/dev/null;exit 20; })" || exit
+        
         fname="${fname//\\/}"
+        [[ $fname == "" ]] && { echo "$(echo "W: Name can not be empty, skipping..." |tee -a /dev/stderr)" "....@$(date)" |tee -a "$errorlog" >/dev/null; continue; }
         fnamewe="${fname%.*}"
         index="$c"
         if="$ln"
         di1=$di
         dri1=$dri
         ir1=$ir
+        
+        invi1=$invi
+        invir1=$invir
+        invdi1=$invdi
+        invdri1=$invdri
+        
         if [[ $ifl != "" ]];then 
             index="$(printf "%0${ifl}d\n" $c)"
             if="$(printf "%0${ifl}d\n" $ln)"
             di1="$(printf "%0${ifl}d\n" $di)"
             dri1="$(printf "%0${ifl}d\n" $dri)"
             ir1="$(printf "%0${ifl}d\n" $ir)"
+            invi1="$(printf "%0${ifl}d\n" $invi)"
+            invir1="$(printf "%0${ifl}d\n" $invir)"
+            invdi1="$(printf "%0${ifl}d\n" $invdi)"
+            invdri1="$(printf "%0${ifl}d\n" $invdri)"
         fi
-        name="${nameString//\/idr/$dri1}"
+        name="$nameString"
         [[ $nameString == "" ]] && name="$fname"
+        name="${name//\/n\//$fnamewe}"
+        name="${name//\/fn\//$fname}"
+        name="${name//\/idr\//$dri1}"
         name="${name//\/id\//$di1}"
         name="${name//\/ir\//$ir1}"
         name="${name//\/i\//$index}"
-        name="${name//\/n\//$fnamewe}"
-        name="${name//\/fn\//$fname}"
         name="${name//\/dc\//$dc}"
         name="${name//\/l\//$if}"
+        name="${name//\/-i\//$invi1}"
+        name="${name//\/-ir\//$invir1}"
+        name="${name//\/-id\//$invdi1}"
+        name="${name//\/-idr\//$invdri1}"
         name="${name//\//}"
         name="${name//\\/}"
-        if ! $quiet; then printf "%s\t%s\t%s\n" "$dir/${file##*/}" "-->" "$dir/${name}";fi
+        if ! validPath "$dir/$name";then continue;fi
+        if ! $quiet; then printf "%s\t%s\t%s\n" "$file" "-->" "$dir/$name";fi
         if ! $allY;then
-          printf "\nConfirm Moving file:\n\n"
+          printf "\nConfirm renaming file:\n\n"
           select opt in "${opts[@]}";do
             case "$opt" in
                 "Only this file")
@@ -515,23 +759,23 @@ cd ..
           if $y; then
             
               if $force;then
-                  if [[ ! -e "$dir/$name" ]]; then  mv -f "$file" "$dir/$name"; ((mvc++));  else  echo "---Filename confusion occured" >/dev/stderr;exit 18;fi
+                  if [[ ! -e "$dir/$name" ]]; then  mv -f "$file" "$dir/$name"; ((mvc++)); printf "\\%s\\ \t--->\t\\%s\\ \t@%s\n" "$file" "$dir/$name" "$(date)" | tee -a  "$renamedfilelog" "$outlog" >/dev/null; cat "$renamedfilelog" > "$rnmfilelog";  else  echo "$(echo "E: Filename confusion occured" |tee /dev/stderr)" "    @$(date)" |tee -a  "$errorlog" >/dev/null;exit 18;fi
               else
-                  if [[ ! -e "$dir/$name" ]]; then  mv "$file" "$dir/$name"; ((mvc++));  else  echo "---Filename confusion occured" >/dev/stderr;exit 18;fi
+                  if [[ ! -e "$dir/$name" ]]; then  mv "$file" "$dir/$name"; ((mvc++)); printf "\\%s\\ \t--->\t\\%s\\ \t@%s\n" "$file" "$dir/$name" "$(date)" |tee -a "$renamedfilelog" "$outlog" >/dev/null;cat "$renamedfilelog" > "$rnmfilelog";  else  echo "$(echo "E: Filename confusion occured" |tee /dev/stderr)" "    @$(date)" |tee -a  "$errorlog" >/dev/null;exit 18;fi
               fi
           else
-            ((ir++));((dri++));((ln++))
+            ((ir++));((invir--));((dri++));((invdri--));if $InverseLine;then ((ln--));else ((ln++));fi
             continue
           fi
         else
        
             if $force;then
-                if [[ ! -e "$dir/$name" ]]; then  mv -f "$file" "$dir/$name"; ((mvc++));  else  echo "---Filename confusion occured" >/dev/stderr;exit 18;fi
+                if [[ ! -e "$dir/$name" ]]; then  mv -f "$file" "$dir/$name"; ((mvc++)); printf "\\%s\\ \t--->\t\\%s\\ \t@%s\n" "$file" "$dir/$name" "$(date)" |tee -a "$renamedfilelog" "$outlog" >/dev/null;cat "$renamedfilelog" > "$rnmfilelog";  else  echo "$(echo "E: Filename confusion occured" |tee /dev/stderr)" "    @$(date)" |tee -a  "$errorlog" >/dev/null;exit 18;fi
             else
-                if [[ ! -e "$dir/$name" ]]; then  mv "$file" "$dir/$name"; ((mvc++));  else  echo "---Filename confusion occured" >/dev/stderr;exit 18;fi
+                if [[ ! -e "$dir/$name" ]]; then  mv "$file" "$dir/$name"; ((mvc++)); printf "\\%s\\ \t--->\t\\%s\\ \t@%s\n" "$file" "$dir/$name" "$(date)" |tee -a "$renamedfilelog" "$outlog" >/dev/null;cat "$renamedfilelog" > "$rnmfilelog";  else  echo "$(echo "E: Filename confusion occured" |tee /dev/stderr)" "    @$(date)" |tee -a  "$errorlog" >/dev/null;exit 18;fi
             fi
         fi
-       ((ln++));((c++));((di++));((ir++));((dri++));
+       if $InverseLine;then ((ln--));else ((ln++));fi;((c++));((invi--));((di++));((invdi--));((ir++));((invir--));((dri++));((invdri--));
     done
  
  fi
@@ -540,9 +784,12 @@ cd ..
 ### Now single mode
 else
     
-    di=$c;dri=$ir;
+    di=$c;dri=$ir;invdi=$invi;invdri=$invir
+    [[ "$ei" == "$c" || "$ei" == "$ir" || "$ei" == "$invi" || "$ei" == "$invir" ]] && continue
+
     file="$(getAbsolutePath "$dir")"
-    [[ "$file" == "$SelfPath" ]] && { echo "...Can't rename myself" >/dev/stderr; continue; }
+    if ! validPath "$file";then continue;fi
+    [[ "$file" == "$SelfPath" ]] && { echo "$(echo "W: Could not rename myself" |tee /dev/stderr)" "    @$(date)" |tee -a  "$errorlog" "$outlog" >/dev/null; continue; }
     [[ "$(basename "$file")" =~ $bashSearchString ]] || continue
     dir="$(dirname "$file")"
     if [[ "$nameString" != "" && "$nameStringFile" == "" ]]; then
@@ -550,29 +797,45 @@ else
         di1=$di
         dri1=$dri
         ir1=$ir
+        
+        invi1=$invi
+        invir1=$invir
+        invdi1=$invdi
+        invdri1=$invdri
+        
         if [[ $ifl != "" ]]; then 
             index="$(printf "%0${ifl}d\n" $c)"
             di1="$(printf "%0${ifl}d\n" $di)"
             dri1="$(printf "%0${ifl}d\n" $dri)"
             ir1="$(printf "%0${ifl}d\n" $ir)"
+            invi1="$(printf "%0${ifl}d\n" $invi)"
+            invir1="$(printf "%0${ifl}d\n" $invir)"
+            invdi1="$(printf "%0${ifl}d\n" $invdi)"
+            invdri1="$(printf "%0${ifl}d\n" $invdri)"
         fi
         fname="${file##*/}"
         fname="${fname//\\/}"
         fnamewe="${fname%.*}"
-        name="${nameString//\/idr\//$dri1}"
+        name="$nameString"
         [[ $nameString == "" ]] && name="$fname"
+        name="${name//\/n\//$fnamewe}"
+        name="${name//\/fn\//$fname}"
+        name="${name//\/idr\//$dri1}"
         name="${name//\/id\//$di1}"
         name="${name//\/ir\//$ir1}"
         name="${name//\/i\//$index}"
-        name="${name//\/n\//$fnamewe}"
-        name="${name//\/fn\//$fname}"
         name="${name//\/dc\//$dc}"
+        name="${name//\/-i\//$invi1}"
+        name="${name//\/-ir\//$invir1}"
+        name="${name//\/-id\//$invdi1}"
+        name="${name//\/-idr\//$invdri1}"
         #name="$(echo $nameString | sed "s:/i/:$index:g;s:/id/:$di:g;s:/ir/:$ir:g;s:/n/:$fnamewe:g;s:/fn/:$fname:g;s:/idr/:$dri:g;s:^$:$fname:g;s:/dc/:$dc:g")"
         name="${name//\//}"
         name="${name//\\/}"
-        if ! $quiet; then printf "%s\t%s\t%s\n" "$dir/${file##*/}" "-->" "$dir/${name}";fi
+        if ! validPath "$dir/$name";then continue;fi
+        if ! $quiet; then printf "%s\t%s\t%s\n" "$file" "-->" "$dir/$name";fi
         if ! $allY;then
-          printf "\nConfirm Renaming file:\n\n"
+          printf "\nConfirm renaming file:\n\n"
           select opt in "${opts[@]}";do
             case "$opt" in
                 "Only this file")
@@ -602,56 +865,74 @@ else
         if ! $allY;then
           if $y; then
               if $force;then
-                  if [[ ! -e "$dir/$name" ]]; then  mv -f "$file" "$dir/$name"; ((mvc++));  else  echo "---Filename confusion occured" >/dev/stderr;exit 18;fi
+                  if [[ ! -e "$dir/$name" ]]; then  mv -f "$file" "$dir/$name"; ((mvc++)); printf "\\%s\\ \t--->\t\\%s\\ \t@%s\n" "$file" "$dir/$name" "$(date)" |tee -a "$renamedfilelog" "$outlog" >/dev/null;cat "$renamedfilelog" > "$rnmfilelog";  else  echo "$(echo "E: Filename confusion occured" |tee /dev/stderr)" "    @$(date)" |tee -a  "$errorlog" >/dev/null;exit 18;fi
               else
-                  if [[ ! -e "$dir/$name" ]]; then  mv "$file" "$dir/$name"; ((mvc++));  else  echo "---Filename confusion occured" >/dev/stderr;exit 18;fi
+                  if [[ ! -e "$dir/$name" ]]; then  mv "$file" "$dir/$name"; ((mvc++)); printf "\\%s\\ \t--->\t\\%s\\ \t@%s\n" "$file" "$dir/$name" "$(date)" |tee -a "$renamedfilelog" "$outlog" >/dev/null;cat "$renamedfilelog" > "$rnmfilelog";  else  echo "$(echo "E: Filename confusion occured" |tee /dev/stderr)" "    @$(date)" |tee -a  "$errorlog" >/dev/null;exit 18;fi
               fi
           else
-            ((ir++));((dri++))
+            ((ir++));((invir--));((dri++));((invdri--))
             continue
           fi
         else
             if $force;then
-                if [[ ! -e "$dir/$name" ]]; then  mv -f "$file" "$dir/$name"; ((mvc++));  else  echo "---Filename confusion occured" >/dev/stderr;exit 18;fi
+                if [[ ! -e "$dir/$name" ]]; then  mv -f "$file" "$dir/$name"; ((mvc++)); printf "\\%s\\ \t--->\t\\%s\\ \t@%s\n" "$file" "$dir/$name" "$(date)" |tee -a "$renamedfilelog" "$outlog" >/dev/null;cat "$renamedfilelog" > "$rnmfilelog";  else  echo "$(echo "E: Filename confusion occured" |tee /dev/stderr)" "    @$(date)" |tee -a  "$errorlog" >/dev/null;exit 18;fi
             else
-                if [[ ! -e "$dir/$name" ]]; then  mv "$file" "$dir/$name"; ((mvc++));  else  echo "---Filename confusion occured" >/dev/stderr;exit 18;fi
+                if [[ ! -e "$dir/$name" ]]; then  mv "$file" "$dir/$name"; ((mvc++)); printf "\\%s\\ \t--->\t\\%s\\ \t@%s\n" "$file" "$dir/$name" "$(date)" |tee -a "$renamedfilelog" "$outlog" >/dev/null;cat "$renamedfilelog" > "$rnmfilelog";  else  echo "$(echo "E: Filename confusion occured" |tee /dev/stderr)" "    @$(date)" |tee -a  "$errorlog" >/dev/null;exit 18;fi
             fi
         fi
-        ((c++));((di++));((ir++));((dri++));
+        ((c++));((invi--));((di++));((invdi--));((ir++));((invir--));((dri++));((invdri--));
     
     fi
     
     
     if [[ "$nameStringFile" != "" ]]; then
-        fname="$(sed -n "${ln}s/.*/&/p" $nameStringFile || { echo "---sed error"  >/dev/stderr;exit 27; })"
+        [[ $ln != $eln ]] && (( $ln > 0 )) && fname="$(sed -n "${ln}s/.*/&/p" $nameStringFile || { echo "$(echo "E: sed error"  |tee /dev/stderr)" "    @$(date)" |tee -a  "$errorlog";exit 27; })" || exit
         fname="${fname//\\/}"
         fnamewe="${fname%.*}"
+        
         index="$c"
         if="$ln"
         di1=$di
         dri1=$dri
         ir1=$ir
+        
+        invi1=$invi
+        invir1=$invir
+        invdi1=$invdi
+        invdri1=$invdri
+        
         if [[ $ifl != "" ]];then 
             index="$(printf "%0${ifl}d\n" $c)"
             if="$(printf "%0${ifl}d\n" $ln)"
             di1="$(printf "%0${ifl}d\n" $di)"
             dri1="$(printf "%0${ifl}d\n" $dri)"
             ir1="$(printf "%0${ifl}d\n" $ir)"
+            invi1="$(printf "%0${ifl}d\n" $invi)"
+            invir1="$(printf "%0${ifl}d\n" $invir)"
+            invdi1="$(printf "%0${ifl}d\n" $invdi)"
+            invdri1="$(printf "%0${ifl}d\n" $invdri)"
         fi
-        name="${nameString//\/idr\//$dri1}"
+        name="$nameString"
         [[ $nameString == "" ]] && name="$fname"
+        name="${name//\/n\//$fnamewe}"
+        name="${name//\/fn\//$fname}"
+        
+        name="${name//\/idr\//$dri1}"
         name="${name//\/id\//$di1}"
         name="${name//\/ir\//$ir1}"
         name="${name//\/i\//$index}"
-        name="${name//\/n\//$fnamewe}"
-        name="${name//\/fn\//$fname}"
         name="${name//\/dc\//$dc}"
         name="${name//\/l\//$if}"
+        name="${name//\/-i\//$invi1}"
+        name="${name//\/-ir\//$invir1}"
+        name="${name//\/-id\//$invdi1}"
+        name="${name//\/-idr\//$invdri1}"
         name="${name//\//}"
         name="${name//\\/}"
-        if ! $quiet; then printf "%s\t%s\t%s\n" "$dir/${file##*/}" "-->" "$dir/${name}";fi
+        if ! validPath "$dir/$name";then continue;fi
+        if ! $quiet; then printf "%s\t%s\t%s\n" "$file" "-->" "$dir/$name";fi
         if ! $allY;then
-          printf "\nConfirm Renaming file:\n\n"
+          printf "\nConfirm renaming file:\n\n"
           select opt in "${opts[@]}";do
             case "$opt" in
                 "Only this file")
@@ -681,22 +962,22 @@ else
         if ! $allY;then
           if $y; then
               if $force;then
-                  if [[ ! -e "$dir/$name" ]]; then  mv -f "$file" "$dir/$name"; ((mvc++));  else  echo "---Filename confusion occured" >/dev/stderr;exit 18;fi
+                  if [[ ! -e "$dir/$name" ]]; then  mv -f "$file" "$dir/$name"; ((mvc++)); printf "\\%s\\ \t--->\t\\%s\\ \t@%s\n" "$file" "$dir/$name" "$(date)" |tee -a "$renamedfilelog" "$outlog" >/dev/null;cat "$renamedfilelog" > "$rnmfilelog";  else  echo "$(echo "E: Filename confusion occured" |tee /dev/stderr)" "    @$(date)" |tee -a  "$errorlog" >/dev/null;exit 18;fi
               else
-                  if [[ ! -e "$dir/$name" ]]; then  mv "$file" "$dir/$name"; ((mvc++));  else  echo "---Filename confusion occured" >/dev/stderr;exit 18;fi
+                  if [[ ! -e "$dir/$name" ]]; then  mv "$file" "$dir/$name"; ((mvc++)); printf "\\%s\\ \t--->\t\\%s\\ \t@%s\n" "$file" "$dir/$name" "$(date)" |tee -a "$renamedfilelog" "$outlog" >/dev/null;cat "$renamedfilelog" > "$rnmfilelog";  else  echo "$(echo "E: Filename confusion occured" |tee /dev/stderr)" "    @$(date)" |tee -a  "$errorlog" >/dev/null;exit 18;fi
               fi
           else
-            ((ir++));((dri++));((ln++))
+            ((ir++));((invir--));((dri++));((invdri--));if $InverseLine;then ((ln--));else ((ln++));fi
             continue
           fi
         else
             if $force;then
-                if [[ ! -e "$dir/$name" ]]; then  mv -f "$file" "$dir/$name"; ((mvc++));  else  echo "---Filename confusion occured" >/dev/stderr;exit 18;fi
+                if [[ ! -e "$dir/$name" ]]; then  mv -f "$file" "$dir/$name"; ((mvc++)); printf "\\%s\\ \t--->\t\\%s\\ \t@%s\n" "$file" "$dir/$name" "$(date)" |tee -a "$renamedfilelog" "$outlog" >/dev/null;cat "$renamedfilelog" > "$rnmfilelog";  else  echo "$(echo "E: Filename confusion occured" |tee /dev/stderr)" "    @$(date)" |tee -a  "$errorlog" >/dev/null;exit 18;fi
             else
-                if [[ ! -e "$dir/$name" ]]; then  mv "$file" "$dir/$name"; ((mvc++));  else  echo "---Filename confusion occured" >/dev/stderr;exit 18;fi
+                if [[ ! -e "$dir/$name" ]]; then  mv "$file" "$dir/$name"; ((mvc++)); printf "\\%s\\ \t--->\t\\%s\\ \t@%s\n" "$file" "$dir/$name" "$(date)" |tee -a "$renamedfilelog" "$outlog" >/dev/null;cat "$renamedfilelog" > "$rnmfilelog";  else  echo "$(echo "E: Filename confusion occured" |tee /dev/stderr)" "    @$(date)" |tee -a  "$errorlog" >/dev/null;exit 18;fi
             fi
         fi
-        ((ln++));((c++));((di++));((ir++));((dri++));
+        if $InverseLine;then ((ln--));else ((ln++));fi;((c++));((invi--));((di++));((invdi--));((ir++));((invir--));((dri++));((invdri--));
     fi
 
  

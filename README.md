@@ -1,5 +1,17 @@
 # rnm
-Bulk Rename Utility for GNU/Linux written in Bash scripting language. Therefore the use of this script/tool depends on Bash. It uses `mv` and `sed` to rename and take filename from input file. GNU/Linux utility <span class="quote">find</span> and Bash filename globbing is used to search and iterate through files. Files and folders can be passed as command line arguments to rename them in bulk according to some naming scheme (Name String).
+Bulk Rename Utility for GNU/Linux written in Bash scripting language. Therefore the use of this script/tool depends on Bash. Files and folders can be passed as command line arguments to rename them in bulk according to some naming scheme (Name String). It provides an undo functionality too to move back an unwanted rename operation.
+
+
+
+#Features:
+
+1. Both directory and file can be renamed.
+2. Undo functionality (`rnm -u`).
+3. Multiple directories and files can be passed as command arguments.
+4. File name can be modified runtime by passing a *Name String* as argument.
+5. Selective rename is possible by passing a *Search String* as argument which will take only the files that matches the search string ( *Search String* is a [regex] (https://en.wikipedia.org/wiki/Regular_expression) by default). To use a fixed string use the `-sF` option.
+6. Name can be taken from a file too. And these names (taken from a file) can be modified with *Name String* at runtime.
+7. Name can be taken from a file according to starting line number (`-l` or `-sl`) and ending line number (`-el`).
 
 
 
@@ -9,6 +21,11 @@ Bulk Rename Utility for GNU/Linux written in Bash scripting language. Therefore 
 2. Run it or just drag and dropt it on terminal and hit <kbd>Enter</kbd>.
 
 
+#Uninstall:
+To uninstall, run:
+```
+sudo rm /usr/bin/rnm
+```
 
 #Usage:
 
@@ -16,50 +33,62 @@ Bulk Rename Utility for GNU/Linux written in Bash scripting language. Therefore 
 rnm Directory/File/Path [options]
 ```
 
-One of the options of `[-ns]` or `[-nsf]` is mandatory.
+One of the options of `-ns` or `-nsf` is mandatory.
 
 ##Options:
 
-`-h`, `--help`: Show help menu.
+`-h`, `--help`      : Show help menu.
 
-`-i`  : Starting index.
-`-ifl` : Index field length. not occupied field will be
+`-i`,`-si`          : Starting index.
+`-ei`               : End index i.e index to stop renaming from.
+       Note that directory index `/id/` will renew in each directory
+       i.e in each directory rename will be performed from start index
+       to end index.
+`-ifl`              : Index field length. not occupied field will be
        filled with 0's.
 
-`-ns`  : Name string.
+`-ns`               : Name string.
      
-`-nsf` : Name string file. File containing name string (one per line).
-`-l`   : Line number in name string file.
+`-nsf`              : Name string file. File containing name string (one per line).
+       `-nsf /hist/` i.e a value passed `/hist/` as Name string file, will
+       try to take the file from history.
+`-l`, `-sl`         : Start Line number in name string file.
+`-li`               : Same as -l, except line number will be decremented in each iteration.
+`-el`               : End line number. Line number to stop renaming from.
+`-eli`              : Same as -el, except line number will be decremented in each iteration.
 
-`-ss` : Search string.
+`-ss`               : Search string.
      String that will be used to search for files with matching names.
      Regex is allowed (posix compliant extended regex).
      
 
-`-sF` : Fixed search string (not treated as regex).
+`-sF`               : Fixed search string (not treated as regex).
 
-`-dp`  : Depth of folder. 0 means unlimited depth i.e all files and subdirectories will
+`-dp`               : Depth of folder. 0 means unlimited depth i.e all files and subdirectories will
        be included. Other values may be 1 2 3 etc...
        Default depth is 1.
        
-`-D`   : Apply rename on direcotry as well as on files.
+`-D`                : Directories and files both will be treated in the same way,
+       i.e apply rename on direcotry as well as on files.
        This is a peculier option and may seem slightly confusing.
        No subdirectories will be renamed i.e only file and folders on the
        current directory. If only one directory is passed as the argument,
        that directory will be renamed not any file or folder inside that
        directory.
        
-`-oD`  : Apply rename on directory only. 
+`-oD`                : Apply rename on directory only. No subdirectories.
 
-`-ed`  : Apply rename on files only, exclude any and all directory and their contents.
+`-ed`                : Apply rename on files only, exclude any and all directory and their contents.
 
-`-y`   : Confirm Yes to all.
+`-y`                 : Confirm Yes to all.
 
-`-f`, `--force`: Force rename
+`-f`, `--force`      : Force rename
 
-`-v`   : Version info.
+`-u`, `-U`, `--undo` : Undo renaming
 
-`-q`   : Quiet operation.
+`-v`                 : Version info.
+
+`-q`                 : Quiet operation.
 
 ##Technical Terms:
 
@@ -78,6 +107,8 @@ One of the options of `[-ns]` or `[-nsf]` is mandatory.
 6. `/fn/` in name string will be replaced with full name of the files. If used with `-nsf` option, full name will be the name taken from the *Name String File*.
 7. `/l/` in name string will be replaced with line number from *Name String File*.
 8. `/dc/` in name string will be replaced with directory count
+9. `/-i/` in name string will be replaced with inverse index.
+10. `/-ir/` in name string will be replaced with iverse reserved index. In general, `-` in the above replacement rules (applies to indexes excluding `/l/` and `/dc/`) will mean inverse index conforming to their meaning.
 
 **Name String File  :** A file which contains a list of name string (one per line) to be applied to the new files.
      
@@ -109,8 +140,9 @@ etc...
 
 #Things to care:
 
-1. Newline in file or folder name is not supported. Make sure your folder doesn't contain any file/folder with new line.
+1. Newline in file or folder name is not supported. Make sure your folders/files don't contain any new line in their name.
 2. All options should always be separated by space. For Example: `-vy` won't mean two option `-v` and `-y`, rather it will mean a single option `-vy`.
 3. Any non option argument will be treated as file or directory path. For example in <pre><code>rnm file1 file2 -- -ns fd</code></pre>`file1`, `file2` and `--` will be taken as file paths.
 4. Be wary of filename globbing. Command like `rnm ./*` will take all files and folders as arguments and thus the files and immediate contents (by default) of the folders will be subject to rename operation. If you don't want to rename any folder contents (when the folder is passed as an argument), use `-ed` option to exclude any and all directory which have mistakenly or deliberately passed as arguments.
+5. This is a dangerous tool like `rm`, so use with care. If you make a mistake and do some unwanted rename, immediately run `rnm -u` to undo.
 
