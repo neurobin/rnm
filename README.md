@@ -57,7 +57,7 @@ One of the options of `-ns` or `-nsf` is mandatory.
        
 `-l`, `-sl`         : Start Line number in name string file.
 
-`-li`               : Same as `-l`, except line number will be decremented in each iteration.
+`-li`, `-sli`       : Same as `-l` or -`sl`, except line number will be decremented in each iteration.
 
 `-el`               : End line number. Line number to stop renaming from.
 
@@ -136,7 +136,7 @@ One of the options of `-ns` or `-nsf` is mandatory.
 
 ```
 rnm file -ns new_file
-rnm folder -ns "New Folder" -oD
+rnm folder -ns "New Folder" -oD          (-oD forces Directory only mode)
 rnm ./New*/* -ns /i/.ext                 (globbing is allowed)
 rnm ./New*/* -ns /i/.ext -ed             (-ed forces file only mode)
 rnm "./New Folder" -ns /id//dc/.ext

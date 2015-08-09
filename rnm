@@ -25,58 +25,58 @@ One of the options of [-ns] or [-nsf] is mandatory
 
 options:
 
--h, --help: Show help menu
+-h, --help     : Show help menu
 
--i,-si   : Starting index
--ei  : End index i.e index to stop renaming from.
-       Note that directory index /id/ will renew in each directory
-       i.e in each directory rename will be performed from start index
-       to end index.
--ifl : Index field length. not occupied field will be
-       filled with 0's.
+-i,-si         : Starting index
+-ei            : End index i.e index to stop renaming from.
+                 Note that directory index /id/ will renew in each directory
+                 i.e in each directory rename will be performed from start index
+                 to end index.
+-ifl           : Index field length. not occupied field will be
+                 filled with 0's.
 
--ns  : Name string
+-ns            : Name string
      
--nsf : Name string file. File containing name string (one per line).
-       [-nsf /hist/] i.e a value passed /hist/ as Name string file, will
-       try to take the file from history.
--l,-sl   : Start Line number in name string file.
--li  : Same as -l, except line number will be decremented in each iteration.
--el  : End line number. Line number to stop renaming from.
--eli : Same as -el, except line number will be decremented in each iteration.
+-nsf           : Name string file. File containing name string (one per line).
+                 [-nsf /hist/] i.e a value passed /hist/ as Name string file, will
+                 try to take the file from history.
+-l, -sl        : Start Line number in name string file.
+-li, -sli      : Same as -l or -sl, except line number will be decremented in each iteration.
+-el            : End line number. Line number to stop renaming from.
+-eli           : Same as -el, except line number will be decremented in each iteration.
 
--ss  : Search string
-     String that will be used to search for files with matching names.
-     Regex is allowed (posix compliant extended regex).
+-ss            : Search string
+                 String that will be used to search for files with matching names.
+                 Regex is allowed (posix compliant extended regex).
      
 
--sF  : Fixed search string (not treated as regex).
+-sF            : Fixed search string (not treated as regex).
 
--dp  : Depth of folder. 0 means unlimited depth i.e all files and subdirectories will
-       be included. Other values may be 1 2 3 etc...
-       Default depth is 1.
+-dp            : Depth of folder. 0 means unlimited depth i.e all files and subdirectories will
+                 be included. Other values may be 1 2 3 etc...
+                 Default depth is 1.
        
--D   : Directories and files both will be treated in the same way,
-       i.e apply rename on direcotry as well as on files.
-       This is a peculier option and may seem slightly confusing.
-       No subdirectories will be renamed i.e only file and folders on the
-       current directory. If only one directory is passed as the argument,
-       that directory will be renamed not any file or folder inside that
-       directory.
+-D             : Directories and files both will be treated in the same way,
+                 i.e apply rename on direcotry as well as on files.
+                 This is a peculier option and may seem slightly confusing.
+                 No subdirectories will be renamed i.e only file and folders on the
+                 current directory. If only one directory is passed as the argument,
+                 that directory will be renamed not any file or folder inside that
+                 directory.
        
--oD  : Apply rename on directory only. No subdirectories.
+-oD            : Apply rename on directory only. No subdirectories.
 
--ed  : Apply rename on files only, exclude any and all directory and their contents.
+-ed            : Apply rename on files only, exclude any and all directory and their contents.
 
--y   : Confirm Yes to all
+-y             : Confirm Yes to all
 
--f, --force: Force rename
+-f, --force    : Force rename
 
--u, -U, --undo: Undo renaming
+-u, -U, --undo : Undo renaming
 
--v   : Version info
+-v             : Version info
 
--q   : Quiet operation
+-q             : Quiet operation
 
 Technical Terms:
 
@@ -289,7 +289,7 @@ for((i=0;i<"${#optarr[@]}";i++));do
         ln="$(trimZeroFromInteger "$ln")"
         skipcount=true
         ;;
-        "-li")
+        "-li"|"-sli")
         ln="${optarr[$(($i+1))]}"
         [[ ! $ln =~ ^[0-9]+$ ]] && { echo "$(printf "%s\n" "E: Starting line must be a positive integer" |tee /dev/stderr)" "    @$(date)" |tee -a  "$errorlog" >/dev/null;exit 8; }
         ln="$(trimZeroFromInteger "$ln")"
