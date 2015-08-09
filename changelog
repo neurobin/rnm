@@ -11,4 +11,5 @@
 3. Added inverse index feature
 4. Added new name string rules for inverse index.
 5. Added `/hist/` as a valid argument for `-nsf` option to take *Name String File* from history.
-6. Lots of bug fixes.
+6. Logging functionality. Log files are put in $HOME/.neurobin/rnm
+7. Lots of bug fixes.

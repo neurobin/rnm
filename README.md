@@ -1,14 +1,14 @@
 # rnm
-Bulk Rename Utility for GNU/Linux written in Bash scripting language. Therefore the use of this script/tool depends on Bash. Files and folders can be passed as command line arguments to rename them in bulk according to some naming scheme (Name String). It provides an undo functionality too to move back an unwanted rename operation.
+Bulk Rename Utility for GNU/Linux written in Bash scripting language. Therefore, the use of this script/tool depends on Bash. Files and folders can be passed as command line arguments to rename them in bulk according to some naming scheme (Name String). It provides an undo functionality too to move back an unwanted rename operation.
 
 
 
 #Features:
 
-1. Both directory and file can be renamed.
+1. Both directories and files can be renamed.
 2. Undo functionality (`rnm -u`).
-3. Multiple directories and files can be passed as command arguments.
-4. File name can be modified runtime by passing a *Name String* as argument.
+3. Multiple directories and files can be passed as command line arguments.
+4. File name can be modified at runtime by passing a *Name String* as argument.
 5. Selective rename is possible by passing a *Search String* as argument which will take only the files that matches the search string ( *Search String* is a [regex] (https://en.wikipedia.org/wiki/Regular_expression) by default). To use a fixed string use the `-sF` option.
 6. Name can be taken from a file too. And these names (taken from a file) can be modified with *Name String* at runtime.
 7. Name can be taken from a file according to starting line number (`-l` or `-sl`) and ending line number (`-el`).
@@ -40,10 +40,12 @@ One of the options of `-ns` or `-nsf` is mandatory.
 `-h`, `--help`      : Show help menu.
 
 `-i`,`-si`          : Starting index.
+
 `-ei`               : End index i.e index to stop renaming from.
        Note that directory index `/id/` will renew in each directory
        i.e in each directory rename will be performed from start index
        to end index.
+       
 `-ifl`              : Index field length. not occupied field will be
        filled with 0's.
 
@@ -52,10 +54,14 @@ One of the options of `-ns` or `-nsf` is mandatory.
 `-nsf`              : Name string file. File containing name string (one per line).
        `-nsf /hist/` i.e a value passed `/hist/` as Name string file, will
        try to take the file from history.
+       
 `-l`, `-sl`         : Start Line number in name string file.
-`-li`               : Same as -l, except line number will be decremented in each iteration.
+
+`-li`               : Same as `-l`, except line number will be decremented in each iteration.
+
 `-el`               : End line number. Line number to stop renaming from.
-`-eli`              : Same as -el, except line number will be decremented in each iteration.
+
+`-eli`              : Same as `-el`, except line number will be decremented in each iteration.
 
 `-ss`               : Search string.
      String that will be used to search for files with matching names.
