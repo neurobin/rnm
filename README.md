@@ -116,7 +116,7 @@ One of the options of `-ns` or `-nsf` is mandatory.
 9. `/-i/` in name string will be replaced with inverse index.
 10. `/-ir/` in name string will be replaced with inverse reserved index. In general, `-` in the above replacement rules (applies to indexes excluding `/l/` and `/dc/`) will mean inverse index conforming to their meaning.
 
-Inverse Index       : Decrementing index.
+**Inverse Index     :** Decrementing index.
 
 **Name String File  :** A file which contains a list of name string (one per line) to be applied to the new files.
      
