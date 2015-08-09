@@ -246,16 +246,16 @@ for((i=0;i<"${#optarr[@]}";i++));do
         ;;
         "-h"|"--help")
         printf "%s\n" "$helpMessage"
-        exit 2
+        exit 1
         ;;
         "-v")
         printf "%s\n" "$versionInfo"
-        exit 3
+        exit 2
         ;;
         "-i"|"-si")
         c="${optarr[$(($i+1))]}"
         index="$c"
-        [[ ! $index =~ ^-?[0-9]+$ ]] && { echo "$(printf "%s\n" "E: Index must be an integer" |tee /dev/stderr)" "    @$(date)" |tee -a  "$errorlog" >/dev/null;exit 4; }
+        [[ ! $index =~ ^-?[0-9]+$ ]] && { echo "$(printf "%s\n" "E: Index must be an integer" |tee /dev/stderr)" "    @$(date)" |tee -a  "$errorlog" >/dev/null;exit 3; }
         index="$(trimZeroFromInteger "$index" )"
         c=$index;ir=$c;invir=$c;invi=$c;
         skipcount=true
@@ -291,20 +291,20 @@ for((i=0;i<"${#optarr[@]}";i++));do
         ;;
         "-li")
         ln="${optarr[$(($i+1))]}"
-        [[ ! $ln =~ ^[0-9]+$ ]] && { echo "$(printf "%s\n" "E: Starting line must be a positive integer" |tee /dev/stderr)" "    @$(date)" |tee -a  "$errorlog" >/dev/null;exit 7; }
+        [[ ! $ln =~ ^[0-9]+$ ]] && { echo "$(printf "%s\n" "E: Starting line must be a positive integer" |tee /dev/stderr)" "    @$(date)" |tee -a  "$errorlog" >/dev/null;exit 8; }
         ln="$(trimZeroFromInteger "$ln")"
         InverseLine=true
         skipcount=true
         ;;
         "-el")
         eln="${optarr[$(($i+1))]}"
-        [[ ! $eln =~ ^[0-9]+$ ]] && { echo "$(printf "%s\n" "E: Starting line must be a positive integer" |tee /dev/stderr)" "    @$(date)" |tee -a  "$errorlog" >/dev/null;exit 7; }
+        [[ ! $eln =~ ^[0-9]+$ ]] && { echo "$(printf "%s\n" "E: Starting line must be a positive integer" |tee /dev/stderr)" "    @$(date)" |tee -a  "$errorlog" >/dev/null;exit 9; }
         eln="$(trimZeroFromInteger "$eln")"
         skipcount=true
         ;;
         "-eli")
         eln="${optarr[$(($i+1))]}"
-        [[ ! $eln =~ ^[0-9]+$ ]] && { echo "$(printf "%s\n" "E: Starting line must be a positive integer" |tee /dev/stderr)" "    @$(date)" |tee -a  "$errorlog" >/dev/null;exit 7; }
+        [[ ! $eln =~ ^[0-9]+$ ]] && { echo "$(printf "%s\n" "E: Starting line must be a positive integer" |tee /dev/stderr)" "    @$(date)" |tee -a  "$errorlog" >/dev/null;exit 10; }
         eln="$(trimZeroFromInteger "$eln")"
         InverseLine=true
         skipcount=true
@@ -320,26 +320,26 @@ for((i=0;i<"${#optarr[@]}";i++));do
         "-ss")
         searchString="${optarr[$(($i+1))]}"
         skipcount=true
-        [[ $searchString == "" ]] && { echo "$(printf "%s\n" "E: Search string can not be empty." |tee /dev/stderr)" "    @$(date)" |tee -a  "$errorlog" >/dev/null;exit 8; }
+        [[ $searchString == "" ]] && { echo "$(printf "%s\n" "E: Search string can not be empty." |tee /dev/stderr)" "    @$(date)" |tee -a  "$errorlog" >/dev/null;exit 11; }
         
         ;;
         "-ns")
         nameString="${optarr[$(($i+1))]}"
         skipcount=true
-        [[ $nameString == "" ]] && { echo "$(printf "%s\n" "E: Name string can not be empty." |tee /dev/stderr)" "    @$(date)" |tee -a  "$errorlog" >/dev/null;exit 9; }
+        [[ $nameString == "" ]] && { echo "$(printf "%s\n" "E: Name string can not be empty." |tee /dev/stderr)" "    @$(date)" |tee -a  "$errorlog" >/dev/null;exit 12; }
         
         ;;
         "-nsf")
         nameStringFile="${optarr[$(($i+1))]}"
         skipcount=true
-        [[ -f $nameStringFile && ! -L $nameStringFile || $nameStringFile == "/hist/" ]] || { echo "$(printf "%s\n" "E: File not found: $nameStringFile" |tee /dev/stderr)" "    @$(date)" |tee -a  "$errorlog" >/dev/null;exit 10; }
+        [[ -f $nameStringFile && ! -L $nameStringFile || $nameStringFile == "/hist/" ]] || { echo "$(printf "%s\n" "E: File not found: $nameStringFile" |tee /dev/stderr)" "    @$(date)" |tee -a  "$errorlog" >/dev/null;exit 13; }
         
        
         ;;
         "-dp")
         dp="${optarr[$(($i+1))]}"
         skipcount=true
-        [[ ! $dp =~ ^[0-9]+$ ]] && { echo "$(printf "%s\n" "E: Depth mush be an integer and >=1" |tee /dev/stderr)" "    @$(date)" |tee -a  "$errorlog" >/dev/null;exit 11; }
+        [[ ! $dp =~ ^[0-9]+$ ]] && { echo "$(printf "%s\n" "E: Depth mush be an integer and >=1" |tee /dev/stderr)" "    @$(date)" |tee -a  "$errorlog" >/dev/null;exit 14; }
         dp="$(trimZeroFromInteger "$dp")"
         ;;
         "-D")
@@ -369,9 +369,8 @@ SelfPath="$(getAbsolutePath "$BASH_SOURCE")"
 
 ##########################################################################################################
 ##Generating a directory to keep logs
-
-printf "" > "$renamedfilelog"
 mkdir -p "$logdir"
+printf "" > "$renamedfilelog"
 printf "%s\n" "\\*** rnm output log printed. Includes warning and normal outputs. Errors are not printed here, see errors.log for error ***\\" > "$outlog"
 
 
@@ -384,10 +383,10 @@ if [[ ! -f "$rnmfilelog" ]]; then
     if [[ -f "$rnmfilelog.old" ]]; then
         echo "$(printf "%s\n" "E: Required log file (rfl.log) missing. Make sure this utility has been run before with successful rename. You may use old log file though, but it is not recommended." |tee /dev/stderr)" "....@$(date)" |tee -a "$errorlog"  >/dev/null;
         read -e -p "Use old log file?[Y/n]: " yn
-        [[ $yn =~ ^[Yy]$ ]] && mv -f "$rnmfilelog.old" "$rnmfilelog" || exit 2
+        [[ $yn =~ ^[Yy]$ ]] && mv -f "$rnmfilelog.old" "$rnmfilelog" || exit 15
     else
         echo "$(printf "%s\n" "E: Required log file (rfl.log) missing. Make sure this utility has been run before with successful rename." |tee /dev/stderr)" "....@$(date)" |tee -a "$errorlog" >/dev/null
-        exit 2
+        exit 16
     fi
 
 
@@ -439,7 +438,7 @@ fi
             if $force;then
                 if [[ ! -e "$outfile" ]]; then  mv -f "$infile" "$outfile"; ((mvc++)); printf "\\%s\\ \t--->\t\\%s\\ \t@%s\n" "$infile" "$outfile" "$(date)" | tee -a  "$renamedfilelog" "$outlog" >/dev/null; cat "$renamedfilelog" > "$rnmfilelog";  else  echo "$(echo "E: Filename confusion occured" |tee /dev/stderr)" "    @$(date)" |tee -a  "$errorlog" >/dev/null;exit 18;fi
             else
-                if [[ ! -e "$outfile" ]]; then  mv "$infile" "$outfile"; ((mvc++)); printf "\\%s\\ \t--->\t\\%s\\ \t@%s\n" "$infile" "$outfile" "$(date)" | tee -a  "$renamedfilelog" "$outlog" >/dev/null; cat "$renamedfilelog" > "$rnmfilelog";  else  echo "$(echo "E: Filename confusion occured" |tee /dev/stderr)" "    @$(date)" |tee -a  "$errorlog" >/dev/null;exit 18;fi
+                if [[ ! -e "$outfile" ]]; then  mv "$infile" "$outfile"; ((mvc++)); printf "\\%s\\ \t--->\t\\%s\\ \t@%s\n" "$infile" "$outfile" "$(date)" | tee -a  "$renamedfilelog" "$outlog" >/dev/null; cat "$renamedfilelog" > "$rnmfilelog";  else  echo "$(echo "E: Filename confusion occured" |tee /dev/stderr)" "    @$(date)" |tee -a  "$errorlog" >/dev/null;exit 19;fi
             fi
         else
             continue
@@ -447,9 +446,9 @@ fi
     else
         
         if $force;then
-            if [[ ! -e "$outfile" ]]; then  mv -f "$infile" "$outfile"; ((mvc++)); printf "\\%s\\ \t--->\t\\%s\\ \t@%s\n" "$infile" "$outfile" "$(date)" | tee -a  "$renamedfilelog" "$outlog" >/dev/null; cat "$renamedfilelog" > "$rnmfilelog";  else  echo "$(echo "E: Filename confusion occured" |tee /dev/stderr)" "    @$(date)" |tee -a  "$errorlog" >/dev/null;exit 18;fi
+            if [[ ! -e "$outfile" ]]; then  mv -f "$infile" "$outfile"; ((mvc++)); printf "\\%s\\ \t--->\t\\%s\\ \t@%s\n" "$infile" "$outfile" "$(date)" | tee -a  "$renamedfilelog" "$outlog" >/dev/null; cat "$renamedfilelog" > "$rnmfilelog";  else  echo "$(echo "E: Filename confusion occured" |tee /dev/stderr)" "    @$(date)" |tee -a  "$errorlog" >/dev/null;exit 20;fi
         else
-            if [[ ! -e "$outfile" ]]; then  mv "$infile" "$outfile"; ((mvc++)); printf "\\%s\\ \t--->\t\\%s\\ \t@%s\n" "$infile" "$outfile" "$(date)" | tee -a  "$renamedfilelog" "$outlog" >/dev/null; cat "$renamedfilelog" > "$rnmfilelog";  else  echo "$(echo "E: Filename confusion occured" |tee /dev/stderr)" "    @$(date)" |tee -a  "$errorlog" >/dev/null;exit 18;fi
+            if [[ ! -e "$outfile" ]]; then  mv "$infile" "$outfile"; ((mvc++)); printf "\\%s\\ \t--->\t\\%s\\ \t@%s\n" "$infile" "$outfile" "$(date)" | tee -a  "$renamedfilelog" "$outlog" >/dev/null; cat "$renamedfilelog" > "$rnmfilelog";  else  echo "$(echo "E: Filename confusion occured" |tee /dev/stderr)" "    @$(date)" |tee -a  "$errorlog" >/dev/null;exit 21;fi
         fi
     fi
 
@@ -464,10 +463,10 @@ exit
 fi
 
 
-[[ "${#filearr[@]}" == "0"  ]] && { echo "$(printf "%s\n" "E: No file/directory path specified" |tee /dev/stderr)" "    @$(date)" |tee -a  "$errorlog"  >/dev/null; exit 12; }
+[[ "${#filearr[@]}" == "0"  ]] && { echo "$(printf "%s\n" "E: No file/directory path specified" |tee /dev/stderr)" "    @$(date)" |tee -a  "$errorlog"  >/dev/null; exit 22; }
 
 
-[[ "$nameString" == "" && "$nameStringFile" == "" ]] && { echo "$(printf "%s\n" "E: One of the options: -ns or -nsf is mandatory" |tee /dev/stderr)" "    @$(date)" |tee -a  "$errorlog" >/dev/null; exit 13; } 
+[[ "$nameString" == "" && "$nameStringFile" == "" ]] && { echo "$(printf "%s\n" "E: One of the options: -ns or -nsf is mandatory" |tee /dev/stderr)" "    @$(date)" |tee -a  "$errorlog" >/dev/null; exit 23; } 
 
 
 
@@ -480,12 +479,12 @@ if [[ $nameStringFile != "" ]];then
   if [[ "$nameStringFile" != "/hist/" ]];then 
     tmpf="$nameStringFile"
     nameStringFile="$(getAbsolutePath "$nameStringFile")"
-    [[ "$nameStringFile" == "" ]] && { echo "$(echo "E: Name string file not found: $tmpf" |tee /dev/stderr)" "....@$(date)" |tee -a "$errorlog" >/dev/null;exit 2; }
+    [[ "$nameStringFile" == "" ]] && { echo "$(echo "E: Name string file not found: $tmpf" |tee /dev/stderr)" "....@$(date)" |tee -a "$errorlog" >/dev/null;exit 24; }
     nmsf="$nameStringFile"  # used in validPath function
     cp "$nameStringFile" "$logdir/nsf.list"
     nameStringFile="$logdir/nsf.list"
   else
-    if chkFile "$logdir/nsf.list";then nameStringFile="$logdir/nsf.list";else exit 2;fi;
+    if chkFile "$logdir/nsf.list";then nameStringFile="$logdir/nsf.list";else exit 25;fi;
     
   fi
 fi
@@ -526,9 +525,9 @@ invdri=$InverseDirReservedIndex
 ###### Checking validity of $dir ############
 dir="$(getAbsolutePath "$dir")"
 if ! validPath "$dir";then continue;fi
-[[ $dir == "" ]] && { echo $(printf "%s\n" "E: Make sure directory/file path is given and is correct" |tee /dev/stderr)"    @$(date)" |tee -a  "$errorlog" >/dev/null;exit 14; }
-[[ -e $dir ]] || { echo "$(printf "%s\n" "E: No such file or directory: $dir" |tee /dev/stderr)" "    @$(date)" |tee -a  "$errorlog" >/dev/null;exit 15; }
-[[ $dir == $(pwd -P) ]] && { echo "$(printf "%s\n" "E: You can't pass current directory as argument (It's considered unsafe and thus disabled). If you still want to do it on current directory, Try ./* instead of ./" |tee /dev/stderr)" "    @$(date)" |tee -a  "$errorlog" >/dev/null;exit 16; }
+[[ $dir == "" ]] && { echo $(printf "%s\n" "E: Make sure directory/file path is given and is correct" |tee /dev/stderr)"    @$(date)" |tee -a  "$errorlog" >/dev/null;exit 26; }
+[[ -e $dir ]] || { echo "$(printf "%s\n" "E: No such file or directory: $dir" |tee /dev/stderr)" "    @$(date)" |tee -a  "$errorlog" >/dev/null;exit 27; }
+[[ $dir == $(pwd -P) ]] && { echo "$(printf "%s\n" "E: You can't pass current directory as argument (It's considered unsafe and thus disabled). If you still want to do it on current directory, Try ./* instead of ./" |tee /dev/stderr)" "    @$(date)" |tee -a  "$errorlog" >/dev/null;exit 28; }
 #echo "$PWD $dir $BASH_SOURCE"
 #############################################
 
@@ -637,7 +636,7 @@ cd ..
                     break
                     ;;
                 "Exit")
-                    exit 17
+                    exit 29
                     ;;
                 *)
                     echo "Invalid option"
@@ -649,9 +648,9 @@ cd ..
     if ! $allY;then
         if $y; then
             if $force;then
-                if [[ ! -e "$dir/$name" ]]; then  mv -f "$file" "$dir/$name"; ((mvc++)); printf "\\%s\\ \t--->\t\\%s\\ \t@%s\n" "$file" "$dir/$name" "$(date)" | tee -a  "$renamedfilelog" "$outlog" >/dev/null; cat "$renamedfilelog" > "$rnmfilelog";  else  echo "$(echo "E: Filename confusion occured" |tee /dev/stderr)" "    @$(date)" |tee -a  "$errorlog" >/dev/null;exit 18;fi
+                if [[ ! -e "$dir/$name" ]]; then  mv -f "$file" "$dir/$name"; ((mvc++)); printf "\\%s\\ \t--->\t\\%s\\ \t@%s\n" "$file" "$dir/$name" "$(date)" | tee -a  "$renamedfilelog" "$outlog" >/dev/null; cat "$renamedfilelog" > "$rnmfilelog";  else  echo "$(echo "E: Filename confusion occured" |tee /dev/stderr)" "    @$(date)" |tee -a  "$errorlog" >/dev/null;exit 30;fi
             else
-                if [[ ! -e "$dir/$name" ]]; then  mv "$file" "$dir/$name"; ((mvc++)); printf "\\%s\\ \t--->\t\\%s\\ \t@%s\n" "$file" "$dir/$name" "$(date)" | tee -a  "$renamedfilelog" "$outlog" >/dev/null; cat "$renamedfilelog" > "$rnmfilelog";  else  echo "$(echo "E: Filename confusion occured" |tee /dev/stderr)" "    @$(date)" |tee -a  "$errorlog" >/dev/null;exit 18;fi
+                if [[ ! -e "$dir/$name" ]]; then  mv "$file" "$dir/$name"; ((mvc++)); printf "\\%s\\ \t--->\t\\%s\\ \t@%s\n" "$file" "$dir/$name" "$(date)" | tee -a  "$renamedfilelog" "$outlog" >/dev/null; cat "$renamedfilelog" > "$rnmfilelog";  else  echo "$(echo "E: Filename confusion occured" |tee /dev/stderr)" "    @$(date)" |tee -a  "$errorlog" >/dev/null;exit 31;fi
             fi
         else
             ((ir++));((invir--));((dri++));((invdri--))
@@ -660,9 +659,9 @@ cd ..
     else
         
         if $force;then
-            if [[ ! -e "$dir/$name" ]]; then  mv -f "$file" "$dir/$name"; ((mvc++)); printf "\\%s\\ \t--->\t\\%s\\ \t@%s\n" "$file" "$dir/$name" "$(date)" | tee -a  "$renamedfilelog" "$outlog" >/dev/null; cat "$renamedfilelog" > "$rnmfilelog";  else  echo "$(echo "E: Filename confusion occured" |tee /dev/stderr)" "    @$(date)" |tee -a  "$errorlog" >/dev/null;exit 18;fi
+            if [[ ! -e "$dir/$name" ]]; then  mv -f "$file" "$dir/$name"; ((mvc++)); printf "\\%s\\ \t--->\t\\%s\\ \t@%s\n" "$file" "$dir/$name" "$(date)" | tee -a  "$renamedfilelog" "$outlog" >/dev/null; cat "$renamedfilelog" > "$rnmfilelog";  else  echo "$(echo "E: Filename confusion occured" |tee /dev/stderr)" "    @$(date)" |tee -a  "$errorlog" >/dev/null;exit 32;fi
         else
-            if [[ ! -e "$dir/$name" ]]; then  mv "$file" "$dir/$name"; ((mvc++)); printf "\\%s\\ \t--->\t\\%s\\ \t@%s\n" "$file" "$dir/$name" "$(date)" | tee -a  "$renamedfilelog" "$outlog" >/dev/null; cat "$renamedfilelog" > "$rnmfilelog";  else  echo "$(echo "E: Filename confusion occured" |tee /dev/stderr)" "    @$(date)" |tee -a  "$errorlog" >/dev/null;exit 18;fi
+            if [[ ! -e "$dir/$name" ]]; then  mv "$file" "$dir/$name"; ((mvc++)); printf "\\%s\\ \t--->\t\\%s\\ \t@%s\n" "$file" "$dir/$name" "$(date)" | tee -a  "$renamedfilelog" "$outlog" >/dev/null; cat "$renamedfilelog" > "$rnmfilelog";  else  echo "$(echo "E: Filename confusion occured" |tee /dev/stderr)" "    @$(date)" |tee -a  "$errorlog" >/dev/null;exit 33;fi
         fi
     fi
     ((c++));((invi--));((di++));((invdi--));((ir++));((invir--));((dri++));((invdri--));
@@ -682,7 +681,7 @@ cd ..
         if ! validPath "$file";then continue;fi
         dir="$(dirname "$file")"
         
-        (( $ln != $eln && $ln > 0 )) && fname="$(sed -n "${ln}s/.*/&/p" $nameStringFile || { echo "$(echo "E: sed error"  |tee /dev/stderr)" "    @$(date)" |tee -a  "$errorlog" >/dev/null;exit 20; })" || exit
+        (( $ln != $eln && $ln > 0 )) && fname="$(sed -n "${ln}s/.*/&/p" $nameStringFile || { echo "$(echo "E: sed error"  |tee /dev/stderr)" "    @$(date)" |tee -a  "$errorlog" >/dev/null;exit 34; })" || exit
         
         fname="${fname//\\/}"
         [[ $fname == "" ]] && { echo "$(echo "W: Name can not be empty, skipping..." |tee -a /dev/stderr)" "....@$(date)" |tee -a "$errorlog" >/dev/null; continue; }
@@ -746,7 +745,7 @@ cd ..
                     break
                     ;;
                 "Exit")
-                    exit 21
+                    exit 35
                     ;;
                 *)
                     echo "Invalid option"
@@ -759,9 +758,9 @@ cd ..
           if $y; then
             
               if $force;then
-                  if [[ ! -e "$dir/$name" ]]; then  mv -f "$file" "$dir/$name"; ((mvc++)); printf "\\%s\\ \t--->\t\\%s\\ \t@%s\n" "$file" "$dir/$name" "$(date)" | tee -a  "$renamedfilelog" "$outlog" >/dev/null; cat "$renamedfilelog" > "$rnmfilelog";  else  echo "$(echo "E: Filename confusion occured" |tee /dev/stderr)" "    @$(date)" |tee -a  "$errorlog" >/dev/null;exit 18;fi
+                  if [[ ! -e "$dir/$name" ]]; then  mv -f "$file" "$dir/$name"; ((mvc++)); printf "\\%s\\ \t--->\t\\%s\\ \t@%s\n" "$file" "$dir/$name" "$(date)" | tee -a  "$renamedfilelog" "$outlog" >/dev/null; cat "$renamedfilelog" > "$rnmfilelog";  else  echo "$(echo "E: Filename confusion occured" |tee /dev/stderr)" "    @$(date)" |tee -a  "$errorlog" >/dev/null;exit 36;fi
               else
-                  if [[ ! -e "$dir/$name" ]]; then  mv "$file" "$dir/$name"; ((mvc++)); printf "\\%s\\ \t--->\t\\%s\\ \t@%s\n" "$file" "$dir/$name" "$(date)" |tee -a "$renamedfilelog" "$outlog" >/dev/null;cat "$renamedfilelog" > "$rnmfilelog";  else  echo "$(echo "E: Filename confusion occured" |tee /dev/stderr)" "    @$(date)" |tee -a  "$errorlog" >/dev/null;exit 18;fi
+                  if [[ ! -e "$dir/$name" ]]; then  mv "$file" "$dir/$name"; ((mvc++)); printf "\\%s\\ \t--->\t\\%s\\ \t@%s\n" "$file" "$dir/$name" "$(date)" |tee -a "$renamedfilelog" "$outlog" >/dev/null;cat "$renamedfilelog" > "$rnmfilelog";  else  echo "$(echo "E: Filename confusion occured" |tee /dev/stderr)" "    @$(date)" |tee -a  "$errorlog" >/dev/null;exit 37;fi
               fi
           else
             ((ir++));((invir--));((dri++));((invdri--));if $InverseLine;then ((ln--));else ((ln++));fi
@@ -770,9 +769,9 @@ cd ..
         else
        
             if $force;then
-                if [[ ! -e "$dir/$name" ]]; then  mv -f "$file" "$dir/$name"; ((mvc++)); printf "\\%s\\ \t--->\t\\%s\\ \t@%s\n" "$file" "$dir/$name" "$(date)" |tee -a "$renamedfilelog" "$outlog" >/dev/null;cat "$renamedfilelog" > "$rnmfilelog";  else  echo "$(echo "E: Filename confusion occured" |tee /dev/stderr)" "    @$(date)" |tee -a  "$errorlog" >/dev/null;exit 18;fi
+                if [[ ! -e "$dir/$name" ]]; then  mv -f "$file" "$dir/$name"; ((mvc++)); printf "\\%s\\ \t--->\t\\%s\\ \t@%s\n" "$file" "$dir/$name" "$(date)" |tee -a "$renamedfilelog" "$outlog" >/dev/null;cat "$renamedfilelog" > "$rnmfilelog";  else  echo "$(echo "E: Filename confusion occured" |tee /dev/stderr)" "    @$(date)" |tee -a  "$errorlog" >/dev/null;exit 38;fi
             else
-                if [[ ! -e "$dir/$name" ]]; then  mv "$file" "$dir/$name"; ((mvc++)); printf "\\%s\\ \t--->\t\\%s\\ \t@%s\n" "$file" "$dir/$name" "$(date)" |tee -a "$renamedfilelog" "$outlog" >/dev/null;cat "$renamedfilelog" > "$rnmfilelog";  else  echo "$(echo "E: Filename confusion occured" |tee /dev/stderr)" "    @$(date)" |tee -a  "$errorlog" >/dev/null;exit 18;fi
+                if [[ ! -e "$dir/$name" ]]; then  mv "$file" "$dir/$name"; ((mvc++)); printf "\\%s\\ \t--->\t\\%s\\ \t@%s\n" "$file" "$dir/$name" "$(date)" |tee -a "$renamedfilelog" "$outlog" >/dev/null;cat "$renamedfilelog" > "$rnmfilelog";  else  echo "$(echo "E: Filename confusion occured" |tee /dev/stderr)" "    @$(date)" |tee -a  "$errorlog" >/dev/null;exit 39;fi
             fi
         fi
        if $InverseLine;then ((ln--));else ((ln++));fi;((c++));((invi--));((di++));((invdi--));((ir++));((invir--));((dri++));((invdri--));
@@ -853,7 +852,7 @@ else
                     break
                     ;;
                 "Exit")
-                    exit 24
+                    exit 40
                     ;;
                 *)
                     echo "Invalid option"
@@ -865,9 +864,9 @@ else
         if ! $allY;then
           if $y; then
               if $force;then
-                  if [[ ! -e "$dir/$name" ]]; then  mv -f "$file" "$dir/$name"; ((mvc++)); printf "\\%s\\ \t--->\t\\%s\\ \t@%s\n" "$file" "$dir/$name" "$(date)" |tee -a "$renamedfilelog" "$outlog" >/dev/null;cat "$renamedfilelog" > "$rnmfilelog";  else  echo "$(echo "E: Filename confusion occured" |tee /dev/stderr)" "    @$(date)" |tee -a  "$errorlog" >/dev/null;exit 18;fi
+                  if [[ ! -e "$dir/$name" ]]; then  mv -f "$file" "$dir/$name"; ((mvc++)); printf "\\%s\\ \t--->\t\\%s\\ \t@%s\n" "$file" "$dir/$name" "$(date)" |tee -a "$renamedfilelog" "$outlog" >/dev/null;cat "$renamedfilelog" > "$rnmfilelog";  else  echo "$(echo "E: Filename confusion occured" |tee /dev/stderr)" "    @$(date)" |tee -a  "$errorlog" >/dev/null;exit 41;fi
               else
-                  if [[ ! -e "$dir/$name" ]]; then  mv "$file" "$dir/$name"; ((mvc++)); printf "\\%s\\ \t--->\t\\%s\\ \t@%s\n" "$file" "$dir/$name" "$(date)" |tee -a "$renamedfilelog" "$outlog" >/dev/null;cat "$renamedfilelog" > "$rnmfilelog";  else  echo "$(echo "E: Filename confusion occured" |tee /dev/stderr)" "    @$(date)" |tee -a  "$errorlog" >/dev/null;exit 18;fi
+                  if [[ ! -e "$dir/$name" ]]; then  mv "$file" "$dir/$name"; ((mvc++)); printf "\\%s\\ \t--->\t\\%s\\ \t@%s\n" "$file" "$dir/$name" "$(date)" |tee -a "$renamedfilelog" "$outlog" >/dev/null;cat "$renamedfilelog" > "$rnmfilelog";  else  echo "$(echo "E: Filename confusion occured" |tee /dev/stderr)" "    @$(date)" |tee -a  "$errorlog" >/dev/null;exit 42;fi
               fi
           else
             ((ir++));((invir--));((dri++));((invdri--))
@@ -875,9 +874,9 @@ else
           fi
         else
             if $force;then
-                if [[ ! -e "$dir/$name" ]]; then  mv -f "$file" "$dir/$name"; ((mvc++)); printf "\\%s\\ \t--->\t\\%s\\ \t@%s\n" "$file" "$dir/$name" "$(date)" |tee -a "$renamedfilelog" "$outlog" >/dev/null;cat "$renamedfilelog" > "$rnmfilelog";  else  echo "$(echo "E: Filename confusion occured" |tee /dev/stderr)" "    @$(date)" |tee -a  "$errorlog" >/dev/null;exit 18;fi
+                if [[ ! -e "$dir/$name" ]]; then  mv -f "$file" "$dir/$name"; ((mvc++)); printf "\\%s\\ \t--->\t\\%s\\ \t@%s\n" "$file" "$dir/$name" "$(date)" |tee -a "$renamedfilelog" "$outlog" >/dev/null;cat "$renamedfilelog" > "$rnmfilelog";  else  echo "$(echo "E: Filename confusion occured" |tee /dev/stderr)" "    @$(date)" |tee -a  "$errorlog" >/dev/null;exit 43;fi
             else
-                if [[ ! -e "$dir/$name" ]]; then  mv "$file" "$dir/$name"; ((mvc++)); printf "\\%s\\ \t--->\t\\%s\\ \t@%s\n" "$file" "$dir/$name" "$(date)" |tee -a "$renamedfilelog" "$outlog" >/dev/null;cat "$renamedfilelog" > "$rnmfilelog";  else  echo "$(echo "E: Filename confusion occured" |tee /dev/stderr)" "    @$(date)" |tee -a  "$errorlog" >/dev/null;exit 18;fi
+                if [[ ! -e "$dir/$name" ]]; then  mv "$file" "$dir/$name"; ((mvc++)); printf "\\%s\\ \t--->\t\\%s\\ \t@%s\n" "$file" "$dir/$name" "$(date)" |tee -a "$renamedfilelog" "$outlog" >/dev/null;cat "$renamedfilelog" > "$rnmfilelog";  else  echo "$(echo "E: Filename confusion occured" |tee /dev/stderr)" "    @$(date)" |tee -a  "$errorlog" >/dev/null;exit 44;fi
             fi
         fi
         ((c++));((invi--));((di++));((invdi--));((ir++));((invir--));((dri++));((invdri--));
@@ -886,7 +885,7 @@ else
     
     
     if [[ "$nameStringFile" != "" ]]; then
-        [[ $ln != $eln ]] && (( $ln > 0 )) && fname="$(sed -n "${ln}s/.*/&/p" $nameStringFile || { echo "$(echo "E: sed error"  |tee /dev/stderr)" "    @$(date)" |tee -a  "$errorlog";exit 27; })" || exit
+        [[ $ln != $eln ]] && (( $ln > 0 )) && fname="$(sed -n "${ln}s/.*/&/p" $nameStringFile || { echo "$(echo "E: sed error"  |tee /dev/stderr)" "    @$(date)" |tee -a  "$errorlog";exit 45; })" || exit
         fname="${fname//\\/}"
         fnamewe="${fname%.*}"
         
@@ -950,7 +949,7 @@ else
                     break
                     ;;
                 "Exit")
-                    exit 28
+                    exit 46
                     ;;
                 *)
                     echo "Invalid option"
@@ -962,9 +961,9 @@ else
         if ! $allY;then
           if $y; then
               if $force;then
-                  if [[ ! -e "$dir/$name" ]]; then  mv -f "$file" "$dir/$name"; ((mvc++)); printf "\\%s\\ \t--->\t\\%s\\ \t@%s\n" "$file" "$dir/$name" "$(date)" |tee -a "$renamedfilelog" "$outlog" >/dev/null;cat "$renamedfilelog" > "$rnmfilelog";  else  echo "$(echo "E: Filename confusion occured" |tee /dev/stderr)" "    @$(date)" |tee -a  "$errorlog" >/dev/null;exit 18;fi
+                  if [[ ! -e "$dir/$name" ]]; then  mv -f "$file" "$dir/$name"; ((mvc++)); printf "\\%s\\ \t--->\t\\%s\\ \t@%s\n" "$file" "$dir/$name" "$(date)" |tee -a "$renamedfilelog" "$outlog" >/dev/null;cat "$renamedfilelog" > "$rnmfilelog";  else  echo "$(echo "E: Filename confusion occured" |tee /dev/stderr)" "    @$(date)" |tee -a  "$errorlog" >/dev/null;exit 47;fi
               else
-                  if [[ ! -e "$dir/$name" ]]; then  mv "$file" "$dir/$name"; ((mvc++)); printf "\\%s\\ \t--->\t\\%s\\ \t@%s\n" "$file" "$dir/$name" "$(date)" |tee -a "$renamedfilelog" "$outlog" >/dev/null;cat "$renamedfilelog" > "$rnmfilelog";  else  echo "$(echo "E: Filename confusion occured" |tee /dev/stderr)" "    @$(date)" |tee -a  "$errorlog" >/dev/null;exit 18;fi
+                  if [[ ! -e "$dir/$name" ]]; then  mv "$file" "$dir/$name"; ((mvc++)); printf "\\%s\\ \t--->\t\\%s\\ \t@%s\n" "$file" "$dir/$name" "$(date)" |tee -a "$renamedfilelog" "$outlog" >/dev/null;cat "$renamedfilelog" > "$rnmfilelog";  else  echo "$(echo "E: Filename confusion occured" |tee /dev/stderr)" "    @$(date)" |tee -a  "$errorlog" >/dev/null;exit 48;fi
               fi
           else
             ((ir++));((invir--));((dri++));((invdri--));if $InverseLine;then ((ln--));else ((ln++));fi
@@ -972,9 +971,9 @@ else
           fi
         else
             if $force;then
-                if [[ ! -e "$dir/$name" ]]; then  mv -f "$file" "$dir/$name"; ((mvc++)); printf "\\%s\\ \t--->\t\\%s\\ \t@%s\n" "$file" "$dir/$name" "$(date)" |tee -a "$renamedfilelog" "$outlog" >/dev/null;cat "$renamedfilelog" > "$rnmfilelog";  else  echo "$(echo "E: Filename confusion occured" |tee /dev/stderr)" "    @$(date)" |tee -a  "$errorlog" >/dev/null;exit 18;fi
+                if [[ ! -e "$dir/$name" ]]; then  mv -f "$file" "$dir/$name"; ((mvc++)); printf "\\%s\\ \t--->\t\\%s\\ \t@%s\n" "$file" "$dir/$name" "$(date)" |tee -a "$renamedfilelog" "$outlog" >/dev/null;cat "$renamedfilelog" > "$rnmfilelog";  else  echo "$(echo "E: Filename confusion occured" |tee /dev/stderr)" "    @$(date)" |tee -a  "$errorlog" >/dev/null;exit 49;fi
             else
-                if [[ ! -e "$dir/$name" ]]; then  mv "$file" "$dir/$name"; ((mvc++)); printf "\\%s\\ \t--->\t\\%s\\ \t@%s\n" "$file" "$dir/$name" "$(date)" |tee -a "$renamedfilelog" "$outlog" >/dev/null;cat "$renamedfilelog" > "$rnmfilelog";  else  echo "$(echo "E: Filename confusion occured" |tee /dev/stderr)" "    @$(date)" |tee -a  "$errorlog" >/dev/null;exit 18;fi
+                if [[ ! -e "$dir/$name" ]]; then  mv "$file" "$dir/$name"; ((mvc++)); printf "\\%s\\ \t--->\t\\%s\\ \t@%s\n" "$file" "$dir/$name" "$(date)" |tee -a "$renamedfilelog" "$outlog" >/dev/null;cat "$renamedfilelog" > "$rnmfilelog";  else  echo "$(echo "E: Filename confusion occured" |tee /dev/stderr)" "    @$(date)" |tee -a  "$errorlog" >/dev/null;exit 50;fi
             fi
         fi
         if $InverseLine;then ((ln--));else ((ln++));fi;((c++));((invi--));((di++));((invdi--));((ir++));((invir--));((dri++));((invdri--));
