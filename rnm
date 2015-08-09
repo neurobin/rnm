@@ -95,7 +95,7 @@ Name String       : A string which is parsed to create name for new files.
      /l/ in name string will be replaced with line number from list file.
      /dc/ in name string will be replaced with directory count
      /-i/ in name string will be replaced with inverse index.
-     /-ir/ in name string will be replaced with iverse reserved index.
+     /-ir/ in name string will be replaced with inverse reserved index.
   In general - in the above replacement rules (applies to indexes excluding /l/ and /dc/)
   will mean inverse index conforming to their meaning.
   

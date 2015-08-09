@@ -1,5 +1,5 @@
 # rnm
-Bulk Rename Utility for GNU/Linux written in Bash scripting language. Therefore, the use of this script/tool depends on Bash. Files and folders can be passed as command line arguments to rename them in bulk according to some naming scheme (Name String). It provides an undo functionality too to move back an unwanted rename operation.
+Bulk Rename Utility for GNU/Linux written in Bash scripting language. Therefore, the use of this script/tool depends on Bash. Files and folders can be passed as command line arguments to rename them in bulk according to some naming scheme (*Name String*). It provides an undo functionality too to move back an unwanted rename operation.
 
 
 
@@ -114,13 +114,15 @@ One of the options of `-ns` or `-nsf` is mandatory.
 7. `/l/` in name string will be replaced with line number from *Name String File*.
 8. `/dc/` in name string will be replaced with directory count
 9. `/-i/` in name string will be replaced with inverse index.
-10. `/-ir/` in name string will be replaced with iverse reserved index. In general, `-` in the above replacement rules (applies to indexes excluding `/l/` and `/dc/`) will mean inverse index conforming to their meaning.
+10. `/-ir/` in name string will be replaced with inverse reserved index. In general, `-` in the above replacement rules (applies to indexes excluding `/l/` and `/dc/`) will mean inverse index conforming to their meaning.
+
+Inverse Index       : Decrementing index.
 
 **Name String File  :** A file which contains a list of name string (one per line) to be applied to the new files.
      
 **Search String     :** A string that is used to search for files with matching
                     filenames against the search string. By default it is
-                    a regex if -sF option is not used.
+                    a regex if `-sF` option is not used.
                  
 **Index Field Length:** An integer value defining the field length of index.
                     empty field will be filled with 0's. For example, if
@@ -135,7 +137,8 @@ One of the options of `-ns` or `-nsf` is mandatory.
 ```
 rnm file -ns new_file
 rnm folder -ns "New Folder" -oD
-rnm ./New*/* -ns /i/.ext  (globbing is allowed)
+rnm ./New*/* -ns /i/.ext                 (globbing is allowed)
+rnm ./New*/* -ns /i/.ext -ed             (-ed forces file only mode)
 rnm "./New Folder" -ns /id//dc/.ext
 rnm ./New* -ns /id/.ext -ss "regex"
 rnm -nsf filepath -ns /n//id/.ext
@@ -150,5 +153,5 @@ etc...
 2. All options should always be separated by space. For Example: `-vy` won't mean two option `-v` and `-y`, rather it will mean a single option `-vy`.
 3. Any non option argument will be treated as file or directory path. For example in <pre><code>rnm file1 file2 -- -ns fd</code></pre>`file1`, `file2` and `--` will be taken as file paths.
 4. Be wary of filename globbing. Command like `rnm ./*` will take all files and folders as arguments and thus the files and immediate contents (by default) of the folders will be subject to rename operation. If you don't want to rename any folder contents (when the folder is passed as an argument), use `-ed` option to exclude any and all directory which have mistakenly or deliberately passed as arguments.
-5. This is a dangerous tool like `rm`, so use with care. If you make a mistake and do some unwanted rename, immediately run `rnm -u` to undo.
+5. This is a dangerous tool like `rm`, so use with care. If you make a mistake and do some unwanted rename, run `rnm -u` to undo.
 
