@@ -33,7 +33,7 @@ sudo rm /usr/bin/rnm
 rnm Directory/File/Path [options]
 ```
 
-One of the options of `-ns` or `-nsf` is mandatory.
+One of the options of `-ns` or `-nsf` is mandatory. Options are **not** sequential, their position in the argument list have no siginificance. For example, `rnm filepath -ns name` is the same as `rnm -ns name filepath`. Though passing the *Directory/File* path at the end of the arguement list is considered to be safe and wise.
 
 ##Options:
 
