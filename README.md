@@ -111,14 +111,16 @@ One of the options of `-ns` or `-nsf` is mandatory. Options are **not** sequenti
 4. `/idr/` in name string will be replaced with reserved directory index
 5. `/n/` in name string will be replaced with filename without extention. If used with `-nsf` option, the filename will be the name taken from the *Name String File*.
 6. `/fn/` in name string will be replaced with full name of the files. If used with `-nsf` option, full name will be the name taken from the *Name String File*.
-7. `/l/` in name string will be replaced with line number from *Name String File*.
-8. `/dc/` in name string will be replaced with directory count
-9. `/-i/` in name string will be replaced with inverse index.
-10. `/-ir/` in name string will be replaced with inverse reserved index. In general, `-` in the above replacement rules (applies to indexes excluding `/l/` and `/dc/`) will mean inverse index conforming to their meaning.
+7. `/smn/` in name string will be replaced with Sed Modified Name.
+8. `/rn/` in name string will be replaced with Sed Modified Name.
+9. `/l/` in name string will be replaced with line number from *Name String File*.
+10. `/dc/` in name string will be replaced with directory count
+11. `/-i/` in name string will be replaced with inverse index.
+12. `/-ir/` in name string will be replaced with inverse reserved index. In general, `-` in the above replacement rules (applies to indexes excluding `/l/` and `/dc/`) will mean inverse index conforming to their meaning.
 
 **Inverse Index     :** Decrementing index.
 
-**Name String File  :** A file which contains a list of name string (one per line) to be applied to the new files.
+**Name String File  :** A file which contains a list of name string (one per line, empty line will make files skip) to be applied to the new files.
      
 **Search String     :** A string that is used to search for files with matching
                     filenames against the search string. By default it is
@@ -126,10 +128,30 @@ One of the options of `-ns` or `-nsf` is mandatory. Options are **not** sequenti
                  
 **Index Field Length:** An integer value defining the field length of index.
                     empty field will be filled with 0's. For example, if
-                    the value is 3, then index will be 001, 002, 003, etc..
+                    the value is `3`, then index will be `001`, `002`, `003`, etc..
                     
 **Directory Index   :** Index inside a directory i.e for every new directory
                      index is counted from the start.
+                     
+**Sed Modified Name :** The name can be modified at runtime using the default
+                    sed tool available in Linux system. You can insert sed
+                    script in the form `/search_string/replace_string/modifier;`
+                    
+                    For example: `/video/Episode/gi;` will replace every instances
+                    of `video` with `Episode` in the name of the file found (or the name 
+                    taken from Name String File).
+                    
+                    The format must be of :
+                    `/search_string/replace_string/modifier;`
+                    
+                    Two modifiers are avalilable: `g` and `i`.
+                    `g` stands for global. Replaces every instances of match found.
+                    `i` stands case insensitive search.
+                    
+                    This replaced modified name is available through Name String Rule: 
+                    `/smn/` or `/rn/` (stands for replaced name)
+                    
+                    Note that sed basic regex mode is used to do this job.
         
         
 ###Example:

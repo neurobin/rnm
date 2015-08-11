@@ -13,3 +13,8 @@
 5. Added `/hist/` as a valid argument for `-nsf` option to take *Name String File* from history.
 6. Logging functionality. Log files are put in $HOME/.neurobin/rnm
 7. Lots of bug fixes.
+
+###`2.0.1`: <span class="light-quote">Wed Aug  12 02:36:00 BDT 2015</span>
+
+1. Added name modification feature using `sed`.
+2. Added extra Name String Rule `/smn/` or `/rn/`.
