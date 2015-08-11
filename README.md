@@ -154,4 +154,5 @@ etc...
 3. Any non option argument will be treated as file or directory path. For example in <pre><code>rnm file1 file2 -- -ns fd</code></pre>`file1`, `file2` and `--` will be taken as file paths.
 4. Be wary of filename globbing. Command like `rnm ./*` will take all files and folders as arguments and thus the files and immediate contents (by default) of the folders will be subject to rename operation. If you don't want to rename any folder contents (when the folder is passed as an argument), use `-ed` option to exclude any and all directory which have mistakenly or deliberately passed as arguments.
 5. This is a dangerous tool like `rm`, so use with care. If you make a mistake and do some unwanted rename, run `rnm -u` to undo.
+6. Always use at least one forward slash in *Directory/File/Path*. If it's the current directory then `./filename` or `./foldername`, if you want globbing, then `./*`. Never use `filename` or `foldername` without a slash in their path, and never use `*` to glob into the current folder, instead use `./*`. It's very important, so be careful about it.
 
