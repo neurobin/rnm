@@ -150,7 +150,6 @@ String Rename(String oldn,String newn){
                 reverse_index-=inc;
                 directory_index+=inc;
                 directory_reverse_index-=inc;
-                if(name_string_file!=""){current_line+=linc;}
                 rnc++;
             }
             else {printErrorLog(strerror(errno));}
@@ -724,7 +723,7 @@ NameList getNameListFromFile(String filename,Int si,Int ei,int mod=1){
     FileStream file;
     if(mod==1){file.open(filename,$read);}
     else {file.open(filename,$binary | $read);}
-    if(!file.good()){print "Error";Exit(1);}
+    if(!file.good()){printErrorLog("Couldn't open name string file: "+filename);Exit(1);}
     Int tmplinc=linc;
     while(getLineFromFile(file,line,delim) && lc<end){
         abslc++;
@@ -739,7 +738,7 @@ NameList getNameListFromFile(String filename,Int si,Int ei,int mod=1){
         if(lc>=start && lc<=end && tmplinc<=0){
             list[lc]=line;abslc_list[lc]=abslc;
             tmplinc=linc;
-            print lc<<list[lc]+NEW_LINE;
+            //print lc<<list[lc]+NEW_LINE;
         }
         
     }
@@ -773,14 +772,14 @@ bool doRename(String file){
         
         }
     else if(name_string=="" && name_string_file!=""){
-        print current_line<<"\t"<<nsflist[current_line]<<"\t"<<line_upward<<NEW_LINE;
+        //print current_line<<"\t"<<nsflist[current_line]<<"\t"<<line_upward<<NEW_LINE;
         if(nsflist[current_line]!=""){
             
             name=parseNameString(nsflist[current_line],file);
             current_abs_line=abslc_list[current_line];
         
         
-            print line_upward<<reverse_line<<NEW_LINE;
+            //print line_upward<<reverse_line<<NEW_LINE;
             if(!reverse_line){current_line+=linc;}
             else{current_line-=linc;}
         
@@ -792,7 +791,7 @@ bool doRename(String file){
             name=parseNameString(name_string,nsflist[current_line]);
             current_abs_line=abslc_list[current_line];
         
-            print line_upward<<reverse_line<<NEW_LINE;
+            //print line_upward<<reverse_line<<NEW_LINE;
             if(!reverse_line){current_line+=linc;}
             else{current_line-=linc;}
         
@@ -813,12 +812,7 @@ bool doRename(String file){
     
     
     if(name!=""){
-        if(!quiet){
-            //String out=file+"    ---->    "+dir+path_delim+name;
-            
-            print NEW_LINE+file+"    ---->    "+dir+path_delim+name+NEW_LINE;
-            
-        }
+        if(!quiet){print NEW_LINE+file+"    ---->    "+dir+path_delim+name+NEW_LINE;}
         ///do rename
         int confirm;
         
@@ -998,7 +992,6 @@ void startTask(StringArray files){
     directory_reverse_index=DIRECTORY_REVERSE_INDEX;
     directory_reverse_index_rd=DIRECTORY_REVERSE_INDEX;
     for(int i=0;i<(int)files.size();i++){
-        if(directory_index>end_index){continue;}
         String file=files[i];
         String parent="";
         String src_name="";
