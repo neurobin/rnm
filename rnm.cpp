@@ -727,9 +727,11 @@ NameList getNameListFromFile(String filename,Int si,Int ei,int mod=1){
     Int tmplinc=linc;
     while(getLineFromFile(file,line,delim) && lc<end){
         abslc++;
-        if ( line.size() && line[line.size()-1] == '\r' ) {
-           line = line.substr( 0, line.size() - 1 );
+        if(mod==1){
+            if ( line.size() && line[line.size()-1] == '\r' ) {
+               line = line.substr( 0, line.size() - 1 );
             }
+        }
         if(line=="" || line == toString('\0')){
             continue;}
         lc++;

@@ -65,11 +65,11 @@ Options are case insensitive, i.e `-ssF` and `-ssf` is the same.
 
        
 `-ifl`               : Index field length. not occupied field will be
-                       filled with index field fillers (set with `-iff`). iff is set to 0 by default.
+                       filled with index field fillers (set with `-iff`). iff is set to the character `0` by default.
        
 `--index-field-filler`,
 `-iff`               : Not occupied field in index will be filled with a character
-                      set by this option.
+                      which is set by this option.
 
 `--index-field-precision`,
 `-ifp`               : Index is a floating point decimal value. This sets the precision
@@ -84,21 +84,21 @@ Options are case insensitive, i.e `-ssF` and `-ssf` is the same.
                        try to take the file from history.
        
 `--name-string-file-null-terminated`,
-`-nsfn`              : Name String file. This takes a null terminated file. Null terminated
-                       files are good way to store filenames in files.
+`-nsfn`              : Name String file. This takes a null terminated file (filenames are null terminated). Null terminated
+                       files are good way to store filenames.
 
 `--line`, `--start-line`,
 `-l`, `-sl`          : Start Line number in name string file.
 
 `--line-reverse`, `--start-line-reverse`,
-`-lv`, `-slv`        : Same as -l or -sl, except line number will be decremented in each
+`-lv`, `-slv`        : Same as `-l` or `-sl`, except line number will be decremented in each
                        iteration.
 
 `--end-line`,
 `-el`                : End line number. Line number to stop renaming from.
 
 `--end-line-reverse`,
-`-elv`               : Same as -el, except line number will be decremented in each iteration.
+`-elv`               : Same as `-el`, except line number will be decremented in each iteration.
 
 `--search-string`,
 `-ss`                : Search string
@@ -111,7 +111,7 @@ Options are case insensitive, i.e `-ssF` and `-ssf` is the same.
 `--depth`,
 `-dp`                : Depth of folder. -1(any negative number) means unlimited depth i.e all files and subdirectories
                        will be included. Other values may be 0 1 2 3 etc...
-                       Default depth is 0, i.e directory contents will be ignored.
+                       Default depth is `0`, i.e directory contents will be ignored.
 
        
 `--file-only`,
@@ -231,7 +231,7 @@ etc...
 
 1. All options should always be separated by space. For Example: `-vy` won't mean two option `-v` and `-y`, rather it will mean a single option `-vy`.
 2. Any non option argument will be treated as file or directory path. For example in <pre><code>rnm file1 file2 -- -ns fd</code></pre>`file1`, `file2` and `--` will be taken as file paths.
-3. Be wary of filename globbing. Command like `rnm ./*` will take all files and directories as arguments and thus the files and directories will be subject to rename operation. If you don't want to rename directories, use file only mode (`-fo`). If you want to go inside directories, use depth (`-dp`) greater than `0`.
+3. Be wary of filename globbing. Command like `rnm ./*` will take all files and directories as arguments and thus the files and directories will be subject to rename operation. If you don't want to rename directories, use file only mode (`-fo`). If you want to go inside directories, use depth (`-dp`) greater than `0` with file only mode.
 4. If you run `rnm . -ns something` or `rnm ./ -ns something`, your current directory will be renamed (be careful).
 5. This is a dangerous tool like `rm`, so use with care. If you make a mistake and do some unwanted rename, run `rnm -u` to undo (before running any more rnm command).
 
