@@ -65,7 +65,7 @@ Options are case insensitive, i.e `-ssF` and `-ssf` is the same.
 
        
 `-ifl`               : Index field length. not occupied field will be
-                       filled with index field fillers (set with -iff). iff is set to 0 by default.
+                       filled with index field fillers (set with `-iff`). iff is set to 0 by default.
        
 `--index-field-filler`,
 `-iff`               : Not occupied field in index will be filled with a character
