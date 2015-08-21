@@ -219,7 +219,7 @@ options:\n\
                  \n\
 --index-field-length,\n\
 -ifl           : Index field length. not occupied field will be\n\
-                 filled with 0's.\n\
+                 filled with index field fillers (set with -iff). iff is set to 0 by default.\n\
 \n\
 --index-field-filler,\n\
 -iff           : Not occupied field in index will be filled with a character\n\
