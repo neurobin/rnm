@@ -189,14 +189,15 @@ Options are case insensitive, i.e `-ssF` and `-ssf` is the same.
                     where search_string is the regex to search for and
                     replace_string is the string to replace with. For replace string,
                     there are four special cases:
-                    1. `&` will be taken as the entire match found by the regex (search_string).
-                    2. `\1`, `\2` etc.. is the back-references, i.e you can access captured groups
-                    with these back-references.
-                    3. `\p` is the prefix (i.e., the part of the target sequence that precedes the match)
-                    4. `\s` is the suffix (i.e., the part of the target sequence that follows the match).
-                    to insert a `&` literally, use `\&` and for `\` use `\\`.Two modifiers are avalilable: g and i.
-                    g stands for global and replaces every instances of match found.
-                    i stands case insensitive search (default is case sensitive).*Replace String* is always performed on old file name.
+                    
+1. `&` will be taken as the entire match found by the regex (search_string).
+2. `\1`, `\2` etc.. is the back-references, i.e you can access captured groups with these back-references.
+3. `\p` is the prefix (i.e., the part of the target sequence that precedes the match)
+4. `\s` is the suffix (i.e., the part of the target sequence that follows the match).
+
+to insert a `&` literally, use `\&` and for `\` use `\\`.Two modifiers are avalilable: g and i.
+g stands for global and replaces every instances of match found.
+i stands case insensitive search (default is case sensitive).*Replace String* is always performed on old file name.
                     
                     Example: '/video/Episode /i//gi' will replace every instances
                     of 'video' with 'Episode index' i.e you will get new rname as:.
