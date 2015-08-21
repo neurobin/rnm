@@ -24,7 +24,7 @@
 1. Code rewritten in C++
 2. Bash independent.
 3. Portable
-4. Supports all characters allowed in file/directory name according POSIX specs.
+4. Supports all characters allowed in file/directory name according to POSIX specs.
 5. Regex syntax changed to ECMAScript Regex.
 6. `-rs` option added
 7. `-iff` option added
