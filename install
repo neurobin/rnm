@@ -1,6 +1,9 @@
 #!/bin/bash
+if [ $EUID -ne 0 ]; then
+    printf "\n-----Sorry! Run with root privilege\n\n"
+    exit 1
+fi
 cd "$(dirname "$BASH_SOURCE")"
-sudo -ks<<EOF
 cp ./rnm /usr/bin/rnm
 chmod 755 /usr/bin/rnm
-EOF
+echo "***** Success *****"

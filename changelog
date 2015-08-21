@@ -18,3 +18,20 @@
 
 1. Added name modification feature using `sed`.
 2. Added extra Name String Rule `/smn/` or `/rn/`.
+
+###`3.0.0`: <span class="light-quote">Fri Aug 21 12:33:49 BDT 2015</span>
+
+1. Code rewritten in C++
+2. Bash independent.
+3. Portable
+4. Supports all characters allowed in file/directory name according POSIX specs.
+5. Regex syntax changed to ECMAScript Regex.
+6. `-rs` option added
+7. `-iff` option added
+8. `-ifp` option added
+9. `-inc` option added
+10. `-linc` option added
+11. renamed `-li` to `-lv` and `-eli` to `-elv`
+12. `-shop` and `-sim` option added
+13. New name string rule: `/la/` added
+

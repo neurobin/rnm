@@ -71,7 +71,7 @@ bool undoRename(){
     }
     
     else {
-        printErrorLog("Undo failed. Required log files not found");
+        printErrorLog("Undo failed. Required log files not found.");
         return false;
     }
     
@@ -87,7 +87,7 @@ void checkArgAvailability(StringArray sa,int i){
 
 bool isInvalidFile(String file){
     bool status=false;
-    StringArray invf={HOME,"/",LOG_DIR_PARENT,LOG_DIR,RNM_FILE_LOG_L,RNM_FILE_LOG_R,RNM_FILE_LOG_L_TMP,RNM_FILE_LOG_R_TMP,self_path,\
+    StringArray invf={HOME,path_delim,LOG_DIR_PARENT,LOG_DIR,RNM_FILE_LOG_L,RNM_FILE_LOG_R,RNM_FILE_LOG_L_TMP,RNM_FILE_LOG_R_TMP,self_path,\
         "/bin","/usr","/usr/bin","/tmp","/dev","/etc","/proc","/sys","/home"};
     for(int i=0;i<(int)invf.size();i++){
         if(file==invf[i]){status=true;printWarningLog("rename not permitted: "+invf[i]);}
@@ -138,7 +138,7 @@ String Rename(String oldn,String newn){
     if(isPathValid(newn)){
         if(!quiet){
             printErrorLog("File/Directory exists: "+newn);
-            //Exit(1);
+            
         }
     }
     else {
@@ -267,7 +267,7 @@ String regexReplace(String s,String search,String replace,String modifier){
     
 String stripPathDelimiter(String s){
     s=replaceStringAll(s,path_delim,"");
-    //s=replaceStringAll(s,"\\","\\\\");
+    
     return s;
 }
     
@@ -624,7 +624,7 @@ Int childDepth(String parent,String child){
             childstr=replaceString(child,parent+path_delim,String(""));
         }
         else{
-            childstr=replaceString(dirname(child),parent+"/",String(""));
+            childstr=replaceString(dirname(child),parent+path_delim,String(""));
         }
         return countMatchInRegex(childstr,"/?[^/]+/?");
     }
@@ -734,11 +734,11 @@ NameList getNameListFromFile(String filename,Int si,Int ei,int mod=1){
             continue;}
         lc++;
         tmplinc--;
-        //print ""<<lc<<line+NEW_LINE;
+        
         if(lc>=start && lc<=end && tmplinc<=0){
             list[lc]=line;abslc_list[lc]=abslc;
             tmplinc=linc;
-            //print lc<<list[lc]+NEW_LINE;
+            
         }
         
     }
@@ -772,14 +772,12 @@ bool doRename(String file){
         
         }
     else if(name_string=="" && name_string_file!=""){
-        //print current_line<<"\t"<<nsflist[current_line]<<"\t"<<line_upward<<NEW_LINE;
+        
         if(nsflist[current_line]!=""){
-            
-            name=parseNameString(nsflist[current_line],file);
             current_abs_line=abslc_list[current_line];
-        
-        
-            //print line_upward<<reverse_line<<NEW_LINE;
+            name=parseNameString(nsflist[current_line],file);
+            
+            
             if(!reverse_line){current_line+=linc;}
             else{current_line-=linc;}
         
@@ -787,11 +785,10 @@ bool doRename(String file){
     }
     else if(name_string!="" && name_string_file!=""){
         if(nsflist[current_line]!=""){
-            
-            name=parseNameString(name_string,nsflist[current_line]);
             current_abs_line=abslc_list[current_line];
+            name=parseNameString(name_string,nsflist[current_line]);
+            
         
-            //print line_upward<<reverse_line<<NEW_LINE;
             if(!reverse_line){current_line+=linc;}
             else{current_line-=linc;}
         
@@ -801,14 +798,11 @@ bool doRename(String file){
         
     else {printErrorLog("One of the options: -ns or -nsf or -rs is mandatory");Exit(1);}
     
-
-
-
-
+    
+    
+    
     ///sanitize name
     name=stripPathDelimiter(name);
-    
-    
     
     
     if(name!=""){
@@ -845,15 +839,12 @@ bool doRename(String file){
             
         }
         
-        
     }
     else{
         printWarningLog("Name can not be empty, skipped.");not_skipped=false;
     }
     
-    
-    
-    //print current_line<<"\t"<<end_line<<"\t"<<line_upward;
+
   if(name_string_file!=""){
     if(current_line<=0){showResult();Exit(1);}
       
@@ -883,7 +874,7 @@ StringArray getFilesFromDir(String file){
                 if ((dir = opendir (file.c_str())) != NULL) {
                     while ((ent = readdir (dir)) != NULL) {
                         
-                        String filename=file+"/"+ent->d_name;
+                        String filename=file+path_delim+ent->d_name;
                         if(basename(filename)=="." || basename(filename)==".."){continue;}
                         files.push_back(filename);
                     }
@@ -910,8 +901,7 @@ void startInDepthFileOnlyTaskOnDirectory(String dir,String base_dir=base_dir){
     for(int i=0;i<(int)files.size();i++){
         if(directory_index>end_index){continue;}
         String file=files[i];
-        
-        //print file+NEW_LINE;
+
         if(childDepth(base_dir,file)>depth){continue;}
         String parent="";
         String src_name="";
@@ -920,23 +910,18 @@ void startInDepthFileOnlyTaskOnDirectory(String dir,String base_dir=base_dir){
         src_name=basename(file);
         parent=dirname(file);
         
-        
-        //print childDepth(base_dir,file)<<"\t"<<base_dir+NEW_LINE;
-        //print depth_count<<"\t"<<prev_file.length()<<"\t"<<file.length()+NEW_LINE;
+    
         if(isDir(file)){
             
             if(file_only){
                 
                 if(childDepth(base_dir,file)<=depth){
                     
-
                     startInDepthFileOnlyTaskOnDirectory(file);
                 }
                 else{
                 
-                
                 }
-                
                 
             }
             
@@ -946,23 +931,16 @@ void startInDepthFileOnlyTaskOnDirectory(String dir,String base_dir=base_dir){
             
             else{
                 
-                
                 doRename(file);
                 
-                
             }
-            
             
         }
         else if(isFile(file)){
             
-            
             if(!directory_only){
                 doRename(file);
             }
-            
-            
-            
             
         }
         else {
@@ -999,17 +977,16 @@ void startTask(StringArray files){
         file=getAbsolutePath(file);
         src_name=basename(file);
         parent=dirname(file);
-        
-        //print depth_count<<"\t"<<prev_file.length()<<"\t"<<file.length()+NEW_LINE;
+
         if(isDir(file)){
             base_dir=dirname(file);
         
             if(file_only){
-                //print childDepth(base_dir,file)<<"\t"<<depth+NEW_LINE;
+
                 if(childDepth(base_dir,file)<=depth){
 
                     startInDepthFileOnlyTaskOnDirectory(file);
-                    //depth_count=DEPTH_COUNT_INITIAL;
+
                 }
                 else{
                 
@@ -1024,11 +1001,8 @@ void startTask(StringArray files){
             }
             
             else{
-                //print file;
                 doRename(file);
-                
-                
-                
+              
             }
             
             
@@ -1038,11 +1012,7 @@ void startTask(StringArray files){
             if(!directory_only){
                 doRename(file);
             }
-            
-            
-            
-            
-            
+     
         }
         else {
         printWarningLog("Not a valid file or directory");
@@ -1115,13 +1085,13 @@ void showResult(){
 
 
 
-int main(int argc, char* argv[]) {getCurrentDir(self_dir);self_path=self_dir+String("/")+executable_name;
+int main(int argc, char* argv[]) {getCurrentDir(self_dir);self_path=self_dir+String(path_delim)+executable_name;
     prepareLogDir();
     
     
 
     
-//////////////////////////////// Opt parse////////////////////////////////////////////
+    //////////////////////////////// Opt parse////////////////////////////////////////////
     bool skipcount=false;
     StringArray args;
     for(int i = 1; i < argc; i++){args.push_back(argv[i]);}
@@ -1239,6 +1209,15 @@ int main(int argc, char* argv[]) {getCurrentDir(self_dir);self_path=self_dir+Str
           
         }
         
+
+      else if(opt=="-nsfn"||opt=="--name-string-file-null-terminated"){
+          checkArgAvailability(args,i+1);
+          name_string_file=args[i+1];
+          nsf_n=true;
+          skipcount=true;
+          
+        }
+        
       else if(opt=="-l"||opt=="-sl"||opt=="--line"||opt=="--start-line"){
           checkArgAvailability(args,i+1);
           mustBeAPositiveInteger("Start Line",args[i+1]);
@@ -1342,10 +1321,12 @@ int main(int argc, char* argv[]) {getCurrentDir(self_dir);self_path=self_dir+Str
       
       
     }
+    
+    
     file_vector=files;
-//////////////////////////////////////// Opt parse ends here/////////////////////////////////
+    //////////////////////////////////////// Opt parse ends here/////////////////////////////////
 
-if(undo){undoRename();showResult();Exit(0);}
+    if(undo){undoRename();showResult();Exit(0);}
 
     
     
@@ -1377,24 +1358,30 @@ if(undo){undoRename();showResult();Exit(0);}
         }
     
     if(name_string_file!=""){
-        if(!isFile(name_string_file)){
+        if(name_string_file=="/hist/"){
+            if(isFile(NSF_LIST_FILE)){name_string_file=NSF_LIST_FILE;}
+            else{printErrorLog("History no found.");Exit(1);}
+        }
+        else if(!isFile(name_string_file)){
             printErrorLog("Name String File not found: "+name_string_file);
             Exit(1);
         }
         detectLineUpwardOrDownward();
+        copyFile2(name_string_file,NSF_LIST_FILE);
         if(!quiet){print "Reading name string file..."+NEW_LINE;}
-        nsflist=getNameListFromFile(name_string_file,start_line,end_line);
+        if(!nsf_n){nsflist=getNameListFromFile(name_string_file,start_line,end_line);}
+        else{nsflist=getNameListFromFile(name_string_file,start_line,end_line,0);}
     
     }
 
     
-    ////////////////////////////////// Various checks ends here//////////////////////////////
+    ////////////////////////////////// Various checks end here//////////////////////////////
     
  
     
-startTask(files);
+    startTask(files);
     
-showResult();
+    showResult();
     
 
    return 0;
