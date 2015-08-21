@@ -21,17 +21,17 @@
 
 ###`3.0.0`: <span class="light-quote">Fri Aug 21 12:33:49 BDT 2015</span>
 
-1. Code rewritten in C++
+1. Code rewritten in C++.
 2. Shell independent.
-3. Portable
+3. Portable.
 4. Supports all characters allowed in file/directory name according to POSIX specs.
 5. Regex syntax changed to ECMAScript Regex.
-6. `-rs` option added
-7. `-iff` option added
-8. `-ifp` option added
-9. `-inc` option added
-10. `-linc` option added
-11. renamed `-li` to `-lv` and `-eli` to `-elv`
-12. `-shop` and `-sim` option added
-13. New name string rule: `/la/` added
+6. `-rs` option added.
+7. `-iff` option added.
+8. `-ifp` option added.
+9. `-inc` option added.
+10. `-linc` option added.
+11. renamed `-li` to `-lv` and `-eli` to `-elv`.
+12. `-shop` and `-sim` option added.
+13. New name string rule: `/la/` added.
 
