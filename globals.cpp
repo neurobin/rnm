@@ -1,54 +1,5 @@
-
 #include "globals.h"
 
-/// Function prototypes
-template<typename T>
-String toString(T);
-template<typename T>
-T stringTo(String s);
-String toLower(String);
-String prepareLogDir();
-template<typename T>
-String appendToFile(T);
-String printOutLog(String);
-String printErrorLog(String);
-void printOpts(void);
-void startTask(StringArray);
-String replaceStringAll(String, String , String );
-String parseNameString(String,String);
-String regexReplace(String ,String ,String ,String );
-String parseNameString(String ,String );
-void parseReplaceString(String ,String );
-String copyFile(String, String );
-String copyFile2(String src,String dst);
-void finalizeRFL();
-bool undoRename();
-String Rename(String,String);
-String printWarningLog(String str);
-bool isPathValid(String file);
-String appendToRFLTMP(String str1,String str2);
-void showResult(void);
-void parseSearchString(String ss);
-String basename(String file);
-String dirname(String file);
-String fileNameWithoutExtension(String filename);
-String fileExtension(String filename);
-void checkArgAvailability(StringArray sa,int i);
-template<typename T>
-void mustBeAPositiveNumber(String name,String extra,T x);
-template<typename T>
-void mustBeAnInteger(String name,T x);
-template<typename T>
-void mustBeAPositiveInteger(String name,T x);
-template<typename T>
-void mustBeAValidSingleCharacter(String name,T x);
-template<typename T>
-void mustBeANumber(String name,T x);
-bool isFile(String file);
-NameList getNameListFromFile(String filename,int si,int ei,int mod);
-
-
-StringArray files;
 
 bool undoRename(){
     FileStream file_l,file_r;
@@ -63,8 +14,7 @@ bool undoRename(){
     file_l.close();file_r.close();
     for(int i=0;i<(int)left.size();i++){
         ///do rename and log into rfl
-        if(!quiet){print NEW_LINE+right[i]+"    ---->    "+left[i]+NEW_LINE;}
-        Rename(right[i],left[i]);
+        
         }
     
     return true;
@@ -87,7 +37,7 @@ void checkArgAvailability(StringArray sa,int i){
 
 bool isInvalidFile(String file){
     bool status=false;
-    StringArray invf={HOME,"/",LOG_DIR_PARENT,LOG_DIR,RNM_FILE_LOG_L,RNM_FILE_LOG_R,RNM_FILE_LOG_L_TMP,RNM_FILE_LOG_R_TMP,self_path,\
+    StringArray invf={HOME,"/",LOG_DIR_PARENT,LOG_DIR,RNM_FILE_LOG_L,RNM_FILE_LOG_R,RNM_FILE_LOG_L_TMP,RNM_FILE_LOG_R_TMP,\
         "/bin","/usr","/usr/bin","/tmp","/dev","/etc","/proc","/sys","/home"};
     for(int i=0;i<(int)invf.size();i++){
         if(file==invf[i]){status=true;printWarningLog("rename not permitted: "+invf[i]);}
@@ -161,9 +111,9 @@ String Rename(String oldn,String newn){
                 reverse_index-=inc;
                 directory_index+=inc;
                 directory_reverse_index-=inc;
+                if(name_string_file!=""){current_line+=linc;}
                 rnc++;
         }
-        
         
     }
     return strerror(errno);
@@ -402,10 +352,7 @@ String parseNameString(String ns,String file){
         name=replaceStringAll(name,"/dc/",toString(directory_count));
         
         
-        if(name_string_file!=""){
-            name=replaceStringAll(name,"/l/",toStringAccordingToIFL((Double)current_line,input_field_length));
-            name=replaceStringAll(name,"/la/",toStringAccordingToIFL((Double)current_abs_line,input_field_length));
-        }
+        if(name_string_file!=""){name=replaceStringAll(name,"/l/",toStringAccordingToIFL((Double)current_line,input_field_length));}
         
         
         }
@@ -711,44 +658,6 @@ void mustBeAnInteger(String name,T x){
 }
 
 
-NameList getNameListFromFile(String filename,Int si,Int ei,int mod=1){
-    NameList list;
-    String line;
-    Int lc=0,abslc=0;
-    Int start=si,end=ei;
-    if(si>ei && ei!=0){start=ei;end=si;}
-    else if(ei==0 && !reverse_line ){start=si;end=INT_MAX;}
-    else if(ei==0 && reverse_line){start=1;end=si;}
-    char delim='\n';
-    if(mod==0){delim='\0';}
-    FileStream file;
-    if(mod==1){file.open(filename,$read);}
-    else {file.open(filename,$binary | $read);}
-    if(!file.good()){print "Error";Exit(1);}
-    Int tmplinc=linc;
-    while(getLineFromFile(file,line,delim) && lc<end){
-        abslc++;
-        if ( line.size() && line[line.size()-1] == '\r' ) {
-           line = line.substr( 0, line.size() - 1 );
-            }
-        if(line=="" || line == toString('\0')){
-            continue;}
-        lc++;
-        tmplinc--;
-        //print ""<<lc<<line+NEW_LINE;
-        if(lc>=start && lc<=end && tmplinc<=0){
-            list[lc]=line;abslc_list[lc]=abslc;
-            tmplinc=linc;
-            print lc<<list[lc]+NEW_LINE;
-        }
-        
-    }
-    file.close();
-    
-    return list;
-}
-
-
 
 bool doRename(String file){
     bool not_skipped=true;
@@ -773,31 +682,13 @@ bool doRename(String file){
         
         }
     else if(name_string=="" && name_string_file!=""){
-        print current_line<<"\t"<<nsflist[current_line]<<"\t"<<line_upward<<NEW_LINE;
-        if(nsflist[current_line]!=""){
-            
-            name=parseNameString(nsflist[current_line],file);
-            current_abs_line=abslc_list[current_line];
         
-        
-            print line_upward<<reverse_line<<NEW_LINE;
-            if(!reverse_line){current_line+=linc;}
-            else{current_line-=linc;}
         
         }
-    }
     else if(name_string!="" && name_string_file!=""){
-        if(nsflist[current_line]!=""){
-            
-            name=parseNameString(name_string,nsflist[current_line]);
-            current_abs_line=abslc_list[current_line];
         
-            print line_upward<<reverse_line<<NEW_LINE;
-            if(!reverse_line){current_line+=linc;}
-            else{current_line-=linc;}
         
         }
-    }
     else if(replace_string!=""){name=rname;}
         
     else {printErrorLog("One of the options: -ns or -nsf or -rs is mandatory");Exit(1);}
@@ -816,7 +707,7 @@ bool doRename(String file){
         if(!quiet){
             //String out=file+"    ---->    "+dir+path_delim+name;
             
-            print NEW_LINE+file+"    ---->    "+dir+path_delim+name+NEW_LINE;
+            print file+"    ---->    "+dir+path_delim+name+NEW_LINE;
             
         }
         ///do rename
@@ -858,25 +749,8 @@ bool doRename(String file){
     }
     
     
-    
-    //print current_line<<"\t"<<end_line<<"\t"<<line_upward;
-  if(name_string_file!=""){
-    if(current_line<=0){showResult();Exit(1);}
-      
-    if(line_upward && end_line!=0){
-        if(current_line>end_line){printOutLog("End line reached.");showResult();Exit(1);}
-    }
-    else if(end_line==0){
-        if(current_index_rd>=nsflist.size()){printWarningLog("Name string file ran out of names.");showResult();Exit(1);}
-        
-        }
-    else{
-        if(current_line<end_line){printOutLog("End line reached");
-            showResult();
-            Exit(1);
-        }
-    }
-  }
+    if(current_index==end_index){printOutLog("End index reached");Exit(1);}
+    if(current_line==end_line){printOutLog("End line reached");Exit(1);}
     
     return not_skipped;
 }
@@ -914,7 +788,7 @@ void startInDepthFileOnlyTaskOnDirectory(String dir,String base_dir=base_dir){
     directory_reverse_index=DIRECTORY_REVERSE_INDEX;
     directory_reverse_index_rd=DIRECTORY_REVERSE_INDEX;
     for(int i=0;i<(int)files.size();i++){
-        if(directory_index>end_index){continue;}
+        
         String file=files[i];
         
         //print file+NEW_LINE;
@@ -998,7 +872,7 @@ void startTask(StringArray files){
     directory_reverse_index=DIRECTORY_REVERSE_INDEX;
     directory_reverse_index_rd=DIRECTORY_REVERSE_INDEX;
     for(int i=0;i<(int)files.size();i++){
-        if(directory_index>end_index){continue;}
+        
         String file=files[i];
         String parent="";
         String src_name="";
@@ -1073,12 +947,6 @@ String parseTrueFalse(bool a){
     else return "false";
 }
 
-void detectLineUpwardOrDownward(){
-    if(start_line<=end_line || end_line==0){line_upward=true;}
-    else{line_upward=false;reverse_line=true;}
-    if(reverse_line){current_line=(start_line>end_line)?start_line:end_line;}
-    }
-
 
 void printOpts(){
     
@@ -1118,294 +986,3 @@ void showResult(){
     if(show_options || simulation){printOpts();}
     
 }
-
-
-
-
-int main(int argc, char* argv[]) {getCurrentDir(self_dir);self_path=self_dir+String("/")+executable_name;
-    prepareLogDir();
-    
-    
-
-    
-//////////////////////////////// Opt parse////////////////////////////////////////////
-    bool skipcount=false;
-    StringArray args;
-    for(int i = 1; i < argc; i++){args.push_back(argv[i]);}
-    
-    
-    for(int i = 0; i < (int)args.size(); i++){
-      if(skipcount){skipcount=false;continue;}
-        
-      String opt=toLower(String(args[i]));
-      
-      if(opt=="-h"||opt=="--help"){
-          printe help_message;
-          return 0;
-        }
-      else if(opt=="-v"||opt=="--version"){
-          printe version_info;
-          return 0;
-        }
-        
-      else if(opt=="-q"||opt=="--quiet"){
-          quiet=true;
-          
-        }
-      
-      else if(opt=="-fo"||opt=="--file-only"){
-          file_only=true;
-          
-        }
-      
-      else if(opt=="-do"||opt=="--directory-only"){
-          directory_only=true;
-          
-        }
-        
-      else if(opt=="-ed"||opt=="--exclude-directory"){
-          exclude_directory=true;
-          
-        }
-        
-      else if(opt=="-inc"||opt=="--increment-value"){
-          checkArgAvailability(args,i+1);
-          mustBeAPositiveNumber("Increment Value","\nNegative increment i.e decrement will be available using name string rule:\n\
-/-i/, /-ir/, /-id/ etc..\n",args[i+1]);
-          inc=stringTo<decltype(inc)>(args[i+1]);
-          skipcount=true;
-        }
-        
-      else if(opt=="-linc"||opt=="--line-increment-value"){
-          checkArgAvailability(args,i+1);
-          mustBeAPositiveInteger("Line Increment Value",args[i+1]);
-          linc=stringTo<decltype(linc)>(args[i+1]);
-          skipcount=true;
-        }
-        
-        
-      else if(opt=="-i"||opt=="-si"||opt=="--index"||opt=="--start-index"){
-          checkArgAvailability(args,i+1);
-          mustBeANumber("Start Index",args[i+1]);
-          start_index=stringTo<decltype(start_index)>(args[i+1]);
-          current_index=start_index;
-          current_index_rd=start_index;
-          reverse_index=start_index;
-          reverse_index_rd=start_index;
-          DIRECTORY_INDEX=start_index;
-          directory_index=DIRECTORY_INDEX;
-          directory_reverse_index=directory_index;
-          DIRECTORY_REVERSE_INDEX=directory_reverse_index;
-          skipcount=true;
-        }
-        
-      else if(opt=="-ei"||opt=="--end-index"){
-          checkArgAvailability(args,i+1);
-          mustBeANumber("End Index",args[i+1]);
-          end_index=stringTo<decltype(end_index)>(args[i+1]);
-          skipcount=true;
-          
-        }
-        
-      else if(opt=="-ifl"||opt=="--index-field-length"){
-          checkArgAvailability(args,i+1);
-          mustBeAPositiveInteger("Index field length",args[i+1]);
-          input_field_length=stringTo<decltype(input_field_length)>(args[i+1]);
-          skipcount=true;
-          
-        }
-        
-      else if(opt=="-ifp"||opt=="--index-field-precision"){
-          checkArgAvailability(args,i+1);
-          mustBeAPositiveInteger("Index field precision",args[i+1]);
-          IFP=stringTo<decltype(IFP)>(args[i+1]);
-          skipcount=true;
-          
-        }
-        
-      else if(opt=="-iff"||opt=="--index-field-filler"){
-          checkArgAvailability(args,i+1);
-          mustBeAValidSingleCharacter("Index field filler",args[i+1]);
-          IFF=stringTo<decltype(IFF)>(args[i+1]);
-          IFF=replaceStringAll(IFF,"\\","");
-          skipcount=true;
-          
-        }
-      
-      else if(opt=="-ns"||opt=="--name-string"){
-          checkArgAvailability(args,i+1);
-          name_string=args[i+1];
-          skipcount=true;
-          
-        }
-        
-      else if(opt=="-nsf"||opt=="--name-string-file"){
-          checkArgAvailability(args,i+1);
-          name_string_file=args[i+1];
-          skipcount=true;
-          
-        }
-        
-      else if(opt=="-l"||opt=="-sl"||opt=="--line"||opt=="--start-line"){
-          checkArgAvailability(args,i+1);
-          mustBeAPositiveInteger("Start Line",args[i+1]);
-          start_line=stringTo<decltype(start_line)>(args[i+1]);
-          current_line=start_line;
-          skipcount=true;
-          
-        }
-        
-      else if(opt=="-lv"||opt=="-slv"||opt=="--line-reverse"||opt=="--start-line-reverse"){
-          checkArgAvailability(args,i+1);
-          mustBeAPositiveInteger("Start Line",args[i+1]);
-          start_line=stringTo<decltype(start_line)>(args[i+1]);
-          current_line=start_line;
-          skipcount=true;
-          reverse_line=true;
-          
-        }
-        
-      else if(opt=="-el"||opt=="--end-line"){
-          checkArgAvailability(args,i+1);
-          mustBeAPositiveInteger("End Line",args[i+1]);
-          end_line=stringTo<decltype(end_line)>(args[i+1]);
-          skipcount=true;
-          
-        }
-      
-      else if(opt=="-elv"||opt=="--end-line-reverse"){
-          checkArgAvailability(args,i+1);
-          mustBeAPositiveInteger("End Line",args[i+1]);
-          end_line=stringTo<decltype(end_line)>(args[i+1]);
-          skipcount=true;
-          reverse_line=true;
-          
-        }
-        
-      else if(opt=="-ss"||opt=="--search-string"){
-          checkArgAvailability(args,i+1);
-          search_string=args[i+1];
-          skipcount=true;
-          
-        }
-        
-      else if(opt=="-rs"||opt=="--replace-string"){
-          checkArgAvailability(args,i+1);
-          replace_string=args[i+1];
-          skipcount=true;
-          
-        }
-        
-        
-      else if(opt=="-ssf"||opt=="--search-string-fixed"){
-          checkArgAvailability(args,i+1);
-          search_string=args[i+1];
-          fixed_ss=true;
-          skipcount=true;
-          
-        }
-        
-      else if(opt=="-dp"||opt=="--depth"){
-          checkArgAvailability(args,i+1);
-          mustBeAnInteger("Depth",args[i+1]);
-          depth=stringTo<decltype(depth)>(args[i+1]);
-          if(depth<0){depth=std::numeric_limits<Int>::max();}
-          skipcount=true;
-          
-        }
-        
-      else if(opt=="-y"||opt=="--yes"){
-          all_yes=true;
-          
-        }
-        
-        
-      else if(opt=="-shop"||opt=="--show-options"){
-          show_options=true;
-          
-        }
-        
-      else if(opt=="-f"||opt=="--force"){
-          force=true;
-          
-        }
-        
-      else if(opt=="-u"||opt=="--undo"){
-          undo=true;
-          
-        }
-        
-      else if(opt=="-sim"||opt=="--simulation"){
-          simulation=true;
-          
-        }
-        
-        else {
-            files.push_back(String(args[i]));
-            
-            
-        }
-
-      
-      
-    }
-    file_vector=files;
-//////////////////////////////////////// Opt parse ends here/////////////////////////////////
-
-if(undo){undoRename();showResult();Exit(0);}
-
-    
-    
-    /////////////////////////////////// Various checks///////////////////////////////////////
-    
-    if(files.size()<=0){printErrorLog("No file or directory specified");Exit(1);}
-    if(simulation){quiet=false;show_options=true;}
-    
-    if(name_string=="" && name_string_file=="" && replace_string==""){
-        printErrorLog("One of the options: -ns or -nsf or -rs is mandatory");
-        Exit(1);
-        }
-    if(search_string!="" && !fixed_ss){
-        Regex re("^/[^/]*/i?$");
-        if(!regexMatch(search_string,re)){
-            printErrorLog("Invalid search string");
-            Exit(1);
-            }
-        parseSearchString(search_string);
-        }
-    
-    
-    if(replace_string!=""){
-        Regex re("^/.*/.*/[gi]{0,2}$");
-        if(!regexMatch(replace_string,re)){
-            printErrorLog("Invalid replace string");
-            Exit(1);
-            }
-        }
-    
-    if(name_string_file!=""){
-        if(!isFile(name_string_file)){
-            printErrorLog("Name String File not found: "+name_string_file);
-            Exit(1);
-        }
-        detectLineUpwardOrDownward();
-        if(!quiet){print "Reading name string file..."+NEW_LINE;}
-        nsflist=getNameListFromFile(name_string_file,start_line,end_line);
-    
-    }
-
-    
-    ////////////////////////////////// Various checks ends here//////////////////////////////
-    
- 
-    
-startTask(files);
-    
-showResult();
-    
-
-   return 0;
-} 
-
-
-

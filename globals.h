@@ -24,6 +24,7 @@
 #include <regex>
 #include <cstddef> 
 #include <dirent.h>
+#include <map>
 
 
 
@@ -34,11 +35,14 @@ typedef std::string String;
 typedef std::stringstream Stream;
 typedef std::vector<String> StringArray;
 typedef std::regex Regex;
+typedef std::map<Int,String> NameList;
+typedef std::map<Int,Int> IntMap;
 
 
 /////defs
 #define Exit(a) std::exit((a))
 #define getLine(s) std::getline(std::cin,(s))
+#define getLineFromFile(f,line,delim) std::getline((f),(line),(delim))
 #define regexMatch(s,e) std::regex_match((s),(e))
 #define getCurrentDir(a) getcwd((a), sizeof((a)))
 #define RegexResult std::smatch
@@ -49,11 +53,10 @@ typedef std::regex Regex;
 
 #define print std::cout<<
 #define printe std::cerr<<
-#define NEW_LINE <<std::endl
 #define ENDL std::endl
 #define input std::cin>>
 #define LIMIT_OF_DOUBLE std::numeric_limits<Double>::max();
-#define LIMIT_OF_LONG_LONG std::numeric_limits<Int>::max();
+#define INT_MAX std::numeric_limits<Int>::max();
 #define FileStream std::fstream
 #define $ios std::ios
 #define $append std::ios::app
@@ -81,6 +84,9 @@ bool reverse_line=false;
 bool undo=false;
 bool fixed_ss=false;
 bool show_options=false;
+bool simulation=true;
+bool line_upward=true;
+bool ign=false;
 
 
 /////Doubles
@@ -88,8 +94,8 @@ Double start_index=1;
 Double current_index=1;
 Double current_index_rd=1;
 Double reverse_start_index=-1;
-Double reverse_index=-1;
-Double reverse_index_rd=-1;
+Double reverse_index=reverse_start_index;
+Double reverse_index_rd=reverse_start_index;
 Double end_index=LIMIT_OF_DOUBLE;
 Double inc=1;
 Double directory_index=1;
@@ -100,24 +106,43 @@ Double DIRECTORY_INDEX=directory_index;
 Double DIRECTORY_REVERSE_INDEX=directory_reverse_index;
 
 /////ints
+
+Int linc=1;
 Int start_line=1;
 Int current_line=start_line;
-Int end_line=LIMIT_OF_LONG_LONG;
+Int current_abs_line=start_line;
+Int end_line=0;
 Int directory_count=0;
-Int depth=1;
-const Int DEPTH_COUNT_INITIAL=0;
-Int depth_count=DEPTH_COUNT_INITIAL;
+Int depth=0;
+Int LOWEST_DEPTH=0;
 int input_field_length=1;
 Int rnc=0; //rename count
+IntMap abslc_list;
 
+//////// nsf related
+NameList nsflist;
 
 
 //////// IFL related
 String IFF="0"; //input field filler
 int IFP=2;    //input field precision
-
-
+String blank_str="";
+String NEW_LINE="\n";
 /////Strings
+String path_delim="/";
+////getting Linux Home and defining some paths
+String getLinuxHome(){const char *homedir;if ((homedir = getenv("HOME")) == NULL) {homedir = getpwuid(getuid())->pw_dir;}return String(homedir);}
+String HOME=getLinuxHome();
+String LOG_DIR_PARENT=HOME+path_delim+".neuro";
+String LOG_DIR=LOG_DIR_PARENT+path_delim+"rnm";
+String ERROR_LOG=LOG_DIR+path_delim+"errors.log";
+String OUT_LOG=LOG_DIR+path_delim+"out.log";
+String RNM_FILE_LOG_L=LOG_DIR+path_delim+"rfl.l.log";
+String RNM_FILE_LOG_R=LOG_DIR+path_delim+"rfl.r.log";
+String RNM_FILE_LOG_L_TMP=RNM_FILE_LOG_L+".tmp";
+String RNM_FILE_LOG_R_TMP=RNM_FILE_LOG_R+".tmp";
+
+
 StringArray file_vector;
 char self_dir[FILENAME_MAX];
 String base_dir="";
@@ -126,11 +151,12 @@ String search_string="";
 String replace_string="";
 String name_string="";
 String name_string_file="";
-String name="";
 String rname="";
 String rs_search="";
 String rs_replace="";
 String rs_mod="";
+String ss_search="";
+String ss_mod="";
 
 
 String project_name="rnm";
