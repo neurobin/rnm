@@ -37,7 +37,7 @@ rnm Directory/File/Path [options]
 
 One of the options of `-ns` or `-nsf` or `-rs` is mandatory. Options are **not** sequential, their position in the argument list have no siginificance. For example, `rnm filepath -ns name` is the same as `rnm -ns name filepath`. Though passing the *Directory/File* path at the end of the arguement list is considered to be safe and wise.
 
-Options are case insensitive, i.e `-ssF` and `-ssf` is the same.
+Options are case insensitive, i.e `-ssF` and `-ssf` are the same.
 
 ##Options:
 
@@ -60,11 +60,11 @@ Options are case insensitive, i.e `-ssF` and `-ssf` is the same.
                        available through name string rule: `/-i/`, `/-id/` etc..
 
 `--line-increment-value`,
-`-linc`              : The amount line count will be incremented in each iteration.
+`-linc`              : The amount line count will be incremented or decremented in each iteration.
                        This is always a positive integer.
 
        
-`-ifl`               : Index field length. not occupied field will be
+`-ifl`               : Index field length. Non occupied field will be
                        filled with index field fillers (set with `-iff`). iff is set to the character `0` by default.
        
 `--index-field-filler`,
@@ -73,7 +73,7 @@ Options are case insensitive, i.e `-ssF` and `-ssf` is the same.
 
 `--index-field-precision`,
 `-ifp`               : Index is a floating point decimal value. This sets the precision
-                       i.e the number of digits should be taken after the decimal point.
+                       i.e the number of digits that should be taken after the decimal point.
 
 `--name-string`,
 `-ns`                : Name string.
@@ -84,8 +84,8 @@ Options are case insensitive, i.e `-ssF` and `-ssf` is the same.
                        try to take the file from history.
        
 `--name-string-file-null-terminated`,
-`-nsfn`              : Name String file. This takes a null terminated file (filenames are null terminated). Null terminated
-                       files are good way to store filenames.
+`-nsfn`              : Name String file. This takes a null terminated *Name String* file, i.e
+                 filenames are terminated by null character (`\0`) instead of new line (`\n`).
 
 `--line`, `--start-line`,
 `-l`, `-sl`          : Start Line number in name string file.
@@ -103,7 +103,7 @@ Options are case insensitive, i.e `-ssF` and `-ssf` is the same.
 `--search-string`,
 `-ss`                : Search string
                        String that will be used to search for files with matching names.
-                       Regex is allowed (<a href="http://www.cplusplus.com/reference/regex/ECMAScript/">ECMAScript</a> regex).
+                       This is generally regex  (<a href="http://www.cplusplus.com/reference/regex/ECMAScript/">ECMAScript regex</a>) if not pass with `-ssf` option.
      
 `--search-string-fixed`,
 `-ssf`               : Fixed search string (not treated as regex).
@@ -147,7 +147,7 @@ Options are case insensitive, i.e `-ssF` and `-ssf` is the same.
 **Reverse Index     :** Decrementing index.
                 
 **Name String       :** A string, that is parsed to create names for new files. It can be fixed name which then can be modified for different files at runtime.
-                    Name sting is parsed by the following rules (must be wrapped around with forward slash `/`):
+                    Name sting is parsed by the following rules (must be wrapped around with filepath delimiter `/`):
                     
 1. `/i/` in name string will be replaced with index.
 2. `/ir/` in name string will be replaced with reserved index.

@@ -87,8 +87,10 @@ void checkArgAvailability(StringArray sa,int i){
 
 bool isInvalidFile(String file){
     bool status=false;
-    StringArray invf={HOME,path_delim,LOG_DIR_PARENT,LOG_DIR,RNM_FILE_LOG_L,RNM_FILE_LOG_R,RNM_FILE_LOG_L_TMP,RNM_FILE_LOG_R_TMP,self_path,\
-        "/bin","/usr","/usr/bin","/tmp","/dev","/etc","/proc","/sys","/home"};
+    StringArray invf={HOME,path_delim,LOG_DIR_PARENT,LOG_DIR,RNM_FILE_LOG_L,RNM_FILE_LOG_R,\
+        RNM_FILE_LOG_L_TMP,RNM_FILE_LOG_R_TMP,self_path,\
+        path_delim+"bin",path_delim+"usr",path_delim+"usr"+path_delim+"bin",path_delim+"tmp",\
+        path_delim+"dev",path_delim+"etc",path_delim+"proc",path_delim+"sys",path_delim+"home"};
     for(int i=0;i<(int)invf.size();i++){
         if(file==invf[i]){status=true;printWarningLog("rename not permitted: "+invf[i]);}
     }
@@ -306,14 +308,14 @@ void parseReplaceString(String rs,String file){
     String name=parseNameString( rs, file);
     ///bool re_g=false,re_i=false;
     ///std::regex_constants::format_first_only
-    Regex re ("^/[^/]*/[^/]*/[gi]{0,2}$");
+    Regex re ("^"+path_delim+"[^"+path_delim+"]*"+path_delim+"[^"+path_delim+"]*"+path_delim+"[gi]{0,2}$");
     RegexResult result;
     if(name!="" && regexMatch(name,re)){
-        re ="^/([^/]*)/[^/]*/[gi]{0,2}$";
+        re ="^"+path_delim+"([^"+path_delim+"]*)"+path_delim+"[^"+path_delim+"]*"+path_delim+"[gi]{0,2}$";
         if(std::regex_match(name,result,re)){rs_search=result[1];}
-        re ="^/[^/]*/([^/]*)/[gi]{0,2}$";
+        re ="^"+path_delim+"[^"+path_delim+"]*"+path_delim+"([^"+path_delim+"]*)"+path_delim+"[gi]{0,2}$";
         if(std::regex_match(name,result,re)){rs_replace=result[1];rs_replace=processReplacementString(rs_replace);}
-        re ="^/[^/]*/[^/]*/([gi]{0,2})$";
+        re ="^"+path_delim+"[^"+path_delim+"]*"+path_delim+"[^"+path_delim+"]*"+path_delim+"([gi]{0,2})$";
         if(std::regex_match(name,result,re)){rs_mod=result[1];}
         
         
@@ -328,12 +330,12 @@ void parseReplaceString(String rs,String file){
 
 void parseSearchString(String ss){
   if(!fixed_ss){
-    Regex re("^/[^"+path_delim+"]*/i?$");
+    Regex re("^"+path_delim+"[^"+path_delim+"]*"+path_delim+"i?$");
     RegexResult result;
     if(regexMatch(ss,re)){
-        re="^/([^"+path_delim+"]*)/i?$";
+        re="^"+path_delim+"([^"+path_delim+"]*)"+path_delim+"i?$";
         if(std::regex_match(ss,result,re)){ss_search=result[1];}
-        re="^/[^"+path_delim+"]*/(i?)$";
+        re="^"+path_delim+"[^"+path_delim+"]*"+path_delim+"(i?)$";
         if(std::regex_match(ss,result,re)){ss_mod=result[1];}
     }
     else{
@@ -386,24 +388,24 @@ String parseNameString(String ns,String file){
     String fnamewe=fileNameWithoutExtension(fname);
     String ext=fileExtension(fname);
     if(ns!=""){
-        name=replaceStringAll(name,"/fn/",fname);
-        name=replaceStringAll(name,"/n/",fnamewe);
-        name=replaceStringAll(name,"/e/",ext);
-        name=replaceStringAll(name,"/rn/",rname);
-        name=replaceStringAll(name,"/i/",toStringAccordingToIFL(current_index,input_field_length));
-        name=replaceStringAll(name,"/-i/",toStringAccordingToIFL(reverse_index,input_field_length));
-        name=replaceStringAll(name,"/ir/",toStringAccordingToIFL(current_index_rd,input_field_length));
-        name=replaceStringAll(name,"/-ir/",toStringAccordingToIFL(reverse_index_rd,input_field_length));
-        name=replaceStringAll(name,"/id/",toStringAccordingToIFL(directory_index,input_field_length));
-        name=replaceStringAll(name,"/idr/",toStringAccordingToIFL(directory_reverse_index,input_field_length));
-        name=replaceStringAll(name,"/-id/",toStringAccordingToIFL(directory_index_rd,input_field_length));
-        name=replaceStringAll(name,"/-idr/",toStringAccordingToIFL(directory_reverse_index_rd,input_field_length));
-        name=replaceStringAll(name,"/dc/",toString(directory_count));
+        name=replaceStringAll(name,path_delim+"fn"+path_delim,fname);
+        name=replaceStringAll(name,path_delim+"n"+path_delim,fnamewe);
+        name=replaceStringAll(name,path_delim+"e"+path_delim,ext);
+        name=replaceStringAll(name,path_delim+"rn"+path_delim,rname);
+        name=replaceStringAll(name,path_delim+"i"+path_delim,toStringAccordingToIFL(current_index,input_field_length));
+        name=replaceStringAll(name,path_delim+"-i"+path_delim,toStringAccordingToIFL(reverse_index,input_field_length));
+        name=replaceStringAll(name,path_delim+"ir"+path_delim,toStringAccordingToIFL(current_index_rd,input_field_length));
+        name=replaceStringAll(name,path_delim+"-ir"+path_delim,toStringAccordingToIFL(reverse_index_rd,input_field_length));
+        name=replaceStringAll(name,path_delim+"id"+path_delim,toStringAccordingToIFL(directory_index,input_field_length));
+        name=replaceStringAll(name,path_delim+"idr"+path_delim,toStringAccordingToIFL(directory_reverse_index,input_field_length));
+        name=replaceStringAll(name,path_delim+"-id"+path_delim,toStringAccordingToIFL(directory_index_rd,input_field_length));
+        name=replaceStringAll(name,path_delim+"-idr"+path_delim,toStringAccordingToIFL(directory_reverse_index_rd,input_field_length));
+        name=replaceStringAll(name,path_delim+"dc"+path_delim,toString(directory_count));
         
         
         if(name_string_file!=""){
-            name=replaceStringAll(name,"/l/",toStringAccordingToIFL((Double)current_line,input_field_length));
-            name=replaceStringAll(name,"/la/",toStringAccordingToIFL((Double)current_abs_line,input_field_length));
+            name=replaceStringAll(name,path_delim+"l"+path_delim,toStringAccordingToIFL((Double)current_line,input_field_length));
+            name=replaceStringAll(name,path_delim+"la"+path_delim,toStringAccordingToIFL((Double)current_abs_line,input_field_length));
         }
         
         
@@ -626,7 +628,7 @@ Int childDepth(String parent,String child){
         else{
             childstr=replaceString(dirname(child),parent+path_delim,String(""));
         }
-        return countMatchInRegex(childstr,"/?[^/]+/?");
+        return countMatchInRegex(childstr,path_delim+"?[^"+path_delim+"]+"+path_delim+"?");
     }
     else return LOWEST_DEPTH;
     
@@ -1136,7 +1138,7 @@ int main(int argc, char* argv[]) {getCurrentDir(self_dir);self_path=self_dir+Str
       else if(opt=="-inc"||opt=="--increment-value"){
           checkArgAvailability(args,i+1);
           mustBeAPositiveNumber("Increment Value","\nNegative increment i.e decrement will be available using name string rule:\n\
-/-i/, /-ir/, /-id/ etc..\n",args[i+1]);
+"+path_delim+"-i"+path_delim+", "+path_delim+"-ir"+path_delim+", "+path_delim+"-id"+path_delim+" etc..\n",args[i+1]);
           inc=stringTo<decltype(inc)>(args[i+1]);
           skipcount=true;
         }
@@ -1342,7 +1344,7 @@ int main(int argc, char* argv[]) {getCurrentDir(self_dir);self_path=self_dir+Str
         Exit(1);
         }
     if(search_string!="" && !fixed_ss){
-        Regex re("^/[^/]*/i?$");
+        Regex re("^"+path_delim+"[^"+path_delim+"]*"+path_delim+"i?$");
         if(!regexMatch(search_string,re)){
             printErrorLog("Invalid search string");
             Exit(1);
@@ -1352,7 +1354,7 @@ int main(int argc, char* argv[]) {getCurrentDir(self_dir);self_path=self_dir+Str
     
     
     if(replace_string!=""){
-        Regex re("^/.*/.*/[gi]{0,2}$");
+        Regex re("^"+path_delim+".*"+path_delim+".*"+path_delim+"[gi]{0,2}$");
         if(!regexMatch(replace_string,re)){
             printErrorLog("Invalid replace string");
             Exit(1);
@@ -1360,7 +1362,7 @@ int main(int argc, char* argv[]) {getCurrentDir(self_dir);self_path=self_dir+Str
         }
     
     if(name_string_file!=""){
-        if(name_string_file=="/hist/"){
+        if(name_string_file==path_delim+"hist"+path_delim){
             if(isFile(NSF_LIST_FILE)){name_string_file=NSF_LIST_FILE;}
             else{printErrorLog("History no found.");Exit(1);}
         }
