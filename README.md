@@ -53,6 +53,7 @@ Options are case insensitive, i.e `-ssF` and `-ssf` is the same.
                        Note that directory index `/id/` will renew in each directory
                        i.e in each directory rename will be performed from start index
                        to end index.
+                       
 `--increment-value`,
 `-inc`               : Increment value (floating point decimal). The amount, index will be
                        incremented or decremented in each iteration. Decremented index is
@@ -161,7 +162,6 @@ Options are case insensitive, i.e `-ssF` and `-ssf` is the same.
 11. `/-i/` in name string will be replaced with inverse index.
 12. `/-ir/` in name string will be replaced with inverse reserved index. In general, `-` in the above replacement rules (applies to indexes excluding `/l/`, `/la/` and `/dc/`) will mean inverse index conforming to their meaning.
 
-**Inverse Index     :** Decrementing index.
 
 **Name String File  :** A file which contains a list of name string (one per line).
                     Empty lines will be ignored and line number won't be counted.
@@ -194,23 +194,21 @@ Options are case insensitive, i.e `-ssF` and `-ssf` is the same.
                     with these back-references.
                     3. `\p` is the prefix (i.e., the part of the target sequence that precedes the match)
                     4. `\s` is the suffix (i.e., the part of the target sequence that follows the match).
-                    to insert a `&` literally, use `\&` and for `\` use `\\`.
+                    to insert a `&` literally, use `\&` and for `\` use `\\`.Two modifiers are avalilable: g and i.
+                    g stands for global and replaces every instances of match found.
+                    i stands case insensitive search (default is case sensitive).*Replace String* is always performed on old file name.
                     
                     Example: '/video/Episode /i//gi' will replace every instances
                     of 'video' with 'Episode index' i.e you will get new rname as:.
                     Episode 1..., Episode 2..., etc...
                     
-                    Two modifiers are avalilable: g and i.
-                    g stands for global and replaces every instances of match found.
-                    i stands case insensitive search (default is case sensitive).
-                    
-                    *Replace String* is always performed on old file name.
+
                     
 **Regex             :** Supported regex follows the ECMAScript regex syntax. Visit:
                     <a href="http://www.cplusplus.com/reference/regex/ECMAScript/">ECMAScript Regex</a>
                     for more info.
                     
-    Only invalid characters for a file or directory name is the path delimiter and the null character (`\0`).
+Only invalid characters for a file or directory name is the path delimiter and the null character (`\0`).
         
 ###Example:
 
