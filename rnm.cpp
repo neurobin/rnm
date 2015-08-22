@@ -305,11 +305,12 @@ void processReplaceString(String rs,String file){
     
 
 void parseReplaceString(String rs,String file){
-    String name=parseNameString( rs, file);
+    String name=rs;
     ///bool re_g=false,re_i=false;
     ///std::regex_constants::format_first_only
     Regex re ("^"+path_delim+"[^"+path_delim+"]*"+path_delim+"[^"+path_delim+"]*"+path_delim+"[gi]{0,2}$");
     RegexResult result;
+    if(!regexMatch(name,re)){name=parseNameString( rs, file);}
     if(name!="" && regexMatch(name,re)){
         re ="^"+path_delim+"([^"+path_delim+"]*)"+path_delim+"[^"+path_delim+"]*"+path_delim+"[gi]{0,2}$";
         if(std::regex_match(name,result,re)){rs_search=result[1];}
