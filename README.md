@@ -1,8 +1,9 @@
+<div id="description"></div>
 # rnm
 Bulk Rename Utility for GNU/Linux written in `C++`. Files and directories can be passed as command line arguments to rename them in bulk according to some naming scheme (*Name String*). It uses `C++` regex (<a href="http://www.cplusplus.com/reference/regex/ECMAScript/">ECMAScript regex</a>) to provide search (and replace) functionality. It provides an undo functionality too to move back an unwanted rename operation. 
 
 
-
+<div id="features"></div>
 #Features:
 
 1. Both directories and files can be renamed.
@@ -16,19 +17,20 @@ Bulk Rename Utility for GNU/Linux written in `C++`. Files and directories can be
 9. Null terminated file can be taken as Name String File.
 
 
-
+<div id="install"></div>
 #Install:
 
 1. Give the <span class="quote">install</span> file execution permission and
 2. Run it or just drag and dropt it on terminal and hit <kbd>Enter</kbd> (requires root privilege).
 
-
+<div id="un-install"></div>
 #Uninstall:
 To uninstall, run:
 ```
 sudo rm /usr/bin/rnm
 ```
 
+<div id="usage"></div>
 #Usage:
 
 ```
@@ -39,6 +41,7 @@ One of the options of `-ns` or `-nsf` or `-rs` is mandatory. Options are **not**
 
 Options are case insensitive, i.e `-ssF` and `-ssf` are the same.
 
+<div id="options"></div>
 ##Options:
 
 `-h`, `--help`       : Show help menu.
@@ -137,6 +140,7 @@ Options are case insensitive, i.e `-ssF` and `-ssf` are the same.
 
 `-q`                 : Quiet operation.
 
+<div id="technical-terms"></div>
 ##Technical Terms:
 
 **Reserved Index    :** Index will be incremented even if 
@@ -209,7 +213,8 @@ i stands case insensitive search (default is case sensitive).*Replace String* is
                     for more info.
                     
 Only invalid characters for a file or directory name is the path delimiter and the null character (`\0`).
-        
+
+<div id="examples"></div>
 ###Example:
 
 ```
@@ -224,7 +229,7 @@ rnm -nsf filepath
 etc...
 ```
 
-
+<div id="things-to-care"></div>
 #Things to care:
 
 
