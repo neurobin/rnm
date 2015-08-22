@@ -1,6 +1,6 @@
 <div id="description"></div>
 # rnm
-Bulk Rename Utility for GNU/Linux written in `C++`. Files and directories can be passed as command line arguments to rename them in bulk according to some naming scheme (*Name String*). It uses `C++` regex (<a href="http://www.cplusplus.com/reference/regex/ECMAScript/">ECMAScript regex</a>) to provide search (and replace) functionality. It provides an undo functionality too to move back an unwanted rename operation. 
+Bulk Rename Utility for GNU/Linux written in `C++`. Files and directories can be passed as command line arguments to rename them in bulk according to some naming scheme (*Name String*). If any file or directory path is not passed as command line arguement, it will wait for user to type the path i.e it will take the path from standard input `(>=version 3.0.1)`. It uses `C++` regex (<a href="http://www.cplusplus.com/reference/regex/ECMAScript/">ECMAScript regex</a>) to provide search (and replace) functionality. It provides an undo functionality too to move back an unwanted rename operation. You can also run a simulation instead of antual rename to view the potential outcome as program output on terminal with the `-sim` option.
 
 
 <div id="features"></div>
@@ -139,6 +139,15 @@ Options are case insensitive, i.e `-ssF` and `-ssf` are the same.
 `-v`                 : Version info.
 
 `-q`                 : Quiet operation.
+
+`--show-options`,
+`-shop`              : This shows an info about the various options passed as arguments
+                       and how they are being treated behind the scene.
+                 
+`--simulation`,
+`-sim`               : This runs a simulation of rename instead of actual rename operation,
+                       and prints all kinds of available outputs. `-q` option won't have any
+                       effect if this option is passed.
 
 <div id="technical-terms"></div>
 ##Technical Terms:

@@ -139,7 +139,7 @@ String Rename(String oldn,String newn){
     
     if(isPathValid(newn)){
         if(!quiet){
-            printErrorLog("File/Directory exists: "+newn);
+            printErrorLog("A file or directory with new name exists: "+newn);
             
         }
     }
@@ -1063,7 +1063,6 @@ void printOpts(){
     Depth: "+toString(depth)+"\n\
     Input Field Length: "+toString(index_field_length)+"\n\
     Undo: "+parseTrueFalse(undo)+"\n\
-    Force: "+parseTrueFalse(force)+"\n\
     Start Index: "+toString(start_index)+"\n\
     End Index: "+toString(end_index)+"\n\
     Start Line: "+toString(start_line)+"\n\
@@ -1074,6 +1073,7 @@ void printOpts(){
     Directory Only: "+parseTrueFalse(directory_only)+"\n\
     Exclude Directory: "+parseTrueFalse(exclude_directory)+"\n\
     Increment Value: "+toString(inc)+"\n\
+    Line Increment Value: "+toString(linc)+"\n\
     Simulation: "+parseTrueFalse(simulation)+"\n\n\
 ";
     
@@ -1337,7 +1337,10 @@ int main(int argc, char* argv[]) {getCurrentDir(self_dir);self_path=self_dir+Str
     
     /////////////////////////////////// Various checks///////////////////////////////////////
     
-    if(files.size()<=0){printErrorLog("No file or directory specified");Exit(1);}
+    if(files.size()<=0){String filename_from_stdin;std::getline(std::cin,filename_from_stdin,'\0');
+        files.push_back(filename_from_stdin);
+        //printErrorLog("No file or directory specified");Exit(1);
+        }
     if(simulation){quiet=false;show_options=true;}
     
     if(name_string=="" && name_string_file=="" && replace_string==""){

@@ -36,3 +36,7 @@
 13. New name string rule: `/la/` added.
 14. Removed `-f` (force rename) option.
 
+###`3.0.1`: <span class="light-quote">Sat Aug 22 21:28:14 BDT 2015</span>
+
+rnm now can take file or directory name from standard input, i.e if you run rnm without any file or directory path, it will wait for you to type it.
+

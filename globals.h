@@ -163,7 +163,7 @@ String ss_mod="";
 
 String project_name="rnm";
 String executable_name="rnm";
-String version="3.0.0";
+String version="3.0.1";
 String author_name="Jahidul Hamid";
 String author_email="jahidulhamid@yahoo.com";
 String bug_report_url="http://github.com/neurobin/"+project_name+"/issues";
