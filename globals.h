@@ -116,7 +116,7 @@ Int end_line=0;
 Int directory_count=0;
 Int depth=0;
 Int LOWEST_DEPTH=0;
-int input_field_length=1;
+int index_field_length=1;
 Int rnc=0; //rename count
 IntMap abslc_list;
 

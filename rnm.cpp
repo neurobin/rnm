@@ -393,20 +393,20 @@ String parseNameString(String ns,String file){
         name=replaceStringAll(name,path_delim+"n"+path_delim,fnamewe);
         name=replaceStringAll(name,path_delim+"e"+path_delim,ext);
         name=replaceStringAll(name,path_delim+"rn"+path_delim,rname);
-        name=replaceStringAll(name,path_delim+"i"+path_delim,toStringAccordingToIFL(current_index,input_field_length));
-        name=replaceStringAll(name,path_delim+"-i"+path_delim,toStringAccordingToIFL(reverse_index,input_field_length));
-        name=replaceStringAll(name,path_delim+"ir"+path_delim,toStringAccordingToIFL(current_index_rd,input_field_length));
-        name=replaceStringAll(name,path_delim+"-ir"+path_delim,toStringAccordingToIFL(reverse_index_rd,input_field_length));
-        name=replaceStringAll(name,path_delim+"id"+path_delim,toStringAccordingToIFL(directory_index,input_field_length));
-        name=replaceStringAll(name,path_delim+"idr"+path_delim,toStringAccordingToIFL(directory_reverse_index,input_field_length));
-        name=replaceStringAll(name,path_delim+"-id"+path_delim,toStringAccordingToIFL(directory_index_rd,input_field_length));
-        name=replaceStringAll(name,path_delim+"-idr"+path_delim,toStringAccordingToIFL(directory_reverse_index_rd,input_field_length));
+        name=replaceStringAll(name,path_delim+"i"+path_delim,toStringAccordingToIFL(current_index,index_field_length));
+        name=replaceStringAll(name,path_delim+"-i"+path_delim,toStringAccordingToIFL(reverse_index,index_field_length));
+        name=replaceStringAll(name,path_delim+"ir"+path_delim,toStringAccordingToIFL(current_index_rd,index_field_length));
+        name=replaceStringAll(name,path_delim+"-ir"+path_delim,toStringAccordingToIFL(reverse_index_rd,index_field_length));
+        name=replaceStringAll(name,path_delim+"id"+path_delim,toStringAccordingToIFL(directory_index,index_field_length));
+        name=replaceStringAll(name,path_delim+"idr"+path_delim,toStringAccordingToIFL(directory_reverse_index,index_field_length));
+        name=replaceStringAll(name,path_delim+"-id"+path_delim,toStringAccordingToIFL(directory_index_rd,index_field_length));
+        name=replaceStringAll(name,path_delim+"-idr"+path_delim,toStringAccordingToIFL(directory_reverse_index_rd,index_field_length));
         name=replaceStringAll(name,path_delim+"dc"+path_delim,toString(directory_count));
         
         
         if(name_string_file!=""){
-            name=replaceStringAll(name,path_delim+"l"+path_delim,toStringAccordingToIFL((Double)current_line,input_field_length));
-            name=replaceStringAll(name,path_delim+"la"+path_delim,toStringAccordingToIFL((Double)current_abs_line,input_field_length));
+            name=replaceStringAll(name,path_delim+"l"+path_delim,toStringAccordingToIFL((Double)current_line,index_field_length));
+            name=replaceStringAll(name,path_delim+"la"+path_delim,toStringAccordingToIFL((Double)current_abs_line,index_field_length));
         }
         
         
@@ -1061,7 +1061,7 @@ void printOpts(){
     Replace String replace part (last): "+rs_replace+"\n\
     Replace String modifier part (last): "+rs_mod+"\n\
     Depth: "+toString(depth)+"\n\
-    Input Field Length: "+toString(input_field_length)+"\n\
+    Input Field Length: "+toString(index_field_length)+"\n\
     Undo: "+parseTrueFalse(undo)+"\n\
     Force: "+parseTrueFalse(force)+"\n\
     Start Index: "+toString(start_index)+"\n\
@@ -1178,7 +1178,7 @@ int main(int argc, char* argv[]) {getCurrentDir(self_dir);self_path=self_dir+Str
       else if(opt=="-ifl"||opt=="--index-field-length"){
           checkArgAvailability(args,i+1);
           mustBeAPositiveInteger("Index field length",args[i+1]);
-          input_field_length=stringTo<decltype(input_field_length)>(args[i+1]);
+          index_field_length=stringTo<decltype(index_field_length)>(args[i+1]);
           skipcount=true;
           
         }
