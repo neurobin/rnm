@@ -6,4 +6,7 @@ fi
 cd "$(dirname "$BASH_SOURCE")"
 cp ./rnm /usr/bin/rnm
 chmod 755 /usr/bin/rnm
+## installing manual
+mkdir -p /usr/local/man/man1
+cp ./rnm.1 /usr/local/man/man1/rnm.1
 echo "***** Success *****"

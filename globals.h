@@ -88,6 +88,7 @@ bool simulation=false;
 bool line_upward=true;
 bool ign=false;
 bool nsf_n=false;
+bool single_mode=false;
 
 
 /////Doubles
@@ -131,9 +132,10 @@ String blank_str="";
 String NEW_LINE="\n";
 /////Strings
 String path_delim="/";
+String root_filesystem="/";
 ////getting Linux Home and defining some paths
-String getLinuxHome(){const char *homedir;if ((homedir = getenv("HOME")) == NULL) {homedir = getpwuid(getuid())->pw_dir;}return String(homedir);}
-String HOME=getLinuxHome();
+String getUnixHome(){const char *homedir;if ((homedir = getenv("HOME")) == NULL) {homedir = getpwuid(getuid())->pw_dir;}return String(homedir);}
+String HOME=getUnixHome();
 String LOG_DIR_PARENT=HOME+path_delim+".neurobin";
 String LOG_DIR=LOG_DIR_PARENT+path_delim+"rnm";
 String ERROR_LOG=LOG_DIR+path_delim+"errors.log";
@@ -201,12 +203,7 @@ options:\n\
 -i,-si         : Starting index\n\
 \n\
 --end-index,\n\
--ei,           : End index i.e index to stop renaming from. It is only for files\n\
-                 inside a directory that is being recursively taken due to a depth\n\
-                 value greater than 0, i.e it works on directory index.\n\
-                 Note that directory index "+path_delim+"id"+path_delim+" will renew in each directory\n\
-                 i.e in each directory rename will be performed from start index\n\
-                 to end index.\n\
+-ei,           : End index i.e index to stop renaming from. It works on directory index.\n\
                  \n\
 --increment-value,\n\
 -inc           : Increment value (floating point decimal). The amount, index will be\n\
@@ -235,9 +232,6 @@ options:\n\
      \n\
 --name-string-file,\n\
 -nsf           : Name string file. File containing name string (one per line).\n\
-                 [-nsf "+path_delim+"hist"+path_delim+"] i.e a value passed "+path_delim+"hist"+path_delim+" as Name string file, will\n\
-                 try to take the file from history.\n\
-                 \n\
 --name-string-file-null-terminated,\n\
 -nsfn          : Name String file. This takes a null terminated *Name String* file, i.e\n\
                  filenames are terminated by null character (\\0) instead of new line (\\n).\n\
@@ -292,6 +286,10 @@ options:\n\
 --quiet,\n\
 -q             : Quiet operation\n\
 \n\
+--force\n\
+-f             : Apply force. Enables renaming some non permitted files/directories\n\
+                 except / (The root filesystem directory) and rnm itself\n\
+\n\
 --show-options,\n\
 -shop          : This shows an info about the various options passed as arguments\n\
                  and how they are being treated behind the scene.\n\
@@ -300,7 +298,7 @@ options:\n\
 -sim           : This runs a simulation of rename instead of actual rename operation,\n\
                  and prints all kinds of available outputs.\n\
                  \n\
-Technical Terms:\n\
+Terminology       :\n\
 \n\
 Reserved Index    : Index will be incremented even if \n\
                     any file is skipped renaming in order\n\
@@ -309,28 +307,22 @@ Reserved Index    : Index will be incremented even if \n\
 Reverse Index     : Decrementing index.\n\
 \n\
 Name String       : A string which is parsed to create name for new files.\n\
-                    Name sting is parsed by the following rules \n\
-                    (must be wrapped around with filepath delimiter `"+path_delim+"`):\n\
-     "+path_delim+"i"+path_delim+" in name string will be replaced with index.\n\
-     "+path_delim+"ir"+path_delim+" in name string will be replaced with reserved index.\n\
-     "+path_delim+"id"+path_delim+" in name string will be replaced with directory index (index inside a directory).\n\
-     "+path_delim+"idr"+path_delim+" in name string will be replaced with reserved directory index\n\
-     "+path_delim+"n"+path_delim+" in name string will be replaced with filename without extention.\n\
-     "+path_delim+"fn"+path_delim+" in name string will be replaced with full name of the files.\n\
-     "+path_delim+"rn"+path_delim+" in name string will be replaced with Replaced Name.\n\
-     "+path_delim+"l"+path_delim+" in name string will be replaced with line number from *Name String File*.\n\
-     "+path_delim+"la"+path_delim+" in name string will be replaced wiht actual line number from *Name String File*\n\
-     "+path_delim+"dc"+path_delim+" in name string will be replaced with directory count\n\
-     "+path_delim+"-i"+path_delim+" in name string will be replaced with reverse index.\n\
-     "+path_delim+"-ir"+path_delim+" in name string will be replaced with reverse reserved index.\n\
-  In general - in the above replacement rules (applies to indexes excluding "+path_delim+"l"+path_delim+", "+path_delim+"la"+path_delim+" and "+path_delim+"dc"+path_delim+")\n\
-  will mean reverse index conforming to their meaning.\n\
+                    Name sting must be wrapped around with filepath delimiter "+path_delim+":\n\
+                    "+path_delim+"i"+path_delim+": index, "+path_delim+"ir"+path_delim+": index reserved,"+path_delim+"id"+path_delim+": directory index,\n\
+                    "+path_delim+"idr"+path_delim+": reserved directory index,"+path_delim+"n"+path_delim+": name without extension,\n\
+                    "+path_delim+"fn"+path_delim+": full name,"+path_delim+"rn"+path_delim+": replaced name,"+path_delim+"l"+path_delim+": line number,\n\
+                    "+path_delim+"la"+path_delim+": actual line number,"+path_delim+"dc"+path_delim+": directory count,\n\
+                    "+path_delim+"-i"+path_delim+", inverse index"+path_delim+"-ir"+path_delim+", inverse reserved index.\n\
+                    In general - in the above replacement rules (applies to indexes\n\
+                    excluding "+path_delim+"l"+path_delim+", "+path_delim+"la"+path_delim+" and "+path_delim+"dc"+path_delim+")\n\
+                    will mean reverse index conforming to their meaning. See man rnm for more details.\n\
   \n\
      \n\
 Name String File  : A file which contains a list of name string (one per line).\n\
                     Empty lines will be ignored and line number won't be counted.\n\
                     Actual line number (which counts the empty lines too) is\n\
                     available through name string rule : "+path_delim+"la"+path_delim+".\n\
+                    If passed with -nsfn filename will be expected to be null terminated.\n\
                     \n\
 Search String     : A string that is used to search for files with matching\n\
                     filenames against the search string. By default it is\n\
@@ -351,30 +343,13 @@ Replaced Name     : The name can be modified at runtime using replace string.\n\
 Replace String    : *Replace String* is a regex of the form: \n\
                     "+path_delim+"search_string"+path_delim+"replace_string"+path_delim+"modifier\n\
                     where search_string is the regex to search for and\n\
-                    replace_string is the string to replace with. For replace string,\n\
-                    there are four special cases:\n\
-                    1. & will be taken as the entire match found by the regex (search_string).\n\
-                    2. \\1, \\2 etc.. is the back-references, i.e you can access captured groups\n\
-                    with these back-references.\n\
-                    3. \\p is the prefix (i.e., the part of the target sequence that precedes the match)\n\
-                    4. \\s is the suffix (i.e., the part of the target sequence that follows the match).\n\
-                    to insert a `&` literally, use \\& and for \\ use \\\\.\n\
-                    \n\
-                    Example: '"+path_delim+"video"+path_delim+"Episode "+path_delim+"i"+path_delim+""+path_delim+"gi' will replace every instances\n\
-                    of 'video' with 'Episode index' i.e you will get new rname as:.\n\
-                    Episode 1..., Episode 2..., etc...\n\
-                    \n\
-                    Two modifiers are avalilable: g and i.\n\
-                    g stands for global and replaces every instances of match found.\n\
-                    i stands case insensitive search (default is case sensitive).\n\
+                    replace_string is the string to replace with. For replace string.\n\
                     \n\
                     *Replace String* is always performed on old file name.\n\
-                    \n\
-Regex             : Supported regex follows the ECMAScript regex syntax. Visit:\n\
-                    http://www.cplusplus.com/reference/regex/ECMAScript/\n\
-                    for more info.\n\
+                    See details on the manual man rnm.\n\
                     \n\
     Only invalid characters for a file or directory name is the path delimiter and the null character (\\0).\n\
+    See more details on the manual (man rnm)\n\
 ";
 
 

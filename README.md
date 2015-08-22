@@ -130,11 +130,11 @@ Options are case insensitive, i.e `-ssF` and `-ssf` are the same.
 `-ed`                : Apply rename on files only, exclude any and all directory and their
                        contents. Forces file only mode regardless of depth (-dp) value.
 
-
 `-y`                 : Confirm Yes to all.
 
-
 `-u`, `-U`, `--undo` : Undo renaming
+
+`--force`, `-f`      : Force rename. Enables renaming some restricted files except `/` and the program itself.
 
 `-v`                 : Version info.
 

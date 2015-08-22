@@ -38,5 +38,6 @@
 
 ###`3.0.1`: <span class="light-quote">Sat Aug 22 21:28:14 BDT 2015</span>
 
-rnm now can take file or directory name from standard input, i.e if you run rnm without any file or directory path, it will wait for you to type it.
-
+1. rnm now can take file or directory name from standard input, i.e if you run rnm without any file or directory path, it will wait for you to type it.
+2. `--force` or `-f` i.e force rename option is back. It will enable some restricted files or directories to be renamed except the root filesystem (`/`).
+3. You no longer need confirmation for renaming single file or directory.

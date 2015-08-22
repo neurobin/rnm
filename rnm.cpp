@@ -87,13 +87,28 @@ void checkArgAvailability(StringArray sa,int i){
 
 bool isInvalidFile(String file){
     bool status=false;
-    StringArray invf={HOME,path_delim,LOG_DIR_PARENT,LOG_DIR,RNM_FILE_LOG_L,RNM_FILE_LOG_R,\
-        RNM_FILE_LOG_L_TMP,RNM_FILE_LOG_R_TMP,self_path,\
+    StringArray invf={HOME,\
         path_delim+"bin",path_delim+"usr",path_delim+"usr"+path_delim+"bin",path_delim+"tmp",\
-        path_delim+"dev",path_delim+"etc",path_delim+"proc",path_delim+"sys",path_delim+"home"};
+        path_delim+"dev",path_delim+"etc",path_delim+"proc",path_delim+"home",\
+        path_delim+"boot",path_delim+"root",path_delim+"lib",path_delim+"media",path_delim+"opt",\
+        path_delim+"srv",path_delim+"sbin",path_delim+"sys",path_delim+"var",path_delim+"include",\
+        path_delim+"local",path_delim+"libexec",path_delim+"log",path_delim+"mail",path_delim+"spool",
+        path_delim+"mnt",path_delim+"share",path_delim+"unix"};
     for(int i=0;i<(int)invf.size();i++){
-        if(file==invf[i]){status=true;printWarningLog("rename not permitted: "+invf[i]);}
+        if(file==invf[i]){
+            if(!force){
+                status=true;printWarningLog("rename not permitted: "+file);
+            }
+        }
     }
+    
+    if(file==root_filesystem){status=true;printWarningLog("rename not permitted: "+file);}
+    if(file==self_path){status=true;printWarningLog("rename not permitted: "+file);}
+    if(file==RNM_FILE_LOG_L_TMP){status=true;printWarningLog("rename not permitted: "+file);}
+    if(file==RNM_FILE_LOG_R_TMP){status=true;printWarningLog("rename not permitted: "+file);}
+    if(file==LOG_DIR_PARENT){status=true;printWarningLog("rename not permitted: "+file);}
+    if(file==LOG_DIR){status=true;printWarningLog("rename not permitted: "+file);}
+    
     
     return status;
 }
@@ -816,7 +831,8 @@ bool doRename(String file){
         int confirm;
         
         if(!all_yes){
-            confirm=selectInput();
+            if(!single_mode){confirm=selectInput();}
+            else{confirm=1;}
             
             switch(confirm){
                 case 1:
@@ -1074,6 +1090,7 @@ void printOpts(){
     Exclude Directory: "+parseTrueFalse(exclude_directory)+"\n\
     Increment Value: "+toString(inc)+"\n\
     Line Increment Value: "+toString(linc)+"\n\
+    Apply force: "+parseTrueFalse(force)+"\n\n\
     Simulation: "+parseTrueFalse(simulation)+"\n\n\
 ";
     
@@ -1083,7 +1100,7 @@ void printOpts(){
 
 void showResult(){
     if(!quiet){printOutLog(toString(rnc)+" file/s renamed");if(simulation)print " (simulation)"+NEW_LINE;}
-    if(show_options || simulation){printOpts();}
+    if(show_options){printOpts();}
     
 }
 
@@ -1341,6 +1358,7 @@ int main(int argc, char* argv[]) {getCurrentDir(self_dir);self_path=self_dir+Str
         files.push_back(filename_from_stdin);
         //printErrorLog("No file or directory specified");Exit(1);
         }
+    if(files.size()==1){if(!file_only || depth<=0){single_mode=true;}}
     if(simulation){quiet=false;show_options=true;}
     
     if(name_string=="" && name_string_file=="" && replace_string==""){
