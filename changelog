@@ -34,4 +34,5 @@
 11. renamed `-li` to `-lv` and `-eli` to `-elv`.
 12. `-shop` and `-sim` option added.
 13. New name string rule: `/la/` added.
+14. Removed `-f` (force replace) option.
 

@@ -130,7 +130,6 @@ Options are case insensitive, i.e `-ssF` and `-ssf` are the same.
 
 `-y`                 : Confirm Yes to all.
 
-`-f`, `--force`      : Force rename
 
 `-u`, `-U`, `--undo` : Undo renaming
 
