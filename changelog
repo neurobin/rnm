@@ -31,8 +31,8 @@
 8. `-ifp` option added.
 9. `-inc` option added.
 10. `-linc` option added.
-11. renamed `-li` to `-lv` and `-eli` to `-elv`.
-12. `-shop` and `-sim` option added.
+11. Renamed option `-li` to `-lv` and `-eli` to `-elv`.
+12. `-shop` and `-sim` (simulation) option added.
 13. New name string rule: `/la/` added.
-14. Removed `-f` (force replace) option.
+14. Removed `-f` (force rename) option.
 
