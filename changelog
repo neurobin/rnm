@@ -1,0 +1,38 @@
+#ChangeLog:
+
+###`1.0.0`: <span class="light-quote">Sat 14 Aug 2015</span>
+
+**Birth of rnm**
+    
+###`2.0.0`: <span class="light-quote">Sun Aug  9 23:18:00 BDT 2015</span>
+
+1. Added undo feature.
+2. Added end index feature and end line number feature.
+3. Added inverse index feature
+4. Added new name string rules for inverse index.
+5. Added `/hist/` as a valid argument for `-nsf` option to take *Name String File* from history.
+6. Logging functionality. Log files are put in $HOME/.neurobin/rnm
+7. Lots of bug fixes.
+
+###`2.0.1`: <span class="light-quote">Wed Aug  12 02:36:00 BDT 2015</span>
+
+1. Added name modification feature using `sed`.
+2. Added extra Name String Rule `/smn/` or `/rn/`.
+
+###`3.0.0`: <span class="light-quote">Fri Aug 21 12:33:49 BDT 2015</span>
+
+1. Code rewritten in C++.
+2. Shell independent.
+3. Portable.
+4. Supports all characters allowed in file/directory name according to POSIX specs.
+5. Regex syntax changed to ECMAScript Regex.
+6. `-rs` option added.
+7. `-iff` option added.
+8. `-ifp` option added.
+9. `-inc` option added.
+10. `-linc` option added.
+11. Renamed option `-li` to `-lv` and `-eli` to `-elv`.
+12. `-shop` and `-sim` (simulation) option added.
+13. New name string rule: `/la/` added.
+14. Removed `-f` (force rename) option.
+
