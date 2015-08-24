@@ -16,7 +16,7 @@ void printOpts(void);
 void startTask(StringArray);
 String replaceStringAll(String, String , String );
 String parseNameString(String,String);
-String regexReplace(String ,String ,String ,String );
+String regexReplace(String ,String ,String ,String,int );
 String parseNameString(String ,String );
 void parseReplaceString(String ,String );
 String copyFile(String, String );
@@ -46,6 +46,7 @@ template<typename T>
 void mustBeANumber(String name,T x);
 bool isFile(String file);
 NameList getNameListFromFile(String filename,int si,int ei,int mod);
+Regex createRegex(String s,bool case_sensitive);
 
 
 StringArray files;
@@ -255,7 +256,7 @@ String toStringAccordingToIFL(Double index,int ifl){
     return "-"+buffer.str();}
     else return buffer.str();}
 
-String regexReplace(String s,String search,String replace,String modifier){
+String regexReplace(String s,String search,String replace,String modifier,int user=0){
     bool case_sensitive=true,global=false;
     String replaced_string=s;
     if(modifier=="gi" || modifier=="ig"){global=true;case_sensitive=false;}
@@ -264,7 +265,8 @@ String regexReplace(String s,String search,String replace,String modifier){
     
     try {
         std::regex re (search);
-        if(!case_sensitive){re= Regex (search, ECMASCRIPT | ICASE);}
+        if(user==1){re=createRegex(search,case_sensitive);}
+        else if(!case_sensitive){re= Regex (search, REGEX_DEFAULT | ICASE);}
         
         if(global){
         replaced_string=std::regex_replace (s,re,replace,std::regex_constants::format_default);
@@ -274,7 +276,7 @@ String regexReplace(String s,String search,String replace,String modifier){
         }
     } 
     catch (std::regex_error& e) {
-      printErrorLog("Invalid replace string");
+      printErrorLog("Invalid replace string regex: "+search);
       Exit(1);
     }
     return replaced_string;
@@ -312,7 +314,7 @@ void processReplaceString(String rs,String file){
     parseReplaceString(rs,file);
     ///we now have valid rs_search, rs_replace and rs_mod
     rname=basename(file);
-    rname=regexReplace(rname,rs_search,rs_replace,rs_mod);
+    rname=regexReplace(rname,rs_search,rs_replace,rs_mod,1);
     ///Now a modified name rname is available
 }
     
@@ -335,7 +337,7 @@ void parseReplaceString(String rs,String file){
         
     }
     else{
-        printErrorLog("Invalid replace string");
+        printErrorLog("Invalid replace string format: "+rs);
         Exit(1);
     }
     
@@ -353,7 +355,7 @@ void parseSearchString(String ss){
         if(std::regex_match(ss,result,re)){ss_mod=result[1];}
     }
     else{
-        printErrorLog("Invalid search string");
+        printErrorLog("Invalid search string format: "+ss);
         Exit(1);
     } 
   }
@@ -373,13 +375,13 @@ bool isComplyingToSearchString(String file){
     if(ss_mod=="i"){case_sensitive=false;}
   if(!fixed_ss){
     try {
-        std::regex re (ss_search);
-        if(!case_sensitive){re= Regex (ss_search, ECMASCRIPT | ICASE);}
+        std::regex re;
+        re= createRegex(ss_search, case_sensitive);
         if(std::regex_search(name,re)){return true;}
         else{return false;}
     } 
     catch (std::regex_error& e) {
-      printErrorLog("Invalid search string");
+      printErrorLog("Invalid search string regex: "+ss_search);
       Exit(1);
     }
   }
@@ -918,7 +920,7 @@ void startInDepthFileOnlyTaskOnDirectory(String dir,String base_dir=base_dir){
     directory_reverse_index=DIRECTORY_REVERSE_INDEX;
     directory_reverse_index_rd=DIRECTORY_REVERSE_INDEX;
     for(int i=0;i<(int)files.size();i++){
-        if(directory_index>end_index){continue;}
+        if(fabs(directory_index)>fabs(end_index)){continue;}
         String file=files[i];
 
         if(childDepth(base_dir,file)>depth){continue;}
@@ -1062,6 +1064,30 @@ void detectLineUpwardOrDownward(){
     }
 
 
+Regex createRegex(String s, bool case_sensitive){
+    if(re_locale){
+        if(!case_sensitive){
+            return Regex(s,REGEX_TYPE | REGEX_LOCALE | ICASE);
+            }
+        else{
+            return Regex(s,REGEX_TYPE | REGEX_LOCALE);
+            }
+        }
+    else {
+        if(!case_sensitive){
+            return Regex(s,REGEX_TYPE | REGEX_LOCALE | ICASE);
+            }
+        else{
+            return Regex(s,REGEX_TYPE | REGEX_LOCALE);
+            }
+        }
+    
+    
+    }
+
+
+
+
 void printOpts(){
     
     print "\n\nInfo about this session:\n\
@@ -1074,6 +1100,8 @@ void printOpts(){
     Replace String search part (last): "+rs_search+"\n\
     Replace String replace part (last): "+rs_replace+"\n\
     Replace String modifier part (last): "+rs_mod+"\n\
+    Regex Type: "+re_type+"\n\
+    Regex Locale: "+parseTrueFalse(re_locale)+"\n\
     Depth: "+toString(depth)+"\n\
     Input Field Length: "+toString(index_field_length)+"\n\
     Undo: "+parseTrueFalse(undo)+"\n\
@@ -1088,7 +1116,7 @@ void printOpts(){
     Exclude Directory: "+parseTrueFalse(exclude_directory)+"\n\
     Increment Value: "+toString(inc)+"\n\
     Line Increment Value: "+toString(linc)+"\n\
-    Apply force: "+parseTrueFalse(force)+"\n\n\
+    Apply force: "+parseTrueFalse(force)+"\n\
     Simulation: "+parseTrueFalse(simulation)+"\n\n\
 ";
     
@@ -1288,6 +1316,18 @@ int main(int argc, char* argv[]) {getCurrentDir(self_dir);self_path=self_dir+Str
           
         }
         
+      else if(opt=="-re" || opt == "--regex"){
+          checkArgAvailability(args,i+1);
+          re_type=toLower(args[i+1]);
+          skipcount=true;
+          
+        }
+        
+        else if(opt=="-rel"||opt=="--regex-locale"){
+          re_locale=true;
+          
+        }
+        
         
       else if(opt=="-ssf"||opt=="--search-string-fixed"){
           checkArgAvailability(args,i+1);
@@ -1342,13 +1382,13 @@ int main(int argc, char* argv[]) {getCurrentDir(self_dir);self_path=self_dir+Str
       
     }
     
-    
     file_vector=files;
     //////////////////////////////////////// Opt parse ends here/////////////////////////////////
 
     if(undo){undoRename();showResult();Exit(0);}
 
     
+         
     
     /////////////////////////////////// Various checks///////////////////////////////////////
     
@@ -1357,7 +1397,7 @@ int main(int argc, char* argv[]) {getCurrentDir(self_dir);self_path=self_dir+Str
         //printErrorLog("No file or directory specified");Exit(1);
         }
     if(files.size()==1){if(!file_only || depth<=0){single_mode=true;}}
-    if(simulation){quiet=false;show_options=true;}
+    if(simulation){quiet=false;}
     
     if(name_string=="" && name_string_file=="" && replace_string==""){
         printErrorLog("One of the options: -ns or -nsf or -rs is mandatory");
@@ -1366,7 +1406,7 @@ int main(int argc, char* argv[]) {getCurrentDir(self_dir);self_path=self_dir+Str
     if(search_string!="" && !fixed_ss){
         Regex re("^"+path_delim+"[^"+path_delim+"]*"+path_delim+"i?$");
         if(!regexMatch(search_string,re)){
-            printErrorLog("Invalid search string");
+            printErrorLog("Invalid search string format: "+search_string);
             Exit(1);
             }
         parseSearchString(search_string);
@@ -1376,7 +1416,7 @@ int main(int argc, char* argv[]) {getCurrentDir(self_dir);self_path=self_dir+Str
     if(replace_string!=""){
         Regex re("^"+path_delim+".*"+path_delim+".*"+path_delim+"[gi]{0,2}$");
         if(!regexMatch(replace_string,re)){
-            printErrorLog("Invalid replace string");
+            printErrorLog("Invalid replace string format: "+replace_string);
             Exit(1);
             }
         }
@@ -1398,6 +1438,22 @@ int main(int argc, char* argv[]) {getCurrentDir(self_dir);self_path=self_dir+Str
     
     }
 
+
+    /// check regex type
+    if(re_type!=""){
+        
+        if(re_type=="default"){REGEX_TYPE=REGEX_DEFAULT;}
+        else if(re_type=="awk"){REGEX_TYPE=REGEX_AWK;}
+        else if(re_type=="grep"){REGEX_TYPE=REGEX_GREP;}
+        else if(re_type=="egrep"){REGEX_TYPE=REGEX_EGREP;}
+        else if(re_type=="basic"){REGEX_TYPE=REGEX_BASIC;}
+        else if(re_type=="extended"){REGEX_TYPE=REGEX_EXTENDED;}
+        else if(re_type=="ecmascript"){REGEX_TYPE=REGEX_ECMASCRIPT;}
+        else {printErrorLog("Invalid regex type: "+re_type);Exit(1);}
+        
+        }
+    else {REGEX_TYPE=REGEX_DEFAULT;}
+
     
     ////////////////////////////////// Various checks end here//////////////////////////////
     
@@ -1411,6 +1467,3 @@ int main(int argc, char* argv[]) {getCurrentDir(self_dir);self_path=self_dir+Str
    return 0;
 } 
 
-
-
-	
