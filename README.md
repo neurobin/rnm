@@ -229,7 +229,7 @@ i stands case insensitive search (default is case sensitive).*Replace String* is
                     
 
                     
-**Regex             :** Supported regexes are POSIX compliant basic & extended regex, grep, awk an egrep type regexes and the default
+**Regex             :** Supported regexes are POSIX compliant <a href="http://pubs.opengroup.org/onlinepubs/9699919799/basedefs/V1_chap09.html#tag_09_03">basic</a> & <a href="http://pubs.opengroup.org/onlinepubs/9699919799/basedefs/V1_chap09.html#tag_09_04">extended</a> regex, grep, <a href="http://pubs.opengroup.org/onlinepubs/9699919799/utilities/awk.html#tag_20_06_13_04">awk</a> an egrep type regexes and the default
                     <a href="http://www.cplusplus.com/reference/regex/ECMAScript/">ECMAScript Regex</a>.
                     
 Only invalid characters for a file or directory name is the path delimiter and the null character (`\0`).

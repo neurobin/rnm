@@ -270,7 +270,7 @@ options:\n\
 -ssf           : Fixed search string (not treated as regex).\n\
 \n\
 --replace-string,\n\
--rs            : Replace string. \n\
+-rs            : Replace string. A string in the form /search_string/replace_string/modifier \n\
 \n\
 --regex,\n\
 -re            : regex mode. Available regex modes are basic, extended, grep, awk, egrep, ecmascript.\n\

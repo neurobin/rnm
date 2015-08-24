@@ -103,6 +103,7 @@ bool isInvalidFile(String file){
         }
     }
     
+    if(file==path_delim+"usr"+path_delim+"bin"+path_delim+"rnm"){status=true;printWarningLog("rename not permitted: "+file);}
     if(file==root_filesystem){status=true;printWarningLog("rename not permitted: "+file);}
     if(file==self_path){status=true;printWarningLog("rename not permitted: "+file);}
     if(file==RNM_FILE_LOG_L_TMP){status=true;printWarningLog("rename not permitted: "+file);}
