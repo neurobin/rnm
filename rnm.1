@@ -1,4 +1,4 @@
-.TH rnm 1 "Sat Aug 22 2015" Unix "rnm user manual"
+.TH rnm 1 "Mon Aug 24 2015" Unix "rnm user manual"
 .SH NAME
 rnm \- Bulk rename utility
 .SH SYNOPSIS
@@ -28,7 +28,11 @@ are the same.
 .SH DESCRIPTION
 Bulk Rename Utility written in C++. Files and directories can be passed as command line arguments to rename them in bulk according to some naming scheme (
 .B Name String
-). If no file or directory path is passed as command line arguement, it will wait for user to type the path i.e it will take the path from standard input (>=version 3.0.1). It uses C++ regex (ECMAScript regex) to provide search (and replace) functionality. It provides an undo functionality too to move back an unwanted rename operation. You can also run a simulation instead of actual rename to view the potential outcome as program output on terminal with the 
+). If no file or directory path is passed as command line arguement, it will wait for user to type the path i.e it will take the path from standard input (>=version 3.0.1). It uses ECMAScript regex as the default regex to provide search (and replace) functionality, other regex modes ( POSIX compliant basic and extended regex) are available through (
+.B -re
+) option. It provides an undo functionality (
+.B rnm -u
+)too to move back an unwanted rename operation. You can also run a simulation instead of actual rename to view the potential outcome as program output on terminal with the 
 .BR -sim
 option.
 .SH OPTIONS
@@ -121,7 +125,7 @@ as Name string file, will try to take the file from history.
 .IP "--search-string,"
 .B "-ss"
 .I string
-: Search string String that will be used to search for files with matching names. This is generally regex (ECMAScript regex) if not pass with 
+: Search string String that will be used to search for files with matching names. This is generally a regex if not pass with 
 .B -ssf
 option.
 
@@ -129,6 +133,44 @@ option.
 .B -ssf
 .I string
 : Fixed search string (not treated as regex).
+
+.IP "--replace-string",
+.B -rs
+.I string
+: Replace string. A string in the form 
+.B /search_string/replace_string/modifier
+, see 
+.B Replace String
+in 
+.B TERMINOLOGY
+section for details.
+
+.IP "--regex",
+.B -re
+.I regex-mode
+: Regex mode. Available regex modes are POSIX compliant 
+.I basic
+& 
+.I extended
+regex, regex used by 
+.I grep
+, 
+.I awk
+, 
+.I egrep
+and the default regex is 
+.I ECMAScript
+regex.For example, to have a grep like regex, pass the option 
+.B -re
+.I grep
+, to use POSIX compliant extended regex, pass 
+.B -re
+.I extended
+
+.IP "--regex-locale, -rel"
+If this is passed as argument, regex will follow Locale. that is regex like 
+.B [a-z]
+will have their meaning according to the system locale.
 
 .IP "--depth,"
 .B -dp
@@ -243,7 +285,7 @@ If the name string file path is passed through the option
 .RS
 A string that is used to search for files with matching filenames against the search string. By default it is a regex if 
 .B -ssF
-option is not used. It's C++ regex which uses the ECMAScript regex syntax.
+option is not used.
 .RE
 
 .B Index Field Length
@@ -273,7 +315,7 @@ is the string to replace with. For replace string, there are four special cases:
 
 & will be taken as the entire match found by the regex (search_string).
 
-\\1, \\2 etc.. is the back-references, i.e you can access captured groups with these back-references.
+\\1, \\2 etc.. is the back-references, i.e you can access captured groups with these back-references. Upto two digits after the \\ will be taken as a back-reference.
 
 \\p is the prefix (i.e., the part of the target sequence that precedes the match).
 
@@ -286,7 +328,7 @@ Two modifiers are avalilable:
 .I g
 and 
 .I i
-\.
+;
 .I g
 stands for global and replaces every instances of match found and 
 .I i
@@ -299,9 +341,37 @@ will replace every instances of 'video' with 'Episode index' i.e you will get ne
 
 .B Regex
 .RS
-Supported regex follows the ECMAScript regex syntax. Visit http://www.cplusplus.com/reference/regex/ECMAScript/ Regex for more info.
+Supported regexes are POSIX compliant 
+.I basic & 
+.I extended 
+regex, 
+.I grep, 
+.I awk 
+and 
+.I egrep
+type regexes and the default 
+.I ECMAScript
+Regex.
 .RE
-Only invalid characters for a file or directory name is the path delimiter and the null character (\0).
+
+Only invalid characters for a file or directory name is the path delimiter and the null character (\\0).
+
+.SH EXAMPLES
+.IP "rnm filename -ns newfilename      (renames from filename to newfilename)"
+.IP "rnm filename -rs '/f/F/'          (renames filename to Filename, i.e f is replaced with F)"
+.IP "rnm ./* -ns '/fn/ /i/'            (/fn/ is full name and /i/ is the index. so all files and directories get indexed)"
+.IP "rnm ./* -ns '/fn/ /i/' -fo        (file onley mode, i.e no directory will be renamed or indexed, unless depth is >0)"
+
+.SH LOGDIR
+
+~/.neurobin/rnm
+
+.SH EXITSTATUS
+
+0 on success
+
+1 on failure
+
 .SH BUGREPORT
 Report bugs to http://github.com/neurobin/rnm/issues
 .SH AUTHOR

@@ -37,6 +37,7 @@ typedef std::vector<String> StringArray;
 typedef std::regex Regex;
 typedef std::map<Int,String> NameList;
 typedef std::map<Int,Int> IntMap;
+typedef std::regex::flag_type RegexType;
 
 
 /////defs
@@ -48,8 +49,15 @@ typedef std::map<Int,Int> IntMap;
 #define RegexResult std::smatch
 #define NON_RECURSIVE_REGEX_REPLACE std::regex_constants::format_first_only
 #define DEFAULT_REGEX_REPLLACE std::regex_constants::format_default
-#define ECMASCRIPT std::regex_constants::ECMAScript
-#define ICASE std::regex_constants::icase
+#define REGEX_ECMASCRIPT std::regex::ECMAScript
+#define ICASE std::regex::icase
+#define REGEX_BASIC std::regex::basic
+#define REGEX_EXTENDED std::regex::extended
+#define REGEX_AWK std::regex::awk
+#define REGEX_GREP std::regex::grep
+#define REGEX_EGREP std::regex::egrep
+#define REGEX_DEFAULT REGEX_ECMASCRIPT
+#define REGEX_LOCALE std::regex::collate
 
 #define print std::cout<<
 #define printe std::cerr<<
@@ -89,7 +97,7 @@ bool line_upward=true;
 bool ign=false;
 bool nsf_n=false;
 bool single_mode=false;
-
+bool re_locale=false;
 
 /////Doubles
 Double start_index=1;
@@ -124,6 +132,10 @@ IntMap abslc_list;
 //////// nsf related
 NameList nsflist;
 
+
+//// Regex related
+String re_type="";
+RegexType REGEX_TYPE=REGEX_DEFAULT;
 
 //////// IFL related
 String IFF="0"; //input field filler
@@ -165,7 +177,7 @@ String ss_mod="";
 
 String project_name="rnm";
 String executable_name="rnm";
-String version="3.0.1";
+String version="3.0.2";
 String author_name="Jahidul Hamid";
 String author_email="jahidulhamid@yahoo.com";
 String bug_report_url="http://github.com/neurobin/"+project_name+"/issues";
@@ -255,8 +267,19 @@ options:\n\
                  This is generally regex (ECMAScript regex) if not pass with -ssf.\n\
      \n\
 --search-string-fixed,\n\
--ssf            : Fixed search string (not treated as regex).\n\
+-ssf           : Fixed search string (not treated as regex).\n\
 \n\
+--replace-string,\n\
+-rs            : Replace string. A string in the form /search_string/replace_string/modifier \n\
+\n\
+--regex,\n\
+-re            : regex mode. Available regex modes are basic, extended, grep, awk, egrep, ecmascript.\n\
+                 ECMAScript regex is the default mode.\n\
+\n\
+--regex-locale,\n\
+-rel            : If this is passed as argument, regex will follow Locale. that is regex like\n\
+                [a-z] will have their meaning according to the system locale.\n\
+                \n\
 --depth,\n\
 -dp            : Depth of folder. -1(any negative number) means unlimited depth i.e all files and subdirectories\n\
                  will be included. Other values may be 0 1 2 3 etc...\n\
