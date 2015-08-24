@@ -104,15 +104,15 @@ Options are case insensitive, i.e `-ssF` and `-ssf` are the same.
 `-elv`               : Same as `-el`, except line number will be decremented in each iteration.
 
 `--search-string`,
-`-ss`                : Search string
+`-ss`                : Search string.
                        String that will be used to search for files with matching names.
-                       This is generally regex  (<a href="http://www.cplusplus.com/reference/regex/ECMAScript/">ECMAScript regex</a>) if not pass with `-ssf` option.
+                       This is generally a regex  if not pass with `-ssf` option.
      
 `--search-string-fixed`,
 `-ssf`               : Fixed search string (not treated as regex).
 
 `--replace-string`,
-`-rs`                : Replace string. A string in the form `/search_string/replace_string/modifier`.
+`-rs`                : Replace string. A string in the form `/search_string/replace_string/modifier`. See **Replace String* in <a href="#technical-terms">Terminology</a> for details.
 
 `--regex`,
 `-re`                : regex mode. Available regex modes are POSIX compliant basic & extended regex,
@@ -121,7 +121,7 @@ Options are case insensitive, i.e `-ssF` and `-ssf` are the same.
                        POSIX compliant extended regex, pass `-re extended`
 
 `--regex-locale`,
-`-re`                : If this is passed as argument, regex will follow Locale. that is regex like
+`-rel`                : If this is passed as argument, regex will follow Locale. that is regex like
                       [a-z] will have their meaning according to the system locale.
 
 `--depth`,
@@ -195,8 +195,7 @@ Options are case insensitive, i.e `-ssF` and `-ssf` are the same.
      
 **Search String     :** A string that is used to search for files with matching
                     filenames against the search string. By default it is
-                    a regex if `-ssF` option is not used. It's `C++` regex
-                    which uses the <a href="http://www.cplusplus.com/reference/regex/ECMAScript/">ECMAScript regex</a> syntax.
+                    a regex if `-ssF` option is not used.
                  
 **Index Field Length:** An integer value defining the field length of index.
                     By default empty field will be filled with 0's. For example, if
@@ -230,8 +229,8 @@ i stands case insensitive search (default is case sensitive).*Replace String* is
                     
 
                     
-**Regex             :** Supported regexes are POSIX compliant basic & extended regex, grep, awk an egrep type regexes and the default
-                    <a href="http://www.cplusplus.com/reference/regex/ECMAScript/">ECMAScript Regex</a>
+**Regex             :** Supported regexes are POSIX compliant <a href="http://pubs.opengroup.org/onlinepubs/9699919799/basedefs/V1_chap09.html#tag_09_03">basic</a> & <a href="http://pubs.opengroup.org/onlinepubs/9699919799/basedefs/V1_chap09.html#tag_09_04">extended</a> regex, grep, <a href="http://pubs.opengroup.org/onlinepubs/9699919799/utilities/awk.html#tag_20_06_13_04">awk</a> an egrep type regexes and the default
+                    <a href="http://www.cplusplus.com/reference/regex/ECMAScript/">ECMAScript Regex</a>.
                     
 Only invalid characters for a file or directory name is the path delimiter and the null character (`\0`).
 
