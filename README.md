@@ -23,6 +23,14 @@ Bulk Rename Utility for GNU/Linux written in `C++`. Files and directories can be
 1. Give the <span class="quote">install</span> file execution permission and
 2. Run it or just drag and dropt it on terminal and hit <kbd>Enter</kbd> (requires root privilege).
 
+##For Ubuntu:
+
+```
+sudo add-apt-repository -y ppa:neurobin/ppa
+sudo apt-get update
+sudo apt-get install rnm
+```
+
 <div id="un-install"></div>
 #Uninstall:
 
