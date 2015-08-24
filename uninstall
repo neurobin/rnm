@@ -1,0 +1,8 @@
+#!/bin/bash
+if (( $EUID != 0 )); then
+    printf "\n-----Sorry! Run with root privilege\n\n"
+    exit 1
+fi
+rm /usr/bin/rnm
+rm /usr/share/man/man1/rnm.1
+echo "***** Uninstall success *****"

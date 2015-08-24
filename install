@@ -1,0 +1,18 @@
+#!/bin/bash
+if (( $EUID != 0 )); then
+    printf "\n-----Sorry! Run with root privilege\n\n"
+    exit 1
+fi
+cd "$(dirname "$BASH_SOURCE")"
+## installing manual
+mkdir -p /usr/share/man/man1/
+cp ./rnm.1 /usr/share/man/man1/rnm.1
+## copying binary
+if [ "$(uname -m)" = "x86_64" ];then
+cd bin/x64
+else
+cd bin/x32
+fi
+cp ./rnm /usr/bin/rnm
+chmod 755 /usr/bin/rnm
+echo "***** Success *****"
