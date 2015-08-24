@@ -1,6 +1,6 @@
 <div id="description"></div>
 # rnm
-Bulk Rename Utility for GNU/Linux written in `C++`. Files and directories can be passed as command line arguments to rename them in bulk according to some naming scheme (*Name String*). If any file or directory path is not passed as command line arguement, it will wait for user to type the path i.e it will take the path from standard input `(>=version 3.0.1)`. It uses `C++` regex (<a href="http://www.cplusplus.com/reference/regex/ECMAScript/">ECMAScript regex</a>) to provide search (and replace) functionality. It provides an undo functionality too to move back an unwanted rename operation. You can also run a simulation instead of actual rename to view the potential outcome as program output on terminal with the `-sim` option.
+Bulk Rename Utility for GNU/Linux written in `C++`. Files and directories can be passed as command line arguments to rename them in bulk according to some naming scheme (*Name String*). If any file or directory path is not passed as command line arguement, it will wait for user to type the path i.e it will take the path from standard input `(>=version 3.0.1)`. It uses `C++` regex (<a href="http://www.cplusplus.com/reference/regex/ECMAScript/">ECMAScript regex</a>) as the default regex to provide search (and replace) functionality, other regex modes are available through (`-re`) option. It provides an undo functionality too to move back an unwanted rename operation. You can also run a simulation instead of actual rename to view the potential outcome as program output on terminal with the `-sim` option.
 
 
 <div id="features"></div>
@@ -20,16 +20,15 @@ Bulk Rename Utility for GNU/Linux written in `C++`. Files and directories can be
 <div id="install"></div>
 #Install:
 
-1. Give the <span class="quote">install</span> file execution permission and
+1. Give the <span class="quote">install</span> file (bin/x32 or x64) execution permission and
 2. Run it or just drag and dropt it on terminal and hit <kbd>Enter</kbd> (requires root privilege).
 
 <div id="un-install"></div>
 #Uninstall:
 To uninstall, run:
-
-1. Give the <span class="quote">uninstall</span> file execution permission and
-2. Run it or just drag and dropt it on terminal and hit <kbd>Enter</kbd> (requires root privilege).
-
+```
+sudo rm /usr/bin/rnm
+```
 
 <div id="usage"></div>
 #Usage:
@@ -105,12 +104,25 @@ Options are case insensitive, i.e `-ssF` and `-ssf` are the same.
 `-elv`               : Same as `-el`, except line number will be decremented in each iteration.
 
 `--search-string`,
-`-ss`                : Search string
+`-ss`                : Search string.
                        String that will be used to search for files with matching names.
-                       This is generally regex  (<a href="http://www.cplusplus.com/reference/regex/ECMAScript/">ECMAScript regex</a>) if not pass with `-ssf` option.
+                       This is generally a regex  if not pass with `-ssf` option.
      
 `--search-string-fixed`,
 `-ssf`               : Fixed search string (not treated as regex).
+
+`--replace-string`,
+`-rs`                : Replace string. A string in the form `/search_string/replace_string/modifier`. See **Replace String* in <a href="#technical-terms">Terminology</a> for details.
+
+`--regex`,
+`-re`                : regex mode. Available regex modes are POSIX compliant basic & extended regex,
+                       regex used by grep, awk, egrep and the default regex is ECMAScript regex.
+                       For example, to have a grep like regex, pass the option `-re grep`, to use
+                       POSIX compliant extended regex, pass `-re extended`
+
+`--regex-locale`,
+`-rel`                : If this is passed as argument, regex will follow Locale. that is regex like
+                      [a-z] will have their meaning according to the system locale.
 
 `--depth`,
 `-dp`                : Depth of folder. -1(any negative number) means unlimited depth i.e all files and subdirectories
@@ -183,8 +195,7 @@ Options are case insensitive, i.e `-ssF` and `-ssf` are the same.
      
 **Search String     :** A string that is used to search for files with matching
                     filenames against the search string. By default it is
-                    a regex if `-ssF` option is not used. It's `C++` regex
-                    which uses the <a href="http://www.cplusplus.com/reference/regex/ECMAScript/">ECMAScript regex</a> syntax.
+                    a regex if `-ssF` option is not used.
                  
 **Index Field Length:** An integer value defining the field length of index.
                     By default empty field will be filled with 0's. For example, if
@@ -218,9 +229,8 @@ i stands case insensitive search (default is case sensitive).*Replace String* is
                     
 
                     
-**Regex             :** Supported regex follows the ECMAScript regex syntax. Visit:
-                    <a href="http://www.cplusplus.com/reference/regex/ECMAScript/">ECMAScript Regex</a>
-                    for more info.
+**Regex             :** Supported regexes are POSIX compliant <a href="http://pubs.opengroup.org/onlinepubs/9699919799/basedefs/V1_chap09.html#tag_09_03">basic</a> & <a href="http://pubs.opengroup.org/onlinepubs/9699919799/basedefs/V1_chap09.html#tag_09_04">extended</a> regex, grep, <a href="http://pubs.opengroup.org/onlinepubs/9699919799/utilities/awk.html#tag_20_06_13_04">awk</a> an egrep type regexes and the default
+                    <a href="http://www.cplusplus.com/reference/regex/ECMAScript/">ECMAScript Regex</a>.
                     
 Only invalid characters for a file or directory name is the path delimiter and the null character (`\0`).
 
@@ -229,6 +239,7 @@ Only invalid characters for a file or directory name is the path delimiter and t
 
 ```
 rnm file -ns new_file
+rnm file -rs "/f/F/"                     ( will replace f with F in the name, i.e new name will be: File)
 rnm folder -ns "New Folder" -oD          (-oD forces Directory only mode)
 rnm ./New*/* -ns /i/.ext                 (globbing is allowed)
 rnm ./New*/* -ns /i/.ext -ed             (-ed forces file only mode)
@@ -248,4 +259,5 @@ etc...
 3. Be wary of filename globbing. Command like `rnm ./*` will take all files and directories as arguments and thus the files and directories will be subject to rename operation. If you don't want to rename directories, use file only mode (`-fo`). If you want to go inside directories, use depth (`-dp`) greater than `0` with file only mode.
 4. If you run `rnm . -ns something` or `rnm ./ -ns something`, your current directory will be renamed (be careful).
 5. This is a dangerous tool like `rm`, so use with care. If you make a mistake and do some unwanted rename, run `rnm -u` to undo (before running any more rnm command).
+6. Pass all regex like strings within quotes.
 
