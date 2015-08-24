@@ -20,14 +20,17 @@ Bulk Rename Utility for GNU/Linux written in `C++`. Files and directories can be
 <div id="install"></div>
 #Install:
 
-1. Give the <span class="quote">install</span> file (bin/x32 or x64) execution permission and
-2. Run it or just drag and dropt it on terminal and hit <kbd>Enter</kbd> (requires root privilege).
+```
+./configure
+make
+make install-strip
+```
 
 <div id="un-install"></div>
 #Uninstall:
-To uninstall, run:
+
 ```
-sudo rm /usr/bin/rnm
+make uninstall
 ```
 
 <div id="usage"></div>
