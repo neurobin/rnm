@@ -1,4 +1,4 @@
-
+﻿
 #include "globals.h"
 
 /// Function prototypes
@@ -245,9 +245,7 @@ int countMatchInRegex(std::string s,std::string re){
 
 String toStringAccordingToIFL(Double index,int ifl){
     bool negative_flag=false;
-    Regex re("-[^-]*");
-    std::smatch result;
-    if(regex_match(toString(index),result,re)){index=fabs(index);negative_flag=true;}
+    if(index<0){index=fabs(index);negative_flag=true;}
     Stream buffer;
     buffer.width(ifl);
     buffer.fill(IFF[0]);
@@ -1415,3 +1413,4 @@ int main(int argc, char* argv[]) {getCurrentDir(self_dir);self_path=self_dir+Str
 
 
 
+	
