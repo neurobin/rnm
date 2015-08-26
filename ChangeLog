@@ -50,4 +50,4 @@
 
 ###`3.0.3`: <span class="light-quote">Mon Aug 24 17:01:25 BDT 2015</span>
 
-Bug fix: reserve directory index was decrementing
+Bug fix: inconsistency in reserved directory index.
