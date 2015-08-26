@@ -1008,7 +1008,10 @@ void startTask(StringArray files){
                 if(childDepth(base_dir,file)<=depth){
 
                     startInDepthFileOnlyTaskOnDirectory(file);
-
+                    directory_index=DIRECTORY_INDEX;
+                    directory_index_rd=DIRECTORY_INDEX-inc;
+                    directory_reverse_index=DIRECTORY_REVERSE_INDEX;
+                    directory_reverse_index_rd=DIRECTORY_REVERSE_INDEX+inc;
                 }
                 else{
                 
