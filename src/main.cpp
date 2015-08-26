@@ -414,8 +414,8 @@ String parseNameString(String ns,String file){
         name=replaceStringAll(name,path_delim+"ir"+path_delim,toStringAccordingToIFL(current_index_rd,index_field_length));
         name=replaceStringAll(name,path_delim+"-ir"+path_delim,toStringAccordingToIFL(reverse_index_rd,index_field_length));
         name=replaceStringAll(name,path_delim+"id"+path_delim,toStringAccordingToIFL(directory_index,index_field_length));
-        name=replaceStringAll(name,path_delim+"idr"+path_delim,toStringAccordingToIFL(directory_reverse_index,index_field_length));
-        name=replaceStringAll(name,path_delim+"-id"+path_delim,toStringAccordingToIFL(directory_index_rd,index_field_length));
+        name=replaceStringAll(name,path_delim+"idr"+path_delim,toStringAccordingToIFL(directory_index_rd,index_field_length));
+        name=replaceStringAll(name,path_delim+"-id"+path_delim,toStringAccordingToIFL(directory_reverse_index,index_field_length));
         name=replaceStringAll(name,path_delim+"-idr"+path_delim,toStringAccordingToIFL(directory_reverse_index_rd,index_field_length));
         name=replaceStringAll(name,path_delim+"dc"+path_delim,toString(directory_count));
         

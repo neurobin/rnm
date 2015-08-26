@@ -41,3 +41,13 @@
 1. rnm now can take file or directory name from standard input, i.e if you run rnm without any file or directory path, it will wait for you to type it.
 2. `--force` or `-f` i.e force rename option is back. It will enable some restricted files or directories to be renamed except the root filesystem (`/`).
 3. You no longer need confirmation for renaming single file or directory.
+
+###`3.0.2`: <span class="light-quote">Mon Aug 24 17:01:25 BDT 2015</span>
+
+1. Added POSIX compliant basic and extended regex mode.
+2. Added awk, grep and egrep like regex mode.
+3. Added system locale support in regex.
+
+###`3.0.3`: <span class="light-quote">Mon Aug 24 17:01:25 BDT 2015</span>
+
+Bug fix: reserve directory index was decrementing
