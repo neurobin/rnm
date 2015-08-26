@@ -48,3 +48,6 @@
 2. Added awk, grep and egrep like regex mode.
 3. Added system locale support in regex.
 
+###`3.0.3`: <span class="light-quote">Mon Aug 24 17:01:25 BDT 2015</span>
+
+Bug fix: reserve directory index was decrementing
