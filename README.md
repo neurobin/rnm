@@ -119,7 +119,7 @@ Options are case insensitive, i.e `-ssF` and `-ssf` are the same.
 `-ssf`               : Fixed search string (not treated as regex).
 
 `--replace-string`,
-`-rs`                : Replace string. A string in the form `/search_string/replace_string/modifier`. See **Replace String* in <a href="rnm/index.php#technical-terms">Terminology</a> for details.
+`-rs`                : Replace string. A string in the form `/search_string/replace_string/modifier`. See **Replace String* in <a href="rnm/#technical-terms">Terminology</a> for details.
 
 `--regex`,
 `-re`                : regex mode. Available regex modes are POSIX compliant basic & extended regex,
