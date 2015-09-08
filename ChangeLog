@@ -51,3 +51,10 @@
 ###`3.0.3`: <span class="light-quote">Mon Aug 24 17:01:25 BDT 2015</span>
 
 Bug fix: inconsistency in reserved directory index.
+
+###`3.0.4`: <span class="light-quote">Tue Sep  8 17:44:50 BDT 2015</span>
+
+1. New Name String rule: `/pd/` for parent directory, `/wd/` for working directory.
+2. `/regex/` can be wrtten as `regex` if no modifier is passed.
+3. Directory index bug fixed. 
+

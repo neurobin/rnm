@@ -20,6 +20,8 @@ Bulk Rename Utility written in `C++`. Files and directories can be passed as com
 <div id="install"></div>
 #Install:
 
+###Linux (32 or 64 bit):
+
 1. Give the <span class="quote">install</span> file execution permission and
 2. Run it or just drag and dropt it on terminal and hit <kbd>Enter</kbd> (requires root privilege).
 
@@ -41,7 +43,9 @@ sudo apt-get install rnm
 #Usage:
 
 ```
-rnm Directory/File/Path [options]
+rnm directory/file/path -ns new_name [other options]
+rnm directory/file/path -rs "/search regex/replace string/gi" [other_options]
+rnm directory/file/path -nsf namestring/file/path
 ```
 
 One of the options of `-ns` or `-nsf` or `-rs` is mandatory. Options are **not** sequential, their position in the argument list have no siginificance. For example, `rnm filepath -ns name` is the same as `rnm -ns name filepath`. Though passing the *Directory/File* path at the end of the arguement list is considered to be safe and wise.
@@ -185,14 +189,16 @@ Options are case insensitive, i.e `-ssF` and `-ssf` are the same.
 2. `/ir/` in name string will be replaced with reserved index.
 3. `/id/` in name string will be replaced with directory index (index inside a directory).
 4. `/idr/` in name string will be replaced with reserved directory index
-5. `/n/` in name string will be replaced with filename without extention. If used with `-nsf` option, the filename will be the name taken from the *Name String File*.
-6. `/fn/` in name string will be replaced with full name of the files. If used with `-nsf` option, full name will be the name taken from the *Name String File*.
-7. `/rn/` in name string will be replaced with Replaced Name.
+5. `/-i/` in name string will be replaced with inverse index.
+6. `/-ir/` in name string will be replaced with inverse reserved index. In general, `-i` in the above replacement rules (applies to indexes excluding line indexes) will mean inverse index conforming to their meaning.
+7. `/dc/` in name string will be replaced with directory count
 8. `/l/` in name string will be replaced with line number from *Name String File*.
 9. `/la/` in name string will be replaced wiht actual line number from *Name String File*.
-10. `/dc/` in name string will be replaced with directory count
-11. `/-i/` in name string will be replaced with inverse index.
-12. `/-ir/` in name string will be replaced with inverse reserved index. In general, `-` in the above replacement rules (applies to indexes excluding `/l/`, `/la/` and `/dc/`) will mean inverse index conforming to their meaning.
+10. `/n/` in name string will be replaced with filename without extention. If used with `-nsf` option, the filename will be the name taken from the *Name String File*.
+11. `/fn/` in name string will be replaced with full name of the files. If used with `-nsf` option, full name will be the name taken from the *Name String File*.
+12. `/rn/` in name string will be replaced with Replaced Name.
+13. `/pd/` in name string will be replaced with parent directory  name of the current file or directory. 
+14. `/wd/`  in  name  string will be replaced with the current working directory name. 
 
 
 **Name String File  :** A file which contains a list of name string (one per line).
@@ -202,7 +208,11 @@ Options are case insensitive, i.e `-ssF` and `-ssf` are the same.
      
 **Search String     :** A string that is used to search for files with matching
                     filenames against the search string. By default it is
-                    a regex if `-ssF` option is not used.
+                    a regex if `-ssF` option is not used.It is generally in the form `/regex/modifier` , 
+                    where <u>regex</u> is the regex to search for and available modifier is <u>i</u> which implies  case
+                    insensitive  search. If no  modifier is used, the regex format can be
+                    reduced to `/regex/` or simply `regex`.
+
                  
 **Index Field Length:** An integer value defining the field length of index.
                     By default empty field will be filled with 0's. For example, if
@@ -210,18 +220,19 @@ Options are case insensitive, i.e `-ssF` and `-ssf` are the same.
                     Different filler (other than 0) can be provided with the `-iff` option.
                     
 **Replaced Name     :** The name can be modified at runtime using replace string.
-                    replace string will be parsed to create a new *Name String* rule: `/rname/`
+                    replace string will be parsed to create a new *Name String* rule: `/rn/`
                     which can be used in *Name String*. If name string is not passed as argument,
-                    the new name of the file will be `rname`. *Replaced Name* is always 
+                    the new name of the file will be `/rn/`. *Replaced Name* is always 
                     generated from the old filename.
                     
 **Replace String    :** *Replace String* is a regex of the form: 
-                    `/search_string/replace_string/modifier`
-                    where search_string is the regex to search for and
-                    replace_string is the string to replace with. For replace string,
-                    there are four special cases:
+                    `/search_part/replace_part/modifier`
+                    where search_part is the regex to search for and
+                    replace_part is the string to replace with. Name String rules are
+                    avalilable in search_part and replace_part in Replace String.
+                    Regarding replace string, there are four special cases:
                     
-1. `&` will be taken as the entire match found by the regex (search_string).
+1. `&` will be taken as the entire match found by the regex (search_part).
 2. `\1`, `\2` etc.. is the back-references, i.e you can access captured groups with these back-references.
 3. `\p` is the prefix (i.e., the part of the target sequence that precedes the match)
 4. `\s` is the suffix (i.e., the part of the target sequence that follows the match).
@@ -237,7 +248,7 @@ Episode 1..., Episode 2..., etc...
 ```
 
                     
-**Regex             :** Supported regexes are POSIX compliant <a href="http://pubs.opengroup.org/onlinepubs/9699919799/basedefs/V1_chap09.html#tag_09_03">basic</a> & <a href="http://pubs.opengroup.org/onlinepubs/9699919799/basedefs/V1_chap09.html#tag_09_04">extended</a> regex, grep, <a href="http://pubs.opengroup.org/onlinepubs/9699919799/utilities/awk.html#tag_20_06_13_04">awk</a> an egrep type regexes and the default
+**Regex             :** Supported regexes are POSIX compliant <a href="http://pubs.opengroup.org/onlinepubs/9699919799/basedefs/V1_chap09.html#tag_09_03">basic</a> & <a href="http://pubs.opengroup.org/onlinepubs/9699919799/basedefs/V1_chap09.html#tag_09_04">extended</a> regex, grep, <a href="http://pubs.opengroup.org/onlinepubs/9699919799/utilities/awk.html#tag_20_06_13_04">awk</a> an egrep type regexes and the default. Change the regex mode wiht `-re` or `--regex` option.
                     <a href="http://www.cplusplus.com/reference/regex/ECMAScript/">ECMAScript Regex</a>.
                     
 Only invalid characters for a file or directory name is the path delimiter and the null character (`\0`).
@@ -266,6 +277,6 @@ etc...
 2. Any non option argument will be treated as file or directory path. For example in <pre><code>rnm file1 file2 -- -ns fd</code></pre>`file1`, `file2` and `--` will be taken as file paths.
 3. Be wary of filename globbing. Command like `rnm ./*` will take all files and directories as arguments and thus the files and directories will be subject to rename operation. If you don't want to rename directories, use file only mode (`-fo`). If you want to go inside directories, use depth (`-dp`) greater than `0` with file only mode.
 4. If you run `rnm . -ns something` or `rnm ./ -ns something`, your current directory will be renamed (be careful).
-5. This is a dangerous tool like `rm`, so use with care. If you make a mistake and do some unwanted rename, run `rnm -u` to undo (before running any more rnm command).
-6. Pass all regex like strings within quotes.
+5. This is a dangerous tool like `rm`, so use with care. If you make a mistake and do some unwanted rename, run `rnm -u` to undo (before running any more `rnm` command).
+6. Pass all regex like strings within quotes even if they don't contain any white space.
 
