@@ -229,11 +229,12 @@ Options are case insensitive, i.e `-ssF` and `-ssf` are the same.
 to insert a `&` literally, use `\&` and for `\` use `\\`.Two modifiers are avalilable: g and i.
 g stands for global and replaces every instances of match found.
 i stands case insensitive search (default is case sensitive).*Replace String* is always performed on old file name.
-                    
-                    Example: '/video/Episode /i//gi' will replace every instances
-                    of 'video' with 'Episode index' i.e you will get new rname as:.
-                    Episode 1..., Episode 2..., etc...
-                    
+
+```
+Example: '/video/Episode /i//gi' will replace every instances
+of 'video' with 'Episode index' i.e you will get new rname as:.
+Episode 1..., Episode 2..., etc...
+```
 
                     
 **Regex             :** Supported regexes are POSIX compliant <a href="http://pubs.opengroup.org/onlinepubs/9699919799/basedefs/V1_chap09.html#tag_09_03">basic</a> & <a href="http://pubs.opengroup.org/onlinepubs/9699919799/basedefs/V1_chap09.html#tag_09_04">extended</a> regex, grep, <a href="http://pubs.opengroup.org/onlinepubs/9699919799/utilities/awk.html#tag_20_06_13_04">awk</a> an egrep type regexes and the default
@@ -246,11 +247,11 @@ Only invalid characters for a file or directory name is the path delimiter and t
 
 ```
 rnm file -ns new_file
-rnm file -rs "/f/F/"                     ( will replace f with F in the name, i.e new name will be: File)
-rnm folder -ns "New Folder" -oD          (-oD forces Directory only mode)
-rnm ./New*/* -ns /i/.ext                 (globbing is allowed)
-rnm ./New*/* -ns /i/.ext -ed             (-ed forces file only mode)
-rnm "./New Folder" -ns /id//dc/.ext
+rnm file -rs "/f/F/"                             ( will replace f with F in the name, i.e new name will be: File)
+rnm folder -ns "New Folder" -do                  (-do forces Directory only mode)
+rnm ./New*/* -ns /i/.ext                         (globbing is allowed)
+rnm ./New*/* -ns /i/.ext -ed                     (-ed forces file only mode)
+rnm "./New Folder" -ns /id//dc/.ext -dp 1 -fo    (This will go inside the New Folder directory)
 rnm ./New* -ns /id/.ext -ss "regex"
 rnm -nsf filepath -ns /n//id/.ext
 rnm -nsf filepath
