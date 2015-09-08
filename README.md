@@ -22,7 +22,7 @@ Bulk Rename Utility written in `C++`. Files and directories can be passed as com
 
 ###Unix (32 or 64 bit):
 
-1. Give the <span class="quote">install</span> file execution permission and
+1. Give the <span class="quote">install</span> file execution permission (`chmod +x install`) and
 2. Run it or just drag and dropt it on terminal and hit <kbd>Enter</kbd> (requires root privilege).
 
 ##For Ubuntu:
