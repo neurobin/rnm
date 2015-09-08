@@ -1,0 +1,650 @@
+Content-type: text/html; charset=UTF-8
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML><HEAD><TITLE>Man page of rnm</TITLE>
+</HEAD><BODY>
+<H1>rnm</H1>
+Section: rnm user manual (1)<BR>Updated: Tue Sep 8 2015<BR><A HREF="#index">Index</A>
+<A HREF="/cgi-bin/man/man2html">Return to Main Contents</A><HR>
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>NAME</H2>
+
+rnm - Bulk rename utility
+<A NAME="lbAC">&nbsp;</A>
+<H2>SYNOPSIS</H2>
+
+<B>rnm [-ns</B>
+
+<I>name-string</I>
+
+<B>]</B>
+
+<I>file-path</I>
+
+<B>...</B>
+
+<P>
+One of the options of 
+<B>-ns</B>
+
+or 
+<B>-nsf</B>
+
+or 
+<B>-rs</B>
+
+is mandatory. Options are **not** sequential, their position in the argument list have no significance. For example: 
+<B>rnm filepath -ns name</B>
+
+is the same as 
+<B>rnm -ns name filepath. </B>
+
+Though passing the directory/file path at the end of the argument list is considered to be safe and wise.
+<P>
+Options are case insensitive, i.e 
+<B>-ssF</B>
+
+and 
+<B>-ssf</B>
+
+are the same.
+<A NAME="lbAD">&nbsp;</A>
+<H2>DESCRIPTION</H2>
+
+Bulk Rename Utility written in C++. Files and directories can be passed as command line arguments to rename them in bulk according to some naming scheme (
+<B>Name String</B>
+
+). If no file or directory path is passed as command line arguement, it will wait for user to type the path i.e it will take the path from standard input (&gt;=version 3.0.1). It uses ECMAScript regex as the default regex to provide search (and replace) functionality, other regex modes ( POSIX compliant basic and extended regex) are available through (
+<B>-re</B>
+
+) option. It provides an undo functionality (
+<B>rnm -u</B>
+
+)too to move back an unwanted rename operation. You can also run a simulation instead of actual rename to view the potential outcome as program output on terminal with the 
+<B>-sim</B>
+
+option.
+<A NAME="lbAE">&nbsp;</A>
+<H2>OPTIONS</H2>
+
+<DL COMPACT>
+<DT>-h, --help<DD>
+Show help menu.
+<DT>--index,--start-index, -i,<DD>
+<B>-si</B>
+
+<I>value</I>
+
+: Starting index.
+<DT>--end-index,<DD>
+<B>-ei </B>
+
+<I>value</I>
+
+: End index i.e index to stop renaming from. It is only for files inside a directory that is being recursively taken due to a depth value greater than 0, i.e it works on directory index. Note that directory index 
+<B>/id/</B>
+
+will renew in each directory i.e in each directory rename will be performed from start index to end index.
+<P>
+<DT>--increment-value,<DD>
+<B>-inc</B>
+
+<I>value</I>
+
+: Increment value (floating point decimal). The amount, index will be incremented or decremented in each iteration. Decremented index is available through name string rule: 
+<B>/-i/</B>
+
+, 
+<B>/-id/</B>
+
+etc..
+<P>
+<DT>--line-increment-value,<DD>
+<B>-linc</B>
+
+<I>value</I>
+
+: The amount line count will be incremented or decremented in each iteration. This is always a positive integer.
+<DT>--index-field-length,<DD>
+<B>-ifl</B>
+
+<I>value</I>
+
+: Index field length. Non occupied field will be filled with index field fillers (set with 
+<B>-iff</B>
+
+). iff is set to the character 
+<I>0</I>
+
+by default.
+<P>
+<DT>--index-field-filler,<DD>
+<B>-iff</B>
+
+<I>single-character</I>
+
+: Not occupied field in index will be filled with a character which is set by this option.
+<P>
+<DT>--index-field-precision,<DD>
+<B>-ifp</B>
+
+<I>value</I>
+
+: Index is a floating point decimal value. This sets the precision i.e the number of digits that should be taken after the decimal point.
+<P>
+<DT>--name-string,<DD>
+<B>-ns</B>
+
+<I>string</I>
+
+: Name string.
+<P>
+<DT>--name-string-file,<DD>
+<B>-nsf</B>
+
+<I>file-path</I>
+
+: Name string file. File containing name string (one per line). 
+<B>-nsf</B>
+
+<I>/hist/</I>
+
+i.e a value passed 
+<B>/hist/</B>
+
+as Name string file, will try to take the file from history.
+<P>
+<DT>--name-string-file-null-terminated,<DD>
+<B>-nsfn</B>
+
+<I>file-path</I>
+
+: Name String file. This takes a null terminated Name String file, i.e filenames are terminated by null character (\0) instead of new line (\n).
+<P>
+<DT>--line, --start-line, -l,<DD>
+<B>-sl</B>
+
+: Start Line number in name string file.
+<DT>--line-reverse, --start-line-reverse, -lv,<DD>
+<B>-slv</B>
+
+<I>value</I>
+
+: Same as 
+<B>-l or </B>
+
+<B>-sl</B>
+
+, except line number will be decremented in each iteration.
+<P>
+<DT>--end-line,<DD>
+<B>-el</B>
+
+<I>value</I>
+
+: End line number. Line number to stop renaming from.
+<DT>--end-line-reverse,<DD>
+<B>-elv</B>
+
+<I>value</I>
+
+: Same as 
+<B>-el</B>
+
+, except line number will be decremented in each iteration.
+<DT>--search-string,<DD>
+<B>-ss</B>
+
+<I>string</I>
+
+: Search string String that will be used to search for files with matching names. This is generally a regex if not pass with 
+<B>-ssf</B>
+
+option.
+<P>
+<DT>--search-string-fixed,<DD>
+<B>-ssf</B>
+
+<I>string</I>
+
+: Fixed search string (not treated as regex).
+<P>
+<DT>--replace-string,<DD>
+<B>-rs</B>
+
+<I>string</I>
+
+: Replace string. A string in the form 
+<B>/search_string/replace_string/modifier</B>
+
+, see 
+<B>Replace String</B>
+
+in 
+<B>TERMINOLOGY</B>
+
+section for details.
+<P>
+<DT>--regex,<DD>
+<B>-re</B>
+
+<I>regex-mode</I>
+
+: Regex mode. Available regex modes are POSIX compliant 
+<I>basic</I>
+
+&amp; 
+<I>extended</I>
+
+regex, regex used by 
+<I>grep</I>
+
+, 
+<I>awk</I>
+
+, 
+<I>egrep</I>
+
+and the default regex is 
+<I>ECMAScript</I>
+
+regex.For example, to have a grep like regex, pass the option 
+<B>-re</B>
+
+<I>grep</I>
+
+, to use POSIX compliant extended regex, pass 
+<B>-re</B>
+
+<I>extended</I>
+
+<P>
+<DT>--regex-locale, -rel<DD>
+If this is passed as argument, regex will follow Locale. that is regex like 
+<B>[a-z]</B>
+
+will have their meaning according to the system locale.
+<P>
+<DT>--depth,<DD>
+<B>-dp</B>
+
+<I>value</I>
+
+: Depth of folder. -1(any negative number) means unlimited depth i.e all files and subdirectories will be included. Other values may be 0 1 2 3 etc... Default depth is 0, i.e directory contents will be ignored.
+<P>
+<DT>--file-only, -fo<DD>
+File only mode. Only files are renamed (not directory). Goes to subdirectory/s if depth (
+<B>-dp</B>
+
+) is set to 1 or greater. Default depth is set to 0.
+<P>
+<DT>--directory-only, -do<DD>
+Apply rename on directory only. No subdirectories.
+<P>
+<DT>--exclude-directory, -ed<DD>
+Apply rename on files only, exclude any and all directory and their contents. Forces file only mode regardless of depth (
+<B>-dp</B>
+
+) value.
+<DT>--yes, -y<DD>
+Confirm Yes to all.
+<DT>--undo, -u<DD>
+Undo renaming
+<DT>--version, -v<DD>
+Version info.
+<DT>--quiet, -q<DD>
+Quiet operation.
+<P>
+<DT>--force, -f<DD>
+Apply force. Enables renaming some non permitted files/directories.
+<P>
+<DT>--show-options, -shop<DD>
+This shows an info about the various options passed as arguments and how they are being treated behind the scene.
+<P>
+<DT>--simulation, -sim<DD>
+This runs a simulation of rename instead of actual rename operation, and prints all kinds of available outputs. 
+<B>-q</B>
+
+option won't have any effect if this option is passed.
+</DL>
+<A NAME="lbAF">&nbsp;</A>
+<H2>TERMINOLOGY</H2>
+
+<B>Reserved Index</B>
+
+<DL COMPACT><DT><DD>
+Index will be incremented even if any file is skipped renaming in order to reserve the index for that skipped file
+</DL>
+
+<P>
+<B>Reverse Index</B>
+
+<DL COMPACT><DT><DD>
+Decrementing index.
+</DL>
+
+<P>
+<B>Name String</B>
+
+<DL COMPACT><DT><DD>
+A string, that is parsed to create names for new files. It can be fixed name which then can be modified for different files at runtime. Name sting is parsed by the following rules (must be wrapped around with filepath delimiter /):
+<DL COMPACT><DT><DD>
+<P>
+<B>/n/</B>
+
+in name string will be replaced with filename without extention. If used with -nsf option, the filename will be the name taken from the Name String File.
+<P>
+<B>/fn/</B>
+
+in name string will be replaced with full name of the files. If used with -nsf option, full name will be the name taken from the Name String File.
+<P>
+<B>/rn/</B>
+
+in name string will be replaced with Replaced Name.
+<P>
+<B>/pd/</B>
+
+in name string will be replaced with parent directory name of the current file or directory.
+<P>
+<B>/wd/</B>
+
+in name string will be replaced with the current working directory name.
+<P>
+<B>/l/</B>
+
+in name string will be replaced with line number from Name String File.
+<P>
+<B>/la/</B>
+
+in name string will be replaced with actual line number from Name String File.
+<P>
+<B>/dc/</B>
+
+in name string will be replaced with directory count.
+<P>
+<B>/i/</B>
+
+in name string will be replaced with index.
+<P>
+<B>/ir/</B>
+
+in name string will be replaced with reserved index.
+<P>
+<B>/id/</B>
+
+in name string will be replaced with directory index (index inside a directory).
+<P>
+<B>/idr/</B>
+
+in name string will be replaced with reserved directory index.
+<P>
+<B>/-i/</B>
+
+in name string will be replaced with inverse index.
+<P>
+In general, 
+<B>-i</B>
+
+(
+<B>/-ir/</B>
+
+<B>/-idr/</B>
+
+etc..) in the above replacement rules (applies to indexes excluding line index) will mean inverse index conforming to their meaning.
+</DL>
+
+</DL>
+
+<P>
+<B>Name String File</B>
+
+<DL COMPACT><DT><DD>
+A file which contains a list of name string (one per line). Empty lines will be ignored and line number won't be counted. Actual line number (which counts the empty lines too) is available through name string rule: 
+<B>/la/.</B>
+
+If the name string file path is passed through the option
+<B>-nsfn</B>
+
+, then it will expect the filenames to be null terminated instead of new line.
+</DL>
+
+<P>
+<B>Search String</B>
+
+<DL COMPACT><DT><DD>
+A string that is used to search for files with matching filenames against the search string. By default it is a regex if 
+<B>-ssF</B>
+
+option is not used. It is generally in the form 
+<I>/regex/modifier</I>
+
+, where regex is the regex to search for and available modifier is 
+<I>i</I>
+
+which implies case insensitive search. If no modifier is used, the regex format can be reduced to
+<I>/regex/</I>
+
+or simply 
+<I>regex</I>
+
+</DL>
+
+<P>
+<B>Index Field Length</B>
+
+<DL COMPACT><DT><DD>
+An integer value defining the field length of index. By default empty field will be filled with 0's. For example, if the value is 3, then index will be 001, 002, 003, etc.. Different filler (other than 0) can be provided with the 
+<B>-iff</B>
+
+option.
+</DL>
+
+<P>
+<B>Replaced Name</B>
+
+<DL COMPACT><DT><DD>
+The name can be modified at runtime using replace string. replace string will be parsed to create a new Name String rule: 
+<B>/rn/</B>
+
+which can be used in Name String. If name string is not passed as argument, the new name of the file will be rname. Replaced Name is always generated from the old filename.
+</DL>
+
+<P>
+<B>Replace String</B>
+
+<DL COMPACT><DT><DD>
+Replace String modifies the filename and the modified filename is available through name string rule:
+<B>/rn/</B>
+
+, If no Name String is provided, new name of the file will be the value of /rn/ by default. Replace String is a regex of the form: 
+<B>/search_part/replace_part/modifier</B>
+
+where 
+<I>search_part</I>
+
+is the regex to search for and 
+<I>replace_part</I>
+
+is the string to replace with. Name string rules can be used in both 
+<I>search_part</I>
+
+and
+<I>replace_part</I>
+
+in Replace String.
+<P>
+Regarding the
+<I>replace_part</I>
+
+, there are four special cases:
+<DL COMPACT><DT><DD>
+<P>
+&amp; will be taken as the entire match found by the regex (search_part).
+<P>
+\1, \2 etc.. is the back-references, i.e you can access captured groups with these back-references. Upto two digits after the \ will be taken as a back-reference.
+<P>
+\p is the prefix (i.e., the part of the target sequence that precedes the match).
+<P>
+\s is the suffix (i.e., the part of the target sequence that follows the match).
+</DL>
+
+<P>
+to insert a &amp; literally, use \&amp; and for \ use \\.
+<P>
+Two modifiers are avalilable: 
+<I>g</I>
+
+and 
+<I>i</I>
+
+;
+<I>g</I>
+
+stands for global and replaces every instances of match found and 
+<I>i</I>
+
+stands for case insensitive search (default is case sensitive).Replace String is always performed on old file name.
+<P>
+Example: 
+<B>'/video/Episode /i//gi'</B>
+
+will replace every instances of 'video' with 'Episode index' i.e you will get new rname as: Episode 1..., Episode 2..., etc...
+</DL>
+
+<P>
+<B>Regex</B>
+
+<DL COMPACT><DT><DD>
+Supported regexes are POSIX compliant 
+<I>basic &amp; </I>
+
+<I>extended </I>
+
+regex, 
+<I>grep, </I>
+
+<I>awk </I>
+
+and 
+<I>egrep</I>
+
+type regexes and the default 
+<I>ECMAScript</I>
+
+regex. Change regex mode with
+<B>-re</B>
+
+or
+<B>--regex</B>
+
+option.
+</DL>
+
+<P>
+Only invalid characters for a file or directory name is the path delimiter and the null character (\0).
+<P>
+<A NAME="lbAG">&nbsp;</A>
+<H2>EXAMPLES</H2>
+
+<DL COMPACT>
+<DT>rnm filename -ns newfilename<DD>
+<DL COMPACT><DT><DD>
+renames from 
+<I>filename</I>
+
+to 
+<I>newfilename</I>
+
+</DL>
+
+<DT>rnm filename -rs '/f/F/'<DD>
+<DL COMPACT><DT><DD>
+renames 
+<I>filename</I>
+
+to
+<I>Filename</I>
+
+, i.e f is replaced with F.
+</DL>
+
+<DT>rnm ./* -ns '/fn/ /i/'<DD>
+<DL COMPACT><DT><DD>
+<B>/fn/</B>
+
+is full name and
+<B>/i/</B>
+
+is the index i.e files and directories get indexed (
+<I>filename 1</I>
+
+,
+<I>filename 2</I>
+
+, etc..).
+</DL>
+
+<DT>rnm ./* -ns '/fn/ /i/' -fo<DD>
+<DL COMPACT><DT><DD>
+file only mode, i.e no directory will be renamed or indexed, unless depth is
+<B>&gt;0</B>
+
+<P>
+<P>
+</DL>
+</DL>
+<A NAME="lbAH">&nbsp;</A>
+<H2>LOGDIR</H2>
+
+<P>
+~/.neurobin/rnm
+<P>
+<A NAME="lbAI">&nbsp;</A>
+<H2>EXITSTATUS</H2>
+
+<P>
+0 on success
+<P>
+1 on failure
+<P>
+<A NAME="lbAJ">&nbsp;</A>
+<H2>BUGREPORT</H2>
+
+Report bugs to <A HREF="http://github.com/neurobin/rnm/issues">http://github.com/neurobin/rnm/issues</A>
+<A NAME="lbAK">&nbsp;</A>
+<H2>AUTHOR</H2>
+
+<DL COMPACT>
+<DT>MD. JAHIDUL HAMID &lt;<A HREF="mailto:jahidulhamid@yahoo.com">jahidulhamid@yahoo.com</A>&gt;<DD>
+<DT>@github: <A HREF="http://github.com/neurobin">http://github.com/neurobin</A><DD>
+<DT>@bitbucket: <A HREF="http://bitbucket.com/neurobin">http://bitbucket.com/neurobin</A><DD>
+</DL>
+<A NAME="lbAL">&nbsp;</A>
+<H2>WEB</H2>
+
+<A HREF="http://neurobin.github.io/rnm">http://neurobin.github.io/rnm</A>
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">NAME</A><DD>
+<DT><A HREF="#lbAC">SYNOPSIS</A><DD>
+<DT><A HREF="#lbAD">DESCRIPTION</A><DD>
+<DT><A HREF="#lbAE">OPTIONS</A><DD>
+<DT><A HREF="#lbAF">TERMINOLOGY</A><DD>
+<DT><A HREF="#lbAG">EXAMPLES</A><DD>
+<DT><A HREF="#lbAH">LOGDIR</A><DD>
+<DT><A HREF="#lbAI">EXITSTATUS</A><DD>
+<DT><A HREF="#lbAJ">BUGREPORT</A><DD>
+<DT><A HREF="#lbAK">AUTHOR</A><DD>
+<DT><A HREF="#lbAL">WEB</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/cgi-bin/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 13:59:37 GMT, September 08, 2015
+</BODY>
+</HTML>
