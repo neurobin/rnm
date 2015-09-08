@@ -1,4 +1,4 @@
-.TH rnm 1 "Mon Aug 24 2015" Unix "rnm user manual"
+.TH rnm 1 "Tue Sep 8 2015" Unix "rnm user manual"
 .SH NAME
 rnm \- Bulk rename utility
 .SH SYNOPSIS
@@ -224,6 +224,30 @@ Decrementing index.
 A string, that is parsed to create names for new files. It can be fixed name which then can be modified for different files at runtime. Name sting is parsed by the following rules (must be wrapped around with filepath delimiter /):
 .RS
 
+.B /n/
+in name string will be replaced with filename without extention. If used with -nsf option, the filename will be the name taken from the Name String File.
+
+.B /fn/
+in name string will be replaced with full name of the files. If used with -nsf option, full name will be the name taken from the Name String File.
+
+.B /rn/
+in name string will be replaced with Replaced Name.
+
+.B /pd/
+in name string will be replaced with parent directory name of the current file or directory.
+
+.B /wd/
+in name string will be replaced with the current working directory name.
+
+.B /l/
+in name string will be replaced with line number from Name String File.
+
+.B /la/
+in name string will be replaced with actual line number from Name String File.
+
+.B /dc/
+in name string will be replaced with directory count.
+
 .B /i/
 in name string will be replaced with index.
 
@@ -236,39 +260,15 @@ in name string will be replaced with directory index (index inside a directory).
 .B /idr/
 in name string will be replaced with reserved directory index.
 
-.B /n/
-in name string will be replaced with filename without extention. If used with -nsf option, the filename will be the name taken from the Name String File.
-
-.B /fn/
-in name string will be replaced with full name of the files. If used with -nsf option, full name will be the name taken from the Name String File.
-
-.B /rn/
-in name string will be replaced with Replaced Name.
-
-.B /l/
-in name string will be replaced with line number from Name String File.
-
-.B /la/
-in name string will be replaced wiht actual line number from Name String File.
-
-.B /dc/
-in name string will be replaced with directory count.
-
 .B /-i/
 in name string will be replaced with inverse index.
 
-.B /-ir/
-in name string will be replaced with inverse reserved index.
-
 In general, 
-.B -
-in the above replacement rules (applies to indexes excluding 
-.B /l/
-, 
-.B /la/
-and 
-.B /dc/
-) will mean inverse index conforming to their meaning.
+.B -i
+(
+.B /-ir/
+.B /-idr/
+etc..) in the above replacement rules (applies to indexes excluding line index) will mean inverse index conforming to their meaning.
 .RE
 .RE
 
@@ -285,7 +285,14 @@ If the name string file path is passed through the option
 .RS
 A string that is used to search for files with matching filenames against the search string. By default it is a regex if 
 .B -ssF
-option is not used.
+option is not used. It is generally in the form 
+.I /regex/modifier
+, where regex is the regex to search for and available modifier is 
+.I i
+which implies case insensitive search. If no modifier is used, the regex format can be reduced to
+.I /regex/
+or simply 
+.I regex
 .RE
 
 .B Index Field Length
@@ -298,22 +305,32 @@ option.
 .B Replaced Name
 .RS
 The name can be modified at runtime using replace string. replace string will be parsed to create a new Name String rule: 
-.B /rname/
+.B /rn/
 which can be used in Name String. If name string is not passed as argument, the new name of the file will be rname. Replaced Name is always generated from the old filename.
 .RE
 
 .B Replace String
 .RS
-Replace String is a regex of the form: 
-.B /search_string/replace_string/modifier
+Replace String modifies the filename and the modified filename is available through name string rule:
+.B /rn/
+, If no Name String is provided, new name of the file will be the value of /rn/ by default. Replace String is a regex of the form: 
+.B /search_part/replace_part/modifier
 where 
-.I search_string
+.I search_part
 is the regex to search for and 
-.I replace_string
-is the string to replace with. For replace string, there are four special cases:
+.I replace_part
+is the string to replace with. Name string rules can be used in both 
+.I search_part
+and
+.I replace_part
+in Replace String.
+
+Regarding the
+.I replace_part
+, there are four special cases:
 .RS
 
-& will be taken as the entire match found by the regex (search_string).
+& will be taken as the entire match found by the regex (search_part).
 
 \\1, \\2 etc.. is the back-references, i.e you can access captured groups with these back-references. Upto two digits after the \\ will be taken as a back-reference.
 
@@ -351,16 +368,47 @@ and
 .I egrep
 type regexes and the default 
 .I ECMAScript
-Regex.
+regex. Change regex mode with
+.B -re
+or
+.B --regex
+option.
 .RE
 
 Only invalid characters for a file or directory name is the path delimiter and the null character (\\0).
 
 .SH EXAMPLES
-.IP "rnm filename -ns newfilename      (renames from filename to newfilename)"
-.IP "rnm filename -rs '/f/F/'          (renames filename to Filename, i.e f is replaced with F)"
-.IP "rnm ./* -ns '/fn/ /i/'            (/fn/ is full name and /i/ is the index. so all files and directories get indexed)"
-.IP "rnm ./* -ns '/fn/ /i/' -fo        (file onley mode, i.e no directory will be renamed or indexed, unless depth is >0)"
+.IP "rnm filename -ns newfilename"
+.RS
+renames from 
+.I filename
+to 
+.I newfilename
+.RE
+.IP "rnm filename -rs '/f/F/'"
+.RS
+renames 
+.I filename
+to
+.I Filename
+, i.e f is replaced with F.
+.RE
+.IP "rnm ./* -ns '/fn/ /i/'"
+.RS
+.B /fn/
+is full name and
+.B /i/
+is the index i.e files and directories get indexed (
+.I filename 1
+,
+.I filename 2
+, etc..).
+.RE
+.IP "rnm ./* -ns '/fn/ /i/' -fo"
+.RS
+file only mode, i.e no directory will be renamed or indexed, unless depth is
+.B >0
+
 
 .SH LOGDIR
 

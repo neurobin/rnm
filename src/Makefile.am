@@ -1,2 +1,2 @@
 bin_PROGRAMS = rnm
-rnm_SOURCES = main.cpp globals.h
+rnm_SOURCES = main.cpp globals.h classes.h
