@@ -27,7 +27,9 @@ Bulk Rename Utility written in `C++`. Files and directories can be passed as com
 
 The install script depends on <span class="quote">Bash Shell</span>. If you don't have `bash` installed, then just copy the suitable binary file (`rnm`) from *bin/x32* or *bin/x64* directory to */usr/bin* directory, and copy the <span class="quote">rnm.1</span> file to */usr/share/man/man1* directory.
 
-##For Ubuntu:
+###Ubuntu:
+
+Aside from the above generalized method, you can also install it in Ubuntu from PPA (`ppa:neurobin/ppa`).
 
 ```
 sudo add-apt-repository -y ppa:neurobin/ppa
