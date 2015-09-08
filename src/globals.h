@@ -188,7 +188,6 @@ Version:        "+version+"\n\
 Author:         "+author_name+"\n\
 Author Email:   "+author_email+"\n\
 Bug Report:     "+bug_report_url+"\n\
-License:        GNU GPL public license v3\n\
 ";
 
 
