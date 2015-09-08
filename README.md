@@ -25,6 +25,8 @@ Bulk Rename Utility written in `C++`. Files and directories can be passed as com
 1. Give the <span class="quote">install</span> file execution permission (`chmod +x install`) and
 2. Run it or just drag and dropt it on terminal and hit <kbd>Enter</kbd> (requires root privilege).
 
+The install script depends on <span class="quote">Bash Shell</span>. If you don't have `bash` installed, then just copy the suitable binary file (`rnm`) from *bin/x32* or *bin/x64* directory to */usr/bin* directory, and copy the <span class="quote">rnm.1</span> file to */usr/share/man/man1* directory.
+
 ##For Ubuntu:
 
 ```
@@ -123,7 +125,7 @@ Options are case insensitive, i.e `-ssF` and `-ssf` are the same.
 `-ssf`               : Fixed search string (not treated as regex).
 
 `--replace-string`,
-`-rs`                : Replace string. A string in the form `/search_string/replace_string/modifier`. See **Replace String* in <a href="rnm/#technical-terms">Terminology</a> for details.
+`-rs`                : Replace string. A string in the form `/search_string/replace_string/modifier`. See **Replace String** in <a href="rnm/#technical-terms">Terminology</a> for details.
 
 `--regex`,
 `-re`                : regex mode. Available regex modes are POSIX compliant basic & extended regex,
