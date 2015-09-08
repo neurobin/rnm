@@ -20,7 +20,7 @@ Bulk Rename Utility written in `C++`. Files and directories can be passed as com
 <div id="install"></div>
 #Install:
 
-###Unix (32 or 64 bit):
+###Linux (32 or 64 bit):
 
 1. Give the <span class="quote">install</span> file execution permission and
 2. Run it or just drag and dropt it on terminal and hit <kbd>Enter</kbd> (requires root privilege).
