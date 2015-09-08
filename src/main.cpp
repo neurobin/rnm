@@ -1,5 +1,5 @@
 ﻿
-#include "globals.h"
+#include "classes.h"
 
 /// Function prototypes
 template<typename T>
@@ -15,15 +15,14 @@ String printErrorLog(String);
 void printOpts(void);
 void startTask(StringArray);
 String replaceStringAll(String, String , String );
-String parseNameString(String,String);
+String parseNameString(String,String,DirectoryIndex &);
 String regexReplace(String ,String ,String ,String,int );
-String parseNameString(String ,String );
-void parseReplaceString(String ,String );
+void parseReplaceString(String ,String,DirectoryIndex &);
 String copyFile(String, String );
 String copyFile2(String src,String dst);
 void finalizeRFL();
 bool undoRename();
-String Rename(String,String);
+String Rename(String,String,DirectoryIndex &);
 String printWarningLog(String str);
 bool isPathValid(String file);
 String appendToRFLTMP(String str1,String str2);
@@ -34,6 +33,7 @@ String dirname(String file);
 String fileNameWithoutExtension(String filename);
 String fileExtension(String filename);
 void checkArgAvailability(StringArray sa,int i);
+bool stringContains(String main,String sub);
 template<typename T>
 void mustBeAPositiveNumber(String name,String extra,T x);
 template<typename T>
@@ -55,6 +55,7 @@ bool undoRename(){
     FileStream file_l,file_r;
     String l,r;
     StringArray left,right;
+    DirectoryIndex di;
     file_l.open(RNM_FILE_LOG_L,$binary | $read);
     file_r.open(RNM_FILE_LOG_R,$binary | $read);
     if(file_l.good() && file_r.good()){
@@ -65,7 +66,7 @@ bool undoRename(){
     for(int i=0;i<(int)left.size();i++){
         ///do rename and log into rfl
         if(!quiet){print NEW_LINE+right[i]+"    ---->    "+left[i]+NEW_LINE;}
-        Rename(right[i],left[i]);
+        Rename(right[i],left[i],di);
         }
     
     return true;
@@ -152,7 +153,7 @@ String prepareLogDir(){
 }
 
 
-String Rename(String oldn,String newn){
+String Rename(String oldn,String newn,DirectoryIndex &di){
     
     if(isPathValid(newn)){
         if(!quiet){
@@ -167,8 +168,8 @@ String Rename(String oldn,String newn){
                 appendToRFLTMP(oldn,newn);
                 current_index+=inc;
                 reverse_index-=inc;
-                directory_index+=inc;
-                directory_reverse_index-=inc;
+                di.directory_index+=inc;
+                di.directory_reverse_index-=inc;
                 rnc++;
             }
             else {printErrorLog(strerror(errno));}
@@ -177,8 +178,8 @@ String Rename(String oldn,String newn){
             
                 current_index+=inc;
                 reverse_index-=inc;
-                directory_index+=inc;
-                directory_reverse_index-=inc;
+                di.directory_index+=inc;
+                di.directory_reverse_index-=inc;
                 rnc++;
         }
         
@@ -311,8 +312,8 @@ String processReplacementString(String replace){
 }
     
     
-void processReplaceString(String rs,String file){
-    parseReplaceString(rs,file);
+void processReplaceString(String rs,String file,DirectoryIndex &di){
+    parseReplaceString(rs,file,di);
     ///we now have valid rs_search, rs_replace and rs_mod
     rname=basename(file);
     rname=regexReplace(rname,rs_search,rs_replace,rs_mod,1);
@@ -320,13 +321,13 @@ void processReplaceString(String rs,String file){
 }
     
 
-void parseReplaceString(String rs,String file){
+void parseReplaceString(String rs,String file,DirectoryIndex &di){
     String name=rs;
     ///bool re_g=false,re_i=false;
     ///std::regex_constants::format_first_only
     Regex re ("^"+path_delim+"[^"+path_delim+"]*"+path_delim+"[^"+path_delim+"]*"+path_delim+"[gi]{0,2}$");
     RegexResult result;
-    if(!regexMatch(name,re)){name=parseNameString( rs, file);}
+    if(!regexMatch(name,re)){name=parseNameString( rs, file,di);}
     if(name!="" && regexMatch(name,re)){
         re ="^"+path_delim+"([^"+path_delim+"]*)"+path_delim+"[^"+path_delim+"]*"+path_delim+"[gi]{0,2}$";
         if(std::regex_match(name,result,re)){rs_search=result[1];}
@@ -356,8 +357,8 @@ void parseSearchString(String ss){
         if(std::regex_match(ss,result,re)){ss_mod=result[1];}
     }
     else{
-        printErrorLog("Invalid search string format: "+ss);
-        Exit(1);
+        ///search string is a regex and with no modifier syntax `regex` in place of /regex/ is allowed.
+        ss_search=ss;
     } 
   }
   else{
@@ -398,7 +399,7 @@ bool isComplyingToSearchString(String file){
 
 
 
-String parseNameString(String ns,String file){
+String parseNameString(String ns,String file,DirectoryIndex &di){
     String fname=basename(file);
     if(replace_string==""){rname=fname;}
     String name=ns;
@@ -413,11 +414,13 @@ String parseNameString(String ns,String file){
         name=replaceStringAll(name,path_delim+"-i"+path_delim,toStringAccordingToIFL(reverse_index,index_field_length));
         name=replaceStringAll(name,path_delim+"ir"+path_delim,toStringAccordingToIFL(current_index_rd,index_field_length));
         name=replaceStringAll(name,path_delim+"-ir"+path_delim,toStringAccordingToIFL(reverse_index_rd,index_field_length));
-        name=replaceStringAll(name,path_delim+"id"+path_delim,toStringAccordingToIFL(directory_index,index_field_length));
-        name=replaceStringAll(name,path_delim+"idr"+path_delim,toStringAccordingToIFL(directory_index_rd,index_field_length));
-        name=replaceStringAll(name,path_delim+"-id"+path_delim,toStringAccordingToIFL(directory_reverse_index,index_field_length));
-        name=replaceStringAll(name,path_delim+"-idr"+path_delim,toStringAccordingToIFL(directory_reverse_index_rd,index_field_length));
+        name=replaceStringAll(name,path_delim+"id"+path_delim,toStringAccordingToIFL(di.directory_index,index_field_length));
+        name=replaceStringAll(name,path_delim+"idr"+path_delim,toStringAccordingToIFL(di.directory_index_rd,index_field_length));
+        name=replaceStringAll(name,path_delim+"-id"+path_delim,toStringAccordingToIFL(di.directory_reverse_index,index_field_length));
+        name=replaceStringAll(name,path_delim+"-idr"+path_delim,toStringAccordingToIFL(di.directory_reverse_index_rd,index_field_length));
         name=replaceStringAll(name,path_delim+"dc"+path_delim,toString(directory_count));
+        name=replaceStringAll(name,path_delim+"pd"+path_delim,CPDN);
+        name=replaceStringAll(name,path_delim+"wd"+path_delim,CWDN);
         
         
         if(name_string_file!=""){
@@ -586,6 +589,10 @@ String basename(String file){
     std::size_t found = file.find_last_of(path_delim);
     return file.substr(found+1);
     
+}
+
+String getParentDirectoryName(String file){
+    return basename(dirname(file));
 }
 
 String fileExtension(std::string file){
@@ -770,7 +777,7 @@ NameList getNameListFromFile(String filename,Int si,Int ei,int mod=1){
 
 
 
-bool doRename(String file){
+bool doRename(String file,DirectoryIndex &di){
     bool not_skipped=true;
     
     if(isInvalidFile(file)){return false;}
@@ -785,10 +792,10 @@ bool doRename(String file){
     String oldn=basename(file);
     String dir=dirname(file);
     String name="";
-    if(replace_string!=""){processReplaceString(replace_string,file);}
+    if(replace_string!=""){processReplaceString(replace_string,file,di);}
     
     if(name_string!="" && name_string_file==""){
-        name=parseNameString(name_string,file);
+        name=parseNameString(name_string,file,di);
         
         
         }
@@ -796,7 +803,7 @@ bool doRename(String file){
         
         if(nsflist[current_line]!=""){
             current_abs_line=abslc_list[current_line];
-            name=parseNameString(nsflist[current_line],file);
+            name=parseNameString(nsflist[current_line],file,di);
             
             
             if(!reverse_line){current_line+=linc;}
@@ -807,7 +814,7 @@ bool doRename(String file){
     else if(name_string!="" && name_string_file!=""){
         if(nsflist[current_line]!=""){
             current_abs_line=abslc_list[current_line];
-            name=parseNameString(name_string,nsflist[current_line]);
+            name=parseNameString(name_string,nsflist[current_line],di);
             
         
             if(!reverse_line){current_line+=linc;}
@@ -837,11 +844,11 @@ bool doRename(String file){
             
             switch(confirm){
                 case 1:
-                      Rename(file,dir+path_delim+name);
+                      Rename(file,dir+path_delim+name,di);
                       break;
                 case 2:
                       all_yes=true;
-                      Rename(file,dir+path_delim+name);
+                      Rename(file,dir+path_delim+name,di);
                       break;
                 case 3:
                       break;
@@ -857,7 +864,7 @@ bool doRename(String file){
         }
         else{
             ///do rename finally
-            Rename(file,dir+path_delim+name);
+            Rename(file,dir+path_delim+name,di);
             
         }
         
@@ -916,12 +923,10 @@ void startInDepthFileOnlyTaskOnDirectory(String dir,String base_dir=base_dir){
     files=getFilesFromDir(dir);
     
     directory_count++;
-    directory_index=DIRECTORY_INDEX;
-    directory_index_rd=DIRECTORY_INDEX;
-    directory_reverse_index=DIRECTORY_REVERSE_INDEX;
-    directory_reverse_index_rd=DIRECTORY_REVERSE_INDEX;
+    DirectoryIndex di;
+    
     for(int i=0;i<(int)files.size();i++){
-        if(fabs(directory_index)>fabs(end_index)){continue;}
+        if(fabs(di.directory_index)>fabs(end_index)){continue;}
         String file=files[i];
 
         if(childDepth(base_dir,file)>depth){continue;}
@@ -931,7 +936,7 @@ void startInDepthFileOnlyTaskOnDirectory(String dir,String base_dir=base_dir){
         file=getAbsolutePath(file);
         src_name=basename(file);
         parent=dirname(file);
-        
+        CPDN=getParentDirectoryName(file);
     
         if(isDir(file)){
             
@@ -953,7 +958,7 @@ void startInDepthFileOnlyTaskOnDirectory(String dir,String base_dir=base_dir){
             
             else{
                 
-                doRename(file);
+                doRename(file,di);
                 
             }
             
@@ -961,7 +966,7 @@ void startInDepthFileOnlyTaskOnDirectory(String dir,String base_dir=base_dir){
         else if(isFile(file)){
             
             if(!directory_only){
-                doRename(file);
+                doRename(file,di);
             }
             
         }
@@ -972,8 +977,8 @@ void startInDepthFileOnlyTaskOnDirectory(String dir,String base_dir=base_dir){
         }
 
         ///increment reserved indexes
-        directory_index_rd+=inc;
-        directory_reverse_index_rd-=inc;
+        di.directory_index_rd+=inc;
+        di.directory_reverse_index_rd-=inc;
         current_index_rd+=inc;
         reverse_index_rd-=inc;
         
@@ -987,10 +992,9 @@ void startInDepthFileOnlyTaskOnDirectory(String dir,String base_dir=base_dir){
 void startTask(StringArray files){
     
     directory_count++;
-    directory_index=DIRECTORY_INDEX;
-    directory_index_rd=DIRECTORY_INDEX;
-    directory_reverse_index=DIRECTORY_REVERSE_INDEX;
-    directory_reverse_index_rd=DIRECTORY_REVERSE_INDEX;
+    DirectoryIndex di;
+    
+    if((int)files.size()>0){CWDN=getParentDirectoryName(getAbsolutePath(files[0]));}
     for(int i=0;i<(int)files.size();i++){
         String file=files[i];
         String parent="";
@@ -999,6 +1003,7 @@ void startTask(StringArray files){
         file=getAbsolutePath(file);
         src_name=basename(file);
         parent=dirname(file);
+        CPDN=getParentDirectoryName(file);
 
         if(isDir(file)){
             base_dir=dirname(file);
@@ -1008,10 +1013,6 @@ void startTask(StringArray files){
                 if(childDepth(base_dir,file)<=depth){
 
                     startInDepthFileOnlyTaskOnDirectory(file);
-                    directory_index=DIRECTORY_INDEX;
-                    directory_index_rd=DIRECTORY_INDEX-inc;
-                    directory_reverse_index=DIRECTORY_REVERSE_INDEX;
-                    directory_reverse_index_rd=DIRECTORY_REVERSE_INDEX+inc;
                 }
                 else{
                 
@@ -1026,8 +1027,7 @@ void startTask(StringArray files){
             }
             
             else{
-                doRename(file);
-              
+                doRename(file,di);
             }
             
             
@@ -1035,7 +1035,8 @@ void startTask(StringArray files){
         else if(isFile(file)){
             
             if(!directory_only){
-                doRename(file);
+                doRename(file,di);
+                
             }
      
         }
@@ -1045,8 +1046,8 @@ void startTask(StringArray files){
         }
         
         ///increment reserved indexes
-        directory_index_rd+=inc;
-        directory_reverse_index_rd-=inc;
+        di.directory_index_rd+=inc;
+        di.directory_reverse_index_rd-=inc;
         current_index_rd+=inc;
         reverse_index_rd-=inc;
         
@@ -1208,9 +1209,7 @@ int main(int argc, char* argv[]) {getCurrentDir(self_dir);self_path=self_dir+Str
           reverse_index=start_index;
           reverse_index_rd=start_index;
           DIRECTORY_INDEX=start_index;
-          directory_index=DIRECTORY_INDEX;
-          directory_reverse_index=directory_index;
-          DIRECTORY_REVERSE_INDEX=directory_reverse_index;
+          DIRECTORY_REVERSE_INDEX=start_index;
           skipcount=true;
         }
         
@@ -1409,9 +1408,15 @@ int main(int argc, char* argv[]) {getCurrentDir(self_dir);self_path=self_dir+Str
         }
     if(search_string!="" && !fixed_ss){
         Regex re("^"+path_delim+"[^"+path_delim+"]*"+path_delim+"i?$");
-        if(!regexMatch(search_string,re)){
-            printErrorLog("Invalid search string format: "+search_string);
-            Exit(1);
+        if(regexMatch(search_string,re)){
+            /// Allowed
+            }
+        else{
+            if(stringContains(search_string,path_delim)){
+                printErrorLog("Invalid use of "+path_delim+" character in regex: "+search_string);
+                Exit(1);
+                }
+            
             }
         parseSearchString(search_string);
         }

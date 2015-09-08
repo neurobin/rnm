@@ -108,12 +108,8 @@ Double reverse_index=reverse_start_index;
 Double reverse_index_rd=reverse_start_index;
 Double end_index=LIMIT_OF_DOUBLE;
 Double inc=1;
-Double directory_index=1;
-Double directory_index_rd=1;
-Double directory_reverse_index=-1;
-Double directory_reverse_index_rd=-1;
-Double DIRECTORY_INDEX=directory_index;
-Double DIRECTORY_REVERSE_INDEX=directory_reverse_index;
+Double DIRECTORY_INDEX=1;
+Double DIRECTORY_REVERSE_INDEX=-1;
 
 /////ints
 
@@ -145,6 +141,8 @@ String NEW_LINE="\n";
 /////Strings
 String path_delim="/";
 String root_filesystem="/";
+String CPDN="";
+String CWDN="";
 ////getting Linux Home and defining some paths
 String getUnixHome(){const char *homedir;if ((homedir = getenv("HOME")) == NULL) {homedir = getpwuid(getuid())->pw_dir;}return String(homedir);}
 String HOME=getUnixHome();
@@ -174,10 +172,10 @@ String rs_mod="";
 String ss_search="";
 String ss_mod="";
 
-
+/// Project Info
 String project_name="rnm";
 String executable_name="rnm";
-String version="3.0.3";
+String version="3.0.4";
 String author_name="Jahidul Hamid";
 String author_email="jahidulhamid@yahoo.com";
 String bug_report_url="http://github.com/neurobin/"+project_name+"/issues";
@@ -331,13 +329,13 @@ Reverse Index     : Decrementing index.\n\
 \n\
 Name String       : A string which is parsed to create name for new files.\n\
                     Name sting must be wrapped around with filepath delimiter "+path_delim+":\n\
+                    "+path_delim+"pd"+path_delim+": parent directory name,"+path_delim+"wd"+path_delim+": working directory name.\n\
                     "+path_delim+"i"+path_delim+": index, "+path_delim+"ir"+path_delim+": index reserved,"+path_delim+"id"+path_delim+": directory index,\n\
                     "+path_delim+"idr"+path_delim+": reserved directory index,"+path_delim+"n"+path_delim+": name without extension,\n\
                     "+path_delim+"fn"+path_delim+": full name,"+path_delim+"rn"+path_delim+": replaced name,"+path_delim+"l"+path_delim+": line number,\n\
                     "+path_delim+"la"+path_delim+": actual line number,"+path_delim+"dc"+path_delim+": directory count,\n\
-                    "+path_delim+"-i"+path_delim+", inverse index"+path_delim+"-ir"+path_delim+", inverse reserved index.\n\
-                    In general - in the above replacement rules (applies to indexes\n\
-                    excluding "+path_delim+"l"+path_delim+", "+path_delim+"la"+path_delim+" and "+path_delim+"dc"+path_delim+")\n\
+                    "+path_delim+"-i"+path_delim+": inverse index,"+path_delim+"-ir"+path_delim+": inverse reserved index,\n\
+                    In general - in the above replacement rules (applies to indexes excluding line index)\n\
                     will mean reverse index conforming to their meaning. See man rnm for more details.\n\
   \n\
      \n\
@@ -349,8 +347,8 @@ Name String File  : A file which contains a list of name string (one per line).\
                     \n\
 Search String     : A string that is used to search for files with matching\n\
                     filenames against the search string. By default it is\n\
-                    a regex if `-ssF` option is not used. It's c++ regex\n\
-                    which uses the ECMAScript regex syntax.\n\
+                    a regex if `-ssF` option is not used. It uses the \n\
+                    ECMAScript regex syntax by default.\n\
                  \n\
 Index Field Length: An integer value defining the field length of index.\n\
                     By default empty field will be filled with 0's. For example, if\n\
@@ -358,18 +356,19 @@ Index Field Length: An integer value defining the field length of index.\n\
                     Different filler (other than 0) can be provided with the `-iff` option.\n\
                     \n\
 Replaced Name     : The name can be modified at runtime using replace string.\n\
-                    replace string will be parsed to create a new *Name String* rule: "+path_delim+"rname"+path_delim+"\n\
+                    replace string will be parsed to create a new *Name String* rule: "+path_delim+"rn"+path_delim+"\n\
                     which can be used in *Name String*. If name string is not passed as argument,\n\
-                    the new name of the file will be `rname`. *Replaced Name* is always \n\
+                    the new name of the file will be `/rn/`. *Replaced Name* is always \n\
                     generated from the old filename.\n\
                     \n\
 Replace String    : *Replace String* is a regex of the form: \n\
-                    "+path_delim+"search_string"+path_delim+"replace_string"+path_delim+"modifier\n\
-                    where search_string is the regex to search for and\n\
-                    replace_string is the string to replace with. For replace string.\n\
+                    "+path_delim+"search_part"+path_delim+"replace_part"+path_delim+"modifier\n\
+                    where search_part is the regex to search for and\n\
+                    replace_part is the string to replace with. Name String rules can be used\n\
+                    in search_part and replace_part in Replace String.\n\
                     \n\
                     *Replace String* is always performed on old file name.\n\
-                    See details on the manual man rnm.\n\
+                    See details on the manual (man rnm).\n\
                     \n\
     Only invalid characters for a file or directory name is the path delimiter and the null character (\\0).\n\
     See more details on the manual (man rnm)\n\
