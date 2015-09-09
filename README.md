@@ -252,8 +252,7 @@ Episode 1..., Episode 2..., etc...
 ```
 
                     
-**Regex             :** Supported regexes are POSIX compliant <a href="http://pubs.opengroup.org/onlinepubs/9699919799/basedefs/V1_chap09.html#tag_09_03">basic</a> & <a href="http://pubs.opengroup.org/onlinepubs/9699919799/basedefs/V1_chap09.html#tag_09_04">extended</a> regex, grep, <a href="http://pubs.opengroup.org/onlinepubs/9699919799/utilities/awk.html#tag_20_06_13_04">awk</a> an egrep type regexes and the default. Change the regex mode wiht `-re` or `--regex` option.
-                    <a href="http://www.cplusplus.com/reference/regex/ECMAScript/">ECMAScript Regex</a>.
+**Regex             :** Supported regexes are POSIX compliant <a href="http://pubs.opengroup.org/onlinepubs/9699919799/basedefs/V1_chap09.html#tag_09_03">basic</a> & <a href="http://pubs.opengroup.org/onlinepubs/9699919799/basedefs/V1_chap09.html#tag_09_04">extended</a> regex, grep, egrep and <a href="http://pubs.opengroup.org/onlinepubs/9699919799/utilities/awk.html#tag_20_06_13_04">awk</a> type regexes and the default <a href="http://www.cplusplus.com/reference/regex/ECMAScript/">ECMAScript Regex</a>. You can change the regex mode with `-re` or `--regex` option.
                     
 Only invalid characters for a file or directory name is the path delimiter and the null character (`\0`).
 
