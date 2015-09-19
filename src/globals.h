@@ -157,7 +157,7 @@ String RNM_FILE_LOG_R_TMP=RNM_FILE_LOG_R+".tmp";
 String NSF_LIST_FILE=LOG_DIR+path_delim+"nsf.list";
 
 
-StringArray file_vector;
+//StringArray file_vector;
 char self_dir[FILENAME_MAX];
 String base_dir="";
 String self_path="";
@@ -175,7 +175,7 @@ String ss_mod="";
 /// Project Info
 String project_name="rnm";
 String executable_name="rnm";
-String version="3.0.4";
+String version="3.0.5";
 String author_name="Jahidul Hamid";
 String author_email="jahidulhamid@yahoo.com";
 String bug_report_url="http://github.com/neurobin/"+project_name+"/issues";
