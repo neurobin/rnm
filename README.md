@@ -168,6 +168,8 @@ Options are case insensitive, i.e `-ssF` and `-ssf` are the same.
 
 `-q`                 : Quiet operation.
 
+`--`                 : If this option is passed, anything and everything after it will be taken as file path. Put all options before passing this option.
+
 `--show-options`,
 `-shop`              : This shows an info about the various options passed as arguments
                        and how they are being treated behind the scene.
@@ -282,4 +284,5 @@ etc...
 4. If you run `rnm . -ns something` or `rnm ./ -ns something`, your current directory will be renamed (be careful).
 5. This is a dangerous tool like `rm`, so use with care. If you make a mistake and do some unwanted rename, run `rnm -u` to undo (before running any more `rnm` command).
 6. Pass all regex like strings within quotes even if they don't contain any white space.
+7. To pass a filename that resembles an option, use `./`, i.e `./-ns` to pass a file named `-ns` in the current directory. Or you can use the `--` option make it a non-option argument; in that case make sure to pass all "Option" arguments before `--`, because everything after `--` will be taken as file path/s.
 

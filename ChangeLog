@@ -58,3 +58,8 @@ Bug fix: inconsistency in reserved directory index.
 2. `/regex/` can be wrtten as `regex` if no modifier is passed.
 3. Directory index bug fixed. 
 
+###`3.0.5`: <span class="light-quote">Sat Sep 19 13:00:59 UTC 2015</span>
+
+1. `--` option added. Anything after this option will be taken as file path.
+2. Added warning for multiple defintion of the same option i.e option override.
+
