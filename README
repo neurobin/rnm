@@ -22,10 +22,14 @@ Bulk Rename Utility written in `C++`. Files and directories can be passed as com
 
 ###Unix (32 or 64 bit):
 
-1. Give the <span class="quote">install</span> file execution permission and
+1. Give the <span class="quote">install</span> file execution permission (`chmod +x install`) and
 2. Run it or just drag and dropt it on terminal and hit <kbd>Enter</kbd> (requires root privilege).
 
-##For Ubuntu:
+The install script depends on <span class="quote">Bash Shell</span>. If you don't have `bash` installed, then just copy the suitable binary file (`rnm`) from *bin/x32* or *bin/x64* directory to */usr/bin* directory, and copy the <span class="quote">rnm.1</span> file to */usr/share/man/man1* directory.
+
+###Ubuntu:
+
+Aside from the above generalized method, you can also install it in Ubuntu from PPA (`ppa:neurobin/ppa`).
 
 ```
 sudo add-apt-repository -y ppa:neurobin/ppa
@@ -123,7 +127,7 @@ Options are case insensitive, i.e `-ssF` and `-ssf` are the same.
 `-ssf`               : Fixed search string (not treated as regex).
 
 `--replace-string`,
-`-rs`                : Replace string. A string in the form `/search_string/replace_string/modifier`. See **Replace String* in <a href="rnm/#technical-terms">Terminology</a> for details.
+`-rs`                : Replace string. A string in the form `/search_string/replace_string/modifier`. See **Replace String** in <a href="rnm/#technical-terms">Terminology</a> for details.
 
 `--regex`,
 `-re`                : regex mode. Available regex modes are POSIX compliant basic & extended regex,
@@ -163,6 +167,8 @@ Options are case insensitive, i.e `-ssF` and `-ssf` are the same.
 `-v`                 : Version info.
 
 `-q`                 : Quiet operation.
+
+`--`                 : If this option is passed, anything and everything after it will be taken as file path. Put all options before passing this option.
 
 `--show-options`,
 `-shop`              : This shows an info about the various options passed as arguments
@@ -248,8 +254,7 @@ Episode 1..., Episode 2..., etc...
 ```
 
                     
-**Regex             :** Supported regexes are POSIX compliant <a href="http://pubs.opengroup.org/onlinepubs/9699919799/basedefs/V1_chap09.html#tag_09_03">basic</a> & <a href="http://pubs.opengroup.org/onlinepubs/9699919799/basedefs/V1_chap09.html#tag_09_04">extended</a> regex, grep, <a href="http://pubs.opengroup.org/onlinepubs/9699919799/utilities/awk.html#tag_20_06_13_04">awk</a> an egrep type regexes and the default. Change the regex mode wiht `-re` or `--regex` option.
-                    <a href="http://www.cplusplus.com/reference/regex/ECMAScript/">ECMAScript Regex</a>.
+**Regex             :** Supported regexes are POSIX compliant <a href="http://pubs.opengroup.org/onlinepubs/9699919799/basedefs/V1_chap09.html#tag_09_03">basic</a> & <a href="http://pubs.opengroup.org/onlinepubs/9699919799/basedefs/V1_chap09.html#tag_09_04">extended</a> regex, grep, egrep and <a href="http://pubs.opengroup.org/onlinepubs/9699919799/utilities/awk.html#tag_20_06_13_04">awk</a> type regexes and the default <a href="http://www.cplusplus.com/reference/regex/ECMAScript/">ECMAScript Regex</a>. You can change the regex mode with `-re` or `--regex` option.
                     
 Only invalid characters for a file or directory name is the path delimiter and the null character (`\0`).
 
@@ -279,4 +284,5 @@ etc...
 4. If you run `rnm . -ns something` or `rnm ./ -ns something`, your current directory will be renamed (be careful).
 5. This is a dangerous tool like `rm`, so use with care. If you make a mistake and do some unwanted rename, run `rnm -u` to undo (before running any more `rnm` command).
 6. Pass all regex like strings within quotes even if they don't contain any white space.
+7. To pass a filename that resembles an option, use `./`, i.e `./-ns` to pass a file named `-ns` in the current directory. Or you can use the `--` option make it a non-option argument; in that case make sure to pass all "Option" arguments before `--`, because everything after `--` will be taken as file path/s.
 
