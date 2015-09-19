@@ -1509,7 +1509,7 @@ int main(int argc, char* argv[]) {getCurrentDir(self_dir);self_path=self_dir+Str
     if(name_string_file!=""){
         if(name_string_file==path_delim+"hist"+path_delim){
             if(isFile(NSF_LIST_FILE)){name_string_file=NSF_LIST_FILE;}
-            else{printErrorLog("History no found.");Exit(1);}
+            else{printErrorLog("History not found.");Exit(1);}
         }
         else if(!isFile(name_string_file)){
             printErrorLog("Name String File not found: "+name_string_file);
