@@ -1145,16 +1145,35 @@ int main(int argc, char* argv[]) {getCurrentDir(self_dir);self_path=self_dir+Str
 
     
     //////////////////////////////// Opt parse////////////////////////////////////////////
-    bool skipcount=false;
+    
     StringArray args;
     for(int i = 1; i < argc; i++){args.push_back(argv[i]);}
     
+    bool skipcount=false;
+    bool noopt=false;
+  { //Scope for the following objects
+    Options inc_obj("-inc","--increment-value");
+    Options linc_obj("-linc","--line-increment-value");
+    Options si_obj("-i","-si","--index","--start-index");
+    Options ei_obj("-ei","--end-index");
+    Options ifl_obj("-ifl","--index-field-length");
+    Options ifp_obj("-ifp","--index-field-precision");
+    Options iff_obj("-iff","--index-field-filler");
+    Options ns_obj("-ns","--name-string");
+    Options nsf_obj("-nsf","--name-string-file");
+    Options sl_obj("-l","-sl","--line","--start-line");
+    Options el_obj("-el","--end-line");
+    Options ss_obj("-ss","--search-string");
+    Options rs_obj("-rs","--replace-string");
+    Options re_obj("-re","--regex");
+    Options dp_obj("-dp","--depth");
     
     for(int i = 0; i < (int)args.size(); i++){
       if(skipcount){skipcount=false;continue;}
         
       String opt=toLower(String(args[i]));
       
+     if(!noopt){
       if(opt=="-h"||opt=="--help"){
           printe help_message;
           return 0;
@@ -1176,7 +1195,7 @@ int main(int argc, char* argv[]) {getCurrentDir(self_dir);self_path=self_dir+Str
       
       else if(opt=="-do"||opt=="--directory-only"){
           directory_only=true;
-          
+        
         }
         
       else if(opt=="-ed"||opt=="--exclude-directory"){
@@ -1190,6 +1209,9 @@ int main(int argc, char* argv[]) {getCurrentDir(self_dir);self_path=self_dir+Str
 "+path_delim+"-i"+path_delim+", "+path_delim+"-ir"+path_delim+", "+path_delim+"-id"+path_delim+" etc..\n",args[i+1]);
           inc=stringTo<decltype(inc)>(args[i+1]);
           skipcount=true;
+          
+          inc_obj.count++;
+          if(inc_obj.count>1){printWarningLog("Increment value overwritten");}
         }
         
       else if(opt=="-linc"||opt=="--line-increment-value"){
@@ -1197,6 +1219,9 @@ int main(int argc, char* argv[]) {getCurrentDir(self_dir);self_path=self_dir+Str
           mustBeAPositiveInteger("Line Increment Value",args[i+1]);
           linc=stringTo<decltype(linc)>(args[i+1]);
           skipcount=true;
+          
+          linc_obj.count++;
+          if(linc_obj.count>1){printWarningLog("Line increment value overwritten");}
         }
         
         
@@ -1211,6 +1236,9 @@ int main(int argc, char* argv[]) {getCurrentDir(self_dir);self_path=self_dir+Str
           DIRECTORY_INDEX=start_index;
           DIRECTORY_REVERSE_INDEX=start_index;
           skipcount=true;
+          
+          si_obj.count++;
+          if(si_obj.count>1){printWarningLog("Start index overwritten");}
         }
         
       else if(opt=="-ei"||opt=="--end-index"){
@@ -1219,6 +1247,8 @@ int main(int argc, char* argv[]) {getCurrentDir(self_dir);self_path=self_dir+Str
           end_index=stringTo<decltype(end_index)>(args[i+1]);
           skipcount=true;
           
+          ei_obj.count++;
+          if(ei_obj.count>1){printWarningLog("End index overwritten");}
         }
         
       else if(opt=="-ifl"||opt=="--index-field-length"){
@@ -1227,6 +1257,8 @@ int main(int argc, char* argv[]) {getCurrentDir(self_dir);self_path=self_dir+Str
           index_field_length=stringTo<decltype(index_field_length)>(args[i+1]);
           skipcount=true;
           
+          ifl_obj.count++;
+          if(ifl_obj.count>1){printWarningLog("Index field length overwritten");}
         }
         
       else if(opt=="-ifp"||opt=="--index-field-precision"){
@@ -1235,6 +1267,8 @@ int main(int argc, char* argv[]) {getCurrentDir(self_dir);self_path=self_dir+Str
           IFP=stringTo<decltype(IFP)>(args[i+1]);
           skipcount=true;
           
+          ifp_obj.count++;
+          if(ifp_obj.count>1){printWarningLog("Index field precision overwritten");}
         }
         
       else if(opt=="-iff"||opt=="--index-field-filler"){
@@ -1244,6 +1278,8 @@ int main(int argc, char* argv[]) {getCurrentDir(self_dir);self_path=self_dir+Str
           IFF=replaceStringAll(IFF,"\\","");
           skipcount=true;
           
+          iff_obj.count++;
+          if(iff_obj.count>1){printWarningLog("Index field filler overwritten");}
         }
       
       else if(opt=="-ns"||opt=="--name-string"){
@@ -1251,6 +1287,8 @@ int main(int argc, char* argv[]) {getCurrentDir(self_dir);self_path=self_dir+Str
           name_string=args[i+1];
           skipcount=true;
           
+          ns_obj.count++;
+          if(ns_obj.count>1){printWarningLog("Name string overwritten");}
         }
         
       else if(opt=="-nsf"||opt=="--name-string-file"){
@@ -1258,6 +1296,8 @@ int main(int argc, char* argv[]) {getCurrentDir(self_dir);self_path=self_dir+Str
           name_string_file=args[i+1];
           skipcount=true;
           
+          nsf_obj.count++;
+          if(nsf_obj.count>1){printWarningLog("Name string file option overwritten");}
         }
         
 
@@ -1267,6 +1307,8 @@ int main(int argc, char* argv[]) {getCurrentDir(self_dir);self_path=self_dir+Str
           nsf_n=true;
           skipcount=true;
           
+          nsf_obj.count++;
+          if(nsf_obj.count>1){printWarningLog("Name string file option overwritten");}
         }
         
       else if(opt=="-l"||opt=="-sl"||opt=="--line"||opt=="--start-line"){
@@ -1276,6 +1318,8 @@ int main(int argc, char* argv[]) {getCurrentDir(self_dir);self_path=self_dir+Str
           current_line=start_line;
           skipcount=true;
           
+          sl_obj.count++;
+          if(sl_obj.count>1){printWarningLog("Start line overwritten");}
         }
         
       else if(opt=="-lv"||opt=="-slv"||opt=="--line-reverse"||opt=="--start-line-reverse"){
@@ -1286,6 +1330,8 @@ int main(int argc, char* argv[]) {getCurrentDir(self_dir);self_path=self_dir+Str
           skipcount=true;
           reverse_line=true;
           
+          sl_obj.count++;
+          if(sl_obj.count>1){printWarningLog("Start line overwritten");}
         }
         
       else if(opt=="-el"||opt=="--end-line"){
@@ -1294,6 +1340,8 @@ int main(int argc, char* argv[]) {getCurrentDir(self_dir);self_path=self_dir+Str
           end_line=stringTo<decltype(end_line)>(args[i+1]);
           skipcount=true;
           
+          el_obj.count++;
+          if(el_obj.count>1){printWarningLog("End line overwritten");}
         }
       
       else if(opt=="-elv"||opt=="--end-line-reverse"){
@@ -1303,6 +1351,8 @@ int main(int argc, char* argv[]) {getCurrentDir(self_dir);self_path=self_dir+Str
           skipcount=true;
           reverse_line=true;
           
+          el_obj.count++;
+          if(el_obj.count>1){printWarningLog("End line overwritten");}
         }
         
       else if(opt=="-ss"||opt=="--search-string"){
@@ -1310,6 +1360,8 @@ int main(int argc, char* argv[]) {getCurrentDir(self_dir);self_path=self_dir+Str
           search_string=args[i+1];
           skipcount=true;
           
+          ss_obj.count++;
+          if(ss_obj.count>1){printWarningLog("Search string overwritten");}
         }
         
       else if(opt=="-rs"||opt=="--replace-string"){
@@ -1317,6 +1369,8 @@ int main(int argc, char* argv[]) {getCurrentDir(self_dir);self_path=self_dir+Str
           replace_string=args[i+1];
           skipcount=true;
           
+          rs_obj.count++;
+          if(rs_obj.count>1){printWarningLog("Replace string overwritten");}
         }
         
       else if(opt=="-re" || opt == "--regex"){
@@ -1324,6 +1378,8 @@ int main(int argc, char* argv[]) {getCurrentDir(self_dir);self_path=self_dir+Str
           re_type=toLower(args[i+1]);
           skipcount=true;
           
+          re_obj.count++;
+          if(re_obj.count>1){printWarningLog("Regex mode overwritten");}
         }
         
         else if(opt=="-rel"||opt=="--regex-locale"){
@@ -1338,6 +1394,8 @@ int main(int argc, char* argv[]) {getCurrentDir(self_dir);self_path=self_dir+Str
           fixed_ss=true;
           skipcount=true;
           
+          ss_obj.count++;
+          if(ss_obj.count>1){printWarningLog("Search string overwritten");}
         }
         
       else if(opt=="-dp"||opt=="--depth"){
@@ -1347,6 +1405,8 @@ int main(int argc, char* argv[]) {getCurrentDir(self_dir);self_path=self_dir+Str
           if(depth<0){depth=std::numeric_limits<Int>::max();}
           skipcount=true;
           
+          dp_obj.count++;
+          if(dp_obj.count>1){printWarningLog("Directory depth overwritten");}
         }
         
       else if(opt=="-y"||opt=="--yes"){
@@ -1375,23 +1435,39 @@ int main(int argc, char* argv[]) {getCurrentDir(self_dir);self_path=self_dir+Str
           
         }
         
+        
+      else if(opt=="--"){
+          noopt=true;
+          
+        }
+        
+        
         else {
             files.push_back(String(args[i]));
             
             
         }
+        
+     }
+        
+     else {
+            files.push_back(String(args[i]));
+            
+            
+     }
 
       
       
     }
+  } //objects from Options class are destroyed here
     
-    file_vector=files;
+    //file_vector=files;
     //////////////////////////////////////// Opt parse ends here/////////////////////////////////
 
     if(undo){undoRename();showResult();Exit(0);}
 
     
-         
+    
     
     /////////////////////////////////// Various checks///////////////////////////////////////
     
