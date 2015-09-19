@@ -4,5 +4,5 @@ if (( $EUID != 0 )); then
     exit 1
 fi
 rm /usr/bin/rnm
-rm /usr/share/man/man1/rnm.1
+rm /usr/share/man/man1/rnm.1.*
 echo "***** Uninstall success *****"
