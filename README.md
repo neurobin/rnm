@@ -15,6 +15,7 @@ Bulk Rename Utility written in `C++`. Files and directories can be passed as com
 7. Name can be taken from a file too. And these names (taken from a file) can be modified with *Name String* at runtime.
 8. Name can be taken from a file according to starting line number (`-l` or `-sl`) and ending line number (`-el`).
 9. Null terminated file can be taken as Name String File.
+10. Files or directories can be sorted in natural order or general alphabetical order.
 
 
 <div id="install"></div>
@@ -157,6 +158,12 @@ Options are case insensitive, i.e `-ssF` and `-ssf` are the same.
 `--exclude-directory`,
 `-ed`                : Apply rename on files only, exclude any and all directory and their
                        contents. Forces file only mode regardless of depth (-dp) value.
+                       
+`--count-directory`,
+`-cd`                : Count directory in reserved index, regardless of other options. Reserves indices for directories even if it is File Only mode.
+
+`--count-file`,
+`-cf`                : Count file in reserved index, regardless of other options. Reserves indices for files even if it is Directory Only mode.
 
 `-y`                 : Confirm Yes to all.
 
@@ -285,4 +292,5 @@ etc...
 5. This is a dangerous tool like `rm`, so use with care. If you make a mistake and do some unwanted rename, run `rnm -u` to undo (before running any more `rnm` command).
 6. Pass all regex like strings within quotes even if they don't contain any white space.
 7. To pass a filename that resembles an option, use `./`, i.e `./-ns` to pass a file named `-ns` in the current directory. Or you can use the `--` option make it a non-option argument; in that case make sure to pass all "Option" arguments before `--`, because everything after `--` will be taken as file path/s.
+8. Pass file or directory path list at the end of the argument sequence. Use `--` to make all the argumets after it as paths (not options).
 

@@ -1,12 +1,10 @@
-Content-type: text/html; charset=UTF-8
-
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <HTML><HEAD><TITLE>Man page of rnm</TITLE>
 </HEAD><BODY>
 <H1>rnm</H1>
-Section: Utility (1)<BR>Updated: Sat Sep 19 2015<BR>
+Section: Utility (1)<BR>Updated: Sun Sep 20 2015
 <HR>
-<H2>Index</H2>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
 <DL>
 <DT><A HREF="#lbAB">NAME</A><DD>
 <DT><A HREF="#lbAC">SYNOPSIS</A><DD>
@@ -21,7 +19,6 @@ Section: Utility (1)<BR>Updated: Sat Sep 19 2015<BR>
 <DT><A HREF="#lbAL">WEB</A><DD>
 </DL>
 <HR>
-<A NAME="lbAB">&nbsp;</A>
 <H2>NAME</H2>
 
 rnm - Bulk rename utility
@@ -301,6 +298,16 @@ Apply rename on files only, exclude any and all directory and their contents. Fo
 <B>-dp</B>
 
 ) value.
+<DT>--count-directory, -cd<DD>
+Count directory in reserved index regardless of other options. Reserves indices for directories even if it is File Only mode.
+<DT>--count-file, -cf<DD>
+Count file in reserved index regardless of other options. Reserves indces for files even if it is Directory Only mode.
+<DT>--sort, -s<DD>
+Sort files or directories in a natural (human perceivable natural sort) manner. 
+<DT>--sort/g, -s/g<DD>
+Sort files or directories in general manner (alphabetic sort).
+<DT>--sort/none, -s/none<DD>
+Force not to sort anything. Files or directories may or may not be at random order.
 <DT>--yes, -y<DD>
 Confirm Yes to all.
 <DT>--undo, -u<DD>
@@ -644,6 +651,6 @@ Report bugs to <A HREF="http://github.com/neurobin/rnm/issues">http://github.com
 <P>
 
 <HR>
-Time: 13:07:14 GMT, September 19, 2015
+Time: 17:16:30 GMT, September 20, 2015
 </BODY>
 </HTML>

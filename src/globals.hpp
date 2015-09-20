@@ -98,6 +98,9 @@ bool ign=false;
 bool nsf_n=false;
 bool single_mode=false;
 bool re_locale=false;
+bool count_directory=false;
+bool count_file=false;
+bool sort=false;
 
 /////Doubles
 Double start_index=1;
@@ -171,11 +174,13 @@ String rs_replace="";
 String rs_mod="";
 String ss_search="";
 String ss_mod="";
+String sort_type="natural";
+
 
 /// Project Info
 String project_name="rnm";
 String executable_name="rnm";
-String version="3.0.5";
+String version="3.0.6";
 String author_name="Jahidul Hamid";
 String author_email="jahidulhamid@yahoo.com";
 String bug_report_url="http://github.com/neurobin/"+project_name+"/issues";
@@ -293,6 +298,15 @@ options:\n\
 --exclude-directory,\n\
 -ed            : Apply rename on files only, exclude any and all directory and their\n\
                  contents. Forces file only mode regardless of depth (-dp) value.\n\
+\n\
+--count-directory,\n\
+-cd            : Count directory in reserved index, regardless of other options.\n\
+\n\
+--count-file,\n\
+-cf            : Count file in reserved index, regardless of other options.\n\
+\n\
+--sort,\n\
+-s             : Sort files. Default is natural sort. -s/g for general sort.\n\
 \n\
 --yes\n\
 -y             : Confirm Yes to all\n\
