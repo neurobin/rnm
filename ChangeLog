@@ -63,3 +63,9 @@ Bug fix: inconsistency in reserved directory index.
 1. `--` option added. Anything after this option will be taken as file path.
 2. Added warning for multiple defintion of the same option i.e option override.
 
+###`3.0.6`: <span class="light-quote">Sun Sep 20 16:45:37 UTC 2015</span>
+
+1. Directory reserved index inconsistency fixed.
+2. Added `-cd` and `-cf` options.
+3. Added sort functionality. `-s` for default (natural) sort, `-s/g` for general sort. `-s/n` for natural sort. `-s/none` for no sort.
+

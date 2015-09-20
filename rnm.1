@@ -1,4 +1,4 @@
-.TH rnm 1 "Sat Sep 19 2015" Unix "Utility"
+.TH rnm 1 "Sun Sep 20 2015" Unix "Utility"
 .SH NAME
 rnm \- Bulk rename utility
 .SH SYNOPSIS
@@ -189,6 +189,16 @@ Apply rename on directory only. No subdirectories.
 Apply rename on files only, exclude any and all directory and their contents. Forces file only mode regardless of depth (
 .B -dp
 ) value.
+.IP "--count-directory, -cd"
+Count directory in reserved index regardless of other options. Reserves indices for directories even if it is File Only mode.
+.IP "--count-file, -cf"
+Count file in reserved index regardless of other options. Reserves indces for files even if it is Directory Only mode.
+.IP "--sort, -s"
+Sort files or directories in a natural (human perceivable natural sort) manner. 
+.IP "--sort/g, -s/g"
+Sort files or directories in general manner (alphabetic sort).
+.IP "--sort/none, -s/none"
+Force not to sort anything. Files or directories may or may not be at random order.
 .IP "--yes, -y"
 Confirm Yes to all.
 .IP "--undo, -u"
