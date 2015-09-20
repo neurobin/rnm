@@ -1,5 +1,5 @@
 ﻿
-#include "classes.h"
+#include "classes.hpp"
 
 /// Function prototypes
 template<typename T>
@@ -47,6 +47,7 @@ void mustBeANumber(String name,T x);
 bool isFile(String file);
 NameList getNameListFromFile(String filename,int si,int ei,int mod);
 Regex createRegex(String s,bool case_sensitive);
+void incrementReservedIndexes(DirectoryIndex &di);
 
 
 StringArray files;
@@ -289,6 +290,47 @@ String stripPathDelimiter(String s){
     
     return s;
 }
+    
+bool compareNat(const std::string& a, const std::string& b){
+    if (a.empty())
+        return true;
+    if (b.empty())
+        return false;
+    if (std::isdigit(a[0]) && !std::isdigit(b[0]))
+        return true;
+    if (!std::isdigit(a[0]) && std::isdigit(b[0]))
+        return false;
+    if (!std::isdigit(a[0]) && !std::isdigit(b[0]))
+    {
+        if (a[0] == b[0])
+            return compareNat(a.substr(1), b.substr(1));
+        return (std::toupper(a[0]) < std::toupper(b[0]));
+    }
+
+    // Both strings begin with digit --> parse both numbers
+    std::istringstream issa(a);
+    std::istringstream issb(b);
+    int ia, ib;
+    issa >> ia;
+    issb >> ib;
+    if (ia != ib)
+        return ia < ib;
+
+    // Numbers are the same --> remove numbers and recurse
+    std::string anew, bnew;
+    std::getline(issa, anew);
+    std::getline(issb, bnew);
+    return (compareNat(anew, bnew));
+}
+    
+void sortVector(StringArray &files){
+    if(sort_type=="natural"){std::sort(files.begin(), files.end(), compareNat);}
+    else if(sort_type=="general"){std::sort(files.begin(), files.end());}
+    else if(sort_type=="none"){}
+    else{std::sort(files.begin(), files.end(), compareNat);}
+}
+
+
     
 String processReplacementString(String replace){
     /// \1 \2 etc will be converted to c++ backreference $1 $2
@@ -913,7 +955,8 @@ StringArray getFilesFromDir(String file){
                     perror ("");
                     print"Could not open directory";
                 }
-    return files;
+                sortVector(files);
+                return files;
     
 }
 
@@ -949,17 +992,19 @@ void startInDepthFileOnlyTaskOnDirectory(String dir,String base_dir=base_dir){
                 else{
                 
                 }
+                if(count_directory){incrementReservedIndexes(di);}
                 
             }
             
             else if(exclude_directory){
+                if(count_directory){incrementReservedIndexes(di);}
+                incrementReservedIndexes(di);
                 continue;
             }
             
             else{
-                
                 doRename(file,di);
-                
+                incrementReservedIndexes(di);
             }
             
         }
@@ -967,24 +1012,35 @@ void startInDepthFileOnlyTaskOnDirectory(String dir,String base_dir=base_dir){
             
             if(!directory_only){
                 doRename(file,di);
+                incrementReservedIndexes(di);
             }
-            
+            else if(count_file){incrementReservedIndexes(di);}
         }
         else {
-        printWarningLog("Not a valid file or directory");
-        continue;
+            incrementReservedIndexes(di);
+            printWarningLog("Not a valid file or directory");
+            continue;
             
         }
 
+        ///increment reserved indexes
+        /*di.directory_index_rd+=inc;
+        di.directory_reverse_index_rd-=inc;
+        current_index_rd+=inc;
+        reverse_index_rd-=inc;
+        */
+    
+    }
+    
+    
+}
+
+void incrementReservedIndexes(DirectoryIndex &di){
         ///increment reserved indexes
         di.directory_index_rd+=inc;
         di.directory_reverse_index_rd-=inc;
         current_index_rd+=inc;
         reverse_index_rd-=inc;
-        
-    
-    }
-    
     
 }
 
@@ -1018,16 +1074,18 @@ void startTask(StringArray files){
                 
                 
                 }
-                
+                if(count_directory){incrementReservedIndexes(di);}
                 
             }
             
             else if(exclude_directory){
+                if(count_directory){incrementReservedIndexes(di);}
                 continue;
             }
             
             else{
                 doRename(file,di);
+                incrementReservedIndexes(di);
             }
             
             
@@ -1036,20 +1094,22 @@ void startTask(StringArray files){
             
             if(!directory_only){
                 doRename(file,di);
-                
+                incrementReservedIndexes(di);
             }
+            else if(count_file){incrementReservedIndexes(di);}
      
         }
         else {
-        printWarningLog("Not a valid file or directory");
-        continue;
+            incrementReservedIndexes(di);
+            printWarningLog("Not a valid file or directory");
+            continue;
         }
         
         ///increment reserved indexes
-        di.directory_index_rd+=inc;
+        /*di.directory_index_rd+=inc;
         di.directory_reverse_index_rd-=inc;
         current_index_rd+=inc;
-        reverse_index_rd-=inc;
+        reverse_index_rd-=inc;*/
         
     
     }
@@ -1119,6 +1179,8 @@ void printOpts(){
     File Only: "+parseTrueFalse(file_only)+"\n\
     Directory Only: "+parseTrueFalse(directory_only)+"\n\
     Exclude Directory: "+parseTrueFalse(exclude_directory)+"\n\
+    Count Directory (force): "+parseTrueFalse(count_directory)+"\n\
+    Count File (force): "+parseTrueFalse(count_file)+"\n\
     Increment Value: "+toString(inc)+"\n\
     Line Increment Value: "+toString(linc)+"\n\
     Apply force: "+parseTrueFalse(force)+"\n\
@@ -1409,6 +1471,42 @@ int main(int argc, char* argv[]) {getCurrentDir(self_dir);self_path=self_dir+Str
           if(dp_obj.count>1){printWarningLog("Directory depth overwritten");}
         }
         
+        
+      else if(opt=="-cd"||opt=="--count-directory"){
+          count_directory=true;
+          
+        }
+        
+        
+      else if(opt=="-cf"||opt=="--count-file"){
+          count_file=true;
+          
+        }
+        
+        
+      else if(opt=="-s"||opt=="--sort"){
+          sort=true;
+          sort_type="default";
+          
+        }
+        
+        
+      else if(opt=="-s/g"||opt=="--sort/g"){
+          sort=true;
+          sort_type="general";
+        }
+        
+        
+      else if(opt=="-s/n"||opt=="--sort/n"){
+          sort=true;
+          sort_type="natural";
+        }
+        
+      else if(opt=="-s/none"||opt=="--sort/none"){
+          sort=true;
+          sort_type="none";
+        }
+        
       else if(opt=="-y"||opt=="--yes"){
           all_yes=true;
           
@@ -1442,6 +1540,12 @@ int main(int argc, char* argv[]) {getCurrentDir(self_dir);self_path=self_dir+Str
         }
         
         
+      else if(opt[0]=='-'){
+          printErrorLog("Invalid Option: "+opt);
+          Exit(1);
+          
+        }
+        
         else {
             files.push_back(String(args[i]));
             
@@ -1470,6 +1574,11 @@ int main(int argc, char* argv[]) {getCurrentDir(self_dir);self_path=self_dir+Str
     
     
     /////////////////////////////////// Various checks///////////////////////////////////////
+    
+    if(file_only&&directory_only){printErrorLog("File Only and Directory Only, both can't be true at the same time");Exit(1);}
+    if(file_only&&exclude_directory){printWarningLog("File Only mode is prioritized over Exclude Directory mode");}
+    if(simulation&&quiet){printWarningLog("Quiet option won't have any effect with simulation mode");}
+    
     
     if(files.size()<=0){String filename_from_stdin;std::getline(std::cin,filename_from_stdin,'\0');
         files.push_back(filename_from_stdin);
@@ -1509,7 +1618,7 @@ int main(int argc, char* argv[]) {getCurrentDir(self_dir);self_path=self_dir+Str
     if(name_string_file!=""){
         if(name_string_file==path_delim+"hist"+path_delim){
             if(isFile(NSF_LIST_FILE)){name_string_file=NSF_LIST_FILE;}
-            else{printErrorLog("History no found.");Exit(1);}
+            else{printErrorLog("History not found.");Exit(1);}
         }
         else if(!isFile(name_string_file)){
             printErrorLog("Name String File not found: "+name_string_file);
@@ -1542,6 +1651,9 @@ int main(int argc, char* argv[]) {getCurrentDir(self_dir);self_path=self_dir+Str
     
     ////////////////////////////////// Various checks end here//////////////////////////////
     
+    ///Sort file if sort is true
+    
+    if(sort){sortVector(files);}
  
     
     startTask(files);
