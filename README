@@ -165,6 +165,9 @@ Options are case insensitive, i.e `-ssF` and `-ssf` are the same.
 `--count-file`,
 `-cf`                : Count file in reserved index, regardless of other options. Reserves indices for files even if it is Directory Only mode.
 
+`--sort`,
+`-s`                 : Sort files in natural order (Human perceivable order). This option can be modified to use other sorting methods. For example: `-s/g` or `--sort/g` will sort the file in general (alphabetical) order. Other options are `-s/n` (Natural sort), `-s/none` (No sort).
+
 `-y`                 : Confirm Yes to all.
 
 `-u`, `-U`, `--undo` : Undo renaming
