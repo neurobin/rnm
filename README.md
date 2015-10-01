@@ -44,7 +44,7 @@ sudo apt-get update
 sudo apt-get install rnm
 ```
 
-If you are in Ubuntu 14.04 (trusty), you will need to add ubuntu-toolchain repository to make `libstdc++6 (>=4.9.3)` available:
+If you are in Ubuntu 14.04 or 12.04 (trusty or precise), you will need to add ubuntu-toolchain repository to make `libstdc++6 (>=4.9.3)` available:
 
 ```
 sudo add-apt-repository ppa:ubuntu-toolchain-r/test
