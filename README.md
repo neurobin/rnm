@@ -27,6 +27,8 @@ It was built with GCC 4.9.3. Therefore you at least need `libstdc++6-4.9.3` to r
 
 ###Unix (32 or 64 bit):
 
+Make sure `libstdc++6 (>=4.9.3)` or `GCC (g++>=4.9.3)` is available in your system.
+
 1. Give the <span class="quote">install</span> file execution permission (`chmod +x install`) and
 2. Run it or just drag and dropt it on terminal and hit <kbd>Enter</kbd> (requires root privilege).
 
@@ -42,7 +44,7 @@ sudo apt-get update
 sudo apt-get install rnm
 ```
 
-If you are in Ubuntu 14.04 (trusty), you will need to add ubuntu-toolchain repository:
+If you are in Ubuntu 14.04 (trusty), you will need to add ubuntu-toolchain repository to make `libstdc++6 (>=4.9.3)` available:
 
 ```
 sudo add-apt-repository ppa:ubuntu-toolchain-r/test
