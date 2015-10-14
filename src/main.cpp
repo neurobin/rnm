@@ -48,6 +48,7 @@ bool isFile(String file);
 NameList getNameListFromFile(String filename,int si,int ei,int mod);
 Regex createRegex(String s,bool case_sensitive);
 void incrementReservedIndexes(DirectoryIndex &di);
+bool isComplyingToRegex(String &s,Regex &re);
 
 
 StringArray files;
@@ -388,24 +389,44 @@ void parseReplaceString(String rs,String file,DirectoryIndex &di){
 
 }
 
+bool isComplyingToRegex(String &s,Regex &re){
+    String total="";
+    RegexIterator it(s.begin(), s.end(), re);
+    RegexIterator it_end;
+    while(it!=it_end){total+=it->str();++it;}
+    if(s!=total){return false;}
+    else {return true;}
+    }
+
+
 void parseSearchString(String ss){
-  if(!fixed_ss){
-    Regex re("^"+path_delim+"[^"+path_delim+"]*"+path_delim+"i?$");
-    RegexResult result;
-    if(regexMatch(ss,re)){
-        re="^"+path_delim+"([^"+path_delim+"]*)"+path_delim+"i?$";
+    Regex multi_re("\\s*"+path_delim+"([^"+path_delim+"]*?)"+path_delim+"\\s*(i?)(\\s*;\\s*|$)");
+    int subm[]={1,2,3};
+    if(isComplyingToRegex(ss,multi_re)){
+        /*re="^"+path_delim+"([^"+path_delim+"]*)"+path_delim+"i?$";
         if(std::regex_match(ss,result,re)){ss_search=result[1];}
         re="^"+path_delim+"[^"+path_delim+"]*"+path_delim+"(i?)$";
         if(std::regex_match(ss,result,re)){ss_mod=result[1];}
+        * */
+        RegexTokenIterator end; //default constructor=end of sequence
+        RegexTokenIterator toit (ss.begin(), ss.end(), multi_re,subm);
+        
+        while (toit != end){
+            ss_search.push_back(*toit++);
+            ss_mod.push_back(*toit++);
+            toit++;
+        }
     }
     else{
         ///search string is a regex and with no modifier syntax `regex` in place of /regex/ is allowed.
-        ss_search=ss;
-    } 
-  }
-  else{
-    ///search string is a fixed string, not to be modified.
-  }
+        if(!fixed_ss)
+        printErrorLog("Invalid search regex. Note that "+path_delim+" is not allowed inside regex. \n\
+        Format: '"+path_delim+"regex(No"+path_delim+")"+path_delim+"modifier;' or 'regex(No"+path_delim+")'");
+        else 
+        printErrorLog("Invalid search string. Note that "+path_delim+" is not allowed in a string. \n\
+        Format: '"+path_delim+"string(No"+path_delim+")"+path_delim+"modifier;' or 'string(No"+path_delim+")'");
+        Exit(1);
+    }
 }
 
 bool stringContains(String s1,String s2){
@@ -415,27 +436,32 @@ bool stringContains(String s1,String s2){
 
 bool isComplyingToSearchString(String file){
     String name=basename(file);
-    bool case_sensitive=true;
-    if(ss_mod=="i"){case_sensitive=false;}
-  if(!fixed_ss){
-    try {
-        std::regex re;
-        re= createRegex(ss_search, case_sensitive);
-        if(std::regex_search(name,re)){return true;}
-        else{return false;}
-    } 
-    catch (std::regex_error& e) {
-      printErrorLog("Invalid search string regex: "+ss_search);
-      Exit(1);
-    }
-  }
-  else{
-      if(stringContains(name,search_string)){return true;}
-      else return false;
+    for(int i=0;i<(int)ss_search.size();i++){
+        bool case_sensitive=true;
+        if(ss_mod[i]=="i"){case_sensitive=false;}
+        if(!fixed_ss){
+            try {
+                std::regex re;
+                re=createRegex(ss_search[i], case_sensitive);
+                if(std::regex_search(name,re)){return true;}
+            } 
+            catch (std::regex_error& e) {
+                printErrorLog("Invalid search string regex: "+ss_search[i]);
+                Exit(1);
+            }
+        }
+        else{
+            if(ss_mod[i]=="i"){
+                if(stringContains(toLower(name),toLower(ss_search[i]))){return true;}
+            }
+            else{
+                if(stringContains(name,ss_search[i])){return true;}
+            }
       
-  }
+        }
+    }
     
-    
+    return false;
 }
 
 
@@ -1591,20 +1617,17 @@ int main(int argc, char* argv[]) {getCurrentDir(self_dir);self_path=self_dir+Str
         printErrorLog("One of the options: -ns or -nsf or -rs is mandatory");
         Exit(1);
         }
-    if(search_string!="" && !fixed_ss){
-        Regex re("^"+path_delim+"[^"+path_delim+"]*"+path_delim+"i?$");
-        if(regexMatch(search_string,re)){
-            /// Allowed
-            }
-        else{
-            if(stringContains(search_string,path_delim)){
-                printErrorLog("Invalid use of "+path_delim+" character in regex: "+search_string);
-                Exit(1);
-                }
-            
-            }
-        parseSearchString(search_string);
+    if(search_string!=""){
+        if(stringContains(search_string,path_delim)){
+            parseSearchString(search_string);
         }
+        else {
+            ss_search.push_back(search_string);
+            ss_mod.push_back("");
+            
+        }    
+        
+    }
     
     
     if(replace_string!=""){

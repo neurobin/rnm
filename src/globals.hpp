@@ -38,6 +38,8 @@ typedef std::regex Regex;
 typedef std::map<Int,String> NameList;
 typedef std::map<Int,Int> IntMap;
 typedef std::regex::flag_type RegexType;
+typedef std::regex_iterator<std::string::iterator> RegexIterator;
+typedef std::regex_token_iterator<std::string::iterator> RegexTokenIterator;
 
 
 /////defs
@@ -58,6 +60,7 @@ typedef std::regex::flag_type RegexType;
 #define REGEX_EGREP std::regex::egrep
 #define REGEX_DEFAULT REGEX_ECMASCRIPT
 #define REGEX_LOCALE std::regex::collate
+
 
 #define print std::cout<<
 #define printe std::cerr<<
@@ -172,15 +175,15 @@ String rname="";
 String rs_search="";
 String rs_replace="";
 String rs_mod="";
-String ss_search="";
-String ss_mod="";
+StringArray ss_search;
+StringArray ss_mod;
 String sort_type="natural";
 
 
 /// Project Info
 String project_name="rnm";
 String executable_name="rnm";
-String version="3.0.6";
+String version="3.1.0";
 String author_name="Jahidul Hamid";
 String author_email="jahidulhamid@yahoo.com";
 String bug_report_url="http://github.com/neurobin/"+project_name+"/issues";
