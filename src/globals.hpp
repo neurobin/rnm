@@ -250,9 +250,9 @@ options:\n\
 -ns            : Name string\n\
      \n\
 --name-string-file,\n\
--nsf           : Name string file. File containing name string (one per line).\n\
+-nsf, -ns/f    : Name string file. File containing name string (one per line).\n\
 --name-string-file-null-terminated,\n\
--nsfn          : Name String file. This takes a null terminated *Name String* file, i.e\n\
+-nsfn, -ns/fn  : Name String file. This takes a null terminated *Name String* file, i.e\n\
                  filenames are terminated by null character (\\0) instead of new line (\\n).\n\
                  \n\
 --line, --start-line,\n\
@@ -272,12 +272,21 @@ options:\n\
 -ss            : Search string\n\
                  String that will be used to search for files with matching names.\n\
                  This is generally regex (ECMAScript regex) if not pass with -ssf.\n\
+                 \n\
+--search-string-file,\n\
+-ss/f          : Search string file. Contains search strings per line.\n\
      \n\
 --search-string-fixed,\n\
 -ssf           : Fixed search string (not treated as regex).\n\
 \n\
+--search-string-fixed-file\n\
+-ssf/f         : Fixed search string file. Contains fixed search string (per line).\n\
+\n\
 --replace-string,\n\
 -rs            : Replace string. A string in the form /search_string/replace_string/modifier \n\
+\n\
+--replace-string-file,\n\
+-rs/f          : Replace string file. Contains replace string (per line).\n\
 \n\
 --regex,\n\
 -re            : regex mode. Available regex modes are basic, extended, grep, awk, egrep, ecmascript.\n\
