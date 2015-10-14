@@ -10,9 +10,10 @@ bool isComplyingToRegex(String &s,Regex &re){
     }
 
 int main(){
-    Regex multi_re("\\s*"+path_delim+"([^"+path_delim+"]*?)"+path_delim+"\\s*(i?)(\\s*;\\s*|$)");
-    int subm[]={1,2,3};
-    String s="/12/i";
+    Regex multi_re ("\\s*"+path_delim+"([^"+path_delim+"]*?)"+path_delim+"([^"+path_delim+"]*?)"+path_delim+"\\s*([gi]{0,2})\\s*(;\\s*|$)");
+    int subm[]={1,2,3,4};
+    String s="/search/i/ gi;";
+    getLine(s);
     ///Check the regex format for multi search keyword
     if(!isComplyingToRegex(s,multi_re)){print "Error";}
     RegexTokenIterator end; //default constructor=end of sequence
@@ -20,8 +21,10 @@ int main(){
     
     while (toit != end){
     String search_term=*toit++;
+    String replace_term=*toit++;
     String mod_term=*toit++;
     toit++;
-    std::cout << "["<<search_term <<"]["<<mod_term<<"]"<< std::endl;
+    std::cout << "["<<search_term <<"]["<<replace_term<<"]["<<mod_term<<"]"<< std::endl;
     }
+    main();
     return 0;}

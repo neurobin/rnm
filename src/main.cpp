@@ -359,8 +359,10 @@ void processReplaceString(String rs,String file,DirectoryIndex &di){
     parseReplaceString(rs,file,di);
     ///we now have valid rs_search, rs_replace and rs_mod
     rname=basename(file);
-    rname=regexReplace(rname,rs_search,rs_replace,rs_mod,1);
-    ///Now a modified name rname is available
+    for(int i=0;i<(int)rs_search.size();i++){
+        rname=regexReplace(rname,rs_search[i],rs_replace[i],rs_mod[i],1);
+        ///Now a modified name rname is available
+    }
 }
     
 
@@ -368,17 +370,30 @@ void parseReplaceString(String rs,String file,DirectoryIndex &di){
     String name=rs;
     ///bool re_g=false,re_i=false;
     ///std::regex_constants::format_first_only
-    Regex re ("^"+path_delim+"[^"+path_delim+"]*"+path_delim+"[^"+path_delim+"]*"+path_delim+"[gi]{0,2}$");
-    RegexResult result;
-    if(!regexMatch(name,re)){name=parseNameString( rs, file,di);}
-    if(name!="" && regexMatch(name,re)){
-        re ="^"+path_delim+"([^"+path_delim+"]*)"+path_delim+"[^"+path_delim+"]*"+path_delim+"[gi]{0,2}$";
+    Regex multi_re ("\\s*"+path_delim+"([^"+path_delim+"]*?)"+path_delim+"([^"+path_delim+"]*?)"+path_delim+"\\s*([gi]{0,2})\\s*(;\\s*|$)");
+    int subm[]={1,2,3,4};
+    if(!isComplyingToRegex(name,multi_re)){name=parseNameString( rs, file,di);}
+    /// Carefull!!! must not use else if
+    if(name!="" && isComplyingToRegex(name,multi_re)){
+        /*re ="^"+path_delim+"([^"+path_delim+"]*)"+path_delim+"[^"+path_delim+"]*"+path_delim+"[gi]{0,2}$";
         if(std::regex_match(name,result,re)){rs_search=result[1];}
         re ="^"+path_delim+"[^"+path_delim+"]*"+path_delim+"([^"+path_delim+"]*)"+path_delim+"[gi]{0,2}$";
-        if(std::regex_match(name,result,re)){rs_replace=result[1];rs_replace=processReplacementString(rs_replace);}
+        if(std::regex_match(name,result,re)){rs_replace=result[1];rs_replace=processReplacementString(rs_replace,);}
         re ="^"+path_delim+"[^"+path_delim+"]*"+path_delim+"[^"+path_delim+"]*"+path_delim+"([gi]{0,2})$";
         if(std::regex_match(name,result,re)){rs_mod=result[1];}
-        
+        */
+        /// Populate rs_search, rs_replace and rs_mod with valid values
+        RegexTokenIterator end; ///default constructor=end of sequence
+        RegexTokenIterator toit (name.begin(), name.end(), multi_re,subm);
+        ///clear rs vectors. These are modified according to each file name and thus previous value can not be retained.
+        rs_search.clear();rs_replace.clear();rs_mod.clear();
+        while (toit != end){
+            String se, rep, mod;
+            se=*toit++;rep=*toit++;mod=*toit++;toit++;
+            rs_search.push_back(se);
+            rs_replace.push_back(processReplacementString(rep));
+            rs_mod.push_back(mod);
+        }
         
     }
     else{
@@ -1188,9 +1203,9 @@ void printOpts(){
     Search String: " +search_string+"\n\
     Fixed Search String: " +parseTrueFalse(fixed_ss)+"\n\
     Replace String: " +replace_string+"\n\
-    Replace String search part (last): "+rs_search+"\n\
-    Replace String replace part (last): "+rs_replace+"\n\
-    Replace String modifier part (last): "+rs_mod+"\n\
+    Replace String search part (first): "+rs_search[0]+"\n\
+    Replace String replace part (first): "+rs_replace[0]+"\n\
+    Replace String modifier part (first): "+rs_mod[0]+"\n\
     Regex Type: "+re_type+"\n\
     Regex Locale: "+parseTrueFalse(re_locale)+"\n\
     Depth: "+toString(depth)+"\n\
@@ -1631,8 +1646,8 @@ int main(int argc, char* argv[]) {getCurrentDir(self_dir);self_path=self_dir+Str
     
     
     if(replace_string!=""){
-        Regex re("^"+path_delim+".*"+path_delim+".*"+path_delim+"[gi]{0,2}$");
-        if(!regexMatch(replace_string,re)){
+        Regex multi_re ("\\s*"+path_delim+"([^"+path_delim+"]*?)"+path_delim+"([^"+path_delim+"]*?)"+path_delim+"\\s*([gi]{0,2})\\s*(;\\s*|$)");
+        if(!isComplyingToRegex(replace_string,multi_re)){
             printErrorLog("Invalid replace string format: "+replace_string);
             Exit(1);
             }
