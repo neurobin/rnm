@@ -17,7 +17,7 @@ void startTask(StringArray);
 String replaceStringAll(String, String , String );
 String parseNameString(String,String,DirectoryIndex &);
 String regexReplace(String ,String ,String ,String,int );
-void parseReplaceString(String ,String,DirectoryIndex &);
+void parseReplaceString(StringArray ,String,DirectoryIndex &);
 String copyFile(String, String );
 String copyFile2(String src,String dst);
 void finalizeRFL();
@@ -355,7 +355,9 @@ String processReplacementString(String replace){
 }
     
     
-void processReplaceString(String rs,String file,DirectoryIndex &di){
+void processReplaceString(StringArray rs,String file,DirectoryIndex &di){
+    ///clear rs_* vectors. These are modified according to each file name and thus previous value can not be retained.
+    rs_search.clear();rs_replace.clear();rs_mod.clear();
     parseReplaceString(rs,file,di);
     ///we now have valid rs_search, rs_replace and rs_mod
     rname=basename(file);
@@ -366,41 +368,39 @@ void processReplaceString(String rs,String file,DirectoryIndex &di){
 }
     
 
-void parseReplaceString(String rs,String file,DirectoryIndex &di){
-    String name=rs;
-    ///bool re_g=false,re_i=false;
-    ///std::regex_constants::format_first_only
+void parseReplaceString(StringArray rs,String file,DirectoryIndex &di){
+    String name;
     Regex multi_re ("\\s*"+path_delim+"([^"+path_delim+"]*?)"+path_delim+"([^"+path_delim+"]*?)"+path_delim+"\\s*([gi]{0,2})\\s*(;\\s*|$)");
     int subm[]={1,2,3,4};
-    if(!isComplyingToRegex(name,multi_re)){name=parseNameString( rs, file,di);}
-    /// Carefull!!! must not use else if
-    if(name!="" && isComplyingToRegex(name,multi_re)){
-        /*re ="^"+path_delim+"([^"+path_delim+"]*)"+path_delim+"[^"+path_delim+"]*"+path_delim+"[gi]{0,2}$";
-        if(std::regex_match(name,result,re)){rs_search=result[1];}
-        re ="^"+path_delim+"[^"+path_delim+"]*"+path_delim+"([^"+path_delim+"]*)"+path_delim+"[gi]{0,2}$";
-        if(std::regex_match(name,result,re)){rs_replace=result[1];rs_replace=processReplacementString(rs_replace,);}
-        re ="^"+path_delim+"[^"+path_delim+"]*"+path_delim+"[^"+path_delim+"]*"+path_delim+"([gi]{0,2})$";
-        if(std::regex_match(name,result,re)){rs_mod=result[1];}
-        */
-        /// Populate rs_search, rs_replace and rs_mod with valid values
-        RegexTokenIterator end; ///default constructor=end of sequence
-        RegexTokenIterator toit (name.begin(), name.end(), multi_re,subm);
-        ///clear rs vectors. These are modified according to each file name and thus previous value can not be retained.
-        rs_search.clear();rs_replace.clear();rs_mod.clear();
-        while (toit != end){
-            String se, rep, mod;
-            se=*toit++;rep=*toit++;mod=*toit++;toit++;
-            rs_search.push_back(se);
-            rs_replace.push_back(processReplacementString(rep));
-            rs_mod.push_back(mod);
-        }
+    for(unsigned i=0;i<rs.size();i++){
+        name=rs[i];
+        if(!isComplyingToRegex(name,multi_re)){name=parseNameString( rs[i], file,di);}
+        /// Carefull!!! must not use else if
+        if(name!="" && isComplyingToRegex(name,multi_re)){
+            /*re ="^"+path_delim+"([^"+path_delim+"]*)"+path_delim+"[^"+path_delim+"]*"+path_delim+"[gi]{0,2}$";
+            if(std::regex_match(name,result,re)){rs_search=result[1];}
+            re ="^"+path_delim+"[^"+path_delim+"]*"+path_delim+"([^"+path_delim+"]*)"+path_delim+"[gi]{0,2}$";
+            if(std::regex_match(name,result,re)){rs_replace=result[1];rs_replace=processReplacementString(rs_replace);}
+            re ="^"+path_delim+"[^"+path_delim+"]*"+path_delim+"[^"+path_delim+"]*"+path_delim+"([gi]{0,2})$";
+            if(std::regex_match(name,result,re)){rs_mod=result[1];}
+            */
+            /// Populate rs_search, rs_replace and rs_mod with valid values
+            RegexTokenIterator end; ///default constructor=end of sequence
+            RegexTokenIterator toit (name.begin(), name.end(), multi_re,subm);
+            while (toit != end){
+                String se, rep, mod;
+                se=*toit++;rep=*toit++;mod=*toit++;toit++;
+                rs_search.push_back(se);
+                rs_replace.push_back(processReplacementString(rep));
+                rs_mod.push_back(mod);
+            }
         
+        }
+        else{
+            printErrorLog("Invalid replace string format: "+rs[i]);
+            Exit(1);
+        }
     }
-    else{
-        printErrorLog("Invalid replace string format: "+rs);
-        Exit(1);
-    }
-    
 
 }
 
@@ -435,10 +435,10 @@ void parseSearchString(String ss){
     else{
         ///search string is a regex and with no modifier syntax `regex` in place of /regex/ is allowed.
         if(!fixed_ss)
-        printErrorLog("Invalid search regex. Note that "+path_delim+" is not allowed inside regex. \n\
+        printErrorLog("Invalid search regex: "+ss+"\nNote that "+path_delim+" is not allowed inside regex. \n\
         Format: '"+path_delim+"regex(No"+path_delim+")"+path_delim+"modifier;' or 'regex(No"+path_delim+")'");
         else 
-        printErrorLog("Invalid search string. Note that "+path_delim+" is not allowed in a string. \n\
+        printErrorLog("Invalid search string: "+ss+"\nNote that "+path_delim+" is not allowed in a string. \n\
         Format: '"+path_delim+"string(No"+path_delim+")"+path_delim+"modifier;' or 'string(No"+path_delim+")'");
         Exit(1);
     }
@@ -484,7 +484,7 @@ bool isComplyingToSearchString(String file){
 
 String parseNameString(String ns,String file,DirectoryIndex &di){
     String fname=basename(file);
-    if(replace_string==""){rname=fname;}
+    if(replace_string.size()==0){rname=fname;}
     String name=ns;
     String fnamewe=fileNameWithoutExtension(fname);
     String ext=fileExtension(fname);
@@ -818,6 +818,23 @@ void mustBeAnInteger(String name,T x){
        }
 }
 
+StringArray getLineFromFileAndReturnVector(String filename){
+    StringArray list;
+    String line;
+    char delim='\n';
+    FileStream file;
+    file.open(filename,$read);
+    if(!file.good()){printErrorLog("Couldn't open name string file: "+filename);Exit(1);}
+    while(getLineFromFile(file,line,delim)){
+        if ( line.size() && line[line.size()-1] == '\r' ) {line = line.substr( 0, line.size() - 1 );}
+        if(line=="" || line == toString('\0')){continue;}
+        list.push_back(line);
+    }
+    file.close();
+    
+    return list;
+}
+
 
 NameList getNameListFromFile(String filename,Int si,Int ei,int mod=1){
     NameList list;
@@ -865,7 +882,7 @@ bool doRename(String file,DirectoryIndex &di){
     
     if(isInvalidFile(file)){return false;}
     
-    if(search_string!=""){
+    if(search_string.size()!=0){
         if(!isComplyingToSearchString(file)){
             return false;
         }
@@ -875,7 +892,7 @@ bool doRename(String file,DirectoryIndex &di){
     String oldn=basename(file);
     String dir=dirname(file);
     String name="";
-    if(replace_string!=""){processReplaceString(replace_string,file,di);}
+    if(replace_string.size()!=0){processReplaceString(replace_string,file,di);}
     
     if(name_string!="" && name_string_file==""){
         name=parseNameString(name_string,file,di);
@@ -905,7 +922,7 @@ bool doRename(String file,DirectoryIndex &di){
         
         }
     }
-    else if(replace_string!=""){name=rname;}
+    else if(replace_string.size()!=0){name=rname;}
         
     else {printErrorLog("One of the options: -ns or -nsf or -rs is mandatory");Exit(1);}
     
@@ -1200,9 +1217,9 @@ void printOpts(){
     Executable: "+self_path+"\n\
     Name String: " +name_string+"\n\
     Name String File: " +name_string_file+"\n\
-    Search String: " +search_string+"\n\
+    Search String (first)): " +search_string[0]+"\n\
     Fixed Search String: " +parseTrueFalse(fixed_ss)+"\n\
-    Replace String: " +replace_string+"\n\
+    Replace String (first): " +replace_string[0]+"\n\
     Replace String search part (first): "+rs_search[0]+"\n\
     Replace String replace part (first): "+rs_replace[0]+"\n\
     Replace String modifier part (first): "+rs_mod[0]+"\n\
@@ -1267,7 +1284,9 @@ int main(int argc, char* argv[]) {getCurrentDir(self_dir);self_path=self_dir+Str
     Options sl_obj("-l","-sl","--line","--start-line");
     Options el_obj("-el","--end-line");
     Options ss_obj("-ss","--search-string");
+    Options ss_file_obj("-ss/f","--search-string-file");
     Options rs_obj("-rs","--replace-string");
+    Options rs_file_obj("-rs/f","--replace-string-file");
     Options re_obj("-re","--regex");
     Options dp_obj("-dp","--depth");
     
@@ -1398,6 +1417,16 @@ int main(int argc, char* argv[]) {getCurrentDir(self_dir);self_path=self_dir+Str
           checkArgAvailability(args,i+1);
           name_string_file=args[i+1];
           skipcount=true;
+          printWarningLog("-nsf option is deprecated. Use -ns/f instead.");
+          nsf_obj.count++;
+          if(nsf_obj.count>1){printWarningLog("Name string file option overwritten");}
+        }
+        
+        
+      else if(opt=="-ns/f"||opt=="--name-string-file"){
+          checkArgAvailability(args,i+1);
+          name_string_file=args[i+1];
+          skipcount=true;
           
           nsf_obj.count++;
           if(nsf_obj.count>1){printWarningLog("Name string file option overwritten");}
@@ -1405,6 +1434,17 @@ int main(int argc, char* argv[]) {getCurrentDir(self_dir);self_path=self_dir+Str
         
 
       else if(opt=="-nsfn"||opt=="--name-string-file-null-terminated"){
+          checkArgAvailability(args,i+1);
+          name_string_file=args[i+1];
+          nsf_n=true;
+          skipcount=true;
+          printWarningLog("-nsfn option is deprecated. Use -ns/fn instead.");
+          nsf_obj.count++;
+          if(nsf_obj.count>1){printWarningLog("Name string file option overwritten");}
+        }
+        
+        
+      else if(opt=="-ns/fn"||opt=="--name-string-file-null-terminated"){
           checkArgAvailability(args,i+1);
           name_string_file=args[i+1];
           nsf_n=true;
@@ -1460,20 +1500,63 @@ int main(int argc, char* argv[]) {getCurrentDir(self_dir);self_path=self_dir+Str
         
       else if(opt=="-ss"||opt=="--search-string"){
           checkArgAvailability(args,i+1);
-          search_string=args[i+1];
+          search_string.push_back(args[i+1]);
           skipcount=true;
           
           ss_obj.count++;
           if(ss_obj.count>1){printWarningLog("Search string overwritten");}
         }
         
+        
+      else if(opt=="-ss/f"||opt=="--search-string-file"){
+          checkArgAvailability(args,i+1);
+          search_string_file=args[i+1];
+          skipcount=true;
+          
+          ss_file_obj.count++;
+          if(ss_file_obj.count>1){printWarningLog("Search string file option changed");}
+        }
+        
+         
+      else if(opt=="-ssf"||opt=="--search-string-fixed"){
+          checkArgAvailability(args,i+1);
+          search_string.push_back(args[i+1]);
+          fixed_ss=true;
+          skipcount=true;
+          
+          ss_obj.count++;
+          if(ss_obj.count>1){printWarningLog("Search string overwritten");}
+        }
+        
+          
+      else if(opt=="-ssf/f"||opt=="--search-string-fixed-file"){
+          checkArgAvailability(args,i+1);
+          search_string_file=args[i+1];
+          fixed_ss=true;
+          skipcount=true;
+          
+          ss_file_obj.count++;
+          if(ss_file_obj.count>1){printWarningLog("Search string file option changed");}
+        }
+        
+        
       else if(opt=="-rs"||opt=="--replace-string"){
           checkArgAvailability(args,i+1);
-          replace_string=args[i+1];
+          replace_string.push_back(args[i+1]);
           skipcount=true;
           
           rs_obj.count++;
           if(rs_obj.count>1){printWarningLog("Replace string overwritten");}
+        }
+        
+        
+      else if(opt=="-rs/f"||opt=="--replace-string-file"){
+          checkArgAvailability(args,i+1);
+          replace_string_file=args[i+1];
+          skipcount=true;
+          
+          rs_file_obj.count++;
+          if(rs_file_obj.count>1){printWarningLog("Replace string file option changed");}
         }
         
       else if(opt=="-re" || opt == "--regex"){
@@ -1490,17 +1573,7 @@ int main(int argc, char* argv[]) {getCurrentDir(self_dir);self_path=self_dir+Str
           
         }
         
-        
-      else if(opt=="-ssf"||opt=="--search-string-fixed"){
-          checkArgAvailability(args,i+1);
-          search_string=args[i+1];
-          fixed_ss=true;
-          skipcount=true;
-          
-          ss_obj.count++;
-          if(ss_obj.count>1){printWarningLog("Search string overwritten");}
-        }
-        
+       
       else if(opt=="-dp"||opt=="--depth"){
           checkArgAvailability(args,i+1);
           mustBeAnInteger("Depth",args[i+1]);
@@ -1628,27 +1701,52 @@ int main(int argc, char* argv[]) {getCurrentDir(self_dir);self_path=self_dir+Str
     if(files.size()==1){if(!file_only || depth<=0){single_mode=true;}}
     if(simulation){quiet=false;}
     
-    if(name_string=="" && name_string_file=="" && replace_string==""){
-        printErrorLog("One of the options: -ns or -nsf or -rs is mandatory");
-        Exit(1);
+    if(search_string_file!=""){
+        if(search_string.size()!=0){printErrorLog("Search string and Search string file both can't be passed at the same time");Exit(1);}
+        if(isFile(search_string_file)){
+            search_string=getLineFromFileAndReturnVector(search_string_file);
         }
-    if(search_string!=""){
-        if(stringContains(search_string,path_delim)){
-            parseSearchString(search_string);
+        else{
+            printErrorLog("Search string file not found: "+search_string_file);
+            Exit(1);
         }
-        else {
-            ss_search.push_back(search_string);
-            ss_mod.push_back("");
-            
-        }    
+    }
+    
+    if(replace_string_file!=""){
+        if(replace_string.size()!=0){printErrorLog("Replace string and Replace string file both can't be passed at the same time");Exit(1);}
+        if(isFile(replace_string_file)){
+            replace_string=getLineFromFileAndReturnVector(replace_string_file);
+        }
+        else{
+            printErrorLog("Search string file not found: "+replace_string_file);
+            Exit(1);
+        }
         
     }
     
     
-    if(replace_string!=""){
+    if(name_string=="" && name_string_file=="" && replace_string.size()==0){
+        printErrorLog("One of the options: -ns or -nsf or -rs is mandatory");
+        Exit(1);
+        }
+    if(search_string.size()!=0){
+        for(unsigned i=0;i<search_string.size();i++){
+            if(stringContains(search_string[i],path_delim)){
+                parseSearchString(search_string[i]);
+            }
+            else {
+                ss_search.push_back(search_string[i]);
+                ss_mod.push_back("");
+            
+            }    
+        }
+    }
+    
+    
+    if(replace_string.size()!=0){
         Regex multi_re ("\\s*"+path_delim+"([^"+path_delim+"]*?)"+path_delim+"([^"+path_delim+"]*?)"+path_delim+"\\s*([gi]{0,2})\\s*(;\\s*|$)");
-        if(!isComplyingToRegex(replace_string,multi_re)){
-            printErrorLog("Invalid replace string format: "+replace_string);
+        if(!isComplyingToRegex(replace_string[0],multi_re)){
+            printErrorLog("Invalid replace string format: "+replace_string[0]);
             Exit(1);
             }
         }

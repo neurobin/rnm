@@ -8,6 +8,25 @@ bool isComplyingToRegex(String &s,Regex &re){
     if(s!=total){return false;}
     else {return true;}
     }
+    
+StringArray getLineFromFileAndPushToArray(String filename){
+    StringArray list;
+    String line;
+    char delim='\n';
+    FileStream file;
+    file.open(filename,$read);
+    if(!file.good()){printErrorLog("Couldn't open name string file: "+filename);Exit(1);}
+    while(getLineFromFile(file,line,delim)){
+        if ( line.size() && line[line.size()-1] == '\r' ) {line = line.substr( 0, line.size() - 1 );}
+        if(line=="" || line == toString('\0')){continue;}
+        list.push_back(line);
+    }
+    file.close();
+    
+    return list;
+}
+
+    
 
 int main(){
     Regex multi_re ("\\s*"+path_delim+"([^"+path_delim+"]*?)"+path_delim+"([^"+path_delim+"]*?)"+path_delim+"\\s*([gi]{0,2})\\s*(;\\s*|$)");
