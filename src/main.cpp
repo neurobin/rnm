@@ -213,6 +213,10 @@ String toLower(String s){
     return s;
 }
 
+String toUpper(String s){
+    for(int i=0;i<(int)s.length();i++){s[i]=toupper(s[i]);}
+    return s;
+    }
 
 String replaceString(String str,String replace,String with){
     std::size_t pos = str.find(replace);
@@ -256,6 +260,55 @@ String toStringAccordingToIFL(Double index,int ifl){
     if(negative_flag){
     return "-"+buffer.str();}
     else return buffer.str();}
+    
+    
+String changeCaseAccordingToSS(String s,String search,String replace,String modifier,int user=0){
+    if(replace!="\\c"&&replace!="\\C"){printWarningLog("Invalid case definition: "+replace+" Only \\c or \\C is allowed");return s;}
+    bool case_sensitive=true,global=false;
+    String replaced_string=s;
+    if(modifier=="gi" || modifier=="ig"){global=true;case_sensitive=false;}
+    else if(modifier=="i"){case_sensitive=false;}
+    else if(modifier=="g"){global=true;}
+    RegexResult res;
+    
+    RegexIterator it_end;
+    try {
+        std::regex re (search);
+        if(user==1){re=createRegex(search,case_sensitive);}
+        else if(!case_sensitive){re= Regex (search, REGEX_DEFAULT | ICASE);}
+        
+        if(global){
+            RegexIterator it(s.begin(), s.end(), re);
+            
+            while(it!=it_end){
+                String match=it->str();++it;
+                if(replace=="\\C"){
+                    replaced_string=replaceStringAll(replaced_string,match,toUpper(match));
+                }
+                else if(replace=="\\c"){
+                    replaced_string=replaceStringAll(replaced_string,match,toLower(match));
+                }
+                
+            }
+        }
+        else{
+            if(std::regex_search(replaced_string,res,re)){
+                if(replace=="\\C"){
+                    replaced_string=replaceString(replaced_string,res[0],toUpper(res[0]));
+                }
+                else if(replace=="\\c"){
+                    replaced_string=replaceString(replaced_string,res[0],toLower(res[0]));
+                }
+            }
+        }
+    } 
+    catch (std::regex_error& e) {
+        printErrorLog("Invalid replace string regex: "+search);
+        Exit(1);
+    }
+    return replaced_string;
+}
+
 
 String regexReplace(String s,String search,String replace,String modifier,int user=0){
     bool case_sensitive=true,global=false;
@@ -343,7 +396,7 @@ String processReplacementString(String replace){
     replace=replaceStringAll(replace,"\\&","&");
     replace=replaceStringAll(replace,"\\p","$`");
     replace=replaceStringAll(replace,"\\s","$´");
-    replace=regexReplace(replace,"\\\\(\\d{0,2})","$$$1","g");
+    replace=regexReplace(replace,"\\\\(\\d{1,2})","$$$1","g");
     
     
     ///Finally strip slashes
@@ -359,7 +412,13 @@ void processReplaceString(StringArray rs,String file,DirectoryIndex &di){
     ///we now have valid rs_search, rs_replace and rs_mod
     rname=basename(file);
     for(Int i=0;i<(Int)rs_search.size();i++){
-        rname=regexReplace(rname,rs_search[i],rs_replace[i],rs_mod[i],1);
+        if(stringContains(rs_replace[i],"\\c")||stringContains(rs_replace[i],"\\C")){
+            rname=changeCaseAccordingToSS(rname,rs_search[i],rs_replace[i],rs_mod[i],1);
+        }
+        else {
+            rname=regexReplace(rname,rs_search[i],rs_replace[i],rs_mod[i],1);
+            
+        }
         ///Now a modified name rname is available
     }
 }

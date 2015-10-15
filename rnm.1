@@ -368,12 +368,14 @@ in Replace String.
 
 Regarding the
 .I replace_part
-, there are four special cases:
+, there are several special cases:
 .RS
 
 & will be taken as the entire match found by the regex (search_part).
 
 \\1, \\2 etc.. is the back-references, i.e you can access captured groups with these back-references. Up-to two digits after the \\ will be taken as a back-reference.
+
+\\c to convert to lowercase and \\C to convert to uppercase. No other character is allowed in replace_part if \\c or \\C is used.
 
 \\p is the prefix (i.e., the part of the target sequence that precedes the match).
 
