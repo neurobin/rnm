@@ -319,11 +319,23 @@ which implies case insensitive search. If no modifier is used, regex format can 
 .I /regex/
 or simply 
 .I regex
-; terminate multiple search strings with
+
+Terminate multiple search strings with
 .I ;
 , e.g
 .B "'/regex/modifier;/regex2/modifier2;...'"
+
+Also you can provide multiple search strings with repeated 
+.B -ss
+and/or
+.B -ssf
+options and files with repeated 
+.B -ss/f
+and/or
+.B -ssf/f
+options. These options can be combined together too.
 .RE
+
 .B Index Field Length
 .RS
 An integer value defining the field length of index. By default empty field will be filled with 0's. For example, if the value is 3, then index will be 001, 002, 003, etc.. Different filler (other than 0) can be provided with the 
@@ -383,10 +395,17 @@ stands for case insensitive search (default is case sensitive).Replace String is
 Example: 
 .B '/video/Episode /i//gi'
 will replace every instances of 'video' with 'Episode index' i.e you will get new rname as: Episode 1..., Episode 2..., etc...
-; terminate multiple replace strings with
+
+Terminate multiple replace strings with
 .I ;
 e.g 
 .B "'/search1/replace1/gi;/search2/replace2/i;...'"
+
+Also you can provide multiple replace strings with repeated
+.B -rs
+option and multiple files with repeated
+.B -rs/f
+options. These options can be combined together too.
 .RE
 
 .B Regex

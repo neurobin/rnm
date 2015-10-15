@@ -16,6 +16,8 @@ Bulk Rename Utility written in `C++`. Files and directories can be passed as com
 8. Name can be taken from a file according to starting line number (`-l` or `-sl`) and ending line number (`-el`).
 9. Null terminated file can be taken as Name String File.
 10. Files or directories can be sorted in natural order or general alphabetical order.
+11. Multiple search strings or search string files supported.
+12. Multiple replace strings or replace string files supported.
 
 <div id="dependency"></div>
 #Dependency:
@@ -251,7 +253,11 @@ Options are case insensitive, i.e `-ssF` and `-ssf` are the same.
                     a regex if `-ssF` option is not used.It is generally in the form `/regex/modifier` , 
                     where <u>regex</u> is the regex to search for and available modifier is <u>i</u> which implies  case
                     insensitive  search. If no  modifier is used, the regex format can be
-                    reduced to `/regex/` or simply `regex`. Terminate search strings (/regex/ fromat only) with `;` to provide multiple search strings, e.g `'/s1/i;/s2/;/s3/'`. This applies to fixed search strings too.
+                    reduced to `/regex/` or simply `regex`.
+                    
+Terminate search strings (`/regex/` fromat only) with `;` to provide multiple search strings, e.g `'/s1/i;/s2/;/s3/'`. This applies to fixed search strings as well.
+
+Also you can provide multiple search strings with repeated `-ss` option and file with repeated `-ss/f` options. These options can be combined together too.
 
                  
 **Index Field Length:** An integer value defining the field length of index.
@@ -282,6 +288,8 @@ g stands for global and replaces every instances of match found.
 i stands case insensitive search (default is case sensitive).*Replace String* is always performed on old file name.
 
 Terminate replace strings with `;` to provide multiple replace strings, e.g `'/s1/r1/gi;/s2/r2/i;/s3/r3/'`.
+
+You can provide multiple replace strings with repeated `-rs` option and multiple file with repeated `-rs/f` options. These options can be combined together too.
 
 ```
 Example: '/video/Episode /i//gi' will replace every instances

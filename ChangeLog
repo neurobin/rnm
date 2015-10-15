@@ -76,3 +76,9 @@ Bug fix: inconsistency in reserved directory index.
 3. Search strings can be taken from a file.
 4. Replace strings can be taken from a file.
 
+###`3.1.1`: <span class="light-quote">Thu Oct 15 13:14:24 UTC 2015</span>
+
+1. Multiple search strings or files can now be provided by repeating options.
+2. Multiple replace strings or files can now be provided by repeating options.
+3. Multiple file support for replace string and search string.
+4. Status of skipping files due to existing files with same names is changed to Warning from Error.
