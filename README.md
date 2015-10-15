@@ -1,6 +1,6 @@
 <div id="description"></div>
 # rnm
-Bulk Rename Utility written in `C++`. Files and directories can be passed as command line arguments to rename them in bulk according to some naming scheme (*Name String*). If any file or directory path is not passed as command line arguement, it will wait for user to type the path i.e it will take the path from standard input `(>=version 3.0.1)`. It uses `C++` regex (<a href="http://www.cplusplus.com/reference/regex/ECMAScript/">ECMAScript regex</a>) as the default regex to provide search (and replace) functionality, other regex modes are available through (`-re`) option. It provides an undo functionality too to move back an unwanted rename operation. You can also run a simulation instead of actual rename to view the potential outcome as program output on terminal with the `-sim` option.
+Bulk Rename Utility written in `C++`. Files and directories can be passed as command line arguments to rename them in bulk according to some naming scheme (*Name String*). If any file or directory path is not passed as command line argument, it will wait for user to type the path i.e it will take the path from standard input `(>=version 3.0.1)`. It uses `C++` regex (<a href="http://www.cplusplus.com/reference/regex/ECMAScript/">ECMAScript regex</a>) as the default regex to provide search (and replace) functionality, other regex modes are available through (`-re`) option. It provides an undo functionality too to move back an unwanted rename operation. You can also run a simulation instead of actual rename to view the potential outcome as program output on terminal with the `-sim` option.
 
 
 <div id="features"></div>
@@ -24,7 +24,7 @@ Bulk Rename Utility written in `C++`. Files and directories can be passed as com
 ###Unix (32 or 64 bit):
 
 1. Give the <span class="quote">install</span> file execution permission (`chmod +x install`) and
-2. Run it or just drag and dropt it on terminal and hit <kbd>Enter</kbd> (requires root privilege).
+2. Run it or just drag and drop it on terminal and hit <kbd>Enter</kbd> (requires root privilege).
 
 The install script depends on <span class="quote">Bash Shell</span>. If you don't have `bash` installed, then just copy the suitable binary file (`rnm`) from *bin/x32* or *bin/x64* directory to */usr/bin* directory, and copy the <span class="quote">rnm.1</span> file to */usr/share/man/man1* directory.
 
@@ -42,7 +42,7 @@ sudo apt-get install rnm
 #Uninstall:
 
 1. Give the <span class="quote">uninstall</span> file execution permission and
-2. Run it or just drag and dropt it on terminal and hit <kbd>Enter</kbd> (requires root privilege).
+2. Run it or just drag and drop it on terminal and hit <kbd>Enter</kbd> (requires root privilege).
 
 <div id="usage"></div>
 #Usage:
@@ -53,7 +53,7 @@ rnm directory/file/path -rs "/search regex/replace string/gi" [other_options]
 rnm directory/file/path -nsf namestring/file/path
 ```
 
-One of the options of `-ns` or `-nsf` or `-rs` is mandatory. Options are **not** sequential, their position in the argument list have no siginificance. For example, `rnm filepath -ns name` is the same as `rnm -ns name filepath`. Though passing the *Directory/File* path at the end of the arguement list is considered to be safe and wise.
+One of the options of `-ns` or `-nsf` or `-rs` is mandatory. Options are **not** sequential, their position in the argument list have no significance. For example, `rnm filepath -ns name` is the same as `rnm -ns name filepath`. Though passing the *Directory/File* path at the end of the argument list is considered to be safe and wise.
 
 Options are case insensitive, i.e `-ssF` and `-ssf` are the same.
 
@@ -98,13 +98,14 @@ Options are case insensitive, i.e `-ssF` and `-ssf` are the same.
 `-ns`                : Name string.
      
 `--name-string-file`,
-`-nsf`               : Name string file. File containing name string (one per line).
+`-nsf`, `-ns/f`      : Name string file. File containing name string (one per line).
                        `-nsf /hist/` i.e a value passed `/hist/` as Name string file, will
-                       try to take the file from history.
+                       try to take the file from history. `-nsf` is deprecated, use `-ns/f` instead.
        
 `--name-string-file-null-terminated`,
-`-nsfn`              : Name String file. This takes a null terminated *Name String* file, i.e
+`-nsfn`,`-ns/fn`     : Name String file. This takes a null terminated *Name String* file, i.e
                  filenames are terminated by null character (`\0`) instead of new line (`\n`).
+                 `-nsfn` is deprecated, use `-ns/fn` instead.
 
 `--line`, `--start-line`,
 `-l`, `-sl`          : Start Line number in name string file.
@@ -122,13 +123,23 @@ Options are case insensitive, i.e `-ssF` and `-ssf` are the same.
 `--search-string`,
 `-ss`                : Search string.
                        String that will be used to search for files with matching names.
-                       This is generally a regex  if not pass with `-ssf` option.
-     
+                       This is generally a regex  if not passed with `-ssf` option.
+
+`--search-string-file`,
+`-ss/f`              : Search string file. A file containing search string per line.
+
+
 `--search-string-fixed`,
 `-ssf`               : Fixed search string (not treated as regex).
 
+`--search-string-fixed-file`,
+`-ssf/f`             : Search string file. Contains fixed search string per line.
+
 `--replace-string`,
 `-rs`                : Replace string. A string in the form `/search_string/replace_string/modifier`. See **Replace String** in <a href="rnm/#technical-terms">Terminology</a> for details.
+
+`--replace-string-file`,
+`-rs/f`              : Replace string file. A file containing replace string per line.
 
 `--regex`,
 `-re`                : regex mode. Available regex modes are POSIX compliant basic & extended regex,
@@ -209,8 +220,8 @@ Options are case insensitive, i.e `-ssF` and `-ssf` are the same.
 6. `/-ir/` in name string will be replaced with inverse reserved index. In general, `-i` in the above replacement rules (applies to indexes excluding line indexes) will mean inverse index conforming to their meaning.
 7. `/dc/` in name string will be replaced with directory count
 8. `/l/` in name string will be replaced with line number from *Name String File*.
-9. `/la/` in name string will be replaced wiht actual line number from *Name String File*.
-10. `/n/` in name string will be replaced with filename without extention. If used with `-nsf` option, the filename will be the name taken from the *Name String File*.
+9. `/la/` in name string will be replaced with actual line number from *Name String File*.
+10. `/n/` in name string will be replaced with filename without extension. If used with `-nsf` option, the filename will be the name taken from the *Name String File*.
 11. `/fn/` in name string will be replaced with full name of the files. If used with `-nsf` option, full name will be the name taken from the *Name String File*.
 12. `/rn/` in name string will be replaced with Replaced Name.
 13. `/pd/` in name string will be replaced with parent directory  name of the current file or directory. 
@@ -227,7 +238,7 @@ Options are case insensitive, i.e `-ssF` and `-ssf` are the same.
                     a regex if `-ssF` option is not used.It is generally in the form `/regex/modifier` , 
                     where <u>regex</u> is the regex to search for and available modifier is <u>i</u> which implies  case
                     insensitive  search. If no  modifier is used, the regex format can be
-                    reduced to `/regex/` or simply `regex`.
+                    reduced to `/regex/` or simply `regex`. Terminate search strings (/regex/ fromat only) with `;` to provide multiple search strings, e.g `'/s1/i;/s2/;/s3/'`. This applies to fixed search strings too.
 
                  
 **Index Field Length:** An integer value defining the field length of index.
@@ -253,9 +264,11 @@ Options are case insensitive, i.e `-ssF` and `-ssf` are the same.
 3. `\p` is the prefix (i.e., the part of the target sequence that precedes the match)
 4. `\s` is the suffix (i.e., the part of the target sequence that follows the match).
 
-to insert a `&` literally, use `\&` and for `\` use `\\`.Two modifiers are avalilable: g and i.
+to insert a `&` literally, use `\&` and for `\` use `\\`.Two modifiers are available: g and i.
 g stands for global and replaces every instances of match found.
 i stands case insensitive search (default is case sensitive).*Replace String* is always performed on old file name.
+
+Terminate replace strings with `;` to provide multiple replace strings, e.g `'/s1/r1/gi;/s2/r2/i;/s3/r3/'`.
 
 ```
 Example: '/video/Episode /i//gi' will replace every instances
@@ -295,5 +308,5 @@ etc...
 5. This is a dangerous tool like `rm`, so use with care. If you make a mistake and do some unwanted rename, run `rnm -u` to undo (before running any more `rnm` command).
 6. Pass all regex like strings within quotes even if they don't contain any white space.
 7. To pass a filename that resembles an option, use `./`, i.e `./-ns` to pass a file named `-ns` in the current directory. Or you can use the `--` option make it a non-option argument; in that case make sure to pass all "Option" arguments before `--`, because everything after `--` will be taken as file path/s.
-8. Pass file or directory path list at the end of the argument sequence. Use `--` to make all the argumets after it as paths (not options).
+8. Pass file or directory path list at the end of the argument sequence. Use `--` to make all the arguments after it as paths (not options).
 

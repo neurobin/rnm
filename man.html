@@ -2,9 +2,9 @@
 <HTML><HEAD><TITLE>Man page of rnm</TITLE>
 </HEAD><BODY>
 <H1>rnm</H1>
-Section: Utility (1)<BR>Updated: Sun Sep 20 2015
+Section: Utility (1)<BR>Updated: Thu Oct 15 2015<BR>
 <HR>
-<A NAME="index">&nbsp;</A><H2>Index</H2>
+<H2>Index</H2>
 <DL>
 <DT><A HREF="#lbAB">NAME</A><DD>
 <DT><A HREF="#lbAC">SYNOPSIS</A><DD>
@@ -20,9 +20,7 @@ Section: Utility (1)<BR>Updated: Sun Sep 20 2015
 </DL>
 <HR>
 <H2>NAME</H2>
-
 rnm - Bulk rename utility
-<A NAME="lbAC">&nbsp;</A>
 <H2>SYNOPSIS</H2>
 
 <B>rnm [-ns</B>
@@ -66,7 +64,7 @@ are the same.
 Bulk Rename Utility written in C++. Files and directories can be passed as command line arguments to rename them in bulk according to some naming scheme (
 <B>Name String</B>
 
-). If no file or directory path is passed as command line arguement, it will wait for user to type the path i.e it will take the path from standard input (&gt;=version 3.0.1). It uses ECMAScript regex as the default regex to provide search (and replace) functionality, other regex modes ( POSIX compliant basic and extended regex) are available through (
+). If no file or directory path is passed as command line argument, it will wait for user to type the path i.e it will take the path from standard input (&gt;=version 3.0.1). It uses ECMAScript regex as the default regex to provide search (and replace) functionality, other regex modes ( POSIX compliant basic and extended regex) are available through (
 <B>-re</B>
 
 ) option. It provides an undo functionality (
@@ -154,24 +152,30 @@ by default.
 <DT>--name-string-file,<DD>
 <B>-nsf</B>
 
+,
+<B>-ns/f</B>
+
 <I>file-path</I>
 
-: Name string file. File containing name string (one per line). 
-<B>-nsf</B>
+: Name string file. File containing name string (one per line). -nsf is deprecated (will be removed in future), use -ns/f instead.
+<B>-ns/f</B>
 
 <I>/hist/</I>
 
-i.e a value passed 
+i.e a value 
 <B>/hist/</B>
 
-as Name string file, will try to take the file from history.
+passed as Name string file, will try to take the file from history.
 <P>
 <DT>--name-string-file-null-terminated,<DD>
 <B>-nsfn</B>
 
+,
+<B>-ns/fn</B>
+
 <I>file-path</I>
 
-: Name String file. This takes a null terminated Name String file, i.e filenames are terminated by null character (\0) instead of new line (\n).
+: Name String file. This takes a null terminated Name String file, i.e filenames are terminated by null character (\0) instead of new line (\n). -nsfn is deprecated, use -ns/fn instead.
 <P>
 <DT>--line, --start-line, -l,<DD>
 <B>-sl</B>
@@ -209,18 +213,28 @@ as Name string file, will try to take the file from history.
 
 <I>string</I>
 
-: Search string String that will be used to search for files with matching names. This is generally a regex if not pass with 
+: Search string. String that will be used to search for files with matching names. This is generally a regex if not passed with
 <B>-ssf</B>
 
 option.
-<P>
+<DT>--search-string-file,<DD>
+<B>-ss/f</B>
+
+<I>file_path</I>
+
+: Search string file. A file containing search string per line.
 <DT>--search-string-fixed,<DD>
 <B>-ssf</B>
 
 <I>string</I>
 
 : Fixed search string (not treated as regex).
-<P>
+<DT>--search-string-fixed-file,<DD>
+<B>-ssf/f</B>
+
+<I>file_path</I>
+
+: Search string file. Contains fixed search string per line.
 <DT>--replace-string,<DD>
 <B>-rs</B>
 
@@ -236,7 +250,12 @@ in
 <B>TERMINOLOGY</B>
 
 section for details.
-<P>
+<DT>--replace-string-file,<DD>
+<B>-rs/f</B>
+
+<I>file_path</I>
+
+: Replace string file. A file containing replace string per line.
 <DT>--regex,<DD>
 <B>-re</B>
 
@@ -301,7 +320,7 @@ Apply rename on files only, exclude any and all directory and their contents. Fo
 <DT>--count-directory, -cd<DD>
 Count directory in reserved index regardless of other options. Reserves indices for directories even if it is File Only mode.
 <DT>--count-file, -cf<DD>
-Count file in reserved index regardless of other options. Reserves indces for files even if it is Directory Only mode.
+Count file in reserved index regardless of other options. Reserves indices for files even if it is Directory Only mode.
 <DT>--sort, -s<DD>
 Sort files or directories in a natural (human perceivable natural sort) manner. 
 <DT>--sort/g, -s/g<DD>
@@ -357,7 +376,7 @@ A string, that is parsed to create names for new files. It can be fixed name whi
 <P>
 <B>/n/</B>
 
-in name string will be replaced with filename without extention. If used with -nsf option, the filename will be the name taken from the Name String File.
+in name string will be replaced with filename without extension. If used with -nsf option, the filename will be the name taken from the Name String File.
 <P>
 <B>/fn/</B>
 
@@ -446,15 +465,20 @@ option is not used. It is generally in the form
 , where regex is the regex to search for and available modifier is 
 <I>i</I>
 
-which implies case insensitive search. If no modifier is used, the regex format can be reduced to
+which implies case insensitive search. If no modifier is used, regex format can be reduced to
 <I>/regex/</I>
 
 or simply 
 <I>regex</I>
 
+; terminate multiple search strings with
+<I>;</I>
+
+, e.g
+<B>'/regex/modifier;/regex2/modifier2;...'</B>
+
 </DL>
 
-<P>
 <B>Index Field Length</B>
 
 <DL COMPACT><DT><DD>
@@ -471,7 +495,7 @@ option.
 The name can be modified at runtime using replace string. replace string will be parsed to create a new Name String rule: 
 <B>/rn/</B>
 
-which can be used in Name String. If name string is not passed as argument, the new name of the file will be rname. Replaced Name is always generated from the old filename.
+which can be used in Name String. If name string is not passed as argument, the new name of the file will be /rn/. Replaced Name is always generated from the old filename.
 </DL>
 
 <P>
@@ -506,7 +530,7 @@ Regarding the
 <P>
 &amp; will be taken as the entire match found by the regex (search_part).
 <P>
-\1, \2 etc.. is the back-references, i.e you can access captured groups with these back-references. Upto two digits after the \ will be taken as a back-reference.
+\1, \2 etc.. is the back-references, i.e you can access captured groups with these back-references. Up-to two digits after the \ will be taken as a back-reference.
 <P>
 \p is the prefix (i.e., the part of the target sequence that precedes the match).
 <P>
@@ -516,7 +540,7 @@ Regarding the
 <P>
 to insert a &amp; literally, use \&amp; and for \ use \\.
 <P>
-Two modifiers are avalilable: 
+Two modifiers are available: 
 <I>g</I>
 
 and 
@@ -534,6 +558,12 @@ Example:
 <B>'/video/Episode /i//gi'</B>
 
 will replace every instances of 'video' with 'Episode index' i.e you will get new rname as: Episode 1..., Episode 2..., etc...
+; terminate multiple replace strings with
+<I>;</I>
+
+e.g 
+<B>'/search1/replace1/gi;/search2/replace2/i;...'</B>
+
 </DL>
 
 <P>
@@ -624,7 +654,6 @@ file only mode, i.e no directory will be renamed or indexed, unless depth is
 <P>
 ~/.neurobin/rnm
 <P>
-<A NAME="lbAI">&nbsp;</A>
 <H2>EXITSTATUS</H2>
 
 <P>
@@ -632,25 +661,18 @@ file only mode, i.e no directory will be renamed or indexed, unless depth is
 <P>
 1 on failure
 <P>
-<A NAME="lbAJ">&nbsp;</A>
 <H2>BUGREPORT</H2>
-
 Report bugs to <A HREF="http://github.com/neurobin/rnm/issues">http://github.com/neurobin/rnm/issues</A>
-<A NAME="lbAK">&nbsp;</A>
 <H2>AUTHOR</H2>
-
 <DL COMPACT>
-<DT>MD. JAHIDUL HAMID &lt;<A HREF="mailto:jahidulhamid@yahoo.com">jahidulhamid@yahoo.com</A>&gt;<DD>
+<DT>MD. JAHIDUL HAMID<DD>
 <DT>@github: <A HREF="http://github.com/neurobin">http://github.com/neurobin</A><DD>
 <DT>@bitbucket: <A HREF="http://bitbucket.com/neurobin">http://bitbucket.com/neurobin</A><DD>
 </DL>
-<A NAME="lbAL">&nbsp;</A>
 <H2>WEB</H2>
-
 <A HREF="http://neurobin.github.io/rnm">http://neurobin.github.io/rnm</A>
 <P>
-
 <HR>
-Time: 17:16:30 GMT, September 20, 2015
+Time: 00:30:57 GMT, October 15, 2015
 </BODY>
 </HTML>
