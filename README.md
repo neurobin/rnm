@@ -12,10 +12,10 @@ Bulk Rename Utility written in `C++`. Files and directories can be passed as com
 4. Lowercase-Uppercase conversion is selective i.e you can apply case conversion in part of the name at a targeted position.
 5. Names can be modified with certain predefined rules. For example, you can insert parent directory name or working directory name or index etc... in filename in arbitrary positions.
 6. Names can be taken from a file, and these names can also be modified by applying *Name String* rules on them.
-7. Search functionality. It uses the <a href="https://en.wikipedia.org/wiki/Regular_expression">ECMAScript regex</a> by default. Regex mode can be modified (POSIX basic, extended, egrep, grep, awk, ECMAScript). Fixed string search is also possible.
+7. Search functionality. It uses the <a href="https://en.wikipedia.org/wiki/Regular_expression">ECMAScript regex</a> by default. Regex mode can be changed (POSIX basic, extended, egrep, grep, awk, ECMAScript). Fixed string search is also possible.
 8. Null terminated file support for file names (Null termination is a good way to store filenames in a file).
 9. Sort functionality. Available sorting methods are: Natural sort and general alphabetical sort.
-10. Multiple search criteria and replace methods are possible.
+10. Multiple search criteria and replacement methods are possible.
 11. Search keywords and replacement regex can also be supplied form files (single or multiple).
 
 <div id="dependency"></div>
