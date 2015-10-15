@@ -38,6 +38,8 @@ typedef std::regex Regex;
 typedef std::map<Int,String> NameList;
 typedef std::map<Int,Int> IntMap;
 typedef std::regex::flag_type RegexType;
+typedef std::regex_iterator<std::string::iterator> RegexIterator;
+typedef std::regex_token_iterator<std::string::iterator> RegexTokenIterator;
 
 
 /////defs
@@ -58,6 +60,7 @@ typedef std::regex::flag_type RegexType;
 #define REGEX_EGREP std::regex::egrep
 #define REGEX_DEFAULT REGEX_ECMASCRIPT
 #define REGEX_LOCALE std::regex::collate
+
 
 #define print std::cout<<
 #define printe std::cerr<<
@@ -164,23 +167,25 @@ String NSF_LIST_FILE=LOG_DIR+path_delim+"nsf.list";
 char self_dir[FILENAME_MAX];
 String base_dir="";
 String self_path="";
-String search_string="";
-String replace_string="";
+StringArray search_string;
+String search_string_file="";
+StringArray replace_string;
+String replace_string_file="";
 String name_string="";
 String name_string_file="";
 String rname="";
-String rs_search="";
-String rs_replace="";
-String rs_mod="";
-String ss_search="";
-String ss_mod="";
+StringArray rs_search;
+StringArray rs_replace;
+StringArray rs_mod;
+StringArray ss_search;
+StringArray ss_mod;
 String sort_type="natural";
 
 
 /// Project Info
 String project_name="rnm";
 String executable_name="rnm";
-String version="3.0.6";
+String version="3.1.0";
 String author_name="Jahidul Hamid";
 String author_email="jahidulhamid@yahoo.com";
 String bug_report_url="http://github.com/neurobin/"+project_name+"/issues";
@@ -245,9 +250,9 @@ options:\n\
 -ns            : Name string\n\
      \n\
 --name-string-file,\n\
--nsf           : Name string file. File containing name string (one per line).\n\
+-nsf, -ns/f    : Name string file. File containing name string (one per line).\n\
 --name-string-file-null-terminated,\n\
--nsfn          : Name String file. This takes a null terminated *Name String* file, i.e\n\
+-nsfn, -ns/fn  : Name String file. This takes a null terminated *Name String* file, i.e\n\
                  filenames are terminated by null character (\\0) instead of new line (\\n).\n\
                  \n\
 --line, --start-line,\n\
@@ -267,12 +272,21 @@ options:\n\
 -ss            : Search string\n\
                  String that will be used to search for files with matching names.\n\
                  This is generally regex (ECMAScript regex) if not pass with -ssf.\n\
+                 \n\
+--search-string-file,\n\
+-ss/f          : Search string file. Contains search strings per line.\n\
      \n\
 --search-string-fixed,\n\
 -ssf           : Fixed search string (not treated as regex).\n\
 \n\
+--search-string-fixed-file\n\
+-ssf/f         : Fixed search string file. Contains fixed search string (per line).\n\
+\n\
 --replace-string,\n\
 -rs            : Replace string. A string in the form /search_string/replace_string/modifier \n\
+\n\
+--replace-string-file,\n\
+-rs/f          : Replace string file. Contains replace string (per line).\n\
 \n\
 --regex,\n\
 -re            : regex mode. Available regex modes are basic, extended, grep, awk, egrep, ecmascript.\n\
