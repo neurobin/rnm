@@ -17,6 +17,9 @@ Bulk Rename Utility written in `C++`. Files and directories can be passed as com
 9. Null terminated file can be taken as Name String File.
 10. Files or directories can be sorted in natural order or general alphabetical order.
 
+<div id="dependency"></div>
+#Dependency:
+* `libstdc++6 (>=4.9.2)`
 
 <div id="install"></div>
 #Install:
