@@ -7,7 +7,7 @@ Section: Utility (1)<BR>Updated: Thu Oct 15 2015<BR>
 <H2>NAME</H2>
 rnm - Bulk rename utility
 <HR>
-<H2>Index</H2>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
 <DL>
 <DT><A HREF="#lbAB">NAME</A><DD>
 <DT><A HREF="#lbAC">SYNOPSIS</A><DD>
@@ -542,12 +542,14 @@ in Replace String.
 Regarding the
 <I>replace_part</I>
 
-, there are four special cases:
+, there are several special cases:
 <DL COMPACT><DT><DD>
 <P>
 &amp; will be taken as the entire match found by the regex (search_part).
 <P>
 \1, \2 etc.. is the back-references, i.e you can access captured groups with these back-references. Up-to two digits after the \ will be taken as a back-reference.
+<P>
+\c to convert to lowercase and \C to convert to uppercase. No other character is allowed in replace_part if \c or \C is used.
 <P>
 \p is the prefix (i.e., the part of the target sequence that precedes the match).
 <P>
@@ -689,7 +691,6 @@ file only mode, i.e no directory will be renamed or indexed, unless depth is
 <H2>BUGREPORT</H2>
 Report bugs to <A HREF="http://github.com/neurobin/rnm/issues">http://github.com/neurobin/rnm/issues</A>
 <H2>AUTHOR</H2>
-
 <DL COMPACT>
 <DT>MD. JAHIDUL HAMID<DD>
 <DT>@github: <A HREF="http://github.com/neurobin">http://github.com/neurobin</A><DD>
@@ -699,6 +700,6 @@ Report bugs to <A HREF="http://github.com/neurobin/rnm/issues">http://github.com
 <A HREF="http://neurobin.github.io/rnm">http://neurobin.github.io/rnm</A>
 <P>
 <HR>
-Time: 13:05:06 GMT, October 15, 2015
+Time: 17:49:58 GMT, October 15, 2015
 </BODY>
 </HTML>
