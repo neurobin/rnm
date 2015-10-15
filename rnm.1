@@ -1,4 +1,4 @@
-.TH rnm 1 "Sun Sep 20 2015" Unix "Utility"
+.TH rnm 1 "Thu Oct 15 2015" Unix "Utility"
 .SH NAME
 rnm \- Bulk rename utility
 .SH SYNOPSIS
@@ -28,7 +28,7 @@ are the same.
 .SH DESCRIPTION
 Bulk Rename Utility written in C++. Files and directories can be passed as command line arguments to rename them in bulk according to some naming scheme (
 .B Name String
-). If no file or directory path is passed as command line arguement, it will wait for user to type the path i.e it will take the path from standard input (>=version 3.0.1). It uses ECMAScript regex as the default regex to provide search (and replace) functionality, other regex modes ( POSIX compliant basic and extended regex) are available through (
+). If no file or directory path is passed as command line argument, it will wait for user to type the path i.e it will take the path from standard input (>=version 3.0.1). It uses ECMAScript regex as the default regex to provide search (and replace) functionality, other regex modes ( POSIX compliant basic and extended regex) are available through (
 .B -re
 ) option. It provides an undo functionality (
 .B rnm -u
@@ -88,18 +88,22 @@ by default.
 
 .IP "--name-string-file,"
 .B -nsf
+,
+.B -ns/f
 .I file-path
-: Name string file. File containing name string (one per line). 
-.B -nsf
+: Name string file. File containing name string (one per line). -nsf is deprecated (will be removed in future), use -ns/f instead.
+.B -ns/f
 .I /hist/
-i.e a value passed 
+i.e a value 
 .B /hist/
-as Name string file, will try to take the file from history.
+passed as Name string file, will try to take the file from history.
 
 .IP "--name-string-file-null-terminated,"
 .B -nsfn
+,
+.B -ns/fn
 .I file-path
-: Name String file. This takes a null terminated Name String file, i.e filenames are terminated by null character (\\0) instead of new line (\\n).
+: Name String file. This takes a null terminated Name String file, i.e filenames are terminated by null character (\\0) instead of new line (\\n). -nsfn is deprecated, use -ns/fn instead.
 
 .IP "--line, --start-line, -l,"
 .B "-sl"
@@ -125,16 +129,22 @@ as Name string file, will try to take the file from history.
 .IP "--search-string,"
 .B "-ss"
 .I string
-: Search string String that will be used to search for files with matching names. This is generally a regex if not pass with 
+: Search string. String that will be used to search for files with matching names. This is generally a regex if not passed with
 .B -ssf
 option.
-
+.IP "--search-string-file,"
+.B -ss/f
+.I file_path
+: Search string file. A file containing search string per line.
 .IP "--search-string-fixed,"
 .B -ssf
 .I string
 : Fixed search string (not treated as regex).
-
-.IP "--replace-string",
+.IP "--search-string-fixed-file,"
+.B -ssf/f
+.I file_path
+: Search string file. Contains fixed search string per line.
+.IP "--replace-string,"
 .B -rs
 .I string
 : Replace string. A string in the form 
@@ -144,7 +154,10 @@ option.
 in 
 .B TERMINOLOGY
 section for details.
-
+.IP "--replace-string-file,"
+.B -rs/f
+.I file_path
+: Replace string file. A file containing replace string per line.
 .IP "--regex",
 .B -re
 .I regex-mode
@@ -192,7 +205,7 @@ Apply rename on files only, exclude any and all directory and their contents. Fo
 .IP "--count-directory, -cd"
 Count directory in reserved index regardless of other options. Reserves indices for directories even if it is File Only mode.
 .IP "--count-file, -cf"
-Count file in reserved index regardless of other options. Reserves indces for files even if it is Directory Only mode.
+Count file in reserved index regardless of other options. Reserves indices for files even if it is Directory Only mode.
 .IP "--sort, -s"
 Sort files or directories in a natural (human perceivable natural sort) manner. 
 .IP "--sort/g, -s/g"
@@ -238,7 +251,7 @@ A string, that is parsed to create names for new files. It can be fixed name whi
 .RS
 
 .B /n/
-in name string will be replaced with filename without extention. If used with -nsf option, the filename will be the name taken from the Name String File.
+in name string will be replaced with filename without extension. If used with -nsf option, the filename will be the name taken from the Name String File.
 
 .B /fn/
 in name string will be replaced with full name of the files. If used with -nsf option, full name will be the name taken from the Name String File.
@@ -302,12 +315,15 @@ option is not used. It is generally in the form
 .I /regex/modifier
 , where regex is the regex to search for and available modifier is 
 .I i
-which implies case insensitive search. If no modifier is used, the regex format can be reduced to
+which implies case insensitive search. If no modifier is used, regex format can be reduced to
 .I /regex/
 or simply 
 .I regex
+; terminate multiple search strings with
+.I ;
+, e.g
+.B "'/regex/modifier;/regex2/modifier2;...'"
 .RE
-
 .B Index Field Length
 .RS
 An integer value defining the field length of index. By default empty field will be filled with 0's. For example, if the value is 3, then index will be 001, 002, 003, etc.. Different filler (other than 0) can be provided with the 
@@ -319,7 +335,7 @@ option.
 .RS
 The name can be modified at runtime using replace string. replace string will be parsed to create a new Name String rule: 
 .B /rn/
-which can be used in Name String. If name string is not passed as argument, the new name of the file will be rname. Replaced Name is always generated from the old filename.
+which can be used in Name String. If name string is not passed as argument, the new name of the file will be /rn/. Replaced Name is always generated from the old filename.
 .RE
 
 .B Replace String
@@ -345,7 +361,7 @@ Regarding the
 
 & will be taken as the entire match found by the regex (search_part).
 
-\\1, \\2 etc.. is the back-references, i.e you can access captured groups with these back-references. Upto two digits after the \\ will be taken as a back-reference.
+\\1, \\2 etc.. is the back-references, i.e you can access captured groups with these back-references. Up-to two digits after the \\ will be taken as a back-reference.
 
 \\p is the prefix (i.e., the part of the target sequence that precedes the match).
 
@@ -354,7 +370,7 @@ Regarding the
 
 to insert a & literally, use \\& and for \\ use \\\\.
 
-Two modifiers are avalilable: 
+Two modifiers are available: 
 .I g
 and 
 .I i
@@ -367,6 +383,10 @@ stands for case insensitive search (default is case sensitive).Replace String is
 Example: 
 .B '/video/Episode /i//gi'
 will replace every instances of 'video' with 'Episode index' i.e you will get new rname as: Episode 1..., Episode 2..., etc...
+; terminate multiple replace strings with
+.I ;
+e.g 
+.B "'/search1/replace1/gi;/search2/replace2/i;...'"
 .RE
 
 .B Regex
@@ -436,7 +456,7 @@ file only mode, i.e no directory will be renamed or indexed, unless depth is
 .SH BUGREPORT
 Report bugs to http://github.com/neurobin/rnm/issues
 .SH AUTHOR
-.IP "MD. JAHIDUL HAMID <jahidulhamid@yahoo.com>"
+.IP "MD. JAHIDUL HAMID
 .IP "@github: http://github.com/neurobin"
 .IP "@bitbucket: http://bitbucket.com/neurobin"
 .SH WEB

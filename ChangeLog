@@ -69,3 +69,10 @@ Bug fix: inconsistency in reserved directory index.
 2. Added `-cd` and `-cf` options.
 3. Added sort functionality. `-s` for default (natural) sort, `-s/g` for general sort. `-s/n` for natural sort. `-s/none` for no sort.
 
+###`3.1.0`: <span class="light-quote">Thu Oct 15 00:04:43 UTC 2015</span>
+
+1. Multiple search string support added.
+2. Multiple replace string support added.
+3. Search strings can be taken from a file.
+4. Replace strings can be taken from a file.
+
