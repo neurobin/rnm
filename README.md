@@ -257,7 +257,7 @@ Options are case insensitive, i.e `-ssF` and `-ssf` are the same.
                     
 Terminate search strings (`/regex/` fromat only) with `;` to provide multiple search strings, e.g `'/s1/i;/s2/;/s3/'`. This applies to fixed search strings as well.
 
-Also you can provide multiple search strings with repeated `-ss` option and file with repeated `-ss/f` options. These options can be combined together too.
+Also you can provide multiple search strings with repeated `-ss` and/or `-ssf` options and files with repeated `-ss/f` and/or `-ssf/f` options. These options can be mixed with each other too.
 
                  
 **Index Field Length:** An integer value defining the field length of index.
@@ -289,7 +289,7 @@ i stands case insensitive search (default is case sensitive).*Replace String* is
 
 Terminate replace strings with `;` to provide multiple replace strings, e.g `'/s1/r1/gi;/s2/r2/i;/s3/r3/'`.
 
-You can provide multiple replace strings with repeated `-rs` option and multiple file with repeated `-rs/f` options. These options can be combined together too.
+You can provide multiple replace strings with repeated `-rs` option and multiple file with repeated `-rs/f` options. These options can be mixed with each other too.
 
 ```
 Example: '/video/Episode /i//gi' will replace every instances
