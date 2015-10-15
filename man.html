@@ -4,6 +4,9 @@
 <H1>rnm</H1>
 Section: Utility (1)<BR>Updated: Thu Oct 15 2015<BR>
 <HR>
+<H2>NAME</H2>
+rnm - Bulk rename utility
+<HR>
 <H2>Index</H2>
 <DL>
 <DT><A HREF="#lbAB">NAME</A><DD>
@@ -19,8 +22,6 @@ Section: Utility (1)<BR>Updated: Thu Oct 15 2015<BR>
 <DT><A HREF="#lbAL">WEB</A><DD>
 </DL>
 <HR>
-<H2>NAME</H2>
-rnm - Bulk rename utility
 <H2>SYNOPSIS</H2>
 
 <B>rnm [-ns</B>
@@ -471,14 +472,30 @@ which implies case insensitive search. If no modifier is used, regex format can 
 or simply 
 <I>regex</I>
 
-; terminate multiple search strings with
+<P>
+Terminate multiple search strings with
 <I>;</I>
 
 , e.g
 <B>'/regex/modifier;/regex2/modifier2;...'</B>
 
+<P>
+Also you can provide multiple search strings with repeated 
+<B>-ss</B>
+
+and/or
+<B>-ssf</B>
+
+options and files with repeated 
+<B>-ss/f</B>
+
+and/or
+<B>-ssf/f</B>
+
+options. These options can be combined together too.
 </DL>
 
+<P>
 <B>Index Field Length</B>
 
 <DL COMPACT><DT><DD>
@@ -558,12 +575,21 @@ Example:
 <B>'/video/Episode /i//gi'</B>
 
 will replace every instances of 'video' with 'Episode index' i.e you will get new rname as: Episode 1..., Episode 2..., etc...
-; terminate multiple replace strings with
+<P>
+Terminate multiple replace strings with
 <I>;</I>
 
 e.g 
 <B>'/search1/replace1/gi;/search2/replace2/i;...'</B>
 
+<P>
+Also you can provide multiple replace strings with repeated
+<B>-rs</B>
+
+option and multiple files with repeated
+<B>-rs/f</B>
+
+options. These options can be combined together too.
 </DL>
 
 <P>
@@ -648,7 +674,6 @@ file only mode, i.e no directory will be renamed or indexed, unless depth is
 <P>
 </DL>
 </DL>
-<A NAME="lbAH">&nbsp;</A>
 <H2>LOGDIR</H2>
 
 <P>
@@ -664,6 +689,7 @@ file only mode, i.e no directory will be renamed or indexed, unless depth is
 <H2>BUGREPORT</H2>
 Report bugs to <A HREF="http://github.com/neurobin/rnm/issues">http://github.com/neurobin/rnm/issues</A>
 <H2>AUTHOR</H2>
+
 <DL COMPACT>
 <DT>MD. JAHIDUL HAMID<DD>
 <DT>@github: <A HREF="http://github.com/neurobin">http://github.com/neurobin</A><DD>
@@ -673,6 +699,6 @@ Report bugs to <A HREF="http://github.com/neurobin/rnm/issues">http://github.com
 <A HREF="http://neurobin.github.io/rnm">http://neurobin.github.io/rnm</A>
 <P>
 <HR>
-Time: 00:30:57 GMT, October 15, 2015
+Time: 13:05:06 GMT, October 15, 2015
 </BODY>
 </HTML>

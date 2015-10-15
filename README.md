@@ -16,15 +16,22 @@ Bulk Rename Utility written in `C++`. Files and directories can be passed as com
 8. Name can be taken from a file according to starting line number (`-l` or `-sl`) and ending line number (`-el`).
 9. Null terminated file can be taken as Name String File.
 10. Files or directories can be sorted in natural order or general alphabetical order.
+11. Multiple search strings or search string files supported.
+12. Multiple replace strings or replace string files supported.
 
+<div id="dependency"></div>
+#Dependency:
+* `libstdc++6 (>=4.9.2)`
 
 <div id="install"></div>
 #Install:
 
 ###Unix (32 or 64 bit):
 
+Make sure `libstdc++6 (>=4.9.2)` or `GCC (g++>=4.9.2)` is available in your system.
+
 1. Give the <span class="quote">install</span> file execution permission (`chmod +x install`) and
-2. Run it or just drag and drop it on terminal and hit <kbd>Enter</kbd> (requires root privilege).
+2. Run it or just drag and dropt it on terminal and hit <kbd>Enter</kbd> (requires root privilege).
 
 The install script depends on <span class="quote">Bash Shell</span>. If you don't have `bash` installed, then just copy the suitable binary file (`rnm`) from *bin/x32* or *bin/x64* directory to */usr/bin* directory, and copy the <span class="quote">rnm.1</span> file to */usr/share/man/man1* directory.
 
@@ -38,11 +45,19 @@ sudo apt-get update
 sudo apt-get install rnm
 ```
 
+If you are in Ubuntu 14.04 or 12.04 (trusty or precise), you will need to add ubuntu-toolchain repository to make `libstdc++6 (>=4.9.2)` available:
+
+```
+sudo add-apt-repository ppa:ubuntu-toolchain-r/test
+sudo add-apt-repository -y ppa:neurobin/ppa
+sudo apt-get update
+sudo apt-get install rnm
+```
 <div id="un-install"></div>
 #Uninstall:
 
 1. Give the <span class="quote">uninstall</span> file execution permission and
-2. Run it or just drag and drop it on terminal and hit <kbd>Enter</kbd> (requires root privilege).
+2. Run it or just drag and dropt it on terminal and hit <kbd>Enter</kbd> (requires root privilege).
 
 <div id="usage"></div>
 #Usage:
@@ -238,7 +253,11 @@ Options are case insensitive, i.e `-ssF` and `-ssf` are the same.
                     a regex if `-ssF` option is not used.It is generally in the form `/regex/modifier` , 
                     where <u>regex</u> is the regex to search for and available modifier is <u>i</u> which implies  case
                     insensitive  search. If no  modifier is used, the regex format can be
-                    reduced to `/regex/` or simply `regex`. Terminate search strings (/regex/ fromat only) with `;` to provide multiple search strings, e.g `'/s1/i;/s2/;/s3/'`. This applies to fixed search strings too.
+                    reduced to `/regex/` or simply `regex`.
+                    
+Terminate search strings (`/regex/` fromat only) with `;` to provide multiple search strings, e.g `'/s1/i;/s2/;/s3/'`. This applies to fixed search strings as well.
+
+Also you can provide multiple search strings with repeated `-ss` option and file with repeated `-ss/f` options. These options can be combined together too.
 
                  
 **Index Field Length:** An integer value defining the field length of index.
@@ -269,6 +288,8 @@ g stands for global and replaces every instances of match found.
 i stands case insensitive search (default is case sensitive).*Replace String* is always performed on old file name.
 
 Terminate replace strings with `;` to provide multiple replace strings, e.g `'/s1/r1/gi;/s2/r2/i;/s3/r3/'`.
+
+You can provide multiple replace strings with repeated `-rs` option and multiple file with repeated `-rs/f` options. These options can be combined together too.
 
 ```
 Example: '/video/Episode /i//gi' will replace every instances
