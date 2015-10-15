@@ -1,4 +1,4 @@
-AC_INIT([rnm], [3.1.1], [http://github.com/neurobin/rnm/issues])
+AC_INIT([rnm], [3.1.2], [http://github.com/neurobin/rnm/issues])
 AC_CONFIG_AUX_DIR(config)
 prefix="/usr"
 AC_CONFIG_SRCDIR([src/main.cpp])

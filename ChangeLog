@@ -82,3 +82,7 @@ Bug fix: inconsistency in reserved directory index.
 2. Multiple replace strings or files can now be provided by repeating options.
 3. Multiple file support for replace string and search string.
 4. Status of skipping files due to existing files with same names is changed to Warning from Error.
+
+###`3.1.2`: <span class="light-quote">Thu Oct 15 17:43:05 UTC 2015</span>
+
+1. `\c` and `\C` is added in replace string rules (used in replace_part) for lowercase-uppercase conversion.

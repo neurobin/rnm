@@ -41,6 +41,7 @@ typedef std::map<Int,Int> IntMap;
 typedef std::regex::flag_type RegexType;
 typedef std::regex_iterator<std::string::iterator> RegexIterator;
 typedef std::regex_token_iterator<std::string::iterator> RegexTokenIterator;
+typedef std::smatch RegexResult;
 
 
 /////defs
@@ -49,7 +50,6 @@ typedef std::regex_token_iterator<std::string::iterator> RegexTokenIterator;
 #define getLineFromFile(f,line,delim) std::getline((f),(line),(delim))
 #define regexMatch(s,e) std::regex_match((s),(e))
 #define getCurrentDir(a) getcwd((a), sizeof((a)))
-#define RegexResult std::smatch
 #define NON_RECURSIVE_REGEX_REPLACE std::regex_constants::format_first_only
 #define DEFAULT_REGEX_REPLLACE std::regex_constants::format_default
 #define REGEX_ECMASCRIPT std::regex::ECMAScript
@@ -187,7 +187,7 @@ String sort_type="natural";
 /// Project Info
 String project_name="rnm";
 String executable_name="rnm";
-String version="3.1.1";
+String version="3.1.2";
 String author_name="Jahidul Hamid";
 String author_email="jahidulhamid@yahoo.com";
 String bug_report_url="http://github.com/neurobin/"+project_name+"/issues";
