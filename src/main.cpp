@@ -255,7 +255,7 @@ String toStringAccordingToIFL(Double index,int ifl){
     Stream buffer;
     buffer.width(ifl);
     buffer.fill(IFF[0]);
-    buffer.precision(IFP+1);
+    buffer.precision(IFP);
     buffer <<index;
     if(negative_flag){
     return "-"+buffer.str();}
@@ -395,8 +395,10 @@ String processReplacementString(String replace){
     replace=replaceStringAll(replace,"&","$&");
     replace=replaceStringAll(replace,"\\&","&");
     replace=replaceStringAll(replace,"\\p","$`");
-    replace=replaceStringAll(replace,"\\s","$´");
+    replace=replaceStringAll(replace,"\\s","$'");
     replace=regexReplace(replace,"\\\\(\\d{1,2})","$$$1","g");
+    replace=regexReplace(replace,"\\\\\\{(\\d)\\}","$$0$1","g");
+    replace=regexReplace(replace,"\\\\\\{(\\d\\d)\\}","$$$1","g");
     
     
     ///Finally strip slashes
