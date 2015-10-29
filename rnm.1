@@ -1,4 +1,4 @@
-.TH rnm 1 "Thu Oct 15 2015" Unix "Utility"
+.TH rnm 1 "Thu Oct 29 2015" Unix "Utility"
 .SH NAME
 rnm \- Bulk rename utility
 .SH SYNOPSIS
@@ -373,7 +373,7 @@ Regarding the
 
 & will be taken as the entire match found by the regex (search_part).
 
-\\1, \\2 etc.. is the back-references, i.e you can access captured groups with these back-references. Up-to two digits after the \\ will be taken as a back-reference.
+\\1, \\2 etc.. is the back-references, i.e you can access captured groups with these back-references. Up-to two digits after the \\ will be taken as a back-reference. If you want to isolate a back-reference make it fill up the two digit limit or wrap it around with {}. For example, if you want to put a digit (2) after back-reference \\1, you can't use it like \\12. \\12 will mean 12th back-reference not \\1 appended with a digit (1). In this case either use \\01 instead of \\1 or isolate the back-reference with {} i.e \\{1}.
 
 \\c to convert to lowercase and \\C to convert to uppercase. No other character is allowed in replace_part if \\c or \\C is used.
 

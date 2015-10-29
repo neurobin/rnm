@@ -1,13 +1,13 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
 <HTML><HEAD><TITLE>Man page of rnm</TITLE>
 </HEAD><BODY>
 <H1>rnm</H1>
-Section: Utility (1)<BR>Updated: Thu Oct 15 2015<BR>
-<HR>
+Section: Utility (1)
 <H2>NAME</H2>
 rnm - Bulk rename utility
+
 <HR>
-<A NAME="index">&nbsp;</A><H2>Index</H2>
+<H2>Index</H2>
 <DL>
 <DT><A HREF="#lbAB">NAME</A><DD>
 <DT><A HREF="#lbAC">SYNOPSIS</A><DD>
@@ -547,7 +547,7 @@ Regarding the
 <P>
 &amp; will be taken as the entire match found by the regex (search_part).
 <P>
-\1, \2 etc.. is the back-references, i.e you can access captured groups with these back-references. Up-to two digits after the \ will be taken as a back-reference.
+\1, \2 etc.. is the back-references, i.e you can access captured groups with these back-references. Up-to two digits after the \ will be taken as a back-reference. If you want to isolate a back-reference make it fill up the two digit limit or wrap it around with {}. For example, if you want to put a digit (2) after back-reference \1, you can't use it like \12. \12 will mean 12th back-reference not \1 appended with a digit (1). In this case either use \01 instead of \1 or isolate the back-reference with {} i.e \{1}.
 <P>
 \c to convert to lowercase and \C to convert to uppercase. No other character is allowed in replace_part if \c or \C is used.
 <P>
@@ -676,11 +676,13 @@ file only mode, i.e no directory will be renamed or indexed, unless depth is
 <P>
 </DL>
 </DL>
+<A NAME="lbAH">&nbsp;</A>
 <H2>LOGDIR</H2>
 
 <P>
 ~/.neurobin/rnm
 <P>
+<A NAME="lbAI">&nbsp;</A>
 <H2>EXITSTATUS</H2>
 
 <P>
@@ -688,18 +690,26 @@ file only mode, i.e no directory will be renamed or indexed, unless depth is
 <P>
 1 on failure
 <P>
+<A NAME="lbAJ">&nbsp;</A>
 <H2>BUGREPORT</H2>
+
 Report bugs to <A HREF="http://github.com/neurobin/rnm/issues">http://github.com/neurobin/rnm/issues</A>
+<A NAME="lbAK">&nbsp;</A>
 <H2>AUTHOR</H2>
+
 <DL COMPACT>
 <DT>MD. JAHIDUL HAMID<DD>
 <DT>@github: <A HREF="http://github.com/neurobin">http://github.com/neurobin</A><DD>
 <DT>@bitbucket: <A HREF="http://bitbucket.com/neurobin">http://bitbucket.com/neurobin</A><DD>
 </DL>
+<A NAME="lbAL">&nbsp;</A>
 <H2>WEB</H2>
+
 <A HREF="http://neurobin.github.io/rnm">http://neurobin.github.io/rnm</A>
 <P>
+
+
 <HR>
-Time: 17:49:58 GMT, October 15, 2015
+Time: 11:16:45 GMT, October 29, 2015
 </BODY>
 </HTML>
