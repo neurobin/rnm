@@ -12,10 +12,10 @@ Bulk Rename Utility written in `C++`. Files and directories can be passed as com
 4. Lowercase-Uppercase conversion is selective i.e you can apply case conversion in part of the name at a targeted position.
 5. Names can be modified with certain predefined rules. For example, you can insert parent directory name or working directory name or index etc... in filename in arbitrary positions.
 6. Names can be taken from a file, and these names can also be modified by applying *Name String* rules on them.
-7. Search functionality. It uses the <a href="https://en.wikipedia.org/wiki/Regular_expression">ECMAScript regex</a> by default. Regex mode can be modified (POSIX basic, extended, egrep, grep, awk, ECMAScript). Fixed string search is also possible.
+7. Search functionality. It uses the <a href="https://en.wikipedia.org/wiki/Regular_expression">ECMAScript regex</a> by default. Regex mode can be changed (POSIX basic, extended, egrep, grep, awk, ECMAScript). Fixed string search is also possible.
 8. Null terminated file support for file names (Null termination is a good way to store filenames in a file).
 9. Sort functionality. Available sorting methods are: Natural sort and general alphabetical sort.
-10. Multiple search criteria and replace methods are possible.
+10. Multiple search criteria and replacement methods are possible.
 11. Search keywords and replacement regex can also be supplied form files (single or multiple).
 
 <div id="dependency"></div>
@@ -278,7 +278,7 @@ Also you can provide multiple search strings with repeated `-ss` and/or `-ssf` o
                     Regarding replace string, there are several special cases:
                     
 1. `&` will be taken as the entire match found by the regex (search_part).
-2. `\1`, `\2` etc.. is the back-references, i.e you can access captured groups with these back-references.
+2. `\1`, `\2` etc.. is the back-references, i.e you can access captured groups with these back-references. If you want to isolate a back-reference make it fill up the two digit limit or wrap it around with `{}`. For example, if you want to put a digit (2) after back-reference `\1`, you can't use it like `\12`. `\12` will mean `12th` back-reference not `\1` appended with a digit (1). In this case either use `\01` instead of `\1` or isolate the back-reference with `{}` i.e `\{1}`. 
 3. `\c` will convert the matched string to lowercase, and `\C` will convert it to uppercase. No other character is allowed in replace part if this is used. You can still concatenate different replace strings with `;`.
 4. `\p` is the prefix (i.e., the part of the target sequence that precedes the match)
 5. `\s` is the suffix (i.e., the part of the target sequence that follows the match).

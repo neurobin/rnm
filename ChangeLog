@@ -86,3 +86,10 @@ Bug fix: inconsistency in reserved directory index.
 ###`3.1.2`: <span class="light-quote">Thu Oct 15 17:43:05 UTC 2015</span>
 
 1. `\c` and `\C` is added in replace string rules (used in replace_part) for lowercase-uppercase conversion.
+
+###`3.1.3`: <span class="light-quote">Thu Oct 29 11:25:15 UTC 2015</span>
+
+1. Fix suffix in regex replace in replace string.
+2. Fix index field precision.
+3. Added back-reference isolation with `{}` i.e `\{12}`, `\{1}` etc..
+
