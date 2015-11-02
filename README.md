@@ -178,11 +178,11 @@ Options are case insensitive, i.e `-ssF` and `-ssf` are the same.
                        
 
 `--directory-only`,
-`-do`                : Apply rename on directory only. No subdirectories.
+`-do`                : Apply rename on directory only.
 
 `--exclude-directory`,
 `-ed`                : Apply rename on files only, exclude any and all directory and their
-                       contents. Forces file only mode regardless of depth (-dp) value.
+                       contents. This option is equivalent to file only mode with a zero (`0`) depth value.
                        
 `--count-directory`,
 `-cd`                : Count directory in reserved index, regardless of other options. Reserves indices for directories even if it is File Only mode.
