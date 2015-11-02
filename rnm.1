@@ -1,4 +1,4 @@
-.TH rnm 1 "Thu Oct 29 2015" Unix "Utility"
+.TH rnm 1 "Mon Nov 02 2015" Unix "Utility"
 .SH NAME
 rnm \- Bulk rename utility
 .SH SYNOPSIS
@@ -87,11 +87,9 @@ by default.
 : Name string.
 
 .IP "--name-string-file,"
-.B -nsf
-,
 .B -ns/f
 .I file-path
-: Name string file. File containing name string (one per line). -nsf is deprecated (will be removed in future), use -ns/f instead.
+: Name string file. File containing name string (one per line).
 .B -ns/f
 .I /hist/
 i.e a value 
@@ -99,11 +97,9 @@ i.e a value
 passed as Name string file, will try to take the file from history.
 
 .IP "--name-string-file-null-terminated,"
-.B -nsfn
-,
 .B -ns/fn
 .I file-path
-: Name String file. This takes a null terminated Name String file, i.e filenames are terminated by null character (\\0) instead of new line (\\n). -nsfn is deprecated, use -ns/fn instead.
+: Name String file. This takes a null terminated Name String file, i.e filenames are terminated by null character (\\0) instead of new line (\\n).
 
 .IP "--line, --start-line, -l,"
 .B "-sl"
@@ -196,12 +192,12 @@ File only mode. Only files are renamed (not directory). Goes to subdirectory/s i
 ) is set to 1 or greater. Default depth is set to 0.
 
 .IP "--directory-only, -do"
-Apply rename on directory only. No subdirectories.
+Apply rename on directory only.
 
 .IP "--exclude-directory, -ed"
-Apply rename on files only, exclude any and all directory and their contents. Forces file only mode regardless of depth (
-.B -dp
-) value.
+Apply rename on files only, exclude any and all directory and their contents. This is equivalent to file only mode with a zero depth (
+.B "-fo -dp 0"
+).
 .IP "--count-directory, -cd"
 Count directory in reserved index regardless of other options. Reserves indices for directories even if it is File Only mode.
 .IP "--count-file, -cf"
