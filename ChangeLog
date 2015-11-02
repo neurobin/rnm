@@ -93,3 +93,7 @@ Bug fix: inconsistency in reserved directory index.
 2. Fix index field precision.
 3. Added back-reference isolation with `{}` i.e `\{12}`, `\{1}` etc..
 
+###`3.2.0`: <span class="light-quote">Mon Nov 02 18:10:26 UTC 2015</span>
+
+1. Directories can be renamed recursively in subdirectories.
+2. Potential bug fixes.

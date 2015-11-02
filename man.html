@@ -1,11 +1,9 @@
-
 <HTML><HEAD><TITLE>Man page of rnm</TITLE>
 </HEAD><BODY>
 <H1>rnm</H1>
-Section: Utility (1)
+Section: Utility (1)<BR>Updated: Mon Nov 02 2015<BR>
 <H2>NAME</H2>
 rnm - Bulk rename utility
-
 <HR>
 <H2>Index</H2>
 <DL>
@@ -151,14 +149,11 @@ by default.
 : Name string.
 <P>
 <DT>--name-string-file,<DD>
-<B>-nsf</B>
-
-,
 <B>-ns/f</B>
 
 <I>file-path</I>
 
-: Name string file. File containing name string (one per line). -nsf is deprecated (will be removed in future), use -ns/f instead.
+: Name string file. File containing name string (one per line).
 <B>-ns/f</B>
 
 <I>/hist/</I>
@@ -169,14 +164,11 @@ i.e a value
 passed as Name string file, will try to take the file from history.
 <P>
 <DT>--name-string-file-null-terminated,<DD>
-<B>-nsfn</B>
-
-,
 <B>-ns/fn</B>
 
 <I>file-path</I>
 
-: Name String file. This takes a null terminated Name String file, i.e filenames are terminated by null character (\0) instead of new line (\n). -nsfn is deprecated, use -ns/fn instead.
+: Name String file. This takes a null terminated Name String file, i.e filenames are terminated by null character (\0) instead of new line (\n).
 <P>
 <DT>--line, --start-line, -l,<DD>
 <B>-sl</B>
@@ -311,13 +303,13 @@ File only mode. Only files are renamed (not directory). Goes to subdirectory/s i
 ) is set to 1 or greater. Default depth is set to 0.
 <P>
 <DT>--directory-only, -do<DD>
-Apply rename on directory only. No subdirectories.
+Apply rename on directory only.
 <P>
 <DT>--exclude-directory, -ed<DD>
-Apply rename on files only, exclude any and all directory and their contents. Forces file only mode regardless of depth (
-<B>-dp</B>
+Apply rename on files only, exclude any and all directory and their contents. This is equivalent to file only mode with a zero depth (
+<B>-fo -dp 0</B>
 
-) value.
+).
 <DT>--count-directory, -cd<DD>
 Count directory in reserved index regardless of other options. Reserves indices for directories even if it is File Only mode.
 <DT>--count-file, -cf<DD>
@@ -707,9 +699,7 @@ Report bugs to <A HREF="http://github.com/neurobin/rnm/issues">http://github.com
 
 <A HREF="http://neurobin.github.io/rnm">http://neurobin.github.io/rnm</A>
 <P>
-
-
 <HR>
-Time: 11:16:45 GMT, October 29, 2015
+Time: 18:06:17 GMT, November 02, 2015
 </BODY>
 </HTML>

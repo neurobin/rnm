@@ -22,7 +22,7 @@ String copyFile(String, String );
 String copyFile2(String src,String dst);
 void finalizeRFL();
 bool undoRename();
-String Rename(String,String,DirectoryIndex &);
+bool Rename(String,String,DirectoryIndex &);
 String printWarningLog(String str);
 bool isPathValid(String file);
 String appendToRFLTMP(String str1,String str2);
@@ -49,6 +49,7 @@ NameList getNameListFromFile(String filename,int si,int ei,int mod);
 Regex createRegex(String s,bool case_sensitive);
 void incrementReservedIndexes(DirectoryIndex &di);
 bool isComplyingToRegex(String &s,Regex &re);
+bool Rename2(String oldn,String newn);
 
 
 StringArray files;
@@ -65,7 +66,7 @@ bool undoRename(){
         left.push_back(l);right.push_back(r);
         }
     file_l.close();file_r.close();
-    for(Int i=0;i<(Int)left.size();i++){
+    for(Int i=(Int)left.size()-1;i>=0;i--){
         ///do rename and log into rfl
         if(!quiet){print NEW_LINE+right[i]+"    ---->    "+left[i]+NEW_LINE;}
         Rename(right[i],left[i],di);
@@ -155,8 +156,8 @@ String prepareLogDir(){
 }
 
 
-String Rename(String oldn,String newn,DirectoryIndex &di){
-    
+bool Rename(String oldn,String newn,DirectoryIndex &di){
+    bool success=false;
     if(isPathValid(newn)){
         printWarningLog("A file or directory with new name exists: "+newn);
     }
@@ -170,6 +171,7 @@ String Rename(String oldn,String newn,DirectoryIndex &di){
                 di.directory_index+=inc;
                 di.directory_reverse_index-=inc;
                 rnc++;
+                success=true;
             }
             else {printErrorLog(strerror(errno));}
         }
@@ -184,10 +186,8 @@ String Rename(String oldn,String newn,DirectoryIndex &di){
         
         
     }
-    return strerror(errno);
+    return success;
 }
-
-
 
 
 template<typename T>
@@ -936,14 +936,14 @@ NameList getNameListFromFile(String filename,Int si,Int ei,int mod=1){
 
 
 
-bool doRename(String file,DirectoryIndex &di){
+String doRename(String file,DirectoryIndex &di){
     bool not_skipped=true;
     
-    if(isInvalidFile(file)){return false;}
+    if(isInvalidFile(file)){return file;}
     
     if(ss_search.size()!=0){
         if(!isComplyingToSearchString(file)){
-            return false;
+            return file;
         }
     }
     
@@ -1003,11 +1003,11 @@ bool doRename(String file,DirectoryIndex &di){
             
             switch(confirm){
                 case 1:
-                      Rename(file,dir+path_delim+name,di);
+                      not_skipped=Rename(file,dir+path_delim+name,di);
                       break;
                 case 2:
                       all_yes=true;
-                      Rename(file,dir+path_delim+name,di);
+                      not_skipped=Rename(file,dir+path_delim+name,di);
                       break;
                 case 3:
                       break;
@@ -1023,7 +1023,7 @@ bool doRename(String file,DirectoryIndex &di){
         }
         else{
             ///do rename finally
-            Rename(file,dir+path_delim+name,di);
+            not_skipped=Rename(file,dir+path_delim+name,di);
             
         }
         
@@ -1050,8 +1050,11 @@ bool doRename(String file,DirectoryIndex &di){
         }
     }
   }
+    String filename_to_return="";
+    if(not_skipped){filename_to_return=dir+path_delim+name;}
+    else{filename_to_return=file;}
     
-    return not_skipped;
+    return filename_to_return;
 }
 
 
@@ -1069,8 +1072,7 @@ StringArray getFilesFromDir(String file){
                     closedir (dir);
                 } 
                 else {
-                    perror ("");
-                    print"Could not open directory";
+                    printErrorLog((String(strerror(errno))+": "+file).c_str());
                 }
                 sortVector(files);
                 return files;
@@ -1078,7 +1080,7 @@ StringArray getFilesFromDir(String file){
 }
 
 
-void startInDepthFileOnlyTaskOnDirectory(String dir,String base_dir=base_dir){
+void startInDepthRenamingTaskOnDirectory(String dir,String base_dir=base_dir){
     StringArray files;
     files=getFilesFromDir(dir);
     
@@ -1104,7 +1106,7 @@ void startInDepthFileOnlyTaskOnDirectory(String dir,String base_dir=base_dir){
                 
                 if(childDepth(base_dir,file)<=depth){
                     
-                    startInDepthFileOnlyTaskOnDirectory(file);
+                    startInDepthRenamingTaskOnDirectory(file);
                 }
                 else{
                 
@@ -1115,20 +1117,28 @@ void startInDepthFileOnlyTaskOnDirectory(String dir,String base_dir=base_dir){
             
             else if(exclude_directory){
                 if(count_directory){incrementReservedIndexes(di);}
-                incrementReservedIndexes(di);
                 continue;
             }
             
             else{
-                doRename(file,di);
+                
+                files[i]=doRename(file,di);
                 incrementReservedIndexes(di);
+                file=getAbsolutePath(files[i]);
+                src_name=basename(file);
+                parent=dirname(file);
+                CPDN=getParentDirectoryName(file);
+                if(childDepth(base_dir,file)<=depth){
+                    
+                    startInDepthRenamingTaskOnDirectory(file);
+                }
             }
             
         }
         else if(isFile(file)){
             
             if(!directory_only){
-                doRename(file,di);
+                files[i]=doRename(file,di);
                 incrementReservedIndexes(di);
             }
             else if(count_file){incrementReservedIndexes(di);}
@@ -1185,7 +1195,7 @@ void startTask(StringArray files){
 
                 if(childDepth(base_dir,file)<=depth){
 
-                    startInDepthFileOnlyTaskOnDirectory(file);
+                    startInDepthRenamingTaskOnDirectory(file);
                 }
                 else{
                 
@@ -1201,8 +1211,18 @@ void startTask(StringArray files){
             }
             
             else{
-                doRename(file,di);
+                
+                files[i]=doRename(file,di);
                 incrementReservedIndexes(di);
+                file=getAbsolutePath(files[i]);
+                src_name=basename(file);
+                parent=dirname(file);
+                CPDN=getParentDirectoryName(file);
+                base_dir=dirname(file);
+                if(childDepth(base_dir,file)<=depth){
+                    
+                    startInDepthRenamingTaskOnDirectory(file);
+                }
             }
             
             
@@ -1210,7 +1230,7 @@ void startTask(StringArray files){
         else if(isFile(file)){
             
             if(!directory_only){
-                doRename(file,di);
+                files[i]=doRename(file,di);
                 incrementReservedIndexes(di);
             }
             else if(count_file){incrementReservedIndexes(di);}
@@ -1338,7 +1358,7 @@ int main(int argc, char* argv[]) {getCurrentDir(self_dir);self_path=self_dir+Str
     Options ifp_obj("-ifp","--index-field-precision");
     Options iff_obj("-iff","--index-field-filler");
     Options ns_obj("-ns","--name-string");
-    Options nsf_obj("-nsf","--name-string-file");
+    Options nsf_obj("-ns/f","--name-string-file");
     Options sl_obj("-l","-sl","--line","--start-line");
     Options el_obj("-el","--end-line");
     Options ss_obj("-ss","--search-string");
@@ -1471,32 +1491,12 @@ int main(int argc, char* argv[]) {getCurrentDir(self_dir);self_path=self_dir+Str
           if(ns_obj.count>1){printWarningLog("Name string overwritten");}
         }
         
-      else if(opt=="-nsf"||opt=="--name-string-file"){
-          checkArgAvailability(args,i+1);
-          name_string_file=args[i+1];
-          skipcount=true;
-          printWarningLog("-nsf option is deprecated. Use -ns/f instead.");
-          nsf_obj.count++;
-          if(nsf_obj.count>1){printErrorLog("Only one name string file is allowed");Exit(1);}
-        }
-        
         
       else if(opt=="-ns/f"||opt=="--name-string-file"){
           checkArgAvailability(args,i+1);
           name_string_file=args[i+1];
           skipcount=true;
           
-          nsf_obj.count++;
-          if(nsf_obj.count>1){printErrorLog("Only one name string file is allowed");Exit(1);}
-        }
-        
-
-      else if(opt=="-nsfn"||opt=="--name-string-file-null-terminated"){
-          checkArgAvailability(args,i+1);
-          name_string_file=args[i+1];
-          nsf_n=true;
-          skipcount=true;
-          printWarningLog("-nsfn option is deprecated. Use -ns/fn instead");
           nsf_obj.count++;
           if(nsf_obj.count>1){printErrorLog("Only one name string file is allowed");Exit(1);}
         }

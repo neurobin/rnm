@@ -187,7 +187,7 @@ String sort_type="natural";
 /// Project Info
 String project_name="rnm";
 String executable_name="rnm";
-String version="3.1.3";
+String version="3.2.0";
 String author_name="Jahidul Hamid";
 String author_email="jahidulhamid@yahoo.com";
 String bug_report_url="http://github.com/neurobin/"+project_name+"/issues";
@@ -252,9 +252,9 @@ options:\n\
 -ns            : Name string\n\
      \n\
 --name-string-file,\n\
--nsf, -ns/f    : Name string file. File containing name string (one per line).\n\
+-ns/f    : Name string file. File containing name string (one per line).\n\
 --name-string-file-null-terminated,\n\
--nsfn, -ns/fn  : Name String file. This takes a null terminated *Name String* file, i.e\n\
+-ns/fn  : Name String file. This takes a null terminated *Name String* file, i.e\n\
                  filenames are terminated by null character (\\0) instead of new line (\\n).\n\
                  \n\
 --line, --start-line,\n\
@@ -309,11 +309,11 @@ options:\n\
                  Default depth is set to 0.\n\
                  \n\
 --directory-only,\n\
--do            : Apply rename on directory only. No subdirectories.\n\
+-do            : Apply rename on directory only.\n\
 \n\
 --exclude-directory,\n\
--ed            : Apply rename on files only, exclude any and all directory and their\n\
-                 contents. Forces file only mode regardless of depth (-dp) value.\n\
+-ed            : Apply rename on files only, exclude any and all directories and their\n\
+                 contents. equivalent to: '-fo -dp 0'\n\
 \n\
 --count-directory,\n\
 -cd            : Count directory in reserved index, regardless of other options.\n\
@@ -339,6 +339,8 @@ options:\n\
 --force\n\
 -f             : Apply force. Enables renaming some non permitted files/directories\n\
                  except / (The root filesystem directory) and rnm itself\n\
+\n\
+--             : Everything after this will be taken as file paths\n\
 \n\
 --show-options,\n\
 -shop          : This shows an info about the various options passed as arguments\n\
