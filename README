@@ -112,14 +112,13 @@ Options are case insensitive, i.e `-ssF` and `-ssf` are the same.
 `-ns`                : Name string.
      
 `--name-string-file`,
-`-nsf`, `-ns/f`      : Name string file. File containing name string (one per line).
+`-ns/f`      : Name string file. File containing name string (one per line).
                        `-nsf /hist/` i.e a value passed `/hist/` as Name string file, will
-                       try to take the file from history. `-nsf` is deprecated, use `-ns/f` instead.
+                       try to take the file from history.
        
 `--name-string-file-null-terminated`,
-`-nsfn`,`-ns/fn`     : Name String file. This takes a null terminated *Name String* file, i.e
+`-ns/fn`     : Name String file. This takes a null terminated *Name String* file, i.e
                  filenames are terminated by null character (`\0`) instead of new line (`\n`).
-                 `-nsfn` is deprecated, use `-ns/fn` instead.
 
 `--line`, `--start-line`,
 `-l`, `-sl`          : Start Line number in name string file.
