@@ -355,7 +355,8 @@ bool compareNat(const std::string& a, const std::string& b){
     {
         if (a[0] == b[0])
             return compareNat(a.substr(1), b.substr(1));
-        return (std::toupper(a[0]) < std::toupper(b[0]));
+        return (toUpper(a) < toUpper(b));
+        //toUpper() is a function to convert a std::string to uppercase.
     }
 
     // Both strings begin with digit --> parse both numbers

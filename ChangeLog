@@ -97,3 +97,8 @@ Bug fix: inconsistency in reserved directory index.
 
 1. Directories can be renamed recursively in subdirectories.
 2. Potential bug fixes.
+3. `-nsf` and `-nsfn` option is removed. Use `-ns/f` or `-ns/fn` instead.
+
+###`3.2.1`: <span class="light-quote">Tue Nov  3 09:19:46 UTC 2015</span>
+
+1. Natural sort algorithm improved/fixed.
