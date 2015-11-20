@@ -113,8 +113,7 @@ Options | Description
 `-v`                 | Version info.
 `-q`                 | Quiet operation.
 `--`                 | If this option is passed, anything and everything after it will be taken as file path. Put all options before passing this option.
-`-shop`              | This shows an info about the various options passed as arguments
-                       and how they are being treated behind the scene.
+`-shop`              | This shows an info about the various options passed as arguments and how they are being treated behind the scene.
 `-sim`               | This runs a simulation of rename instead of actual rename operation, prints all kinds of available outputs. `-q` option won't have any effect if this option is passed.
 
 <div id="technical-terms"></div>
