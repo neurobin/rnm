@@ -30,7 +30,7 @@ Bulk Rename Utility written in `C++`. Files and directories can be passed as com
 Make sure `libstdc++6 (>=4.9.2)` or `GCC (g++>=4.9.2)` is available in your system.
 
 1. Give the <span class="quote">install</span> file execution permission (`chmod +x install`) and
-2. Run it or just drag and dropt it on terminal and hit <kbd>Enter</kbd> (requires root privilege).
+2. Run it or just drag and drop it on terminal and hit <kbd>Enter</kbd> (requires root privilege).
 
 The install script depends on <span class="quote">Bash Shell</span>. If you don't have `bash` installed, then just copy the suitable binary file (`rnm`) from *bin/x32* or *bin/x64* directory to */usr/bin* directory, and copy the <span class="quote">rnm.1</span> file to */usr/share/man/man1* directory.
 
@@ -74,142 +74,116 @@ Options are case insensitive, i.e `-ssF` and `-ssf` are the same.
 <div id="options"></div>
 ##Options:
 
-`-h`, `--help`       : Show help menu.
+Options | Description
+------- | -----------
+`-h`, `--help`       | Show help menu.
 
-`--index`, `--start-index`,
-`-i`,`-si`           : Starting index.
+`-i`,`-si`           | Starting index.
 
-`--end-index`,
-`-ei`                : End index i.e index to stop renaming from. It is only for files
+`-ei`                | End index i.e index to stop renaming from. It is only for files
                        inside a directory that is being recursively taken due to a depth
                        value greater than 0, i.e it works on directory index.
                        Note that directory index `/id/` will renew in each directory
                        i.e in each directory rename will be performed from start index
                        to end index.
                        
-`--increment-value`,
-`-inc`               : Increment value (floating point decimal). The amount, index will be
+`-inc`               | Increment value (floating point decimal). The amount, index will be
                        incremented or decremented in each iteration. Decremented index is
-                       available through name string rule: `/-i/`, `/-id/` etc..
+                       available through name string rule| `/-i/`, `/-id/` etc..
 
-`--line-increment-value`,
-`-linc`              : The amount line count will be incremented or decremented in each iteration.
+`-linc`              | The amount line count will be incremented or decremented in each iteration.
                        This is always a positive integer.
 
        
-`-ifl`               : Index field length. Non occupied field will be
+`-ifl`               | Index field length. Non occupied field will be
                        filled with index field fillers (set with `-iff`). iff is set to the character `0` by default.
        
-`--index-field-filler`,
-`-iff`               : Not occupied field in index will be filled with a character
+`-iff`               | Not occupied field in index will be filled with a character
                       which is set by this option.
 
-`--index-field-precision`,
-`-ifp`               : Index is a floating point decimal value. This sets the precision
+`-ifp`               | Index is a floating point decimal value. This sets the precision
                        i.e the number of digits that should be taken after the decimal point.
 
-`--name-string`,
-`-ns`                : Name string.
+`-ns`                | Name string.
      
-`--name-string-file`,
-`-ns/f`      : Name string file. File containing name string (one per line).
+`-ns/f`              | Name string file. File containing name string (one per line).
                        `-nsf /hist/` i.e a value passed `/hist/` as Name string file, will
                        try to take the file from history.
        
-`--name-string-file-null-terminated`,
-`-ns/fn`     : Name String file. This takes a null terminated *Name String* file, i.e
+`-ns/fn`             | Name String file. This takes a null terminated *Name String* file, i.e
                  filenames are terminated by null character (`\0`) instead of new line (`\n`).
 
-`--line`, `--start-line`,
-`-l`, `-sl`          : Start Line number in name string file.
+`-l`, `-sl`          | Start Line number in name string file.
 
-`--line-reverse`, `--start-line-reverse`,
-`-lv`, `-slv`        : Same as `-l` or `-sl`, except line number will be decremented in each
+`-lv`, `-slv`        | Same as `-l` or `-sl`, except line number will be decremented in each
                        iteration.
 
-`--end-line`,
-`-el`                : End line number. Line number to stop renaming from.
+`-el`                | End line number. Line number to stop renaming from.
 
-`--end-line-reverse`,
-`-elv`               : Same as `-el`, except line number will be decremented in each iteration.
+`-elv`               | Same as `-el`, except line number will be decremented in each iteration.
 
-`--search-string`,
-`-ss`                : Search string.
+`-ss`                | Search string.
                        String that will be used to search for files with matching names.
                        This is generally a regex  if not passed with `-ssf` option.
 
-`--search-string-file`,
-`-ss/f`              : Search string file. A file containing search string per line.
+`-ss/f`              | Search string file. A file containing search string per line.
 
 
-`--search-string-fixed`,
-`-ssf`               : Fixed search string (not treated as regex).
+`-ssf`               | Fixed search string (not treated as regex).
 
-`--search-string-fixed-file`,
-`-ssf/f`             : Search string file. Contains fixed search string per line.
+`-ssf/f`             | Search string file. Contains fixed search string per line.
 
-`--replace-string`,
-`-rs`                : Replace string. A string in the form `/search_string/replace_string/modifier`. See **Replace String** in <a href="rnm/#technical-terms">Terminology</a> for details.
+`-rs`                | Replace string. A string in the form `/search_string/replace_string/modifier`. See **Replace String** in <a href="#technical-terms">Terminology</a> for details.
 
-`--replace-string-file`,
-`-rs/f`              : Replace string file. A file containing replace string per line.
+`-rs/f`              | Replace string file. A file containing replace string per line.
 
-`--regex`,
-`-re`                : regex mode. Available regex modes are POSIX compliant basic & extended regex,
+`-re`                | regex mode. Available regex modes are POSIX compliant basic & extended regex,
                        regex used by grep, awk, egrep and the default regex is ECMAScript regex.
                        For example, to have a grep like regex, pass the option `-re grep`, to use
                        POSIX compliant extended regex, pass `-re extended`
 
-`--regex-locale`,
-`-rel`                : If this is passed as argument, regex will follow Locale. that is regex like
+`-rel`                | If this is passed as argument, regex will follow Locale. that is regex like
                       [a-z] will have their meaning according to the system locale.
 
-`--depth`,
-`-dp`                : Depth of folder. -1(any negative number) means unlimited depth i.e all files and subdirectories
+`-dp`                | Depth of folder. -1(any negative number) means unlimited depth i.e all files and subdirectories
                        will be included. Other values may be 0 1 2 3 etc...
                        Default depth is `0`, i.e directory contents will be ignored.
 
        
-`--file-only`,
-`-fo`                : File only mode. Only files are renamed (not directory).
+`-fo`                | File only mode. Only files are renamed (not directory).
                        Goes to subdirectory/s if depth (`-dp`) is set to `1` or greater.
                        Default depth is set to 0.
                        
 
-`--directory-only`,
-`-do`                : Apply rename on directory only.
+`-do`                | Apply rename on directory only.
 
-`--exclude-directory`,
-`-ed`                : Apply rename on files only, exclude any and all directory and their
+`-ed`                | Apply rename on files only, exclude any and all directory and their
                        contents. This option is equivalent to file only mode with a zero (`0`) depth value.
-                       
-`--count-directory`,
-`-cd`                : Count directory in reserved index, regardless of other options. Reserves indices for directories even if it is File Only mode.
+                    
+`-cd`                | Count directory in reserved index, regardless of other options. Reserves indexes for directories even if it is File Only mode.
 
-`--count-file`,
-`-cf`                : Count file in reserved index, regardless of other options. Reserves indices for files even if it is Directory Only mode.
+`-cf`                | Count file in reserved index, regardless of other options. Reserves indexes for files even if it is Directory Only mode.
 
-`--sort`,
-`-s`                 : Sort files in natural order (Human perceivable order). This option can be modified to use other sorting methods. For example: `-s/g` or `--sort/g` will sort the file in general (alphabetical) order. Other options are `-s/n` (Natural sort), `-s/none` (No sort).
+`-s`                 | Sort files in natural order (Human perceivable order). This option can be modified to use other sorting methods. For example: `-s/g` or `--sort/g` will sort the file in general (alphabetical) order. Other options are `-s/n` (Natural sort), `-s/none` (No sort).
 
-`-y`                 : Confirm Yes to all.
+`-y`                 | Confirm Yes to all.
 
-`-u`, `-U`, `--undo` : Undo renaming
+`-fl`                | Follow symbolic link.
 
-`--force`, `-f`      : Force rename. Enables renaming some restricted files except `/` and the program itself.
+`-u`                 | Undo renaming
 
-`-v`                 : Version info.
+`--force`, `-f`      | Force rename. Enables renaming some restricted files except `/` and the program itself.
 
-`-q`                 : Quiet operation.
+`-v`                 | Version info.
 
-`--`                 : If this option is passed, anything and everything after it will be taken as file path. Put all options before passing this option.
+`-q`                 | Quiet operation.
 
-`--show-options`,
-`-shop`              : This shows an info about the various options passed as arguments
+`--`                 | If this option is passed, anything and everything after it will be taken as file path. Put all options before passing this option.
+
+`-shop`              | This shows an info about the various options passed as arguments
                        and how they are being treated behind the scene.
                  
-`--simulation`,
-`-sim`               : This runs a simulation of rename instead of actual rename operation,
+`-sim`               | This runs a simulation of rename instead of actual rename operation,
                        and prints all kinds of available outputs. `-q` option won't have any
                        effect if this option is passed.
 
@@ -253,7 +227,7 @@ Options are case insensitive, i.e `-ssF` and `-ssf` are the same.
                     insensitive  search. If no  modifier is used, the regex format can be
                     reduced to `/regex/` or simply `regex`.
                     
-Terminate search strings (`/regex/` fromat only) with `;` to provide multiple search strings, e.g `'/s1/i;/s2/;/s3/'`. This applies to fixed search strings as well.
+Terminate search strings (`/regex/` format only) with `;` to provide multiple search strings, e.g `'/s1/i;/s2/;/s3/'`. This applies to fixed search strings as well.
 
 Also you can provide multiple search strings with repeated `-ss` and/or `-ssf` options and files with repeated `-ss/f` and/or `-ssf/f` options. These options can be mixed with each other too.
 
