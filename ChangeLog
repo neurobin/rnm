@@ -108,3 +108,8 @@ Bug fix: inconsistency in reserved directory index.
 1. Bug in index precision fixed (previously index>=100 would become >=1e+02 i.e scientific format)
 2. Follow symbolic link option added.
 
+###`3.2.3`: <span class="light-quote">Sat Nov 21 06:56:10 UTC 2015</span>
+
+1. Manual updated with corrections.
+2. Inconsistency in index field precision fixed.
+3. Two more options added: `-ifp/d` and `-ifp/s`.

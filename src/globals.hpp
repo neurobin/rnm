@@ -36,12 +36,13 @@
 #include <cstddef> 
 #include <dirent.h>
 #include <map>
+#include <cmath>
 
 
 
 /////typedefs
 typedef long long Int;
-typedef double Double;
+typedef long double Double;
 typedef std::string String;
 typedef std::stringstream Stream;
 typedef std::vector<String> StringArray;
@@ -119,6 +120,8 @@ bool count_directory=false;
 bool count_file=false;
 bool sort=false;
 bool follow_symlink=false;
+bool IFDP=false;
+bool IFSP=false;
 
 /////Doubles
 Double start_index=1;
@@ -201,7 +204,7 @@ String sort_type="natural";
 /// Project Info
 String project_name="rnm";
 String executable_name="rnm";
-String version="3.2.2";
+String version="3.2.3";
 String author_name="Jahidul Hamid";
 String author_email="jahidulhamid@yahoo.com";
 String bug_report_url="http://github.com/neurobin/"+project_name+"/issues";
@@ -253,6 +256,12 @@ options:\n\
                  which is set by this option.\n\
                  \n\
 -ifp           : Index is a floating point decimal value. This sets the precision.\n\
+                 \n\
+-ifp/d         : This sets the decimal precision i.e\n\
+                 the number of digits that would be taken after the decimal point.\n\
+                 \n\
+-ifp/s         : This sets the scientific precision i.e\n\
+                 the indexes would be rendered in scientific form.\n\
                  \n\
 -ns            : Name string.\n\
      \n\
