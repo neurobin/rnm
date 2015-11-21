@@ -105,6 +105,6 @@ Bug fix: inconsistency in reserved directory index.
 
 ###`3.2.2`: <span class="light-quote">Fri Nov 20 16:24:15 UTC 2015</span>
 
-1. Bug in index precision fixed (previously index>=100 would become 1e+02)
+1. Bug in index precision fixed (previously index>=100 would become >=1e+02 i.e scientific format)
 2. Follow symbolic link option added.
 
