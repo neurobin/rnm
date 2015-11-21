@@ -232,9 +232,9 @@ Options are case insensitive, i.e `-ssF` and `-ssf` are the same.\n\
 \n\
 options:\n\
 \n\
--h             : Show help menu\n\
+-h             : Show help menu.\n\
 \n\
--i,-si         : Starting index\n\
+-i,-si         : Starting index.\n\
 \n\
 -ei            : End index i.e index to stop renaming from. It works on directory index.\n\
                  \n\
@@ -252,10 +252,9 @@ options:\n\
 -iff           : Not occupied field in index will be filled with a character\n\
                  which is set by this option.\n\
                  \n\
--ifp           : Index is a floating point decimal value. This sets the precision\n\
-                 i.e the number of digits that should be taken after the decimal point.\n\
+-ifp           : Index is a floating point decimal value. This sets the precision.\n\
                  \n\
--ns            : Name string\n\
+-ns            : Name string.\n\
      \n\
 -ns/f          : Name string file. File containing name string (one per line).\n\
 \n\
@@ -310,20 +309,20 @@ options:\n\
 \n\
 -s             : Sort files. Default is natural sort. -s/g for general sort.\n\
 \n\
--y             : Confirm Yes to all\n\
+-y             : Confirm Yes to all.\n\
 \n\
--fl            : follow symlink\n\
+-fl            : follow symlink.\n\
 \n\
--u             : Undo renaming\n\
+-u             : Undo renaming.\n\
 \n\
--v             : Version info\n\
+-v             : Version info.\n\
 \n\
--q             : Quiet operation\n\
+-q             : Quiet operation.\n\
 \n\
 -f             : Apply force. Enables renaming some non permitted files/directories\n\
-                 except / (The root filesystem directory) and rnm itself\n\
+                 except / (The root filesystem directory) and rnm itself.\n\
 \n\
---             : Everything after this will be taken as file paths\n\
+--             : Everything after this will be taken as file paths.\n\
 \n\
 -shop          : This shows an info about the various options passed as arguments\n\
                  and how they are being treated behind the scene.\n\
@@ -335,7 +334,7 @@ Terminology       :\n\
 \n\
 Reserved Index    : Index will be incremented even if \n\
                     any file is skipped renaming in order\n\
-                    to reserve the index for that skipped file\n\
+                    to reserve the index for that skipped file.\n\
                 \n\
 Reverse Index     : Decrementing index.\n\
 \n\
@@ -383,7 +382,7 @@ Replace String    : *Replace String* is a regex of the form: \n\
                     See details on the manual (man rnm).\n\
                     \n\
     Only invalid characters for a file or directory name is the path delimiter and the null character (\\0).\n\
-    See more details on the manual (man rnm)\n\
+    See more details on the manual (man rnm).\n\
 ";
 
 
