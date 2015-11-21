@@ -1,4 +1,4 @@
-.TH rnm 1 "Mon Nov 20 2015" Unix "Utility"
+.TH rnm 1 "Sat Nov 21 2015" Unix "Utility"
 .SH NAME
 rnm \- Bulk rename utility
 .SH SYNOPSIS
@@ -79,7 +79,17 @@ by default.
 .IP "--index-field-precision,"
 .B -ifp
 .I value
-: Index is a floating point decimal value. This sets the precision. If it is less than the number of digits left of the decimal point, the indexes may be rendered in scientific format.
+: Index is a floating point decimal value. This sets the precision. If it is less than the number of digits left of the decimal point, the indexes may be rendered in scientific format.This option only sets the precision value. The result may be confusing and you shouldn't use this option unless you know what you are doing. Make it specific with `-ifp/d` or `-ifp/s` which set type of format (fixed point or scientific) along with the precision value.
+
+.IP "--index-field-decimal-precision,"
+.B -ifp/d
+.I value
+: This sets the decimal precision i.e the number of digits that would be taken after the decimal point. If this option is passed other types of precisions will be ignored (if passed alongside). Mind that only the type is ignored not the value i.e the precision value will be overwritten always.
+
+.IP "--index-field-scientific-precision,"
+.B -ifp/s
+.I value
+: This sets the scientific precision. All indexes will be rendered in scientific form.
 
 .IP --name-string,
 .B -ns

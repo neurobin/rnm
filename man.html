@@ -2,7 +2,7 @@
 <HTML><HEAD><TITLE>Man page of rnm</TITLE>
 </HEAD><BODY>
 <H1>rnm</H1>
-Section: Utility (1)<BR>Updated: Mon Nov 20 2015<BR>
+Section: Utility (1)<BR>Updated: Sat Nov 21 2015<BR>
 <HR>
 <A NAME="index">&nbsp;</A><H2>Index</H2>
 <DL>
@@ -19,6 +19,7 @@ Section: Utility (1)<BR>Updated: Mon Nov 20 2015<BR>
 <DT><A HREF="#lbAL">WEB</A><DD>
 </DL>
 <HR>
+
 <A NAME="lbAB">&nbsp;</A>
 <H2>NAME</H2>
 
@@ -143,7 +144,21 @@ by default.
 
 <I>value</I>
 
-: Index is a floating point decimal value. This sets the precision. If it is less than the number of digits left of the decimal point, the indexes may be rendered in scientific format.
+: Index is a floating point decimal value. This sets the precision. If it is less than the number of digits left of the decimal point, the indexes may be rendered in scientific format.This option only sets the precision value. The result may be confusing and you shouldn't use this option unless you know what you are doing. Make it specific with `-ifp/d` or `-ifp/s` which set type of format (fixed point or scientific) along with the precision value.
+<P>
+<DT>--index-field-decimal-precision,<DD>
+<B>-ifp/d</B>
+
+<I>value</I>
+
+: This sets the decimal precision i.e the number of digits that would be taken after the decimal point. If this option is passed other types of precisions will be ignored (if passed alongside). Mind that only the type is ignored not the value i.e the precision value will be overwritten always.
+<P>
+<DT>--index-field-scientific-precision,<DD>
+<B>-ifp/s</B>
+
+<I>value</I>
+
+: This sets the scientific precision. All indexes will be rendered in scientific form.
 <P>
 <DT>--name-string,<DD>
 <B>-ns</B>
@@ -709,6 +724,6 @@ Report bugs to <A HREF="http://github.com/neurobin/rnm/issues">http://github.com
 
 <HR>
 This document was created by man2html<BR>
-Time: 18:21:23 GMT, November 20, 2015
+Time: 06:57:16 GMT, November 21, 2015
 </BODY>
 </HTML>

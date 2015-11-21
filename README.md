@@ -83,7 +83,9 @@ Options | Description
 `-linc`              | The amount line count will be incremented or decremented in each iteration. This is always a positive integer.
 `-ifl`               | Index field length. Non occupied field will be filled with index field fillers (set with `-iff`). iff is set to the character `0` by default.
 `-iff`               | Not occupied field in index will be filled with a character which is set by this option.
-`-ifp`               | Index is a floating point decimal value. This sets the precision i.e the number of digits that should be taken after the decimal point.
+`-ifp`               | Index is a floating point decimal value. This sets the precision. If it is less than the number of digits left of the decimal point, the indexes may be rendered in scientific format.This option only sets the precision value. The result may be confusing and you shouldn't use this option unless you know what you are doing. Make it specific with `-ifp/d` or `-ifp/s` which set type of format (fixed point or scientific) along with the precision value.
+`-ifp/d`             | This sets the decimal precision i.e the number of digits that would be taken after the decimal point. If this option is passed other types of precisions will be ignored (if passed alongside). Mind that only the type is ignored not the value i.e the precision value will be overwritten always.
+`-ifp/s`             | This sets the scientific precision. All indexes will be rendered in scientific form.
 `-ns`                | Name string.
 `-ns/f`              | Name string file. File containing name string (one per line). `-nsf /hist/` i.e a value passed `/hist/` as Name string file, will try to take the file from history.
 `-ns/fn`             | Name String file. This takes a null terminated *Name String* file, i.e filenames are terminated by null character (`\0`) instead of new line (`\n`). 
@@ -98,7 +100,7 @@ Options | Description
 `-rs`                | Replace string. A string in the form `/search_string/replace_string/modifier`. See **Replace String** in <a href="#technical-terms">Terminology</a> for details. 
 `-rs/f`              | Replace string file. A file containing replace string per line. 
 `-re`                | regex mode. Available regex modes are POSIX compliant basic & extended regex, regex used by grep, awk, egrep and the default regex is ECMAScript regex. For example, to have a grep like regex, pass the option `-re grep`, to use POSIX compliant extended regex, pass `-re extended`.
-`-rel`                | If this is passed as argument, regex will follow Locale. that is regex like [a-z] will have their meaning according to the system locale. 
+`-rel`               | If this is passed as argument, regex will follow Locale. that is regex like [a-z] will have their meaning according to the system locale. 
 `-dp`                | Depth of folder. -1(any negative number) means unlimited depth i.e all files and subdirectories will be included. Other values may be 0 1 2 3 etc... Default depth is `0`, i.e directory contents will be ignored.
 `-fo`                | File only mode. Only files are renamed (not directory). Goes to subdirectory/s if depth (`-dp`) is set to `1` or greater. depth is set to 0. 
 `-do`                | Apply rename on directory only. 
