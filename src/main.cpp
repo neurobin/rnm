@@ -4,7 +4,7 @@
  * 
  * Global conventions:
  * * Always use absolute paths (mind the undo option uses full path).
- * * IFP can't be 0 by default. Make it maximum.
+ * * IFP can't be 0 by default. Make it -1 (disabled).
  * * Skip files with warning (not error).
  * * Exit with exit status 1 in case of any error.
  * 
@@ -44,6 +44,7 @@ int main(int argc, char* argv[]) {getCurrentDir(self_dir);self_path=self_dir+Str
     Options rs_file_obj("-rs/f","--replace-string-file");
     Options re_obj("-re","--regex");
     Options dp_obj("-dp","--depth");
+    Options if_obj("-if","--index-flags");
     
     for(int i = 0; i < (int)args.size(); i++){
       if(skipcount){skipcount=false;continue;}
@@ -128,6 +129,15 @@ int main(int argc, char* argv[]) {getCurrentDir(self_dir);self_path=self_dir+Str
           if(ei_obj.count>1){printWarningLog("End index overwritten");}
         }
         
+        
+      else if(opt=="-if"||opt=="--index-flags"){
+          checkArgAvailability(args,i+1);
+          parseIndexFlags(args[i+1]);
+          skipcount=true;
+          if_obj.count++;
+          if(if_obj.count>1){printWarningLog("Override occurred in Index flags");}
+        }
+        
       else if(opt=="-ifl"||opt=="--index-field-length"){
           checkArgAvailability(args,i+1);
           mustBeAPositiveInteger("Index field length",args[i+1]);
@@ -148,26 +158,6 @@ int main(int argc, char* argv[]) {getCurrentDir(self_dir);self_path=self_dir+Str
           if(ifp_obj.count>1){printWarningLog("Index field precision overwritten");}
         }
         
-        
-      else if(opt=="-ifp/d"||opt=="--index-field-decimal-precision"){
-          checkArgAvailability(args,i+1);
-          mustBeAPositiveInteger("Index field decimal precision",args[i+1]);
-          IFP=stringTo<decltype(IFP)>(args[i+1]);
-          skipcount=true;
-          IFDP=true;
-          ifp_obj.count++;
-          if(ifp_obj.count>1){printWarningLog("Index field precision overwritten. When using decimal precision, other (types of) precisions will be ignored");}
-        }
-        
-      else if(opt=="-ifp/s"||opt=="--index-field-scientific-precision"){
-          checkArgAvailability(args,i+1);
-          mustBeAPositiveInteger("Index field scientific precision",args[i+1]);
-          IFP=stringTo<decltype(IFP)>(args[i+1]);
-          skipcount=true;
-          IFSP=true;
-          ifp_obj.count++;
-          if(ifp_obj.count>1){printWarningLog("Index field precision overwritten.");}
-        }
         
       else if(opt=="-iff"||opt=="--index-field-filler"){
           checkArgAvailability(args,i+1);

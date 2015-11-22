@@ -4,7 +4,7 @@
  * 
  * Global conventions:
  * * Always use absolute paths (mind the undo option uses full path).
- * * IFP can't be 0 by default. Make it maximum.
+ * * IFP can't be 0 by default. Make it -1 (disabled).
  * * Skip files with warning (not error).
  * * Exit with exit status 1 in case of any error.
  * 
@@ -26,7 +26,7 @@ void printOpts(void);
 void startTask(StringArray);
 String replaceStringAll(String, String , String );
 String parseNameString(String,String,DirectoryIndex &);
-String regexReplace(String ,String ,String ,String,int );
+String regexReplace(String s,String search,String replace,String modifier,int user=0);
 void parseReplaceString(StringArray ,String,DirectoryIndex &);
 String copyFile(String, String );
 String copyFile2(String src,String dst);
@@ -60,7 +60,30 @@ Regex createRegex(String s,bool case_sensitive);
 void incrementReservedIndexes(DirectoryIndex &di);
 bool isComplyingToRegex(String &s,Regex &re);
 bool Rename2(String oldn,String newn);
-
+bool isInt(String x);
+String reverseString(String s);
+String trim(String s,String delim=" ");
+String ltrim(String s,String delim=" ");
+String rtrim(String s,String delim=" ");
+void parseIndexFlags(String s);
+void printIndexFlags(void);
+StringArray split(const String &text, char sep);
+bool setIndexFlagInd(String s);
+bool setIndexFlagAdjust(String s);
+//bool setIndexFlagFloat(String s);
+bool isPositiveInt(String x);
+String toStringAccordingToIFL(Double index,int ifl,int number_base=NUM_BASE,IOFormatFlag index_flag_float=INDEX_FLAG_FLOAT,bool latin=false);
+String toStringAccordingToMyConvention(int val);
+String toStringAccordingToMyConvention(double val);
+String processExtendedNameString(String ns,std::map<String,Double>& ns_rules,int ifl);
+template<typename T1, typename T2>
+bool existsInMap(std::map<T1,T2> mymap, T1 key);
+String removeInvalidNameStringRules(String ns);
+void updateIndexFlagsFromIntFlagMap(void);
+bool parseTwoStepIndexFlag(String s);
+template<typename T>
+bool isSingleCharacter(T x);
+String convertToLatinNumber(Int num);
 
 StringArray files;
 
@@ -216,7 +239,10 @@ T stringTo(String s){
     return a;
 }
 
-
+String reverseString(String s){
+    String temp="";
+    for(int i=s.length()-1;i>=0;i--){temp+=s[i];}
+    return temp;}
 
 String toLower(String s){
     for(int i=0;i<(int)s.length();i++){s[i]=tolower(s[i]);}
@@ -247,6 +273,33 @@ String replaceStringAll(String str, String replace, String with) {
 return str;
 }
 
+
+String convertToLatinNumber(Int num){
+    String res;
+    Int latin_num[9];
+    Int latin_fixed_value[9]={1000,500,100,50,10,9,5,4,1};
+    String latin_fixed_char[9]={"m","d","c","l","x","ix","v","iv","i"};
+    for(int i=0;i<9;i++){
+        latin_num[i] = num / latin_fixed_value[i];
+        num = num % latin_fixed_value[i];
+    }
+    for(int i=0;i<9;i++){
+        for(int j=0;j<latin_num[i];j++)res+=latin_fixed_char[i];
+    }
+    return res;
+}
+
+
+String toStringAccordingToMyConvention(int val){
+    if(val==-1){return "unset";}
+    else return toString(val);
+   }
+
+String toStringAccordingToMyConvention(double val){
+    if(val==-1.0){return "unset";}
+    else return toString(val);
+   }
+
 int countMatchInRegex(std::string s,std::string re){
  
     std::regex words_regex(re);
@@ -258,20 +311,261 @@ int countMatchInRegex(std::string s,std::string re){
 
 }
 
+StringArray split(const String &text, char sep) {
+    StringArray tokens;
+    int start = 0, end = 0;
+    while ((Int)(end = text.find(sep, start)) != (Int)std::string::npos) {
+        String temp=text.substr(start, end - start);
+        if(temp!="")tokens.push_back(temp);
+        start = end + 1;
+    }
+    String temp=text.substr(start);
+    if(temp!="")tokens.push_back(temp);
+    return tokens;
+}
 
-String toStringAccordingToIFL(Double index,int ifl){
+
+String ltrim(String s,String delim){return regexReplace(s,"^["+delim+"]+","","");}
+String rtrim(String s,String delim){return regexReplace(s,"["+delim+"]+$","","");}
+String trim(String s,String delim){return rtrim(ltrim(s,delim),delim);}
+
+void updateIndexFlagsFromFlagMaps(){
+    IFP=index_int_flag["precision"];
+    index_field_length=index_int_flag["width"];
+    IFF=index_string_flag["filler"];
+}
+
+bool parseTwoStepIndexFlag(String s){
+    String res=trim(s);
+    Regex re ("(^[^=]+)=([^=]+$)");
+    RegexResult match;
+    if(std::regex_match(s,match,re)){
+        if(existsInMap(index_int_flag,String(match[1]))){
+            if(isPositiveInt(String(match[2]))){
+            index_int_flag[String(match[1])]=stringTo<int>(match[2]);
+            updateIndexFlagsFromFlagMaps();
+            return true;
+            }
+        }
+        else if(existsInMap(index_string_flag,String(match[1]))){
+            if(isSingleCharacter(String(match[2]))){
+                index_string_flag[String(match[1])]=String(match[2]);
+                updateIndexFlagsFromFlagMaps();
+                return true;
+                }
+            
+            
+        }
+    }
+    return false;}
+/*
+bool setIndexFlagFloat(String s){
+    s=trim(s);
+    for(int j=0;j<(int)INDEX_FLAGS_AV_F.size();j++){
+        if(s==trim(INDEX_FLAGS_AV_F[j])){
+            index_flag_float=INDEX_FLAGS_F[j];
+            index_flag_float_s=INDEX_FLAGS_AV_F[j];
+            return true;
+        }
+    }
+    return false;
+}*/
+
+bool setIndexFlagAdjust(String s){
+    s=trim(s);
+    for(int i=0;i<(int)INDEX_FLAGS_AV_A.size();i++){
+        if(s==trim(INDEX_FLAGS_AV_A[i])){
+            index_flag_adjust=INDEX_FLAGS_A[i];
+            index_flag_adjust_s=INDEX_FLAGS_AV_A[i];
+            return true;
+        }
+    }
+    return false;
+}
+
+
+bool setIndexFlagInd(String s){
+    s=trim(s);
+    for(int j=0;j<(int)INDEX_FLAGS_AV_I.size();j++){
+        if(s==trim(INDEX_FLAGS_AV_I[j])){
+            index_flag_ind.push_back(INDEX_FLAGS_I[j]);
+            index_flag_ind_s.push_back(INDEX_FLAGS_AV_I[j]);
+            std::sort( index_flag_ind.begin(), index_flag_ind.end() );
+            index_flag_ind.erase( unique( index_flag_ind.begin(), index_flag_ind.end() ), index_flag_ind.end() );
+            
+            std::sort( index_flag_ind_s.begin(), index_flag_ind_s.end() );
+            index_flag_ind_s.erase( unique( index_flag_ind_s.begin(), index_flag_ind_s.end() ), index_flag_ind_s.end() );
+            return true;
+        }
+    }
+    return false;
+}
+
+
+void parseIndexFlags(String s){
+    bool er=true;
+    StringArray tokens=split(s,FLAG_DELIM);
+    for(int i=0;i<(int)tokens.size();i++){
+        er=true;
+        if(parseTwoStepIndexFlag(tokens[i])){
+            er=false;
+            continue;
+        }
+        /*
+        if(setIndexFlagFloat(tokens[i])){
+            er=false;
+            continue;
+        }*/
+            
+        if(setIndexFlagAdjust(tokens[i])){
+            er=false;
+            continue;
+        }
+            
+        if(setIndexFlagInd(tokens[i])){
+            er=false;
+            continue;
+        }
+        if(er){printErrorLog("Invalid index flag: "+tokens[i]);Exit(1);}
+    
+    }
+}
+
+void printIndexFlags(){
+    print "Width: "<<index_field_length<<NEW_LINE;
+    print "Filler: "<<IFF<<NEW_LINE;
+    print "Precision: "<<toStringAccordingToMyConvention(IFP)<<NEW_LINE;
+    print "Adjust field: "+index_flag_adjust_s+NEW_LINE;
+    print "Other flags: ";
+    for(int i=0;i<(int)index_flag_ind_s.size();i++){
+        print index_flag_ind_s[i];
+        if(i<(int)index_flag_ind_s.size()-1){print ", ";}
+        }
+    print NEW_LINE;
+    
+    }
+
+
+String convertBase(Double x,int base){
+    if(base<NUM_BASE_MIN||base>NUM_BASE_MAX){base=NUM_BASE;}
+    String res="";
+    String res_left="",res_right="";
+    String val="0123456789abcdefghijklmnopqrstuvwxyz";
+    Double intp,fractp;
+    int prec;
+    if(IFP<0){prec=DoubleLimit::max_digits10+2;}
+    else{prec=IFP;}
+    fractp=std::modf(x, &intp);
+    int i=0;
+    do{
+        int rem=(Int)intp%(Int)base;
+        intp=Int((Int)intp/(Int)base);
+        res_left+=val[rem];
+        i++;}while(intp!=0);
+    i=0;
+    Double fractph;
+    do{
+        if((int)i>=(int)prec){break;}
+        Double newp=fractp*base;
+        Double newintp;
+        fractph=fractp;
+        fractp=std::modf(newp,&newintp);
+        if(fractph<=fractp*1.01&&fractph>=fractp*0.99){
+            if(IFP<0){if(i>3)break;}
+            else if(i>IFP){break;}
+        }
+        res_right+=val[(Int)newintp];
+        i++;}
+    while(i<50 && fractp!=0);
+        
+    res_left=reverseString(res_left);
+    if(res_right=="0"){res_right="";}
+    for(int j=0;j<(int)index_flag_ind.size();j++){
+        if(index_flag_ind[j]==std::ios::showbase){
+            if(base==16)res_left="0x"+res_left;
+            if(base==8)res_left="0"+res_left;
+        }
+        if(index_flag_ind[j]==std::ios::showpoint){
+            for(int i=(int)res_right.length();i<IFP;i++){
+                res_right+="0";
+            }
+        }
+        if(index_flag_ind[j]==std::ios::uppercase){
+            res_left=toUpper(res_left);res_right=toUpper(res_right);
+        }
+    }
+    
+    res=res_left+"."+toString(res_right);
+    res=regexReplace(res,"\\.$","","i",0);
+    return res;}
+    
+
+String doubleToString(Double x, int ifl,int number_base,IOFormatFlag index_flag_float,bool latin){
+    Stream buffer;
+    String res;
+    ///set float format
+    
+    buffer.setf(index_flag_float);
+    
+    
+    ///set other flags
+    for(int i=0;i<(int)index_flag_ind.size();i++){
+        if(index_flag_ind[i]==std::ios::showpos){continue;}
+        if(index_flag_ind[i]==std::ios::showbase){continue;}
+        buffer.setf(index_flag_ind[i]);
+        }
+    
+    ///set precision if given
+    if(IFP>=0)buffer.precision(IFP);
+    
+    ///pass double to buffer if base is dec or pass int otherwise
+    if(!latin){
+        if(number_base!=10){buffer<<convertBase(x,number_base);}
+        else{ buffer << x;}
+    }
+    else{
+        buffer<<convertToLatinNumber((Int)round(x));
+    }
+    res= buffer.str();
+    
+    ///trim zeros from end 1.2000 and 1.2000e+32 1.2000E+32 etc...
+    if(number_base==10&&IFP<0&&!latin){
+        res=regexReplace(res,"([^\\.]*\\.\\d+?)0+$","$1","i",0);
+        res=regexReplace(res,"([^\\.]*\\.\\d+?)0+(e.*)$","$1$2","i",0);
+        res=regexReplace(res,"([^\\.]*)\\.0*$","$1","i",0);
+        res=regexReplace(res,"([^\\.]*)\\.0*(e.*)$","$1$2","i",0);
+    }
+    
+    if(!latin){
+        for(int i=0;i<(int)index_flag_ind.size();i++){
+            if(index_flag_ind[i]==std::ios::showpoint){
+                res=regexReplace(res,"^[^\\.]+$","$&.0","i");
+                break;
+            }
+        }
+    }
+    
+    return res;}
+
+
+String toStringAccordingToIFL(Double index,int ifl,int number_base,IOFormatFlag index_flag_float,bool latin){
     bool negative_flag=false;
     if(index<0){index=fabs(index);negative_flag=true;}
+    String res=doubleToString(index,ifl,number_base,index_flag_float,latin);
     Stream buffer;
     buffer.width(ifl);
+    buffer.setf(index_flag_adjust);
     buffer.fill(IFF[0]);
-    if(IFDP){buffer.setf(std::ios::fixed,std::ios::floatfield);}
-    else if(IFSP){buffer.setf(std::ios::scientific,std::ios::floatfield);}
-    buffer.precision(IFP);
-    buffer <<index;
+    buffer <<res;
     if(negative_flag){
-    return "-"+buffer.str();}
-    else return buffer.str();}
+    res= "-"+buffer.str();}
+    else {res= buffer.str();}
+    
+    for(int i=0;i<(int)index_flag_ind.size();i++){
+        if(index_flag_ind[i]==std::ios::showpos&&!negative_flag){res="+"+res;}
+    }
+            
+    return res;}
     
     
 String changeCaseAccordingToSS(String s,String search,String replace,String modifier,int user=0){
@@ -322,7 +616,7 @@ String changeCaseAccordingToSS(String s,String search,String replace,String modi
 }
 
 
-String regexReplace(String s,String search,String replace,String modifier,int user=0){
+String regexReplace(String s,String search,String replace,String modifier,int user){
     bool case_sensitive=true,global=false;
     String replaced_string=s;
     if(modifier=="gi" || modifier=="ig"){global=true;case_sensitive=false;}
@@ -349,9 +643,7 @@ String regexReplace(String s,String search,String replace,String modifier,int us
 }
     
 String stripPathDelimiter(String s){
-    s=replaceStringAll(s,path_delim,"");
-    
-    return s;
+    return replaceStringAll(s,path_delim,"");
 }
     
 bool compareNat(const std::string& a, const std::string& b){
@@ -414,8 +706,10 @@ String processReplacementString(String replace){
     replace=regexReplace(replace,"\\\\\\{(\\d\\d)\\}","$$$1","g");
     
     
-    ///Finally strip slashes
+    ///Finally strip invalid namestring rules and slashes
+    replace=removeInvalidNameStringRules(replace);
     replace=stripPathDelimiter(replace);
+    
     return replace;
 }
     
@@ -551,7 +845,53 @@ bool isComplyingToSearchString(String file){
     return false;
 }
 
+String removeInvalidNameStringRules(String ns){
+    return regexReplace(ns,path_delim+"[^"+path_delim+"]"+path_delim,"","g");
+}
 
+template<typename T1, typename T2>
+bool existsInMap(std::map<T1,T2> mymap, T1 key){
+    if ( mymap.find(key) == mymap.end() ) return false;
+    else return true;
+}
+
+String processExtendedNameString(String ns,std::map<String,Double>& ns_rules,int ifl){
+    String name=ns;
+    int subm[]={0,1,2,3,4},base=NUM_BASE;
+    Regex multi_re (""+path_delim+"(-?[^"+path_delim+"-]+)-([^"+path_delim+"])(\\d*)("+path_delim+")");
+    RegexTokenIterator end; ///default constructor=end of sequence
+    RegexTokenIterator toit (ns.begin(), ns.end(), multi_re,subm);
+    while (toit != end){
+        String tot,rulep, basenp,basep;
+        tot=*toit++;rulep=*toit++;basenp=*toit++;basep=*toit++;toit++;
+        ///print tot+NEW_LINE;print rulep+NEW_LINE;print basenp+NEW_LINE;print basep+NEW_LINE;
+        if(basenp=="b"){
+            if(isPositiveInt(basep)){
+                base=stringTo<int>(basep);
+                if(base>=NUM_BASE_MIN&&base<=NUM_BASE_MAX){
+                    if(existsInMap(ns_rules,String(rulep))){
+                        name=replaceStringAll(name,tot,toStringAccordingToIFL(ns_rules[rulep],index_field_length,base));
+                    }
+                }
+            }
+        }
+        else if(basenp=="s"){
+            if(basep==""){
+                if(existsInMap(ns_rules,String(rulep))){
+                    name=replaceStringAll(name,tot,toStringAccordingToIFL(ns_rules[rulep],index_field_length,10,std::ios::scientific));
+                }
+            }
+        }
+        else if(basenp=="l"){
+            if(basep==""){
+                if(existsInMap(ns_rules,String(rulep))){
+                    name=replaceStringAll(name,tot,toStringAccordingToIFL(ns_rules[rulep],index_field_length,10,std::ios::fixed,true));
+                }
+            }
+        }
+    }
+return name;
+}
 
 
 String parseNameString(String ns,String file,DirectoryIndex &di){
@@ -560,28 +900,51 @@ String parseNameString(String ns,String file,DirectoryIndex &di){
     String name=ns;
     String fnamewe=fileNameWithoutExtension(fname);
     String ext=fileExtension(fname);
+    std::map<String,Double> ns_rules;
+    ns_rules["i"]=current_index;
+    ns_rules["-i"]=reverse_index;
+    ns_rules["ir"]=current_index_rd;
+    ns_rules["-ir"]=reverse_index_rd;
+    ns_rules["id"]=di.directory_index;
+    ns_rules["idr"]=di.directory_index_rd;
+    ns_rules["-id"]=di.directory_reverse_index;
+    ns_rules["-idr"]=di.directory_reverse_index_rd;
+    ns_rules["dc"]=directory_count;
+    
+    if(name_string_file!=""){
+        ns_rules["l"]=(Double)current_line;
+        ns_rules["la"]=(Double)current_abs_line;
+        //name=replaceStringAll(name,path_delim+"l"+path_delim,toStringAccordingToIFL((Double)current_line,index_field_length));
+        //name=replaceStringAll(name,path_delim+"la"+path_delim,toStringAccordingToIFL((Double)current_abs_line,index_field_length));
+    }
+    
     if(ns!=""){
         name=replaceStringAll(name,path_delim+"fn"+path_delim,fname);
         name=replaceStringAll(name,path_delim+"n"+path_delim,fnamewe);
         name=replaceStringAll(name,path_delim+"e"+path_delim,ext);
         name=replaceStringAll(name,path_delim+"rn"+path_delim,rname);
-        name=replaceStringAll(name,path_delim+"i"+path_delim,toStringAccordingToIFL(current_index,index_field_length));
-        name=replaceStringAll(name,path_delim+"-i"+path_delim,toStringAccordingToIFL(reverse_index,index_field_length));
-        name=replaceStringAll(name,path_delim+"ir"+path_delim,toStringAccordingToIFL(current_index_rd,index_field_length));
-        name=replaceStringAll(name,path_delim+"-ir"+path_delim,toStringAccordingToIFL(reverse_index_rd,index_field_length));
-        name=replaceStringAll(name,path_delim+"id"+path_delim,toStringAccordingToIFL(di.directory_index,index_field_length));
-        name=replaceStringAll(name,path_delim+"idr"+path_delim,toStringAccordingToIFL(di.directory_index_rd,index_field_length));
-        name=replaceStringAll(name,path_delim+"-id"+path_delim,toStringAccordingToIFL(di.directory_reverse_index,index_field_length));
-        name=replaceStringAll(name,path_delim+"-idr"+path_delim,toStringAccordingToIFL(di.directory_reverse_index_rd,index_field_length));
-        name=replaceStringAll(name,path_delim+"dc"+path_delim,toString(directory_count));
         name=replaceStringAll(name,path_delim+"pd"+path_delim,CPDN);
         name=replaceStringAll(name,path_delim+"wd"+path_delim,CWDN);
         
-        
-        if(name_string_file!=""){
-            name=replaceStringAll(name,path_delim+"l"+path_delim,toStringAccordingToIFL((Double)current_line,index_field_length));
-            name=replaceStringAll(name,path_delim+"la"+path_delim,toStringAccordingToIFL((Double)current_abs_line,index_field_length));
+        for(auto const& ent : ns_rules){
+            ///ent.first is the key, ent.second is the value    
+            name=replaceStringAll(name,path_delim+ent.first+path_delim,toStringAccordingToIFL(ent.second,index_field_length));
         }
+        
+        ///for name string rules like /i-b16/, b16 stands for base 16
+        name=processExtendedNameString(name,ns_rules,index_field_length);
+        
+        //name=replaceStringAll(name,path_delim+"i"+path_delim,toStringAccordingToIFL(current_index,index_field_length));
+        //name=replaceStringAll(name,path_delim+"-i"+path_delim,toStringAccordingToIFL(reverse_index,index_field_length));
+        //name=replaceStringAll(name,path_delim+"ir"+path_delim,toStringAccordingToIFL(current_index_rd,index_field_length));
+        //name=replaceStringAll(name,path_delim+"-ir"+path_delim,toStringAccordingToIFL(reverse_index_rd,index_field_length));
+        //name=replaceStringAll(name,path_delim+"id"+path_delim,toStringAccordingToIFL(di.directory_index,index_field_length));
+        //name=replaceStringAll(name,path_delim+"idr"+path_delim,toStringAccordingToIFL(di.directory_index_rd,index_field_length));
+        //name=replaceStringAll(name,path_delim+"-id"+path_delim,toStringAccordingToIFL(di.directory_reverse_index,index_field_length));
+        //name=replaceStringAll(name,path_delim+"-idr"+path_delim,toStringAccordingToIFL(di.directory_reverse_index_rd,index_field_length));
+        //name=replaceStringAll(name,path_delim+"dc"+path_delim,toString(directory_count));
+        
+        
         
         
         }
@@ -880,20 +1243,20 @@ Int childDepth(String parent,String child){
 
 
 bool isInt(String x){
-    Regex e ("^-?\\d+");
+    Regex e ("^-?\\d+$");
     if (std::regex_match (x,e)) return true;
     else return false;
 }
 
 bool isPositiveInt(String x){
-    Regex e ("^\\d+");
+    Regex e ("^\\d+$");
     if (std::regex_match (x,e)) return true;
     else return false;}
 
 template<typename T>
 bool isNumber(T x){
     String s;
-    Regex e ("^-?\\d*\\.?\\d+");
+    Regex e ("^-?\\d*\\.?\\d+$");
     Stream ss; 
     ss << x;
     ss >>s;
@@ -904,7 +1267,7 @@ bool isNumber(T x){
 template<typename T>
 bool isPositiveNumber(T x){
     String s;
-    Regex e ("^\\d*\\.?\\d+");
+    Regex e ("^\\d*\\.?\\d+$");
     Stream ss; 
     ss << x;
     ss >>s;
@@ -936,7 +1299,13 @@ void mustBeAPositiveInteger(String name,T x){
        Exit(1);
        }
 }    
-    
+
+template<typename T>
+bool isSingleCharacter(T x){
+    String s=toString(x);
+    if(s.length()!=1)return false;
+    else return true;
+}
     
 template<typename T>
 void mustBeAValidSingleCharacter(String name,T x){
@@ -1066,7 +1435,8 @@ String doRename(String file,DirectoryIndex &di){
     
     
     
-    ///sanitize name
+    ///sanitize name by removing invalid name string rules and path delimiter
+    name=removeInvalidNameStringRules(name);
     name=stripPathDelimiter(name);
     
     
@@ -1398,8 +1768,9 @@ void printOpts(){
     Increment Value: "+toString(inc)+"\n\
     Line Increment Value: "+toString(linc)+"\n\
     Apply force: "+parseTrueFalse(force)+"\n\
-    Simulation: "+parseTrueFalse(simulation)+"\n\n\
 ";
+    printIndexFlags();
+    print "Simulation: "+parseTrueFalse(simulation)+"\n\n";
     
     }
 
