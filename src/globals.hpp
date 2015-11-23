@@ -1,14 +1,35 @@
 ﻿/***********************************************************************
  * Bulk rename utility for Unix (rnm)
  * Author: Md. Jahidul Hamid <jahidulhamid@yahoo.com>
- * 
+ * Copyright (C) 2015 by Md. Jahidul Hamid <jahidulhamid@yahoo.com>
+ *   
+ * This software is provided 'as-is', without any express or implied
+ * warranty.  In no event will the authors be held liable for any damages
+ * arising from the use of this software.
+ *
+ * Permission is granted to anyone to use this software for any purpose,
+ * including commercial applications, and to alter it and redistribute it
+ * freely, subject to the following restrictions:
+ *
+ * 1. The origin of this software must not be misrepresented; you must not
+ *   claim that you wrote the original software. If you use this software
+ *    in a product, an acknowledgment in the product documentation would be
+ *    appreciated but is not required.
+ * 2. Altered source versions must be plainly marked as such, and must not be
+ *    misrepresented as being the original software.
+ * 3. This notice may not be removed or altered from any source distribution.
+ * ********************************************************************/
+/***********************************************************************
  * Global conventions:
+ * 
  * * Always use absolute paths (mind the undo option uses full path).
  * * IFP can't be 0 by default. Make it -1 (disabled).
- * * Skip files with warning (not error).
- * * Exit with exit status 1 in case of any error.
+ * * Try to skip files with warning (not error).
+ * * Exit with exit status 1 in case of error.
  * 
  * ********************************************************************/
+ 
+ 
 #ifndef __GLOBALS_H
 #define __GLOBALS_H
 
@@ -37,7 +58,7 @@
 #include <dirent.h>
 #include <map>
 #include <cmath>
-
+#include <algorithm>
 
 
 /////typedefs
@@ -57,8 +78,8 @@ typedef std::smatch RegexResult;
 typedef std::numeric_limits< Double > DoubleLimit;
 typedef std::ios_base::fmtflags IOFormatFlag;
 typedef std::vector<IOFormatFlag> IOFormatFlagArray;
-typedef std::function<std::ios_base&(std::ios_base&)> StdFlag;
-typedef std::vector<StdFlag> FlagArray;
+//~ typedef std::function<std::ios_base&(std::ios_base&)> StdFlag;
+//~ typedef std::vector<StdFlag> FlagArray;
 typedef std::map<String,int> StringintMap;
 
 
@@ -127,6 +148,13 @@ bool sort=false;
 bool follow_symlink=false;
 bool number_latin=false;
 
+//experimental
+bool uppercase=false;
+bool showbase=false;
+bool showpoint=false;
+bool showpos=false;
+
+
 /////Doubles
 Double start_index=1;
 Double current_index=1;
@@ -161,39 +189,38 @@ NameList nsflist;
 String re_type="";
 RegexType REGEX_TYPE=REGEX_DEFAULT;
 
-//////// IFL related
+//////// Index flag related
+int LATIN_FALLBACK=55555;
+int latin_fall_back_threshold=LATIN_FALLBACK;
 char FLAG_DELIM='/';
 int NUM_BASE=10;
 int NUM_BASE_MIN=2;
 int NUM_BASE_MAX=36;
 String IFF="0"; //index field filler
 int IFP=-1;    //index field precision
-std::map<String,int> index_int_flag={{"precision",IFP},{"width",index_field_length}};
+
+///////Index flags management
+
+std::map<String,int> index_int_flag={{"precision",IFP},{"width",index_field_length},{"latin-fallback",latin_fall_back_threshold}};
 std::map<String,String> index_string_flag={{"filler",IFF}};
 
 String IFP_s="unset";
 IOFormatFlag INDEX_FLAG_FLOAT=std::ios::fixed;
-//IOFormatFlag index_flag_float=std::ios::fixed;
-//StdFlag index_flag_float=std::fixed;
-//String index_flag_float_s="fixed";
 IOFormatFlag index_flag_adjust=std::ios::right;
-//StdFlag index_flag_adjust=std::right;
 String index_flag_adjust_s="right";
 IOFormatFlagArray index_flag_ind {};
-//FlagArray index_flag_ind {};
 StringArray index_flag_ind_s {};
 ///The following array couples must be in sync, don't change the sequence, they are important
-//StringArray INDEX_FLAGS_AV_F={"fixed","scientific"};
-//IOFormatFlagArray INDEX_FLAGS_F={std::ios::fixed,std::ios::scientific};
-//FlagArray INDEX_FLAGS_F={std::fixed,std::scientific};
 StringArray INDEX_FLAGS_AV_A={"internal","right","left"};
 IOFormatFlagArray INDEX_FLAGS_A={std::ios::internal,std::ios::right,std::ios::left};
-//FlagArray INDEX_FLAGS_A={std::internal,std::right,std::left};
 StringArray INDEX_FLAGS_AV_I={"uppercase","showbase","showpoint","showpos"};
+std::map<String,bool> INDEX_FLAGS_I_B={{"uppercase",false},{"showbase",false},{"showpoint",false},{"showpos",false}};
 IOFormatFlagArray INDEX_FLAGS_I={std::ios::uppercase,std::ios::showbase,std::ios::showpoint,std::ios::showpos};
-/*FlagArray INDEX_FLAGS_I={std::uppercase,std::showbase,std::showpoint,std::showpos,std::nouppercase\
-    ,std::noshowbase,std::noshowpoint,std::noshowpos};*/
 ///The above array couples must be in sync, don't change the sequence, they are important
+
+
+
+
 
 
 String blank_str="";
