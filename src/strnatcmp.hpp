@@ -28,6 +28,9 @@
  * 
  * ********************************************************************/
 
+#ifndef __STRNATCMP_HPP
+#define __STRNATCMP_HPP
+
 #include <cstddef>	/* size_t */
 #include <cctype>
 #include <string>
@@ -176,3 +179,6 @@ int compareNatq(const void *a, const void *b){
     char const *pa = *(char const **)a, *pb = *(char const **)b;
     return strnatcasecmp(pa, pb);
 }
+
+
+#endif

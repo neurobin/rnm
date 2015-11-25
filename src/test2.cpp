@@ -1,28 +1,28 @@
-#include <iostream>
-#include <vector>
-#include <algorithm>
-#include "strnatcmp.hpp"
+#include "funcs.hpp"
+#include "times.hpp"
+#include <functional>
+
+
+
+
 
 int main(){
-    std::vector<std::string> files;
-    
-    files.push_back("20.txt");
-    files.push_back("10.txt");
-    files.push_back("1.txt");
-    files.push_back("z2.txt");
-    files.push_back("z10.txt");
-    files.push_back("z100.txt");
-    files.push_back("1_t.txt ");
-    files.push_back("ABc");
-    files.push_back("aBCd");
-    files.push_back("aBc");
-    files.push_back("aaa");
-    files.push_back("aBcd");
-    files.push_back("aaA");
-    
-    std::sort(files.begin(),files.end(),compareNat);
-    
-    for(int i=0;i<(int)files.size();i++)std::cout<< files[i]+"\n";
-    
+    print fileExtension(".config")<<NEW_LINE;
+    print fileNameWithoutExtension("fdsfsd..fsdaf..fsd.jp.config")<<NEW_LINE;
+    print "------------------------"<<NEW_LINE;
+    print funcTime(countCharInString,"precision=10","=")<<NEW_LINE;
+    print "------------------------"<<NEW_LINE;
+    print funcTime(countMatchInString,"I am a simple and very simple string", "simple")<<NEW_LINE;
+    print "------------------------"<<NEW_LINE;
+    print funcTime(countCharWithAlgorithm,"precision=10",'=')<<NEW_LINE;
+    print "------------------------"<<NEW_LINE;
+    print "parse1: "<<funcTime(parseTwoStepIndexFlag,"precision=12")<<NEW_LINE;
+    print "------------------------"<<NEW_LINE;
+    print "parse2: "<<funcTime(parseTwoStepIndexFlag,"precision=12")<<NEW_LINE;
+    std::cout<<"norm: "<<funcTime(countCharInString,"precision=10","=")<<"\n";
+    std::cout<<"algo: "<<funcTime(countCharWithAlgorithm,"precision=10",'=');
+    String s;
+    getLine(s);
+    main();
 	return 0;
 }

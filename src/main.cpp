@@ -272,7 +272,7 @@ int main(int argc, char* argv[]) {getCurrentDir(self_dir);self_path=self_dir+Str
           skipcount=true;
           
           ss_obj.count++;
-          ///if(ss_obj.count>1){printWarningLog("Search string overwritten");}
+          ///multple is allowed
         }
         
         
@@ -295,7 +295,7 @@ int main(int argc, char* argv[]) {getCurrentDir(self_dir);self_path=self_dir+Str
             Exit(1);
           }
           ss_file_obj.count++;
-          //if(ss_file_obj.count>1){printWarningLog("Search string file option changed");}
+          ///multple is allowed
         }
         
          
@@ -306,7 +306,7 @@ int main(int argc, char* argv[]) {getCurrentDir(self_dir);self_path=self_dir+Str
           skipcount=true;
           
           ss_obj.count++;
-          if(ss_obj.count>1){printWarningLog("Search string overwritten");}
+          ///multple is allowed
         }
         
           
@@ -328,7 +328,7 @@ int main(int argc, char* argv[]) {getCurrentDir(self_dir);self_path=self_dir+Str
             Exit(1);
           }
           ss_file_obj.count++;
-          //if(ss_file_obj.count>1){printWarningLog("Search string file option changed");}
+          ///multple is allowed
         }
         
         
@@ -338,8 +338,7 @@ int main(int argc, char* argv[]) {getCurrentDir(self_dir);self_path=self_dir+Str
           skipcount=true;
           
           rs_obj.count++;
-          //if(rs_obj.count>1){printWarningLog("Replace string overwritten");} //this is invalid from version 3.1.0
-           
+          ///multple is allowed
         }
         
         
@@ -356,7 +355,7 @@ int main(int argc, char* argv[]) {getCurrentDir(self_dir);self_path=self_dir+Str
             Exit(1);
           }
           rs_file_obj.count++;
-          //if(rs_file_obj.count>1){printWarningLog("Replace string file option changed");}
+          ///multple is allowed
         }
         
       else if(opt=="-re" || opt == "--regex"){
@@ -563,7 +562,7 @@ int main(int argc, char* argv[]) {getCurrentDir(self_dir);self_path=self_dir+Str
     ////////////////////////////////// Various checks end here//////////////////////////////
     
     ///Sort file if sort is true
-    
+    if(sort){sortVector(files);}
     
     startTask(files);
     
