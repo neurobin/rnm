@@ -11,10 +11,6 @@ typedef std::chrono::high_resolution_clock::time_point TimeVar;
 #define timeNow() std::chrono::high_resolution_clock::now()
 
 
-template<typename Func, typename... Args>
-void process(Func func, Args&&... args) {
-    func(std::forward<Args>(args)...);
-}
 
 template<typename F, typename... Args>
 double funcTime(F func, Args&&... args){

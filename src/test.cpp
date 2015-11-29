@@ -1,7 +1,7 @@
 #include "funcs.hpp"
 
 
-String processPdNameString(String ns,String file){
+String processExtendedPdNameStringRule(String ns, const String& file){///file must not contain path, only the name.
     String name=ns;
     int subm[]={0,1,2,3,4};
     Regex multi_re (""+path_delim+"pd(\\d+)-?(\\d*)-?([^/]*)("+path_delim+")");
@@ -10,8 +10,9 @@ String processPdNameString(String ns,String file){
     while (toit != end){
         String tot,si, ei,delim;
         tot=*toit++;si=*toit++;ei=*toit++;delim=*toit++;toit++;
+        if(delim==""&&ei!="")delim="*";
+        else if(ei=="")delim="";
         print tot+NEW_LINE;print si+NEW_LINE;print ei+NEW_LINE;print delim+NEW_LINE;
-        
         //~ if(basenp=="b"){
             //~ if(isPositiveInt(basep)){
                 //~ base=stringTo<int>(basep);
@@ -31,5 +32,5 @@ StringArray cpdn;
 int main(){
     String f="/media/jahid/softs/iso images/windows/kfljsl.iso";
     String d="/home/jahidul/Downloads/sofs/instant/more-instant";
-    processPdNameString("/pd012/ /pd1278/ /pd120-0/ /pd9098-032-4324/ /pd90-fsdf/ /pd09fsd/ /pd-324/",f);
+    processExtendedPdNameStringRule("/pd012/ /pd1278/ /pd120-0/ /pd9098-032-4324/ /pd90-fsdf/ /pd09fsd/ /pd-324/",f);
     }

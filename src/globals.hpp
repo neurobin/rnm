@@ -33,6 +33,7 @@
 #ifndef __GLOBALS_H
 #define __GLOBALS_H
 
+
 /////includes
 #include <iostream>
 #include <iomanip>
@@ -101,13 +102,11 @@ typedef std::map<String,int> StringintMap;
 #define REGEX_DEFAULT REGEX_ECMASCRIPT
 #define REGEX_LOCALE std::regex::collate
 
-
+#define PCRE2_CODE_UNIT_WIDTH 8
 #define print std::cout<<
 #define printe std::cerr<<
 #define ENDL std::endl
 #define input std::cin>>
-#define LIMIT_OF_DOUBLE std::numeric_limits<Double>::max();
-#define INT_MAX std::numeric_limits<Int>::max();
 #define FileStream std::fstream
 #define $ios std::ios
 #define $append std::ios::app
@@ -156,6 +155,8 @@ bool showpos=false;
 
 
 /////Doubles
+
+Double LIMIT_OF_DOUBLE =std::numeric_limits<Double>::max();
 Double start_index=1;
 Double current_index=1;
 Double current_index_rd=1;
@@ -167,8 +168,10 @@ Double inc=1;
 Double DIRECTORY_INDEX=1;
 Double DIRECTORY_REVERSE_INDEX=-1;
 
+
 /////ints
 
+Int INT_MAX =std::numeric_limits<Int>::max();
 Int linc=1;
 Int start_line=1;
 Int current_line=start_line;
@@ -188,6 +191,12 @@ NameList nsflist;
 //// Regex related
 String re_type="";
 RegexType REGEX_TYPE=REGEX_DEFAULT;
+
+
+/////Name string related
+
+String PD_DELIM=" ";
+
 
 //////// Index flag related
 int LATIN_FALLBACK=55555;
