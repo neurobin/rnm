@@ -1,4 +1,4 @@
-.TH rnm 1 "Sat Nov 21 2015" Unix "Utility"
+.TH rnm 1 "Sat Dec 19 2015" Unix "Utility"
 .SH NAME
 rnm \- Bulk rename utility
 .SH SYNOPSIS
@@ -28,7 +28,7 @@ are the same.
 .SH DESCRIPTION
 Bulk Rename Utility written in C++. Files and directories can be passed as command line arguments to rename them in bulk according to some naming scheme (
 .B Name String
-). If no file or directory path is passed as command line argument, it will wait for user to type the path i.e it will take the path from standard input (>=version 3.0.1). It uses ECMAScript regex as the default regex to provide search (and replace) functionality, other regex modes ( POSIX compliant basic and extended regex) are available through (
+). If no file or directory path is passed as command line argument, it will wait for user to type the path i.e it will take the path from standard input (>=version 3.0.1). It uses ECMAScript regex (aka JavaScript) as the default regex to provide search (and replace) functionality, other regex modes ( POSIX compliant basic and extended regex) are available through (
 .B -re
 ) option. It provides an undo functionality (
 .B rnm -u
@@ -62,6 +62,25 @@ etc..
 .B -linc
 .I value
 : The amount line count will be incremented or decremented in each iteration. This is always a positive integer.
+
+.IP "--index-flags,"
+.B -if
+.I flags
+: This sets Index flags. This is a '/' separated list of flags that will be used to render the index within it's text field.
+
+The general format is 
+.I '/keyword1/keyword2/...'
+
+Valued flags are set with
+.I keyword=value
+format.
+
+Ex:
+.B -if
+.I '/uppercase/showpoint/showpos/showbase/left/length=4/precision=3/filler=*/latin-fallback=687678/'
+
+See keywords section for details.
+
 .IP --index-field-length,
 .B -ifl
 .I value
@@ -69,27 +88,23 @@ etc..
 .B -iff
 ). iff is set to the character 
 .I 0
-by default.
+by default. This can also be set using the 
+.B -if
+option. The keyword is 'length'.
 
 .IP "--index-field-filler,"
 .B -iff
 .I single-character
-: Not occupied field in index will be filled with a character which is set by this option.
+: Not occupied field in index will be filled with a character which is set by this option. This can also be set using the 
+.B -if
+option. The keyword is 'filler'.
 
 .IP "--index-field-precision,"
 .B -ifp
 .I value
-: Index is a floating point decimal value. This sets the precision. If it is less than the number of digits left of the decimal point, the indexes may be rendered in scientific format.This option only sets the precision value. The result may be confusing and you shouldn't use this option unless you know what you are doing. Make it specific with `-ifp/d` or `-ifp/s` which set type of format (fixed point or scientific) along with the precision value.
-
-.IP "--index-field-decimal-precision,"
-.B -ifp/d
-.I value
-: This sets the decimal precision i.e the number of digits that would be taken after the decimal point. If this option is passed other types of precisions will be ignored (if passed alongside). Mind that only the type is ignored not the value i.e the precision value will be overwritten always.
-
-.IP "--index-field-scientific-precision,"
-.B -ifp/s
-.I value
-: This sets the scientific precision. All indexes will be rendered in scientific form.
+: Index is a floating point decimal value. This sets the precision. If it is less than the number of digits left of the decimal point, the indexes may be rendered in scientific format.This option only sets the precision value. The result may be confusing and you shouldn't use this option unless you know what you are doing. This can also be set using the 
+.B -if
+option. The keyword is 'precision'.
 
 .IP --name-string,
 .B -ns
@@ -256,7 +271,7 @@ Decrementing index.
 .B Name String
 .RS
 A string, that is parsed to create names for new files. It can be fixed name which then can be modified for different files at runtime. Name sting is parsed by the following rules (must be wrapped around with filepath delimiter /):
-.RS
+
 
 .B /n/
 in name string will be replaced with filename without extension. If used with -nsf option, the filename will be the name taken from the Name String File.
@@ -303,6 +318,51 @@ In general,
 .B /-ir/
 .B /-idr/
 etc..) in the above replacement rules (applies to indexes excluding line index) will mean inverse index conforming to their meaning.
+
+.RE
+
+.B Extended Name String Rule
+.RS
+This is an extension of the general purpose name string rules mentioned above.
+
+.B Base conversion
+.RS
+.B /i-b2/
+converts the index to base 2 i.e binary and
+.B /i-b32/
+will convert to base 32. This applies to all numbered name string rules.
+.RE
+
+.B Latin conversion
+.RS
+.B /i-l/
+converts the index to Latin number. This applies to all numbered name string rules.
+.RE
+
+.B Scientific conversion
+.RS
+.B /i-s/
+converts the index to scientific form. This applies to all numbered name string rules.
+.RE
+
+.B Extended /pd/ rules
+.RS
+pd0 is the immediate parent directory, pd1 is the directory before pd0 and so forth. 
+
+A range can also be supplied to combine all the directories in the level implied by the range. The general format of this rule is
+.B /pd<digits>-<digits>-delimiter/
+
+For example:
+.B /pd0-4--/
+will combine all directories from level 0 to 4 inserting the delimiter (- in this case) between them and the rule will become something like dir0-dir1-dir2-dir3-dir4. 
+
+In place of <digits> you can also supply 'e' which generally means the 'end' i.e the deepest level available.
+
+Any unavailable level of directory will be ignored and be replaced with empty string. 
+
+The range is bidirectional e.g
+.B /pd4-0--/
+will do the same in reverse order.
 .RE
 .RE
 
@@ -381,7 +441,7 @@ Regarding the
 
 & will be taken as the entire match found by the regex (search_part).
 
-\\1, \\2 etc.. is the back-references, i.e you can access captured groups with these back-references. Up-to two digits after the \\ will be taken as a back-reference. If you want to isolate a back-reference make it fill up the two digit limit or wrap it around with {}. For example, if you want to put a digit (2) after back-reference \\1, you can't use it like \\12. \\12 will mean 12th back-reference not \\1 appended with a digit (1). In this case either use \\01 instead of \\1 or isolate the back-reference with {} i.e \\{1}.
+\\1, \\2 etc.. is the captured groups or subpatterns. Up-to two digits after the \\ will be taken as a captured group. If you want to isolate a captured group, wrap it around with {}. For example, if you want to put a digit (2) after the subpattern \\1, you can't use it like \\12. \\12 will mean 12th subpattern not \\1 appended with a digit (1). In this case isolate the subpattern with {} i.e \\{1}.
 
 \\c to convert to lowercase and \\C to convert to uppercase. No other character is allowed in replace_part if \\c or \\C is used.
 
@@ -437,6 +497,42 @@ or
 option.
 .RE
 
+.B Keywords
+.RS
+.B uppercase
+: means uppercase.
+
+.B showpoint
+: show point regardless if it's an integer or floating point value.
+
+.B showbase
+: means show base (Hex or Oct).
+
+.B showpos
+: show + sign for positive numbers.
+
+.B right
+: adjust right.
+
+.B left
+: adjust left.
+
+.B internal
+: adjust internal.
+
+.B precision
+: set precision. Used like 
+.I precision=value
+
+.B length
+: sets length. Used like
+.I length=value
+
+.B filler
+: sets filler. Used like
+.I filler=value
+.RE
+
 Only invalid characters for a file or directory name is the path delimiter and the null character (\\0).
 
 .SH EXAMPLES
@@ -471,6 +567,13 @@ is the index i.e files and directories get indexed (
 file only mode, i.e no directory will be renamed or indexed, unless depth is
 .B >0
 
+.SH LIMITS
+
+.B Maximum length of file name/path
+: FILENAME_MAX
+
+.B Default latin fallback
+: 55555 (After this value latin conversion will fall back to decimal).
 
 .SH LOGDIR
 
