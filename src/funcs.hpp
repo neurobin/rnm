@@ -1,65 +1,38 @@
 /***********************************************************************
  * Bulk rename utility for Unix (rnm)
  * Author: Md. Jahidul Hamid <jahidulhamid@yahoo.com>
- * 
+ * Copyright (C) 2015 by Md. Jahidul Hamid <jahidulhamid@yahoo.com>
+ *   
+ * This software is provided 'as-is', without any express or implied
+ * warranty.  In no event will the authors be held liable for any damages
+ * arising from the use of this software.
+ *
+ * Permission is granted to anyone to use this software for any purpose,
+ * including commercial applications, and to alter it and redistribute it
+ * freely, subject to the following restrictions:
+ *
+ * 1. The origin of this software must not be misrepresented; you must not
+ *   claim that you wrote the original software. If you use this software
+ *    in a product, an acknowledgment in the product documentation would be
+ *    appreciated but is not required.
+ * 2. Altered source versions must be plainly marked as such, and must not be
+ *    misrepresented as being the original software.
+ * 3. This notice may not be removed or altered from any source distribution.
+ * ********************************************************************/
+/***********************************************************************
  * Global conventions:
+ * 
  * * Always use absolute paths (mind the undo option uses full path).
- * * IFP can't be 0 by default. Make it maximum.
- * * Skip files with warning (not error).
- * * Exit with exit status 1 in case of any error.
+ * * IFP can't be 0 by default. Make it -1 (disabled).
+ * * Try to skip files with warning (not error).
+ * * Exit with exit status 1 in case of error.
  * 
  * ********************************************************************/
-#include "classes.hpp"
+ 
+ 
 
-/// Function prototypes
-template<typename T>
-String toString(T);
-template<typename T>
-T stringTo(String s);
-String toLower(String);
-String prepareLogDir();
-template<typename T>
-String appendToFile(T);
-String printOutLog(String);
-String printErrorLog(String);
-void printOpts(void);
-void startTask(StringArray);
-String replaceStringAll(String, String , String );
-String parseNameString(String,String,DirectoryIndex &);
-String regexReplace(String ,String ,String ,String,int );
-void parseReplaceString(StringArray ,String,DirectoryIndex &);
-String copyFile(String, String );
-String copyFile2(String src,String dst);
-void finalizeRFL();
-bool undoRename();
-bool Rename(String,String,DirectoryIndex &);
-String printWarningLog(String str);
-bool isPathValid(String file);
-String appendToRFLTMP(String str1,String str2);
-void showResult(void);
-void parseSearchString(String ss,Int index);
-String basename(String file);
-String dirname(String file);
-String fileNameWithoutExtension(String filename);
-String fileExtension(String filename);
-void checkArgAvailability(StringArray sa,int i);
-bool stringContains(String main,String sub);
-template<typename T>
-void mustBeAPositiveNumber(String name,String extra,T x);
-template<typename T>
-void mustBeAnInteger(String name,T x);
-template<typename T>
-void mustBeAPositiveInteger(String name,T x);
-template<typename T>
-void mustBeAValidSingleCharacter(String name,T x);
-template<typename T>
-void mustBeANumber(String name,T x);
-bool isFile(String file);
-NameList getNameListFromFile(String filename,int si,int ei,int mod);
-Regex createRegex(String s,bool case_sensitive);
-void incrementReservedIndexes(DirectoryIndex &di);
-bool isComplyingToRegex(String &s,Regex &re);
-bool Rename2(String oldn,String newn);
+#include "prototypes.hpp"
+#include "strnatcmp.hpp"
 
 
 StringArray files;
@@ -93,14 +66,15 @@ bool undoRename(){
 }
 
 
-void checkArgAvailability(StringArray sa,int i){
+void checkArgAvailability(const StringArray& sa,int i){
     if(i>=(int)sa.size()){
         printErrorLog("One or more argument/s missing");
         Exit(1);
     }
 }
 
-bool isInvalidFile(String file){
+
+bool isInvalidFile(const String& file){
     bool status=false;
     StringArray invf={HOME,\
         path_delim+"bin",path_delim+"usr",path_delim+"usr"+path_delim+"bin",path_delim+"tmp",\
@@ -136,7 +110,7 @@ int selectInput(){
     2. Confirm for all.\n\
     3. Skip this file.\n\
     4. Skip all and exit\n\n\
-Your choice: \
+Your choice (#?): \
 ";
 
     int a=0;
@@ -166,7 +140,7 @@ String prepareLogDir(){
 }
 
 
-bool Rename(String oldn,String newn,DirectoryIndex &di){
+bool Rename(const String& oldn,const String& newn,DirectoryIndex &di){
     bool success=false;
     if(isPathValid(newn)){
         printWarningLog("A file or directory with new name exists: "+newn);
@@ -207,8 +181,9 @@ String toString(T a){
     return ss.str();
 }
 
+
 template<typename T>
-T stringTo(String s){
+T stringTo(const String& s){
     T a;
     Stream ss;
     ss <<s;
@@ -217,37 +192,103 @@ T stringTo(String s){
 }
 
 
+String reverseString(const String& s){
+    String temp="";
+    for(int i=s.length()-1;i>=0;i--){temp+=s[i];}
+    return temp;}
+    
 
 String toLower(String s){
     for(int i=0;i<(int)s.length();i++){s[i]=tolower(s[i]);}
     return s;
 }
 
+
 String toUpper(String s){
     for(int i=0;i<(int)s.length();i++){s[i]=toupper(s[i]);}
     return s;
     }
+    
 
-String replaceString(String str,String replace,String with){
+String replaceString(String str,const String& replace,const String& with){
     std::size_t pos = str.find(replace);
-    if (pos!=std::string::npos){
+    if (pos!=String::npos){
     return str.replace (pos,replace.length(),with);}
     else return str;
     
 }
 
-String replaceStringAll(String str, String replace, String with) {
+
+String replaceStringAll(String str, const String& replace, const String& with) {
    if(replace!=""){
    std::size_t pos = str.find(replace);
-    while ((pos = str.find(replace, pos)) != std::string::npos) {
-         str.replace(pos, replace.length(), with);
+    while ((pos = str.find(replace, pos)) != String::npos) {
+         str=str.replace(pos, replace.length(), with);
          pos += with.length();
     }
 }
 return str;
 }
 
-int countMatchInRegex(std::string s,std::string re){
+
+String replaceStringWithDelims(String s,const String& rep, const String& delim1,const String& delim2){
+    String::size_type pos1=s.find_first_of(delim1);
+    String::size_type pos2=s.find_first_of(delim2,pos1+1);
+    if(pos1!=String::npos&&pos2!=String::npos)
+    return s.replace(pos1,pos2-pos1+1,rep);
+    else return s;
+}
+///Make an overload of the above function to set default parameter
+String replaceStringWithDelims(String s,const String& rep, const String& delim){
+    return replaceStringWithDelims(s,rep,delim,delim);
+}
+
+
+String replaceStringAllWithDelims(String s,const String& rep, const String& delim1, const String& delim2) {
+    String::size_type pos1=s.find_first_of(delim1);
+    String::size_type pos2=s.find_first_of(delim2,pos1+1);
+    while ((pos1 = s.find_first_of(delim1,pos1)) != String::npos && (pos2 = s.find_first_of(delim2,pos1+1)) != String::npos) {
+         s=s.replace(pos1,pos2-pos1+1,rep);
+         pos1 += rep.length();
+    }
+return s;
+}
+///Make an overload of the above function to set default parameter
+String replaceStringAllWithDelims(String s,const String& rep, const String& delim){
+    return replaceStringAllWithDelims(s,rep,delim,delim);
+}
+
+
+String convertToLatinNumber(Int num){
+    String res;
+    Int latin_num[9];
+    Int latin_fixed_value[9]={1000,500,100,50,10,9,5,4,1};
+    String latin_fixed_char[9]={"m","d","c","l","x","ix","v","iv","i"};
+    for(int i=0;i<9;i++){
+        latin_num[i] = num / latin_fixed_value[i];
+        num = num % latin_fixed_value[i];
+    }
+    for(int i=0;i<9;i++){
+        for(int j=0;j<latin_num[i];j++)res+=latin_fixed_char[i];
+    }
+    if(INDEX_FLAGS_I_B["uppercase"]){res=toUpper(res);}
+    return res;
+}
+
+
+String toStringAccordingToMyConvention(int val){
+    if(val==-1){return "unset";}
+    else return toString(val);
+   }
+
+
+String toStringAccordingToMyConvention(double val){
+    if(val==-1.0){return "unset";}
+    else return toString(val);
+   }
+
+
+int countMatchInRegex(const String& s,const String& re){
  
     std::regex words_regex(re);
     auto words_begin = 
@@ -259,22 +300,325 @@ int countMatchInRegex(std::string s,std::string re){
 }
 
 
-String toStringAccordingToIFL(Double index,int ifl){
+int countCharInString(String s, String delim){
+    int count=0;
+    String::size_type pos = s.find_first_of(delim);
+    while ((pos = s.find_first_of(delim, pos)) != String::npos){
+        count++;pos++;
+    }
+    return count;
+}
+
+
+int countMatchInString(String s, String match){
+    int count=0;
+    String::size_type pos = s.find(match);
+    while ((pos = s.find(match, pos)) != String::npos){
+        count++;pos+=match.length();
+    }
+    return count;
+}
+
+
+int countCharWithAlgorithm(String s, char delim){
+    return std::count(s.begin(),s.end(),delim);
+}
+
+
+StringArray split(const String &text, char sep) {
+    StringArray tokens;
+    int start = 0, end = 0;
+    while ((Int)(end = text.find(sep, start)) != (Int)String::npos) {
+        String temp=text.substr(start, end - start);
+        if(temp!="")tokens.push_back(temp);
+        start = end + 1;
+    }
+    String temp=text.substr(start);
+    if(temp!="")tokens.push_back(temp);
+    return tokens;
+}
+
+
+String ltrim(String s,const String& delim){return s.erase(0,s.find_first_not_of(delim));}
+String rtrim(String s,const String& delim){return s.erase(s.find_last_not_of(delim)+1);}
+String trim(String s,const String& delim){return rtrim(ltrim(s,delim),delim);}
+
+
+String trimZeroFromScientificNumber(const String& s){
+    if(!stringContains(s,"."))return s;
+    int pos = s.find_first_of("eE");
+    if(pos!=(int)String::npos){
+        return rtrim(s.substr(0,pos),".0")+s.substr(pos,String::npos);
+    }
+    else return s;
+}
+
+
+String trimFloatingZero(const String& s){
+    if(!stringContains(s,"."))return s;
+    int pos = s.find_first_of("eE");
+    if(pos!=(int)String::npos){
+        return rtrim(s.substr(0,pos),".0")+s.substr(pos,String::npos);
+    }
+    else return rtrim(s,".0");
+}
+
+
+void updateIndexFlagsFromFlagMaps(){
+    IFP=index_int_flag["precision"];
+    index_field_length=index_int_flag["width"];
+    IFF=index_string_flag["filler"];
+    latin_fall_back_threshold=index_int_flag["latin-fallback"];
+}
+
+
+bool parseTwoStepIndexFlag(const String& s){
+    String key,val;
+    int pos = s.find_first_of("=");
+    if(pos!=(int)String::npos){
+        key=s.substr(0,pos);
+        val=s.substr(pos+1,String::npos);
+        if(existsInMap(index_int_flag,key)){
+            if(isPositiveInt(val)){
+            index_int_flag[key]=stringTo<int>(val);
+            updateIndexFlagsFromFlagMaps();
+            return true;
+            }
+        }
+        else if(existsInMap(index_string_flag,key)){
+            if(isSingleCharacter(val)){
+                index_string_flag[key]=val;
+                updateIndexFlagsFromFlagMaps();
+                return true;
+                }
+        }
+    }
+    return false;
+}
+
+
+//~ bool parseTwoStepIndexFlag(const String& s){
+    //~ String res=trim(s);
+    //~ Regex re ("(^[^=]+)=([^=]+$)");
+    //~ RegexResult match;
+    //~ if(std::regex_match(s,match,re)){
+        //~ if(existsInMap(index_int_flag,String(match[1]))){
+            //~ if(isPositiveInt(String(match[2]))){
+            //~ index_int_flag[String(match[1])]=stringTo<int>(match[2]);
+            //~ updateIndexFlagsFromFlagMaps();
+            //~ return true;
+            //~ }
+        //~ }
+        //~ else if(existsInMap(index_string_flag,String(match[1]))){
+            //~ if(isSingleCharacter(String(match[2]))){
+                //~ index_string_flag[String(match[1])]=String(match[2]);
+                //~ updateIndexFlagsFromFlagMaps();
+                //~ return true;
+                //~ }
+        //~ }
+    //~ }
+    //~ return false;}
+
+
+bool setIndexFlagAdjust(String s){
+    s=trim(s);
+    for(int i=0;i<(int)INDEX_FLAGS_AV_A.size();i++){
+        if(s==INDEX_FLAGS_AV_A[i]){
+            index_flag_adjust=INDEX_FLAGS_A[i];
+            index_flag_adjust_s=INDEX_FLAGS_AV_A[i];
+            return true;
+        }
+    }
+    return false;
+}
+
+
+bool setIndexFlagInd(String s){
+    s=trim(s);
+    for(int j=0;j<(int)INDEX_FLAGS_AV_I.size();j++){
+        if(s==INDEX_FLAGS_AV_I[j]){
+            INDEX_FLAGS_I_B[INDEX_FLAGS_AV_I[j]]=true;
+            index_flag_ind.push_back(INDEX_FLAGS_I[j]);
+            index_flag_ind_s.push_back(INDEX_FLAGS_AV_I[j]);
+            std::sort( index_flag_ind.begin(), index_flag_ind.end() );
+            index_flag_ind.erase( unique( index_flag_ind.begin(), index_flag_ind.end() ), index_flag_ind.end() );
+            
+            std::sort( index_flag_ind_s.begin(), index_flag_ind_s.end() );
+            index_flag_ind_s.erase( unique( index_flag_ind_s.begin(), index_flag_ind_s.end() ), index_flag_ind_s.end() );
+            return true;
+        }
+    }
+    return false;
+}
+
+
+void parseIndexFlags(const String& s){
+    bool er=true;
+    StringArray tokens=split(s,FLAG_DELIM);
+    for(int i=0;i<(int)tokens.size();i++){
+        er=true;
+        if(parseTwoStepIndexFlag(tokens[i])){
+            er=false;
+            continue;
+        }
+        
+        if(setIndexFlagAdjust(tokens[i])){
+            er=false;
+            continue;
+        }
+            
+        if(setIndexFlagInd(tokens[i])){
+            er=false;
+            continue;
+        }
+        if(er){printErrorLog("Invalid index flag: "+tokens[i]);Exit(1);}
+    
+    }
+}
+
+
+void printIndexFlags(){
+    print "Width: "<<index_field_length<<NEW_LINE;
+    print "Filler: "<<IFF<<NEW_LINE;
+    print "Precision: "<<toStringAccordingToMyConvention(IFP)<<NEW_LINE;
+    print "Adjust field: "+index_flag_adjust_s+NEW_LINE;
+    print "Other flags: ";
+    for(int i=0;i<(int)index_flag_ind_s.size();i++){
+        print index_flag_ind_s[i];
+        if(i<(int)index_flag_ind_s.size()-1){print ", ";}
+        }
+    print NEW_LINE;
+    
+    }
+
+
+String convertBase(Double x,int base){
+    if(base<NUM_BASE_MIN||base>NUM_BASE_MAX){base=NUM_BASE;}
+    String res="";
+    String res_left="",res_right="";
+    String val="0123456789abcdefghijklmnopqrstuvwxyz";
+    Double intp,fractp;
+    int prec;
+    if(IFP<0){prec=DoubleLimit::max_digits10+2;}
+    else{prec=IFP;}
+    fractp=std::modf(x, &intp);
+    int i=0;
+    do{
+        int rem=(Int)intp%(Int)base;
+        intp=Int((Int)intp/(Int)base);
+        res_left+=val[rem];
+        i++;}while(intp!=0);
+    i=0;
+    Double fractph;
+    do{
+        if((int)i>=(int)prec){break;}
+        Double newp=fractp*base;
+        Double newintp;
+        fractph=fractp;
+        fractp=std::modf(newp,&newintp);
+        if(fractph<=fractp*1.01&&fractph>=fractp*0.99){
+            if(IFP<0){if(i>3)break;}
+            else if(i>IFP){break;}
+        }
+        res_right+=val[(Int)newintp];
+        i++;}
+    while(i<50 && fractp!=0);
+        
+    res_left=reverseString(res_left);
+    if(res_right=="0"){res_right="";}
+    for(int j=0;j<(int)index_flag_ind.size();j++){
+        if(index_flag_ind[j]==std::ios::showbase){
+            if(base==16)res_left="0x"+res_left;
+            if(base==8)res_left="0"+res_left;
+        }
+        if(index_flag_ind[j]==std::ios::showpoint){
+            for(int i=(int)res_right.length();i<IFP;i++){
+                res_right+="0";
+            }
+        }
+        if(index_flag_ind[j]==std::ios::uppercase){
+            res_left=toUpper(res_left);res_right=toUpper(res_right);
+        }
+    }
+    
+    res=rtrim(res_left+"."+toString(res_right),".");
+    return res;
+}
+    
+
+String doubleToString(Double x, int ifl,int number_base,IOFormatFlag index_flag_float,bool latin){
+    Stream buffer;
+    String res;
+    ///set float format
+    
+    buffer.setf(index_flag_float);
+    
+    
+    ///set other flags
+    for(int i=0;i<(int)index_flag_ind.size();i++){
+        if(index_flag_ind[i]==std::ios::showpos){continue;}
+        if(index_flag_ind[i]==std::ios::showbase){continue;}
+        buffer.setf(index_flag_ind[i]);
+        }
+    
+    ///set precision if given
+    if(IFP>=0)buffer.precision(IFP);
+    
+    ///pass double to buffer if base is dec or pass int otherwise
+    if(!latin){
+        if(number_base!=10){buffer<<convertBase(x,number_base);}
+        else{ buffer << x;}
+    }
+    else{
+        if((Int)x<=latin_fall_back_threshold){
+            buffer<<convertToLatinNumber((Int)round(x));
+        }
+        else{
+            printWarningLog("Latin format is too large, falling back to decimal.");
+            if(number_base!=10){buffer<<convertBase(x,number_base);}
+            else{ buffer << x;}
+        }
+    }
+    res= buffer.str();
+    
+    ///trim zeros from end 1.2000 and 1.2000e+32 1.2000E+32 etc...
+    if(number_base==10&&IFP<0&&!latin&&stringContains(res,".")){
+        res=trimFloatingZero(res);
+    }
+    
+    if(!latin){
+        for(int i=0;i<(int)index_flag_ind.size();i++){
+            if(index_flag_ind[i]==std::ios::showpoint){
+                if(!stringContains(res,"."))res+=".0";
+                break;
+            }
+        }
+    }
+    
+    return res;}
+
+
+String toStringAccordingToIFL(Double index,int ifl,int number_base,IOFormatFlag index_flag_float,bool latin){
     bool negative_flag=false;
     if(index<0){index=fabs(index);negative_flag=true;}
+    String res=doubleToString(index,ifl,number_base,index_flag_float,latin);
     Stream buffer;
     buffer.width(ifl);
+    buffer.setf(index_flag_adjust);
     buffer.fill(IFF[0]);
-    if(IFDP){buffer.setf(std::ios::fixed,std::ios::floatfield);}
-    else if(IFSP){buffer.setf(std::ios::scientific,std::ios::floatfield);}
-    buffer.precision(IFP);
-    buffer <<index;
+    buffer <<res;
     if(negative_flag){
-    return "-"+buffer.str();}
-    else return buffer.str();}
+    res= "-"+buffer.str();}
+    else {res= buffer.str();}
+    
+    for(int i=0;i<(int)index_flag_ind.size();i++){
+        if(index_flag_ind[i]==std::ios::showpos&&!negative_flag){res="+"+res;}
+    }
+            
+    return res;}
     
     
-String changeCaseAccordingToSS(String s,String search,String replace,String modifier,int user=0){
+String changeCaseAccordingToSS(String s,const String& search,const String& replace,const String& modifier,int user=0){
     if(replace!="\\c"&&replace!="\\C"){printWarningLog("Invalid case definition: "+replace+" Only \\c or \\C is allowed");return s;}
     bool case_sensitive=true,global=false;
     String replaced_string=s;
@@ -295,12 +639,11 @@ String changeCaseAccordingToSS(String s,String search,String replace,String modi
             while(it!=it_end){
                 String match=it->str();++it;
                 if(replace=="\\C"){
-                    replaced_string=replaceStringAll(replaced_string,match,toUpper(match));
+                    replaced_string=replaceString(replaced_string,match,toUpper(match));
                 }
                 else if(replace=="\\c"){
-                    replaced_string=replaceStringAll(replaced_string,match,toLower(match));
+                    replaced_string=replaceString(replaced_string,match,toLower(match));
                 }
-                
             }
         }
         else{
@@ -322,7 +665,7 @@ String changeCaseAccordingToSS(String s,String search,String replace,String modi
 }
 
 
-String regexReplace(String s,String search,String replace,String modifier,int user=0){
+String regexReplace(const String& s,const String& search,const String& replace,const String& modifier,int user){
     bool case_sensitive=true,global=false;
     String replaced_string=s;
     if(modifier=="gi" || modifier=="ig"){global=true;case_sensitive=false;}
@@ -347,53 +690,22 @@ String regexReplace(String s,String search,String replace,String modifier,int us
     }
     return replaced_string;
 }
-    
-String stripPathDelimiter(String s){
-    s=replaceStringAll(s,path_delim,"");
-    
-    return s;
-}
-    
-bool compareNat(const std::string& a, const std::string& b){
-    if (a.empty())
-        return true;
-    if (b.empty())
-        return false;
-    if (std::isdigit(a[0]) && !std::isdigit(b[0]))
-        return true;
-    if (!std::isdigit(a[0]) && std::isdigit(b[0]))
-        return false;
-    if (!std::isdigit(a[0]) && !std::isdigit(b[0]))
-    {
-        if (a[0] == b[0])
-            return compareNat(a.substr(1), b.substr(1));
-        return (toUpper(a) < toUpper(b));
-        //toUpper() is a function to convert a std::string to uppercase.
-    }
 
-    // Both strings begin with digit --> parse both numbers
-    std::istringstream issa(a);
-    std::istringstream issb(b);
-    int ia, ib;
-    issa >> ia;
-    issb >> ib;
-    if (ia != ib)
-        return ia < ib;
-
-    // Numbers are the same --> remove numbers and recurse
-    std::string anew, bnew;
-    std::getline(issa, anew);
-    std::getline(issb, bnew);
-    return (compareNat(anew, bnew));
+    
+String stripPathDelimiter(const String& s){
+    return replaceStringAll(s,path_delim,"");
 }
+
     
 void sortVector(StringArray &files){
     if(sort_type=="natural"){std::sort(files.begin(), files.end(), compareNat);}
     else if(sort_type=="general"){std::sort(files.begin(), files.end());}
     else if(sort_type=="none"){}
     else{std::sort(files.begin(), files.end(), compareNat);}
+    
+    ///reverse the sort if reverse_sort is true
+    if(reverse_sort){std::reverse(files.begin(), files.end());}
 }
-
 
     
 String processReplacementString(String replace){
@@ -414,13 +726,15 @@ String processReplacementString(String replace){
     replace=regexReplace(replace,"\\\\\\{(\\d\\d)\\}","$$$1","g");
     
     
-    ///Finally strip slashes
+    ///Finally strip invalid namestring rules and slashes
+    replace=removeInvalidNameStringRules(replace);
     replace=stripPathDelimiter(replace);
+    
     return replace;
 }
     
     
-void processReplaceString(StringArray rs,String file,DirectoryIndex &di){
+void processReplaceString(StringArray &rs,const String& file,DirectoryIndex &di){
     ///clear rs_* vectors. These are modified according to each file name and thus previous value can not be retained.
     rs_search.clear();rs_replace.clear();rs_mod.clear();
     parseReplaceString(rs,file,di);
@@ -432,14 +746,13 @@ void processReplaceString(StringArray rs,String file,DirectoryIndex &di){
         }
         else {
             rname=regexReplace(rname,rs_search[i],rs_replace[i],rs_mod[i],1);
-            
         }
         ///Now a modified name rname is available
     }
 }
     
 
-void parseReplaceString(StringArray rs,String file,DirectoryIndex &di){
+void parseReplaceString(StringArray &rs,const String& file,DirectoryIndex &di){
     String name;
     Regex multi_re ("\\s*"+path_delim+"([^"+path_delim+"]*?)"+path_delim+"([^"+path_delim+"]*?)"+path_delim+"\\s*([gi]{0,2})\\s*(;\\s*|$)");
     int subm[]={1,2,3,4};
@@ -448,13 +761,6 @@ void parseReplaceString(StringArray rs,String file,DirectoryIndex &di){
         if(!isComplyingToRegex(name,multi_re)){name=parseNameString( rs[i], file,di);}
         /// Carefull!!! must not use else if
         if(name!="" && isComplyingToRegex(name,multi_re)){
-            /*re ="^"+path_delim+"([^"+path_delim+"]*)"+path_delim+"[^"+path_delim+"]*"+path_delim+"[gi]{0,2}$";
-            if(std::regex_match(name,result,re)){rs_search=result[1];}
-            re ="^"+path_delim+"[^"+path_delim+"]*"+path_delim+"([^"+path_delim+"]*)"+path_delim+"[gi]{0,2}$";
-            if(std::regex_match(name,result,re)){rs_replace=result[1];rs_replace=processReplacementString(rs_replace);}
-            re ="^"+path_delim+"[^"+path_delim+"]*"+path_delim+"[^"+path_delim+"]*"+path_delim+"([gi]{0,2})$";
-            if(std::regex_match(name,result,re)){rs_mod=result[1];}
-            */
             /// Populate rs_search, rs_replace and rs_mod with valid values
             RegexTokenIterator end; ///default constructor=end of sequence
             RegexTokenIterator toit (name.begin(), name.end(), multi_re,subm);
@@ -465,7 +771,6 @@ void parseReplaceString(StringArray rs,String file,DirectoryIndex &di){
                 rs_replace.push_back(processReplacementString(rep));
                 rs_mod.push_back(mod);
             }
-        
         }
         else{
             printErrorLog("Invalid replace string format: "+rs[i]);
@@ -475,7 +780,8 @@ void parseReplaceString(StringArray rs,String file,DirectoryIndex &di){
 
 }
 
-bool isComplyingToRegex(String &s,Regex &re){
+
+bool isComplyingToRegex(String& s,Regex &re){
     String total="";
     RegexIterator it(s.begin(), s.end(), re);
     RegexIterator it_end;
@@ -489,11 +795,6 @@ void parseSearchString(String ss,Int index){
     Regex multi_re("\\s*"+path_delim+"([^"+path_delim+"]*?)"+path_delim+"\\s*(i?)(\\s*;\\s*|$)");
     int subm[]={1,2,3};
     if(isComplyingToRegex(ss,multi_re)){
-        /*re="^"+path_delim+"([^"+path_delim+"]*)"+path_delim+"i?$";
-        if(std::regex_match(ss,result,re)){ss_search=result[1];}
-        re="^"+path_delim+"[^"+path_delim+"]*"+path_delim+"(i?)$";
-        if(std::regex_match(ss,result,re)){ss_mod=result[1];}
-        * */
         RegexTokenIterator end; //default constructor=end of sequence
         RegexTokenIterator toit (ss.begin(), ss.end(), multi_re,subm);
         
@@ -516,12 +817,14 @@ void parseSearchString(String ss,Int index){
     }
 }
 
-bool stringContains(String s1,String s2){
+
+bool stringContains(String s1,const String& s2){
     if (s1.find(s2) != String::npos) {return true;}
     else return false;
 }
 
-bool isComplyingToSearchString(String file){
+
+bool isComplyingToSearchString(const String& file){
     String name=basename(file);
     for(Int i=0;i<(Int)ss_search.size();i++){
         bool case_sensitive=true;
@@ -544,7 +847,6 @@ bool isComplyingToSearchString(String file){
             else{
                 if(stringContains(name,ss_search[i])){return true;}
             }
-      
         }
     }
     
@@ -552,37 +854,198 @@ bool isComplyingToSearchString(String file){
 }
 
 
+String removeInvalidNameStringRules(const String& ns){
+    return replaceStringAllWithDelims(ns,"",path_delim);
+}
 
 
-String parseNameString(String ns,String file,DirectoryIndex &di){
+template<typename T1, typename T2>
+bool existsInMap(std::map<T1,T2> mymap, T1 key){
+    if ( mymap.find(key) == mymap.end() ) return false;
+    else return true;
+}
+
+
+String processExtendedNameString_d(String ns,std::map<String,Double>& ns_rules,int ifl){///_d stands for double
+    String name=ns;
+    int subm[]={0,1,2,3,4},base=NUM_BASE;
+    Regex multi_re (""+path_delim+"(-?[^"+path_delim+"-]+)-([^"+path_delim+"])(\\d*)("+path_delim+")");
+    RegexTokenIterator end; ///default constructor=end of sequence
+    RegexTokenIterator toit (ns.begin(), ns.end(), multi_re,subm);
+    while (toit != end){
+        String tot,rulep, basenp,basep;
+        tot=*toit++;rulep=*toit++;basenp=*toit++;basep=*toit++;toit++;
+        ///print tot+NEW_LINE;print rulep+NEW_LINE;print basenp+NEW_LINE;print basep+NEW_LINE;
+        if(basenp=="b"){///Base conversion
+            if(isPositiveInt(basep)){
+                base=stringTo<int>(basep);
+                if(base>=NUM_BASE_MIN&&base<=NUM_BASE_MAX){
+                    if(existsInMap(ns_rules,String(rulep))){
+                        name=replaceString(name,tot,toStringAccordingToIFL(ns_rules[rulep],index_field_length,base));
+                    }
+                }
+            }
+        }
+        else if(basenp=="s"){///scientific conversion
+            if(basep==""){
+                if(existsInMap(ns_rules,String(rulep))){
+                    name=replaceString(name,tot,toStringAccordingToIFL(ns_rules[rulep],index_field_length,10,std::ios::scientific));
+                }
+            }
+        }
+        else if(basenp=="l"){///Latin conversion
+            if(basep==""){
+                if(existsInMap(ns_rules,String(rulep))){
+                    name=replaceString(name,tot,toStringAccordingToIFL(ns_rules[rulep],index_field_length,10,std::ios::fixed,true));
+                }
+            }
+        }
+    }
+return name;
+}
+
+
+String processExtendedPdNameStringRule(String ns, const String& file){///file must contain whole path.
+    String name=ns;
+    int subm[]={0,1,2,3,4};
+    
+    ///Let's first find pd_max and all the parent directory names
+    StringArray pd_names=split(dirname(file),path_delim[0]);
+    Int pd_max=(Int)(pd_names.size()-1);
+    
+    ///Reverse the order of pd_names so that the right most directory name comes in 0th index
+    std::reverse(pd_names.begin(),pd_names.end());
+    
+    
+    Regex multi_re (""+path_delim+"pd(\\d*|e)-?(\\d*|e)-?([^/]*)("+path_delim+")",ICASE);
+    RegexTokenIterator end; ///default constructor=end of sequence
+    RegexTokenIterator toit (ns.begin(), ns.end(), multi_re,subm);
+    
+    ///Iterate over the regex iterator to get all substrings
+    while (toit != end){
+        String tot,si,ei,delim;
+        String pd_name_c="";
+        
+        ///Get the matches
+        tot=*toit++;si=*toit++;ei=*toit++;delim=*toit++;toit++;
+        
+        //~ ///manage default delim
+        //~ if(ei=="")delim=PD_DELIM;
+        
+        ///Trim left zeros from si and ei
+        ///If there was only zeros in si or ei then both will be empty, make them 0
+        if(si!=""){
+            si=ltrim(si,"0");
+            if(si=="")si="0";
+        }
+        
+        if(ei!=""){
+            ei=ltrim(ei,"0");
+            if(ei=="")ei="0";
+        }
+        
+        ///Get the range in integer
+        Int si_int=stringTo<Int>(si);
+        Int ei_int=stringTo<Int>(ei);
+        
+        if(toLower(si)=="e")si_int=pd_max;
+        if(toLower(ei)=="e")ei_int=pd_max;
+        
+        ///Set overflowed range to pd_max.
+        ///This should not be done unless user wants it to be this way.
+        ///By default overflowed range will be replaced with empty string.
+        //~ if(si_int>pd_max){si_int=pd_max;}
+        //~ if(ei_int>pd_max){ei_int=pd_max;}
+        
+        
+        
+        ///Handle empty si and ei, this must be the end of si_int and ei_int modification
+        if(si=="")si_int=0;
+        if(ei=="")ei_int=si_int;
+        
+        
+        
+        //print tot+NEW_LINE;print si<<": "<<si_int<<NEW_LINE;print ei<<": "<<ei_int<<NEW_LINE;print delim+NEW_LINE<<pd_max<<NEW_LINE;
+        
+    
+        ///Create a string combining all parent directory names with delims added
+        
+        if(si_int<=ei_int){
+            for(Int i=si_int;i<=ei_int;i++){
+                ///if si ei both empty and delim is not empty, then it is an invalid rule
+                if(si==""&&ei==""&&delim!="")continue;    ///must continue
+                if(i>pd_max)break;                        ///Overflow, break will suffice 
+                if(pd_name_c!="")pd_name_c+=delim+pd_names[i];
+                else pd_name_c+=pd_names[i];
+            }
+        }
+        else{
+            for(Int i=si_int;i>=ei_int;i--){
+                ///if si ei both empty and delim is not empty, then it is an invalid rule
+                if(si==""&&ei==""&&delim!="")continue;    ///must continue
+                if(i>pd_max)continue;                    ///Overflow, must continue
+                if(pd_name_c!="")pd_name_c+=delim+pd_names[i];
+                else pd_name_c+=pd_names[i];
+            }
+        }
+        ///Finaly replace the pd rule with the newly created combined name
+        name=replaceString(name,tot,pd_name_c);
+    }
+return name;
+}
+
+
+String parseNameString(const String& ns,const String& file,DirectoryIndex &di){
     String fname=basename(file);
     if(replace_string.size()==0){rname=fname;}
     String name=ns;
     String fnamewe=fileNameWithoutExtension(fname);
     String ext=fileExtension(fname);
+    std::map<String,Double> ns_rules;
+    ns_rules["i"]=current_index;
+    ns_rules["-i"]=reverse_index;
+    ns_rules["ir"]=current_index_rd;
+    ns_rules["-ir"]=reverse_index_rd;
+    ns_rules["id"]=di.directory_index;
+    ns_rules["idr"]=di.directory_index_rd;
+    ns_rules["-id"]=di.directory_reverse_index;
+    ns_rules["-idr"]=di.directory_reverse_index_rd;
+    ns_rules["dc"]=directory_count;
+    
+    if(name_string_file!=""){
+        ns_rules["l"]=(Double)current_line;
+        ns_rules["la"]=(Double)current_abs_line;
+    }
+    
+    
+    
+    std::map<String,String>ns_rules_s;
+    ns_rules_s["fn"]=fname;
+    ns_rules_s["n"]=fnamewe;
+    ns_rules_s["e"]=ext;
+    ns_rules_s["rn"]=rname;
+    //ns_rules_s["pd"]=CPDN;           ///This will be handled with extended function
+    ns_rules_s["wd"]=CWDN;
+    
+    
     if(ns!=""){
-        name=replaceStringAll(name,path_delim+"fn"+path_delim,fname);
-        name=replaceStringAll(name,path_delim+"n"+path_delim,fnamewe);
-        name=replaceStringAll(name,path_delim+"e"+path_delim,ext);
-        name=replaceStringAll(name,path_delim+"rn"+path_delim,rname);
-        name=replaceStringAll(name,path_delim+"i"+path_delim,toStringAccordingToIFL(current_index,index_field_length));
-        name=replaceStringAll(name,path_delim+"-i"+path_delim,toStringAccordingToIFL(reverse_index,index_field_length));
-        name=replaceStringAll(name,path_delim+"ir"+path_delim,toStringAccordingToIFL(current_index_rd,index_field_length));
-        name=replaceStringAll(name,path_delim+"-ir"+path_delim,toStringAccordingToIFL(reverse_index_rd,index_field_length));
-        name=replaceStringAll(name,path_delim+"id"+path_delim,toStringAccordingToIFL(di.directory_index,index_field_length));
-        name=replaceStringAll(name,path_delim+"idr"+path_delim,toStringAccordingToIFL(di.directory_index_rd,index_field_length));
-        name=replaceStringAll(name,path_delim+"-id"+path_delim,toStringAccordingToIFL(di.directory_reverse_index,index_field_length));
-        name=replaceStringAll(name,path_delim+"-idr"+path_delim,toStringAccordingToIFL(di.directory_reverse_index_rd,index_field_length));
-        name=replaceStringAll(name,path_delim+"dc"+path_delim,toString(directory_count));
-        name=replaceStringAll(name,path_delim+"pd"+path_delim,CPDN);
-        name=replaceStringAll(name,path_delim+"wd"+path_delim,CWDN);
         
-        
-        if(name_string_file!=""){
-            name=replaceStringAll(name,path_delim+"l"+path_delim,toStringAccordingToIFL((Double)current_line,index_field_length));
-            name=replaceStringAll(name,path_delim+"la"+path_delim,toStringAccordingToIFL((Double)current_abs_line,index_field_length));
+        for(auto const& ent : ns_rules_s){
+            ///ent.first is the key, ent.second is the value    
+            name=replaceStringAll(name,path_delim+ent.first+path_delim,ent.second);
         }
         
+        
+        for(auto const& ent : ns_rules){
+            ///ent.first is the key, ent.second is the value    
+            name=replaceStringAll(name,path_delim+ent.first+path_delim,toStringAccordingToIFL(ent.second,index_field_length));
+        }
+        
+        ///for name string rules like /i-b16/, b16 stands for base 16
+        name=processExtendedNameString_d(name,ns_rules,index_field_length);
+        
+        ///Process /pd/ along with extended pd name string rules
+        name=processExtendedPdNameStringRule(name,file);  ///file must be the full path
         
         }
     else{
@@ -592,16 +1055,15 @@ String parseNameString(String ns,String file,DirectoryIndex &di){
 }
 
 
-
-template<typename T>
-String appendToFile(T filename, String str){
-    const char* name=toString(filename).c_str();
+String appendToFile(const String& filename, const String& str){
+    const char* name=filename.c_str();
     FileStream file;
     file.open(name,$append);
     file<<str;
     file.close();
     return strerror(errno);
 }
+
 
 String printErrorLog(String str){
     str="E: "+str;
@@ -611,6 +1073,7 @@ String printErrorLog(String str){
     return appendToFile(ERROR_LOG,str+"\t\t\t\t@"+dt);
     
 }
+
 
 String printWarningLog(String str){
     str="W: "+str;
@@ -622,7 +1085,7 @@ String printWarningLog(String str){
 }
 
     
-String printOutLog(String str){
+String printOutLog(const String& str){
     if(!quiet)print NEW_LINE+str+NEW_LINE;
     time_t now = time(0);
     char* dt = ctime(&now);
@@ -630,7 +1093,8 @@ String printOutLog(String str){
 
 }
 
-String appendToRFLTMP(String str1,String str2){
+
+String appendToRFLTMP(const String& str1,const String& str2){
     
     const char* filename_l=RNM_FILE_LOG_L_TMP.c_str();
     const char* filename_r=RNM_FILE_LOG_R_TMP.c_str();
@@ -647,13 +1111,14 @@ String appendToRFLTMP(String str1,String str2){
 
 }
 
+
 void finalizeRFL(){
     copyFile2(RNM_FILE_LOG_L_TMP,RNM_FILE_LOG_L);
     copyFile2(RNM_FILE_LOG_R_TMP,RNM_FILE_LOG_R);
 }
 
 
-String copyFile(String src, String dest){
+String copyFile(const String& src, const String& dest){
     int outfd = open(dest.c_str(),O_RDWR);
     int infd = open(src.c_str(),O_RDWR);          
     struct stat stat_buf ;
@@ -662,7 +1127,8 @@ String copyFile(String src, String dest){
     return toString(size);
 }
 
-String copyFile2(String src,String dst){
+
+String copyFile2(const String& src,const String& dst){
     std::ifstream source(src, $binary);
     std::ofstream dest(dst, $binary);
     dest << source.rdbuf();
@@ -672,58 +1138,29 @@ String copyFile2(String src,String dst){
 }
 
 
-bool isDir(String file){
+bool isDir(const String& file){
     struct stat info;
+    if( stat( file.c_str(), &info ) != 0 )return false;
+    else if( S_ISDIR(info.st_mode) )return true;
+    else return false;  
+}
 
-    if( stat( file.c_str(), &info ) != 0 ){
-        return false;
-    }
-    
-    else if( S_ISDIR(info.st_mode) ) {
-            return true;
-        
-    
-    }
-    else{
-        
-        return false;
-        }
-    
-    
+
+bool isFile(const String& file){
+    struct stat info;
+    if( stat( file.c_str(), &info ) != 0 )return false;
+    else if( S_ISREG(info.st_mode) )return true;
+    else return false;
 }
     
-bool isFile(String file){
+    
+bool isPathValid(const String& file){
     struct stat info;
-
-    if( stat( file.c_str(), &info ) != 0 ){
-        return false;
-    }
-    else if( S_ISREG(info.st_mode) ) {
-        return true;
-    }
-    else{
-        
-        return false;
-        }
-    
-    
+    if( stat( file.c_str(), &info ) != 0 )return false;
+    else if( S_ISREG(info.st_mode) || S_ISDIR(info.st_mode) )return true;
+    else return false;
 }
-    
-bool isPathValid(String file){
-    struct stat info;
 
-    if( stat( file.c_str(), &info ) != 0 ){
-        return false;
-    }
-    else if( S_ISREG(info.st_mode) || S_ISDIR(info.st_mode) ) {
-        return true;
-    }
-    else{
-        return false;
-        }
-    
-    
-}
 
 char * normalizePath(char* pwd, const char * src, char* res) {
 	size_t res_len;
@@ -785,7 +1222,7 @@ char * normalizePath(char* pwd, const char * src, char* res) {
 }
 
 
-String getAbsolutePath(String x){
+String getAbsolutePath(const String& x){
     char path[FILENAME_MAX+1];
     if(follow_symlink){
         realpath(x.c_str(),path);
@@ -794,76 +1231,61 @@ String getAbsolutePath(String x){
     else {
         return toString(normalizePath((char*)CWD.c_str(),(const char*)x.c_str(),path));
     }
-    
 }
 
-String dirname(String file){
-    
+
+String dirname(const String& file){
     std::size_t found = file.find_last_of(path_delim);
     return file.substr(0,found);
     
 }
 
-String basename(String file){
-    
+
+String basename(const String& file){
     std::size_t found = file.find_last_of(path_delim);
     return file.substr(found+1);
-    
 }
 
-String getParentDirectoryName(String file){
+
+String getParentDirectoryName(const String& file){
     return basename(dirname(file));
 }
 
-String fileExtension(std::string file){
-    
-    Regex re(".*[^\\.]+\\.([^\\.]+$)");
-    RegexResult result;
-    if(std::regex_match(file,result,re))return result[1];
+
+String fileExtension(const String& file){
+    String::size_type pos=file.find_last_of('.');
+    if(pos!=String::npos&&pos!=0)return file.substr(pos+1);
     else return "";
-    
 }
 
-String fileNameWithoutExtension(std::string file){
-  
-    Regex re("(.*[^\\.]+)\\.[^\\.]+$");
-    RegexResult result;
-    if(std::regex_match(file,result,re))return result[1];
+
+String fileNameWithoutExtension(const String& file){
+    String::size_type pos=file.find_last_of('.');
+    if(pos!=String::npos&&pos!=0)return file.substr(0,pos);
     else return file;
-    
 }
 
 
-bool isImmediateChild(String prevf,String newf){
-    
-
-        if(prevf==dirname(newf)){
-            return true;
-            }
-        else return false;
-    
-    
+bool isImmediateChild(const String& prevf,const String& newf){
+        if(prevf==dirname(newf))return true;
+        else return false; 
 }
 
-bool isChild(String parent,String child){
+
+bool isChild(const String& parent,const String& child){
   std::size_t found = child.find(parent+path_delim);
-  if (found!=std::string::npos && found==0) return true;
+  if (found!=String::npos && found==0) return true;
   else return false;
-
-
 }
 
-bool isChildDir(String parent,String child){
-    if(isDir(child)){
-        return isChild(parent,child);
-    }
-    else{
-        return isChild(parent,dirname(child));
-    }
-    
+
+bool isChildDir(const String& parent,const String& child){
+    if(isDir(child))return isChild(parent,child);
+    else return isChild(parent,dirname(child));
 }
 
-Int childDepth(String parent,String child){
+
+Int childDepth(const String& parent,const String& child){
     String childstr=child;
     if(isChildDir( parent, child)){
         if(isDir(child)){
@@ -875,71 +1297,115 @@ Int childDepth(String parent,String child){
         return countMatchInRegex(childstr,path_delim+"?[^"+path_delim+"]+"+path_delim+"?");
     }
     else return LOWEST_DEPTH;
+}
+
+
+bool isInt(const String& s, int base){
+   if(s.empty() || std::isspace(s[0])) return false ;
+   char * p ;
+   strtol(s.c_str(), &p, base) ;
+   return (*p == 0) ;
+}
+
+
+bool isPositiveInt(const String& s, int base){
+   if(s.empty() || std::isspace(s[0]) || s[0]=='-') return false ;
+   char * p ;
+   strtol(s.c_str(), &p, base) ;
+   return (*p == 0) ;
+}
+
+
+bool isNegativeInt(const String& s, int base){
+   if(s.empty() || std::isspace(s[0]) || s[0]!='-') return false ;
+   char * p ;
+   strtol(s.c_str(), &p, base) ;
+   return (*p == 0) ;
+}
+
+
+bool isNumber(const std::string& s){
+   if(s.empty() || std::isspace(s[0]) || std::isalpha(s[0])) return false ;
+   char * p ;
+   strtod(s.c_str(), &p) ;
+   return (*p == 0) ;
+}
+
+
+//~ template<typename T>
+//~ bool isNumber(T x){
+    //~ String s;
+    //~ Regex e ("^-?\\d*\\.?\\d+$");
+    //~ Stream ss; 
+    //~ ss << x;
+    //~ ss >>s;
+    //~ if (std::regex_match (s,e)) return true;
+    //~ else return false;
+//~ }
     
-}
-
-
-bool isInt(String x){
-    Regex e ("^-?\\d+");
-    if (std::regex_match (x,e)) return true;
-    else return false;
-}
-
-bool isPositiveInt(String x){
-    Regex e ("^\\d+");
-    if (std::regex_match (x,e)) return true;
-    else return false;}
-
-template<typename T>
-bool isNumber(T x){
-    String s;
-    Regex e ("^-?\\d*\\.?\\d+");
-    Stream ss; 
-    ss << x;
-    ss >>s;
-    if (std::regex_match (s,e)) return true;
-    else return false;
-}
     
-template<typename T>
-bool isPositiveNumber(T x){
-    String s;
-    Regex e ("^\\d*\\.?\\d+");
-    Stream ss; 
-    ss << x;
-    ss >>s;
-    if (std::regex_match (s,e)) return true;
-    else return false;
+bool isPositiveNumber(const std::string& s){
+   if(s.empty() || std::isspace(s[0]) || std::isalpha(s[0]) || s[0]=='-') return false ;
+   char * p ;
+   strtod(s.c_str(), &p) ;
+   return (*p == 0) ;
 }
 
-template<typename T>
-void mustBeANumber(String name,T x){
+
+//~ template<typename T>
+//~ bool isPositiveNumber(T x){
+    //~ String s;
+    //~ Regex e ("^\\d*\\.?\\d+$");
+    //~ Stream ss; 
+    //~ ss << x;
+    //~ ss >>s;
+    //~ if (std::regex_match (s,e)) return true;
+    //~ else return false;
+//~ }
+
+
+
+void mustBeANumber(const String& name,const String& x){
     if(!isNumber(x)){
        printErrorLog(name+" must be a valid number");
        Exit(1);
        }
 }
     
-template<typename T>
-void mustBeAPositiveNumber(String name,String extra,T x){
+    
+
+void mustBeAPositiveNumber(const String& name,const String& extra,const String& x){
     if(!isPositiveNumber(x)){
        printErrorLog(name+" must be a valid positive number."+extra);
        Exit(1);
        }
 }
     
-    
-template<typename T>
-void mustBeAPositiveInteger(String name,T x){
+
+void mustBeAnInteger(const String& name,const String& x){
+    if(!isInt(x)){
+       printErrorLog(name+" must be a valid integer");
+       Exit(1);
+       }
+}
+
+
+void mustBeAPositiveInteger(const String& name,const String& x){
     if(!isPositiveInt(x)){
        printErrorLog(name+" must be a valid positive integer.");
        Exit(1);
        }
 }    
+
+
+bool isSingleCharacter(const String& x){
+    String s=toString(x);
+    if(s.length()!=1)return false;
+    else return true;
+}
     
     
-template<typename T>
-void mustBeAValidSingleCharacter(String name,T x){
+void mustBeAValidSingleCharacter(const String& name,const String& x){
     String s=toString(x);
     if(s.length()!=1){
         printErrorLog(name+" must be a valid single character");
@@ -947,15 +1413,8 @@ void mustBeAValidSingleCharacter(String name,T x){
         }
 }
     
-template<typename T>
-void mustBeAnInteger(String name,T x){
-    if(!isInt(x)){
-       printErrorLog(name+" must be a valid integer");
-       Exit(1);
-       }
-}
 
-StringArray getLineFromFileAndReturnVector(String filename){
+StringArray getLineFromFileAndReturnVector(const String& filename){
     StringArray list;
     String line;
     char delim='\n';
@@ -973,7 +1432,7 @@ StringArray getLineFromFileAndReturnVector(String filename){
 }
 
 
-NameList getNameListFromFile(String filename,Int si,Int ei,int mod=1){
+NameList getNameListFromFile(const String& filename,Int si,Int ei,int mod=1){
     NameList list;
     String line;
     Int lc=0,abslc=0;
@@ -1013,8 +1472,7 @@ NameList getNameListFromFile(String filename,Int si,Int ei,int mod=1){
 }
 
 
-
-String doRename(String file,DirectoryIndex &di){
+String doRename(const String& file,DirectoryIndex &di){
     bool not_skipped=true;
     
     if(isInvalidFile(file)){return file;}
@@ -1064,9 +1522,8 @@ String doRename(String file,DirectoryIndex &di){
     else {printErrorLog("One of the options: -ns or -nsf or -rs is mandatory");Exit(1);}
     
     
-    
-    
-    ///sanitize name
+    ///sanitize name by removing invalid name string rules and path delimiter
+    name=removeInvalidNameStringRules(name);
     name=stripPathDelimiter(name);
     
     
@@ -1136,7 +1593,7 @@ String doRename(String file,DirectoryIndex &di){
 }
 
 
-StringArray getFilesFromDir(String file){
+StringArray getFilesFromDir(const String& file){
                 StringArray files;
                 DIR *dir;
                 struct dirent *ent;
@@ -1158,7 +1615,7 @@ StringArray getFilesFromDir(String file){
 }
 
 
-void startInDepthRenamingTaskOnDirectory(String dir,String base_dir=base_dir){
+void startInDepthRenamingTaskOnDirectory(const String& dir,String base_dir=base_dir){
     StringArray files;
     files=getFilesFromDir(dir);
     
@@ -1225,20 +1682,10 @@ void startInDepthRenamingTaskOnDirectory(String dir,String base_dir=base_dir){
             incrementReservedIndexes(di);
             printWarningLog("Not a valid file or directory");
             continue;
-            
         }
-
-        ///increment reserved indexes
-        /*di.directory_index_rd+=inc;
-        di.directory_reverse_index_rd-=inc;
-        current_index_rd+=inc;
-        reverse_index_rd-=inc;
-        */
-    
     }
-    
-    
 }
+
 
 void incrementReservedIndexes(DirectoryIndex &di){
         ///increment reserved indexes
@@ -1246,16 +1693,14 @@ void incrementReservedIndexes(DirectoryIndex &di){
         di.directory_reverse_index_rd-=inc;
         current_index_rd+=inc;
         reverse_index_rd-=inc;
-    
 }
 
 
-void startTask(StringArray files){
+void startTask(StringArray& files){
     
     directory_count++;
     DirectoryIndex di;
-    
-    //if((Int)files.size()>0){CWDN=getParentDirectoryName(getAbsolutePath(files[0]));}
+
     for(Int i=0;i<(Int)files.size();i++){
         String file=files[i];
         String parent="";
@@ -1320,22 +1765,15 @@ void startTask(StringArray files){
             continue;
         }
         
-        ///increment reserved indexes
-        /*di.directory_index_rd+=inc;
-        di.directory_reverse_index_rd-=inc;
-        current_index_rd+=inc;
-        reverse_index_rd-=inc;*/
-        
-    
     }
-    
-
 }
+
 
 String parseTrueFalse(bool a){
     if(a)return "true";
     else return "false";
 }
+
 
 void detectLineUpwardOrDownward(){
     if(start_line<=end_line || end_line==0){line_upward=true;}
@@ -1344,7 +1782,7 @@ void detectLineUpwardOrDownward(){
     }
 
 
-Regex createRegex(String s, bool case_sensitive){
+Regex createRegex(const String& s, bool case_sensitive){
     if(re_locale){
         if(!case_sensitive){
             return Regex(s,REGEX_TYPE | REGEX_LOCALE | ICASE);
@@ -1361,11 +1799,7 @@ Regex createRegex(String s, bool case_sensitive){
             return Regex(s,REGEX_TYPE | REGEX_LOCALE);
             }
         }
-    
-    
-    }
-
-
+}
 
 
 void printOpts(){
@@ -1398,11 +1832,11 @@ void printOpts(){
     Increment Value: "+toString(inc)+"\n\
     Line Increment Value: "+toString(linc)+"\n\
     Apply force: "+parseTrueFalse(force)+"\n\
-    Simulation: "+parseTrueFalse(simulation)+"\n\n\
 ";
+    printIndexFlags();
+    print "Simulation: "+parseTrueFalse(simulation)+"\n\n";
     
     }
-
 
 
 void showResult(){

@@ -113,3 +113,12 @@ Bug fix: inconsistency in reserved directory index.
 1. Manual updated with corrections.
 2. Inconsistency in index field precision fixed.
 3. Two more options added: `-ifp/d` and `-ifp/s`.
+
+###`3.3.0`: <span class="light-quote">Fri Dec 18 19:03:11 UTC 2015</span>
+
+1. `-ifp/d` and `-ifp/s` options removed. Numerous options are added to achieve the same effect.
+2. `-if` option added. It can be used to manipulate how the indexes are rendered in it's field.
+3. Support for base conversion of indexes (from base 2 to 36) added.
+4. Support for Latin conversion of indexes added.
+5. Support for extended name string rules.
+6. Support for extended name string rules of /pd/.

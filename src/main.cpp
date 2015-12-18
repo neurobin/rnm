@@ -1,14 +1,35 @@
 ﻿/***********************************************************************
  * Bulk rename utility for Unix (rnm)
  * Author: Md. Jahidul Hamid <jahidulhamid@yahoo.com>
- * 
+ * Copyright (C) 2015 by Md. Jahidul Hamid <jahidulhamid@yahoo.com>
+ *   
+ * This software is provided 'as-is', without any express or implied
+ * warranty.  In no event will the authors be held liable for any damages
+ * arising from the use of this software.
+ *
+ * Permission is granted to anyone to use this software for any purpose,
+ * including commercial applications, and to alter it and redistribute it
+ * freely, subject to the following restrictions:
+ *
+ * 1. The origin of this software must not be misrepresented; you must not
+ *   claim that you wrote the original software. If you use this software
+ *    in a product, an acknowledgment in the product documentation would be
+ *    appreciated but is not required.
+ * 2. Altered source versions must be plainly marked as such, and must not be
+ *    misrepresented as being the original software.
+ * 3. This notice may not be removed or altered from any source distribution.
+ * ********************************************************************/
+/***********************************************************************
  * Global conventions:
+ * 
  * * Always use absolute paths (mind the undo option uses full path).
- * * IFP can't be 0 by default. Make it maximum.
- * * Skip files with warning (not error).
- * * Exit with exit status 1 in case of any error.
+ * * IFP can't be 0 by default. Make it -1 (disabled).
+ * * Try to skip files with warning (not error).
+ * * Exit with exit status 1 in case of error.
  * 
  * ********************************************************************/
+ 
+ 
 #include "funcs.hpp"
 
 int main(int argc, char* argv[]) {getCurrentDir(self_dir);self_path=self_dir+String(path_delim)+executable_name;
@@ -44,6 +65,7 @@ int main(int argc, char* argv[]) {getCurrentDir(self_dir);self_path=self_dir+Str
     Options rs_file_obj("-rs/f","--replace-string-file");
     Options re_obj("-re","--regex");
     Options dp_obj("-dp","--depth");
+    Options if_obj("-if","--index-flags");
     
     for(int i = 0; i < (int)args.size(); i++){
       if(skipcount){skipcount=false;continue;}
@@ -128,6 +150,15 @@ int main(int argc, char* argv[]) {getCurrentDir(self_dir);self_path=self_dir+Str
           if(ei_obj.count>1){printWarningLog("End index overwritten");}
         }
         
+        
+      else if(opt=="-if"||opt=="--index-flags"){
+          checkArgAvailability(args,i+1);
+          parseIndexFlags(args[i+1]);
+          skipcount=true;
+          if_obj.count++;
+          if(if_obj.count>1){printWarningLog("Override occurred in Index flags");}
+        }
+        
       else if(opt=="-ifl"||opt=="--index-field-length"){
           checkArgAvailability(args,i+1);
           mustBeAPositiveInteger("Index field length",args[i+1]);
@@ -148,26 +179,6 @@ int main(int argc, char* argv[]) {getCurrentDir(self_dir);self_path=self_dir+Str
           if(ifp_obj.count>1){printWarningLog("Index field precision overwritten");}
         }
         
-        
-      else if(opt=="-ifp/d"||opt=="--index-field-decimal-precision"){
-          checkArgAvailability(args,i+1);
-          mustBeAPositiveInteger("Index field decimal precision",args[i+1]);
-          IFP=stringTo<decltype(IFP)>(args[i+1]);
-          skipcount=true;
-          IFDP=true;
-          ifp_obj.count++;
-          if(ifp_obj.count>1){printWarningLog("Index field precision overwritten. When using decimal precision, other (types of) precisions will be ignored");}
-        }
-        
-      else if(opt=="-ifp/s"||opt=="--index-field-scientific-precision"){
-          checkArgAvailability(args,i+1);
-          mustBeAPositiveInteger("Index field scientific precision",args[i+1]);
-          IFP=stringTo<decltype(IFP)>(args[i+1]);
-          skipcount=true;
-          IFSP=true;
-          ifp_obj.count++;
-          if(ifp_obj.count>1){printWarningLog("Index field precision overwritten.");}
-        }
         
       else if(opt=="-iff"||opt=="--index-field-filler"){
           checkArgAvailability(args,i+1);
@@ -261,7 +272,7 @@ int main(int argc, char* argv[]) {getCurrentDir(self_dir);self_path=self_dir+Str
           skipcount=true;
           
           ss_obj.count++;
-          ///if(ss_obj.count>1){printWarningLog("Search string overwritten");}
+          ///multple is allowed
         }
         
         
@@ -284,7 +295,7 @@ int main(int argc, char* argv[]) {getCurrentDir(self_dir);self_path=self_dir+Str
             Exit(1);
           }
           ss_file_obj.count++;
-          //if(ss_file_obj.count>1){printWarningLog("Search string file option changed");}
+          ///multple is allowed
         }
         
          
@@ -295,7 +306,7 @@ int main(int argc, char* argv[]) {getCurrentDir(self_dir);self_path=self_dir+Str
           skipcount=true;
           
           ss_obj.count++;
-          if(ss_obj.count>1){printWarningLog("Search string overwritten");}
+          ///multple is allowed
         }
         
           
@@ -317,7 +328,7 @@ int main(int argc, char* argv[]) {getCurrentDir(self_dir);self_path=self_dir+Str
             Exit(1);
           }
           ss_file_obj.count++;
-          //if(ss_file_obj.count>1){printWarningLog("Search string file option changed");}
+          ///multple is allowed
         }
         
         
@@ -327,8 +338,7 @@ int main(int argc, char* argv[]) {getCurrentDir(self_dir);self_path=self_dir+Str
           skipcount=true;
           
           rs_obj.count++;
-          //if(rs_obj.count>1){printWarningLog("Replace string overwritten");} //this is invalid from version 3.1.0
-           
+          ///multple is allowed
         }
         
         
@@ -345,7 +355,7 @@ int main(int argc, char* argv[]) {getCurrentDir(self_dir);self_path=self_dir+Str
             Exit(1);
           }
           rs_file_obj.count++;
-          //if(rs_file_obj.count>1){printWarningLog("Replace string file option changed");}
+          ///multple is allowed
         }
         
       else if(opt=="-re" || opt == "--regex"){
@@ -552,9 +562,7 @@ int main(int argc, char* argv[]) {getCurrentDir(self_dir);self_path=self_dir+Str
     ////////////////////////////////// Various checks end here//////////////////////////////
     
     ///Sort file if sort is true
-    
     if(sort){sortVector(files);}
- 
     
     startTask(files);
     
