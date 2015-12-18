@@ -90,6 +90,7 @@ String toStringAccordingToIFL(Double index,int ifl,int number_base=NUM_BASE,IOFo
 String toStringAccordingToMyConvention(int val);
 String toStringAccordingToMyConvention(double val);
 String processExtendedNameString_d(String ns,std::map<String,Double>& ns_rules,int ifl);
+String processExtendedPdNameStringRule(String ns, const String& file);
 template<typename T1, typename T2>
 bool existsInMap(std::map<T1,T2> mymap, T1 key);
 String removeInvalidNameStringRules(const String& ns);

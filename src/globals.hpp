@@ -64,6 +64,7 @@
 
 /////typedefs
 typedef long long Int;
+typedef unsigned long long Uint;
 typedef long double Double;
 typedef std::string String;
 typedef std::stringstream Stream;
@@ -146,6 +147,7 @@ bool count_file=false;
 bool sort=false;
 bool follow_symlink=false;
 bool number_latin=false;
+bool reverse_sort=false;
 
 //experimental
 bool uppercase=false;

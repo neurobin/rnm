@@ -702,6 +702,9 @@ void sortVector(StringArray &files){
     else if(sort_type=="general"){std::sort(files.begin(), files.end());}
     else if(sort_type=="none"){}
     else{std::sort(files.begin(), files.end(), compareNat);}
+    
+    ///reverse the sort if reverse_sort is true
+    if(reverse_sort){std::reverse(files.begin(), files.end());}
 }
 
     
@@ -873,7 +876,7 @@ String processExtendedNameString_d(String ns,std::map<String,Double>& ns_rules,i
         String tot,rulep, basenp,basep;
         tot=*toit++;rulep=*toit++;basenp=*toit++;basep=*toit++;toit++;
         ///print tot+NEW_LINE;print rulep+NEW_LINE;print basenp+NEW_LINE;print basep+NEW_LINE;
-        if(basenp=="b"){
+        if(basenp=="b"){///Base conversion
             if(isPositiveInt(basep)){
                 base=stringTo<int>(basep);
                 if(base>=NUM_BASE_MIN&&base<=NUM_BASE_MAX){
@@ -883,20 +886,110 @@ String processExtendedNameString_d(String ns,std::map<String,Double>& ns_rules,i
                 }
             }
         }
-        else if(basenp=="s"){
+        else if(basenp=="s"){///scientific conversion
             if(basep==""){
                 if(existsInMap(ns_rules,String(rulep))){
                     name=replaceString(name,tot,toStringAccordingToIFL(ns_rules[rulep],index_field_length,10,std::ios::scientific));
                 }
             }
         }
-        else if(basenp=="l"){
+        else if(basenp=="l"){///Latin conversion
             if(basep==""){
                 if(existsInMap(ns_rules,String(rulep))){
                     name=replaceString(name,tot,toStringAccordingToIFL(ns_rules[rulep],index_field_length,10,std::ios::fixed,true));
                 }
             }
         }
+    }
+return name;
+}
+
+
+String processExtendedPdNameStringRule(String ns, const String& file){///file must contain whole path.
+    String name=ns;
+    int subm[]={0,1,2,3,4};
+    
+    ///Let's first find pd_max and all the parent directory names
+    StringArray pd_names=split(dirname(file),path_delim[0]);
+    Int pd_max=(Int)(pd_names.size()-1);
+    
+    ///Reverse the order of pd_names so that the right most directory name comes in 0th index
+    std::reverse(pd_names.begin(),pd_names.end());
+    
+    
+    Regex multi_re (""+path_delim+"pd(\\d*|e)-?(\\d*|e)-?([^/]*)("+path_delim+")",ICASE);
+    RegexTokenIterator end; ///default constructor=end of sequence
+    RegexTokenIterator toit (ns.begin(), ns.end(), multi_re,subm);
+    
+    ///Iterate over the regex iterator to get all substrings
+    while (toit != end){
+        String tot,si,ei,delim;
+        String pd_name_c="";
+        
+        ///Get the matches
+        tot=*toit++;si=*toit++;ei=*toit++;delim=*toit++;toit++;
+        
+        //~ ///manage default delim
+        //~ if(ei=="")delim=PD_DELIM;
+        
+        ///Trim left zeros from si and ei
+        ///If there was only zeros in si or ei then both will be empty, make them 0
+        if(si!=""){
+            si=ltrim(si,"0");
+            if(si=="")si="0";
+        }
+        
+        if(ei!=""){
+            ei=ltrim(ei,"0");
+            if(ei=="")ei="0";
+        }
+        
+        ///Get the range in integer
+        Int si_int=stringTo<Int>(si);
+        Int ei_int=stringTo<Int>(ei);
+        
+        if(toLower(si)=="e")si_int=pd_max;
+        if(toLower(ei)=="e")ei_int=pd_max;
+        
+        ///Set overflowed range to pd_max.
+        ///This should not be done unless user wants it to be this way.
+        ///By default overflowed range will be replaced with empty string.
+        //~ if(si_int>pd_max){si_int=pd_max;}
+        //~ if(ei_int>pd_max){ei_int=pd_max;}
+        
+        
+        
+        ///Handle empty si and ei, this must be the end of si_int and ei_int modification
+        if(si=="")si_int=0;
+        if(ei=="")ei_int=si_int;
+        
+        
+        
+        //print tot+NEW_LINE;print si<<": "<<si_int<<NEW_LINE;print ei<<": "<<ei_int<<NEW_LINE;print delim+NEW_LINE<<pd_max<<NEW_LINE;
+        
+    
+        ///Create a string combining all parent directory names with delims added
+        
+        if(si_int<=ei_int){
+            for(Int i=si_int;i<=ei_int;i++){
+                ///if si ei both empty and delim is not empty, then it is an invalid rule
+                if(si==""&&ei==""&&delim!="")continue;    ///must continue
+                if(i>pd_max)break;                        ///Overflow, break will suffice 
+                if(pd_name_c!="")pd_name_c+=delim+pd_names[i];
+                else pd_name_c+=pd_names[i];
+            }
+        }
+        else{
+            for(Int i=si_int;i>=ei_int;i--){
+                ///if si ei both empty and delim is not empty, then it is an invalid rule
+                if(si==""&&ei==""&&delim!="")continue;    ///must continue
+                if(i>pd_max)continue;                    ///Overflow, must continue
+                if(pd_name_c!="")pd_name_c+=delim+pd_names[i];
+                else pd_name_c+=pd_names[i];
+            }
+        }
+        ///Finaly replace the pd rule with the newly created combined name
+        name=replaceString(name,tot,pd_name_c);
     }
 return name;
 }
@@ -931,7 +1024,7 @@ String parseNameString(const String& ns,const String& file,DirectoryIndex &di){
     ns_rules_s["n"]=fnamewe;
     ns_rules_s["e"]=ext;
     ns_rules_s["rn"]=rname;
-    ns_rules_s["pd"]=CPDN;
+    //ns_rules_s["pd"]=CPDN;           ///This will be handled with extended function
     ns_rules_s["wd"]=CWDN;
     
     
@@ -950,6 +1043,9 @@ String parseNameString(const String& ns,const String& file,DirectoryIndex &di){
         
         ///for name string rules like /i-b16/, b16 stands for base 16
         name=processExtendedNameString_d(name,ns_rules,index_field_length);
+        
+        ///Process /pd/ along with extended pd name string rules
+        name=processExtendedPdNameStringRule(name,file);  ///file must be the full path
         
         }
     else{
