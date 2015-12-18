@@ -103,7 +103,6 @@ typedef std::map<String,int> StringintMap;
 #define REGEX_DEFAULT REGEX_ECMASCRIPT
 #define REGEX_LOCALE std::regex::collate
 
-#define PCRE2_CODE_UNIT_WIDTH 8
 #define print std::cout<<
 #define printe std::cerr<<
 #define ENDL std::endl
@@ -212,7 +211,7 @@ int IFP=-1;    //index field precision
 
 ///////Index flags management
 
-std::map<String,int> index_int_flag={{"precision",IFP},{"width",index_field_length},{"latin-fallback",latin_fall_back_threshold}};
+std::map<String,int> index_int_flag={{"precision",IFP},{"length",index_field_length},{"latin-fallback",latin_fall_back_threshold}};
 std::map<String,String> index_string_flag={{"filler",IFF}};
 
 String IFP_s="unset";
@@ -325,7 +324,6 @@ options:\n\
 -linc  value   : The amount line count will be incremented or decremented in each iteration.\n\
                  This is always a positive integer.\n\
                  \n\
-                 This can also be set with the -if option.\n\
 -if    value   : This sets Index flags. This is a "+path_delim+" separated list of flags\n\
                  that will be used to render the index within it's text field.\n\
 \n\

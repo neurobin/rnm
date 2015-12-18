@@ -1,8 +1,7 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <HTML><HEAD><TITLE>Man page of rnm</TITLE>
 </HEAD><BODY>
 <H1>rnm</H1>
-Section: Utility (1)<BR>Updated: Sat Nov 21 2015<BR>
+Section: Utility (1)<BR>Updated: Sat Dec 19 2015<BR>
 <HR>
 <A NAME="index">&nbsp;</A><H2>Index</H2>
 <DL>
@@ -12,14 +11,14 @@ Section: Utility (1)<BR>Updated: Sat Nov 21 2015<BR>
 <DT><A HREF="#lbAE">OPTIONS</A><DD>
 <DT><A HREF="#lbAF">TERMINOLOGY</A><DD>
 <DT><A HREF="#lbAG">EXAMPLES</A><DD>
-<DT><A HREF="#lbAH">LOGDIR</A><DD>
-<DT><A HREF="#lbAI">EXITSTATUS</A><DD>
-<DT><A HREF="#lbAJ">BUGREPORT</A><DD>
-<DT><A HREF="#lbAK">AUTHOR</A><DD>
-<DT><A HREF="#lbAL">WEB</A><DD>
+<DT><A HREF="#lbAH">LIMITS</A><DD>
+<DT><A HREF="#lbAI">LOGDIR</A><DD>
+<DT><A HREF="#lbAJ">EXITSTATUS</A><DD>
+<DT><A HREF="#lbAK">BUGREPORT</A><DD>
+<DT><A HREF="#lbAL">AUTHOR</A><DD>
+<DT><A HREF="#lbAM">WEB</A><DD>
 </DL>
 <HR>
-
 <A NAME="lbAB">&nbsp;</A>
 <H2>NAME</H2>
 
@@ -68,7 +67,7 @@ are the same.
 Bulk Rename Utility written in C++. Files and directories can be passed as command line arguments to rename them in bulk according to some naming scheme (
 <B>Name String</B>
 
-). If no file or directory path is passed as command line argument, it will wait for user to type the path i.e it will take the path from standard input (&gt;=version 3.0.1). It uses ECMAScript regex as the default regex to provide search (and replace) functionality, other regex modes ( POSIX compliant basic and extended regex) are available through (
+). If no file or directory path is passed as command line argument, it will wait for user to type the path i.e it will take the path from standard input (&gt;=version 3.0.1). It uses ECMAScript regex (aka JavaScript) as the default regex to provide search (and replace) functionality, other regex modes ( POSIX compliant basic and extended regex) are available through (
 <B>-re</B>
 
 ) option. It provides an undo functionality (
@@ -119,6 +118,31 @@ etc..
 <I>value</I>
 
 : The amount line count will be incremented or decremented in each iteration. This is always a positive integer.
+<P>
+<DT>--index-flags,<DD>
+<B>-if</B>
+
+<I>flags</I>
+
+: This sets Index flags. This is a '/' separated list of flags that will be used to render the index within it's text field.
+<P>
+The general format is 
+<I>'/keyword1/keyword2/...'</I>
+
+<P>
+Valued flags are set with
+<I>keyword=value</I>
+
+format.
+<P>
+Ex:
+<B>-if</B>
+
+<I>'/uppercase/showpoint/showpos/showbase/left/length=4/precision=3/filler=*/latin-fallback=687678/'</I>
+
+<P>
+See keywords section for details.
+<P>
 <DT>--index-field-length,<DD>
 <B>-ifl</B>
 
@@ -130,35 +154,30 @@ etc..
 ). iff is set to the character 
 <I>0</I>
 
-by default.
+by default. This can also be set using the 
+<B>-if</B>
+
+option. The keyword is 'length'.
 <P>
 <DT>--index-field-filler,<DD>
 <B>-iff</B>
 
 <I>single-character</I>
 
-: Not occupied field in index will be filled with a character which is set by this option.
+: Not occupied field in index will be filled with a character which is set by this option. This can also be set using the 
+<B>-if</B>
+
+option. The keyword is 'filler'.
 <P>
 <DT>--index-field-precision,<DD>
 <B>-ifp</B>
 
 <I>value</I>
 
-: Index is a floating point decimal value. This sets the precision. If it is less than the number of digits left of the decimal point, the indexes may be rendered in scientific format.This option only sets the precision value. The result may be confusing and you shouldn't use this option unless you know what you are doing. Make it specific with `-ifp/d` or `-ifp/s` which set type of format (fixed point or scientific) along with the precision value.
-<P>
-<DT>--index-field-decimal-precision,<DD>
-<B>-ifp/d</B>
+: Index is a floating point decimal value. This sets the precision. If it is less than the number of digits left of the decimal point, the indexes may be rendered in scientific format.This option only sets the precision value. The result may be confusing and you shouldn't use this option unless you know what you are doing. This can also be set using the 
+<B>-if</B>
 
-<I>value</I>
-
-: This sets the decimal precision i.e the number of digits that would be taken after the decimal point. If this option is passed other types of precisions will be ignored (if passed alongside). Mind that only the type is ignored not the value i.e the precision value will be overwritten always.
-<P>
-<DT>--index-field-scientific-precision,<DD>
-<B>-ifp/s</B>
-
-<I>value</I>
-
-: This sets the scientific precision. All indexes will be rendered in scientific form.
+option. The keyword is 'precision'.
 <P>
 <DT>--name-string,<DD>
 <B>-ns</B>
@@ -386,7 +405,7 @@ Decrementing index.
 
 <DL COMPACT><DT><DD>
 A string, that is parsed to create names for new files. It can be fixed name which then can be modified for different files at runtime. Name sting is parsed by the following rules (must be wrapped around with filepath delimiter /):
-<DL COMPACT><DT><DD>
+<P>
 <P>
 <B>/n/</B>
 
@@ -449,6 +468,67 @@ In general,
 <B>/-idr/</B>
 
 etc..) in the above replacement rules (applies to indexes excluding line index) will mean inverse index conforming to their meaning.
+<P>
+</DL>
+
+<P>
+<B>Extended Name String Rule</B>
+
+<DL COMPACT><DT><DD>
+This is an extension of the general purpose name string rules mentioned above.
+<P>
+<B>Base conversion</B>
+
+<DL COMPACT><DT><DD>
+<B>/i-b2/</B>
+
+converts the index to base 2 i.e binary and
+<B>/i-b32/</B>
+
+will convert to base 32. This applies to all numbered name string rules.
+</DL>
+
+<P>
+<B>Latin conversion</B>
+
+<DL COMPACT><DT><DD>
+<B>/i-l/</B>
+
+converts the index to Latin number. This applies to all numbered name string rules.
+</DL>
+
+<P>
+<B>Scientific conversion</B>
+
+<DL COMPACT><DT><DD>
+<B>/i-s/</B>
+
+converts the index to scientific form. This applies to all numbered name string rules.
+</DL>
+
+<P>
+<B>Extended /pd/ rules</B>
+
+<DL COMPACT><DT><DD>
+pd0 is the immediate parent directory, pd1 is the directory before pd0 and so forth. 
+<P>
+A range can also be supplied to combine all the directories in the level implied by the range. The general format of this rule is
+<B>/pd&lt;digits&gt;-&lt;digits&gt;-delimiter/</B>
+
+<P>
+For example:
+<B>/pd0-4--/</B>
+
+will combine all directories from level 0 to 4 inserting the delimiter (- in this case) between them and the rule will become something like dir0-dir1-dir2-dir3-dir4. 
+<P>
+In place of &lt;digits&gt; you can also supply 'e' which generally means the 'end' i.e the deepest level available.
+<P>
+Any unavailable level of directory will be ignored and be replaced with empty string. 
+<P>
+The range is bidirectional e.g
+<B>/pd4-0--/</B>
+
+will do the same in reverse order.
 </DL>
 
 </DL>
@@ -560,7 +640,7 @@ Regarding the
 <P>
 &amp; will be taken as the entire match found by the regex (search_part).
 <P>
-\1, \2 etc.. is the back-references, i.e you can access captured groups with these back-references. Up-to two digits after the \ will be taken as a back-reference. If you want to isolate a back-reference make it fill up the two digit limit or wrap it around with {}. For example, if you want to put a digit (2) after back-reference \1, you can't use it like \12. \12 will mean 12th back-reference not \1 appended with a digit (1). In this case either use \01 instead of \1 or isolate the back-reference with {} i.e \{1}.
+\1, \2 etc.. is the captured groups or subpatterns. Up-to two digits after the \ will be taken as a captured group. If you want to isolate a captured group, wrap it around with {}. For example, if you want to put a digit (2) after the subpattern \1, you can't use it like \12. \12 will mean 12th subpattern not \1 appended with a digit (1). In this case isolate the subpattern with {} i.e \{1}.
 <P>
 \c to convert to lowercase and \C to convert to uppercase. No other character is allowed in replace_part if \c or \C is used.
 <P>
@@ -637,6 +717,57 @@ option.
 </DL>
 
 <P>
+<B>Keywords</B>
+
+<DL COMPACT><DT><DD>
+<B>uppercase</B>
+
+: means uppercase.
+<P>
+<B>showpoint</B>
+
+: show point regardless if it's an integer or floating point value.
+<P>
+<B>showbase</B>
+
+: means show base (Hex or Oct).
+<P>
+<B>showpos</B>
+
+: show + sign for positive numbers.
+<P>
+<B>right</B>
+
+: adjust right.
+<P>
+<B>left</B>
+
+: adjust left.
+<P>
+<B>internal</B>
+
+: adjust internal.
+<P>
+<B>precision</B>
+
+: set precision. Used like 
+<I>precision=value</I>
+
+<P>
+<B>length</B>
+
+: sets length. Used like
+<I>length=value</I>
+
+<P>
+<B>filler</B>
+
+: sets filler. Used like
+<I>filler=value</I>
+
+</DL>
+
+<P>
 Only invalid characters for a file or directory name is the path delimiter and the null character (\0).
 <P>
 <A NAME="lbAG">&nbsp;</A>
@@ -686,16 +817,27 @@ file only mode, i.e no directory will be renamed or indexed, unless depth is
 <B>&gt;0</B>
 
 <P>
-<P>
 </DL>
 </DL>
 <A NAME="lbAH">&nbsp;</A>
+<H2>LIMITS</H2>
+
+<P>
+<B>Maximum length of file name/path</B>
+
+: FILENAME_MAX
+<P>
+<B>Default latin fallback</B>
+
+: 55555 (After this value latin conversion will fall back to decimal).
+<P>
+<A NAME="lbAI">&nbsp;</A>
 <H2>LOGDIR</H2>
 
 <P>
 ~/.neurobin/rnm
 <P>
-<A NAME="lbAI">&nbsp;</A>
+<A NAME="lbAJ">&nbsp;</A>
 <H2>EXITSTATUS</H2>
 
 <P>
@@ -703,11 +845,11 @@ file only mode, i.e no directory will be renamed or indexed, unless depth is
 <P>
 1 on failure
 <P>
-<A NAME="lbAJ">&nbsp;</A>
+<A NAME="lbAK">&nbsp;</A>
 <H2>BUGREPORT</H2>
 
 Report bugs to <A HREF="http://github.com/neurobin/rnm/issues">http://github.com/neurobin/rnm/issues</A>
-<A NAME="lbAK">&nbsp;</A>
+<A NAME="lbAL">&nbsp;</A>
 <H2>AUTHOR</H2>
 
 <DL COMPACT>
@@ -715,15 +857,15 @@ Report bugs to <A HREF="http://github.com/neurobin/rnm/issues">http://github.com
 <DT>@github: <A HREF="http://github.com/neurobin">http://github.com/neurobin</A><DD>
 <DT>@bitbucket: <A HREF="http://bitbucket.com/neurobin">http://bitbucket.com/neurobin</A><DD>
 </DL>
-<A NAME="lbAL">&nbsp;</A>
+<A NAME="lbAM">&nbsp;</A>
 <H2>WEB</H2>
 
 <A HREF="http://neurobin.github.io/rnm">http://neurobin.github.io/rnm</A>
 <P>
-
-
 <HR>
-This document was created by man2html<BR>
-Time: 06:57:16 GMT, November 21, 2015
+This document was created by
+<A HREF="/cgi-bin/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 20:59:37 GMT, December 18, 2015
 </BODY>
 </HTML>
