@@ -1,6 +1,6 @@
 <div id="description"></div>
 # rnm
-Bulk Rename Utility written in `C++`. Files and directories can be passed as command line arguments to rename them in bulk according to some naming scheme (*Name String*). If any file or directory path is not passed as command line argument, it will wait for user to type the path i.e it will take the path from standard input `(>=version 3.0.1)`. It uses `C++` regex (<a href="http://www.cplusplus.com/reference/regex/ECMAScript/">ECMAScript regex</a>) as the default regex to provide search (and replace) functionality, other regex modes are available through (`-re`) option. It provides an undo functionality too to move back an unwanted rename operation. You can also run a simulation instead of actual rename to view the potential outcome as program output on terminal with the `-sim` option.
+Bulk Rename Utility written in `C++`. Files and directories can be passed as command line arguments to rename them in bulk according to some naming scheme (*Name String*). If any file or directory path is not passed as command line argument, it will wait for user to type the path i.e it will take the path from standard input `(>=version 3.0.1)`. It uses `C++` regex (<a href="http://www.cplusplus.com/reference/regex/ECMAScript/">ECMAScript (aka JavaScript) regex</a>) as the default regex to provide search (and replace) functionality, other regex modes are available through (`-re`) option. It provides an undo functionality too to move back an unwanted rename operation. You can also run a simulation instead of actual rename to view the potential outcome as program output on terminal with the `-sim` option.
 
 
 <div id="features"></div>
@@ -11,8 +11,9 @@ Bulk Rename Utility written in `C++`. Files and directories can be passed as com
 3. Names can be modified by performing regex replace. It enables generating new names by deleting/appending/modifying part of the old filename. It also enables easy conversion from lowercase to uppercase and vice-versa.
 4. Lowercase-Uppercase conversion is selective i.e you can apply case conversion in part of the name at a targeted position.
 5. Names can be modified with certain predefined rules. For example, you can insert parent directory name or working directory name or index etc... in filename in arbitrary positions.
+6. Latin indexing of files. Index can also be converted to different bases (binary, hex, oct etc...).
 6. Names can be taken from a file, and these names can also be modified by applying *Name String* rules on them.
-7. Search functionality. It uses the <a href="http://www.cplusplus.com/reference/regex/ECMAScript/">ECMAScript regex</a> by default. Regex mode can be changed (POSIX basic, extended, egrep, grep, awk, ECMAScript). Fixed string search is also possible.
+7. Search functionality. It uses the <a href="http://www.cplusplus.com/reference/regex/ECMAScript/">ECMAScript (aka JavaScript) regex</a> by default. Regex mode can be changed (POSIX basic, extended, egrep, grep, awk, ECMAScript). Fixed string search is also possible.
 8. Null terminated file support for file names (Null termination is a good way to store filenames in a file).
 9. Sort functionality. Available sorting methods are: Natural sort and general alphabetical sort.
 10. Multiple search criteria and replacement methods are possible.
@@ -81,11 +82,10 @@ Options | Description
 `-ei`                | End index i.e index to stop renaming from. It is only for files inside a directory that is being recursively taken due to a depth value greater than 0, i.e it works on directory index. Note that directory index `/id/` will renew in each directory i.e in each directory rename will be performed from start index to end index.
 `-inc`               | Increment value (floating point decimal). The amount, index will be incremented or decremented in each iteration. Decremented index is available through name string rule| `/-i/`, `/-id/` etc..
 `-linc`              | The amount line count will be incremented or decremented in each iteration. This is always a positive integer.
+`-if`                | This sets Index flags. This is a '/' separated list of flags that will be used to render the index within it's text field. The general format is `'/keyword1/keyword2/...'`. Valued flags are set with *keyword=value* format. Ex: `-if '/uppercase/showpoint/showpos/showbase/left/length=4/precision=3/filler=*/latin-fallback=687678/'`. See <a href="#keywords">keywords section</a> for details.
 `-ifl`               | Index field length. Non occupied field will be filled with index field fillers (set with `-iff`). iff is set to the character `0` by default.
 `-iff`               | Not occupied field in index will be filled with a character which is set by this option.
 `-ifp`               | Index is a floating point decimal value. This sets the precision. If it is less than the number of digits left of the decimal point, the indexes may be rendered in scientific format.This option only sets the precision value. The result may be confusing and you shouldn't use this option unless you know what you are doing. Make it specific with `-ifp/d` or `-ifp/s` which set type of format (fixed point or scientific) along with the precision value.
-`-ifp/d`             | This sets the decimal precision i.e the number of digits that would be taken after the decimal point. If this option is passed other types of precisions will be ignored (if passed alongside). Mind that only the type is ignored not the value i.e the precision value will be overwritten always.
-`-ifp/s`             | This sets the scientific precision. All indexes will be rendered in scientific form.
 `-ns`                | Name string.
 `-ns/f`              | Name string file. File containing name string (one per line). `-nsf /hist/` i.e a value passed `/hist/` as Name string file, will try to take the file from history.
 `-ns/fn`             | Name String file. This takes a null terminated *Name String* file, i.e filenames are terminated by null character (`\0`) instead of new line (`\n`). 
@@ -126,7 +126,8 @@ Options | Description
                     to reserve the index for that skipped file
                     
 **Reverse Index     :** Decrementing index.
-                
+
+<div id="name-string"></div>
 **Name String       :** A string, that is parsed to create names for new files. It can be fixed name which then can be modified for different files at runtime.
                     Name sting is parsed by the following rules (must be wrapped around with filepath delimiter `/`):
                     
@@ -143,14 +144,31 @@ Options | Description
 11. `/fn/` in name string will be replaced with full name of the files. If used with `-nsf` option, full name will be the name taken from the *Name String File*.
 12. `/rn/` in name string will be replaced with Replaced Name.
 13. `/pd/` in name string will be replaced with parent directory  name of the current file or directory. 
-14. `/wd/`  in  name  string will be replaced with the current working directory name. 
+14. `/wd/`  in  name  string will be replaced with the current working directory name.
+
+<div id="extended-name-string-rule"></div>
+**Extended Name String Rule :** This is an extension of the general purpose name string rules mentioned above.
+
+1. Base conversion: `/i-b2/` converts the index to base 2 i.e binary and `/i-b32/` will convert to base 32. This applies to all numbered name string rules. 
+2. Latin conversion: `/i-l/` converts the index to Latin number. This applies to all numbered name string rules. 
+3. Scientific conversion: `/i-s/` converts the index to scientific form. This applies to all numbered name string rules. 
+4. Extended /pd/ rules:
+  * `pd0` is the immediate parent directory, `pd1` is the directory before pd0 and so forth.
+  * A range can also be supplied to combine all the directories in the level implied by the range. The general format of this rule is `/pd<digits>-<digits>-delimiter/`
+  * For example: `/pd0-4--/` will combine all directories from level 0 to 4 inserting the delimiter (`-` in this case) between them and the rule will become something like `dir0-dir1-dir2-dir3-dir4`.
+  * In place of `<digits>` you can also supply `e` which generally means the 'end' i.e the deepest level available.
+  * Any unavailable level of directory will be ignored and be replaced with empty string.
+  * The range is bidirectional e.g `/pd4-0--/` will do the same in reverse order. 
+
+
 
 
 **Name String File  :** A file which contains a list of name string (one per line).
                     Empty lines will be ignored and line number won't be counted.
                     Actual line number (which counts the empty lines too) is
                     available through name string rule : `/la/`.
-     
+
+<div id="search-string"></div>
 **Search String     :** A string that is used to search for files with matching
                     filenames against the search string. By default it is
                     a regex if `-ssF` option is not used.It is generally in the form `/regex/modifier` , 
@@ -173,7 +191,9 @@ Also you can provide multiple search strings with repeated `-ss` and/or `-ssf` o
                     which can be used in *Name String*. If name string is not passed as argument,
                     the new name of the file will be `/rn/`. *Replaced Name* is always 
                     generated from the old filename.
-                    
+
+
+<div id="replace-string"></div>
 **Replace String    :** *Replace String* is a regex of the form: 
                     `/search_part/replace_part/modifier`
                     where search_part is the regex to search for and
@@ -201,8 +221,23 @@ of 'video' with 'Episode index' i.e you will get new rname as:.
 Episode 1..., Episode 2..., etc...
 ```
 
-                    
+<div id="regex"></div>
 **Regex             :** Supported regexes are POSIX compliant <a href="http://pubs.opengroup.org/onlinepubs/9699919799/basedefs/V1_chap09.html#tag_09_03">basic</a> & <a href="http://pubs.opengroup.org/onlinepubs/9699919799/basedefs/V1_chap09.html#tag_09_04">extended</a> regex, grep, egrep and <a href="http://pubs.opengroup.org/onlinepubs/9699919799/utilities/awk.html#tag_20_06_13_04">awk</a> type regexes and the default <a href="http://www.cplusplus.com/reference/regex/ECMAScript/">ECMAScript Regex</a>. You can change the regex mode with `-re` or `--regex` option.
+
+<div id="keywords"></div>
+**Keywords          :**
+
+* *uppercase* : means uppercase.
+* *showpoint : show point regardless if it's an integer or floating point value.
+* showbase : means show base (Hex or Oct).
+* showpos : show + sign for positive numbers.
+* right : adjust right.
+* left : adjust left.
+* internal : adjust internal.
+* precision : set precision. Used like precision=value
+* length : sets length. Used like length=value
+* filler : sets filler. Used like filler=value 
+
                     
 Only invalid characters for a file or directory name is the path delimiter and the null character (`\0`).
 

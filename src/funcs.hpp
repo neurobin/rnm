@@ -348,7 +348,7 @@ String trimZeroFromScientificNumber(const String& s){
     if(!stringContains(s,"."))return s;
     int pos = s.find_first_of("eE");
     if(pos!=(int)String::npos){
-        return rtrim(s.substr(0,pos),".0")+s.substr(pos,String::npos);
+        return rtrim(rtrim(s.substr(0,pos),"0"),".")+s.substr(pos,1)+ltrim(s.substr(pos+1,String::npos),"0");
     }
     else return s;
 }
@@ -358,9 +358,9 @@ String trimFloatingZero(const String& s){
     if(!stringContains(s,"."))return s;
     int pos = s.find_first_of("eE");
     if(pos!=(int)String::npos){
-        return rtrim(s.substr(0,pos),".0")+s.substr(pos,String::npos);
+        return rtrim(rtrim(s.substr(0,pos),"0"),".")+s.substr(pos,1)+ltrim(s.substr(pos+1,String::npos),"0");
     }
-    else return rtrim(s,".0");
+    else return rtrim(rtrim(s,"0"),".");
 }
 
 
@@ -594,7 +594,6 @@ String doubleToString(Double x, int ifl,int number_base,IOFormatFlag index_flag_
             }
         }
     }
-    
     return res;}
 
 
