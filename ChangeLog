@@ -122,3 +122,7 @@ Bug fix: inconsistency in reserved directory index.
 4. Support for Latin conversion of indexes added.
 5. Support for extended name string rules.
 6. Support for extended name string rules of /pd/.
+
+###`3.3.1`: <span class="light-quote">Sun Dec 20 18:52:22 UTC 2015</span>
+
+1. size optimization
