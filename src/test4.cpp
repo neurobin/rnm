@@ -14,15 +14,15 @@ int main(){
 
     ///Compile the pattern
     try{re.compile();}
-    catch(std::string e){std::cout<<e;}
+    catch(int e){std::cout<<re.getErrorMessage(e);}
     
     std::string s="(I am a digit 67d আ 89d 4323d 3432D)";
     
-    try{std::cout<<"\nrepl: "<<re.replace(s,"$1$22${name}","xE",2);}
-    catch(std::string e){std::cout<<e;}
+    try{std::cout<<"\nrepl: "<<re.replace(s,"$1$22${name}","x",2);}
+    catch(int e){std::cout<<re.getErrorMessage(e);}
     
-    try{re.match(s,vec_num0,vec_nas0,vec_nn0,true);}
-    catch(std::string e){std::cout<< e<<re.getErrorCode();}
+    try{re.match(s,vec_nas0,vec_nn0,vec_num0,true);}
+    catch(int e){std::cout<<re.getErrorMessage(e);}
     
     ///Now let's access the matched data
     for(int i=0;i<(int)vec_num0.size();i++){

@@ -1,5 +1,4 @@
 <div id="description"></div>
-# rnm
 Bulk Rename Utility written in `C++`. Files and directories can be passed as command line arguments to rename them in bulk according to some naming scheme (*Name String*). If any file or directory path is not passed as command line argument, it will wait for user to type the path i.e it will take the path from standard input `(>=version 3.0.1)`. It uses `C++` regex (<a href="http://www.cplusplus.com/reference/regex/ECMAScript/">ECMAScript (aka JavaScript) regex</a>) as the default regex to provide search (and replace) functionality, other regex modes are available through (`-re`) option. It provides an undo functionality too to move back an unwanted rename operation. You can also run a simulation instead of actual rename to view the potential outcome as program output on terminal with the `-sim` option.
 
 
@@ -39,7 +38,7 @@ The install script depends on <span class="quote">Bash Shell</span>. If you don'
 
 Aside from the above generalized method, you can also install it in Ubuntu from PPA (`ppa:neurobin/ppa`).
 
-```
+```sh
 sudo add-apt-repository -y ppa:neurobin/ppa
 sudo apt-get update
 sudo apt-get install rnm
@@ -47,7 +46,7 @@ sudo apt-get install rnm
 
 If you are in Ubuntu 14.04 or 12.04 (trusty or precise), you will need to add ubuntu-toolchain repository to make `libstdc++6 (>=4.9.2)` available:
 
-```
+```sh
 sudo add-apt-repository ppa:ubuntu-toolchain-r/test
 sudo add-apt-repository -y ppa:neurobin/ppa
 sudo apt-get update
@@ -62,7 +61,7 @@ sudo apt-get install rnm
 <div id="usage"></div>
 #Usage:
 
-```
+```sh
 rnm directory/file/path -ns new_name [other options]
 rnm directory/file/path -rs "/search regex/replace string/gi" [other_options]
 rnm directory/file/path -nsf namestring/file/path
@@ -228,15 +227,15 @@ Episode 1..., Episode 2..., etc...
 **Keywords          :**
 
 * *uppercase* : means uppercase.
-* *showpoint : show point regardless if it's an integer or floating point value.
-* showbase : means show base (Hex or Oct).
-* showpos : show + sign for positive numbers.
-* right : adjust right.
-* left : adjust left.
-* internal : adjust internal.
-* precision : set precision. Used like precision=value
-* length : sets length. Used like length=value
-* filler : sets filler. Used like filler=value 
+* *showpoint* : show point regardless if it's an integer or floating point value.
+* *showbase* : means show base (Hex or Oct).
+* *showpos* : show + sign for positive numbers.
+* *right* : adjust right.
+* *left* : adjust left.
+* *internal* : adjust internal.
+* *precision* : set precision. Used like precision=value
+* *length* : sets length. Used like length=value
+* *filler* : sets filler. Used like filler=value 
 
                     
 Only invalid characters for a file or directory name is the path delimiter and the null character (`\0`).
@@ -244,7 +243,7 @@ Only invalid characters for a file or directory name is the path delimiter and t
 <div id="examples"></div>
 ###Example:
 
-```
+```sh
 rnm file -ns new_file
 rnm file -rs "/f/F/"                             ( will replace f with F in the name, i.e new name will be: File)
 rnm folder -ns "New Folder" -do                  (-do forces Directory only mode)
