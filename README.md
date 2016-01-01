@@ -200,7 +200,7 @@ Also you can provide multiple search strings with repeated `-ss` and/or `-ssf` o
                     Regarding replace string, there are several special cases:
                     
 1. `&` will be taken as the entire match found by the regex (search_part).
-2. `\1`, `\2` etc.. is the back-references, i.e you can access captured groups with these back-references. If you want to isolate a back-reference make it fill up the two digit limit or wrap it around with `{}`. For example, if you want to put a digit (2) after back-reference `\1`, you can't use it like `\12`. `\12` will mean `12th` back-reference not `\1` appended with a digit (1). In this case either use `\01` instead of `\1` or isolate the back-reference with `{}` i.e `\{1}`. 
+2. `\1`, `\2` etc.. is the captured groups. If you want to isolate a captured groups, wrap it around with `{}`. For example, if you want to put a digit (2) after captured group `\1`, you can't use it like `\12`. `\12` will mean `12th` captured group not `\1` appended with a digit (1). In this case isolate the captured group with `{}` i.e `\{1}`. 
 3. `\c` will convert the matched string to lowercase, and `\C` will convert it to uppercase. No other character is allowed in replace part if this is used. You can still concatenate different replace strings with `;`.
 4. `\p` is the prefix (i.e., the part of the target sequence that precedes the match)
 5. `\s` is the suffix (i.e., the part of the target sequence that follows the match).
