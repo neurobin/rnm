@@ -1,5 +1,5 @@
 <div id="description"></div>
-Bulk Rename Utility written in `C++`. Files and directories can be passed as command line arguments to rename them in bulk according to some naming scheme (*Name String*). If any file or directory path is not passed as command line argument, it will wait for user to type the path i.e it will take the path from standard input `(>=version 3.0.1)`. It uses `C++` regex (<a href="http://www.cplusplus.com/reference/regex/ECMAScript/">ECMAScript (aka JavaScript) regex</a>) as the default regex to provide search (and replace) functionality, other regex modes are available through (`-re`) option. It provides an undo functionality too to move back an unwanted rename operation. You can also run a simulation instead of actual rename to view the potential outcome as program output on terminal with the `-sim` option.
+Bulk Rename Utility written in `C++`. Files and directories can be passed as command line arguments to rename them in bulk according to some naming scheme (*Name String*). If any file or directory path is not passed as command line argument, it will wait for user to type the path i.e it will take the path from standard input `(>=version 3.0.1)`. It uses `C++` regex (<a href="https://www.cplusplus.com/reference/regex/ECMAScript/">ECMAScript (aka JavaScript) regex</a>) as the default regex to provide search (and replace) functionality, other regex modes are available through (`-re`) option. It provides an undo functionality too to move back an unwanted rename operation. You can also run a simulation instead of actual rename to view the potential outcome as program output on terminal with the `-sim` option.
 
 
 <div id="features"></div>
@@ -12,7 +12,7 @@ Bulk Rename Utility written in `C++`. Files and directories can be passed as com
 5. Names can be modified with certain predefined rules. For example, you can insert parent directory name or working directory name or index etc... in filename in arbitrary positions.
 6. Latin indexing of files. Index can also be converted to different bases (binary, hex, oct etc...).
 6. Names can be taken from a file, and these names can also be modified by applying *Name String* rules on them.
-7. Search functionality. It uses the <a href="http://www.cplusplus.com/reference/regex/ECMAScript/">ECMAScript (aka JavaScript) regex</a> by default. Regex mode can be changed (POSIX basic, extended, egrep, grep, awk, ECMAScript). Fixed string search is also possible.
+7. Search functionality. It uses the <a href="https://www.cplusplus.com/reference/regex/ECMAScript/">ECMAScript (aka JavaScript) regex</a> by default. Regex mode can be changed (POSIX basic, extended, egrep, grep, awk, ECMAScript). Fixed string search is also possible.
 8. Null terminated file support for file names (Null termination is a good way to store filenames in a file).
 9. Sort functionality. Available sorting methods are: Natural sort and general alphabetical sort.
 10. Multiple search criteria and replacement methods are possible.
@@ -220,7 +220,7 @@ Episode 1..., Episode 2..., etc...
 ```
 
 <div id="regex"></div>
-**Regex             :** Supported regexes are POSIX compliant <a href="http://pubs.opengroup.org/onlinepubs/9699919799/basedefs/V1_chap09.html#tag_09_03">basic</a> & <a href="http://pubs.opengroup.org/onlinepubs/9699919799/basedefs/V1_chap09.html#tag_09_04">extended</a> regex, grep, egrep and <a href="http://pubs.opengroup.org/onlinepubs/9699919799/utilities/awk.html#tag_20_06_13_04">awk</a> type regexes and the default <a href="http://www.cplusplus.com/reference/regex/ECMAScript/">ECMAScript Regex</a>. You can change the regex mode with `-re` or `--regex` option.
+**Regex             :** Supported regexes are POSIX compliant <a href="https://pubs.opengroup.org/onlinepubs/9699919799/basedefs/V1_chap09.html#tag_09_03">basic</a> & <a href="https://pubs.opengroup.org/onlinepubs/9699919799/basedefs/V1_chap09.html#tag_09_04">extended</a> regex, grep, egrep and <a href="https://pubs.opengroup.org/onlinepubs/9699919799/utilities/awk.html#tag_20_06_13_04">awk</a> type regexes and the default <a href="https://www.cplusplus.com/reference/regex/ECMAScript/">ECMAScript Regex</a>. You can change the regex mode with `-re` or `--regex` option.
 
 <div id="keywords"></div>
 **Keywords          :**
