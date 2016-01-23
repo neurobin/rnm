@@ -74,24 +74,23 @@ class DirectoryIndex{
 
 class Options{
     private:
-        String value1,value2,value3,value4;
+        std::string value1,value2,value3,value4;
         
     public:
         short count;
-        Options(String v1)                               {value1=v1;value2="";value3="";value4="";count=0;}
-        Options(String v1,String v2)                     {value1=v1;value2=v2;value3="";value4="";count=0;}
-        Options(String v1,String v2,String v3)           {value1=v1;value2=v2;value3=v3;value4="";count=0;}
-        Options(String v1,String v2,String v3,String v4) {value1=v1;value2=v2;value3=v3;value4=v4;count=0;}
-        String getValue1(){return value1;}
-        String getValue2(){return value2;}
-        String getValue3(){return value3;}
-        String getValue4(){return value4;}
+        Options(std::string v1)                               {value1=v1;value2="";value3="";value4="";count=0;}
+        Options(std::string v1,std::string v2)                     {value1=v1;value2=v2;value3="";value4="";count=0;}
+        Options(std::string v1,std::string v2,std::string v3)           {value1=v1;value2=v2;value3=v3;value4="";count=0;}
+        Options(std::string v1,std::string v2,std::string v3,std::string v4) {value1=v1;value2=v2;value3=v3;value4=v4;count=0;}
+        std::string getValue1(){return value1;}
+        std::string getValue2(){return value2;}
+        std::string getValue3(){return value3;}
+        std::string getValue4(){return value4;}
     
     
 
 
 };
-
 
 
 

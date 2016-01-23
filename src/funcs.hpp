@@ -690,6 +690,26 @@ String regexReplace(const String& s,const String& search,const String& replace,c
     return replaced_string;
 }
 
+String regexReplace(std::regex re,const String& s,const String& search,const String& replace,const String& modifier){
+    bool global=false;
+    String replaced_string=s;
+    if(stringContains(modifier,"g")){global=true;}
+    
+    try {
+        if(global){
+        replaced_string=std::regex_replace (s,re,replace,std::regex_constants::format_default);
+        }
+        else{
+        replaced_string=std::regex_replace (s,re,replace,NON_RECURSIVE_REGEX_REPLACE);
+        }
+    } 
+    catch (std::regex_error& e) {
+      printErrorLog("Invalid replace string regex: "+search);
+      Exit(1);
+    }
+    return replaced_string;
+}
+
     
 String stripPathDelimiter(const String& s){
     return replaceStringAll(s,path_delim,"");

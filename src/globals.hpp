@@ -69,6 +69,7 @@ typedef long double Double;
 typedef std::string String;
 typedef std::stringstream Stream;
 typedef std::vector<String> StringArray;
+typedef std::vector<std::regex> RegexArray;
 typedef std::vector<bool> BoolArray;
 typedef std::regex Regex;
 typedef std::map<Int,String> NameList;
@@ -192,8 +193,9 @@ NameList nsflist;
 //// Regex related
 String re_type="";
 RegexType REGEX_TYPE=REGEX_DEFAULT;
-
-
+namespace enum_re{
+enum regex_type {Default='0',pcre,ECMAScript,awk,egrep,grep,extended,basic};
+}
 /////Name string related
 
 String PD_DELIM=" ";
@@ -269,9 +271,11 @@ String replace_string_file="";
 String name_string="";
 String name_string_file="";
 String rname="";
+RegexArray rs_search_re;
 StringArray rs_search;
 StringArray rs_replace;
 StringArray rs_mod;
+RegexArray ss_search_re;
 StringArray ss_search;
 StringArray ss_mod;
 String sort_type="natural";
