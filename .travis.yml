@@ -7,3 +7,4 @@ addons:
    packages:
    - gcc-4.9.2
    - g++-4.9.2
+install: make get-deps
