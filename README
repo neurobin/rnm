@@ -25,15 +25,16 @@ Bulk Rename Utility written in `C++`. Files and directories can be passed as com
 <div id="install"></div>
 #Install:
 
-###Unix (32 or 64 bit):
+###Unix:
 
-Make sure `libstdc++6 (>=4.9.2)` or `GCC (g++>=4.9.2)` is available in your system.
+Make sure `libstdc++6 (>=4.9.2)` and `GCC (g++>=4.9.2)` is available in your system.
 
-1. Give the <span class="quote">install</span> file execution permission (`chmod +x install`) and
-2. Run it or just drag and drop it on terminal and hit <kbd>Enter</kbd> (requires root privilege).
-
-The install script depends on <span class="quote">Bash Shell</span>. If you don't have `bash` installed, then just copy the suitable binary file (`rnm`) from *bin/x32* or *bin/x64* directory to */usr/bin* directory, and copy the <span class="quote">rnm.1</span> file to */usr/share/man/man1* directory.
-
+To install, simply do:
+```sh
+./configure
+make
+sudo make install
+```
 ###Ubuntu:
 
 Aside from the above generalized method, you can also install it in Ubuntu from PPA (`ppa:neurobin/ppa`).
@@ -79,16 +80,15 @@ Options | Description
 `-h`, `--help`       | Show help menu.
 `-i`,`-si`           | Starting index.
 `-ei`                | End index i.e index to stop renaming from. It is only for files inside a directory that is being recursively taken due to a depth value greater than 0, i.e it works on directory index. Note that directory index `/id/` will renew in each directory i.e in each directory rename will be performed from start index to end index.
-`-inc`               | Increment value (floating point decimal). The amount, index will be incremented or decremented in each iteration. Decremented index is available through name string rule| `/-i/`, `/-id/` etc..
+`-inc`               | Increment value (floating point decimal). The amount, index will be incremented or decremented in each iteration. Decremented index is available through name string rule `/-i/`, `/-id/` etc..
 `-linc`              | The amount line count will be incremented or decremented in each iteration. This is always a positive integer.
 `-if`                | This sets Index flags. This is a '/' separated list of flags that will be used to render the index within it's text field. The general format is `'/keyword1/keyword2/...'`. Valued flags are set with *keyword=value* format. Ex: `-if '/uppercase/showpoint/showpos/showbase/left/length=4/precision=3/filler=*/latin-fallback=687678/'`. See <a href="#keywords">keywords section</a> for details.
 `-ifl`               | Index field length. Non occupied field will be filled with index field fillers (set with `-iff`). iff is set to the character `0` by default.
 `-iff`               | Not occupied field in index will be filled with a character which is set by this option.
-`-ifp`               | Index is a floating point decimal value. This sets the precision. If it is less than the number of digits left of the decimal point, the indexes may be rendered in scientific format.This option only sets the precision value. The result may be confusing and you shouldn't use this option unless you know what you are doing. Make it specific with `-ifp/d` or `-ifp/s` which set type of format (fixed point or scientific) along with the precision value.
-`-ns`                | Name string.
+`-ifp`               | Index is a floating point decimal value. This sets the precision.
 `-ns/f`              | Name string file. File containing name string (one per line). `-nsf /hist/` i.e a value passed `/hist/` as Name string file, will try to take the file from history.
-`-ns/fn`             | Name String file. This takes a null terminated *Name String* file, i.e filenames are terminated by null character (`\0`) instead of new line (`\n`). 
-`-l`, `-sl`          | Start Line number in name string file. 
+`-ns/fn`             | Name String file. This takes a null terminated *Name String* file, i.e filenames are terminated by null character (`\0`) instead of new line (`\n`).
+`-l`, `-sl`          | Start Line number in name string file.
 `-lv`, `-slv`        | Same as `-l` or `-sl`, except line number will be decremented in each iteration. 
 `-el`                | End line number. Line number to stop renaming from. 
 `-elv`               | Same as `-el`, except line number will be decremented in each iteration. 
@@ -201,7 +201,7 @@ Also you can provide multiple search strings with repeated `-ss` and/or `-ssf` o
                     Regarding replace string, there are several special cases:
                     
 1. `&` will be taken as the entire match found by the regex (search_part).
-2. `\1`, `\2` etc.. is the back-references, i.e you can access captured groups with these back-references. If you want to isolate a back-reference make it fill up the two digit limit or wrap it around with `{}`. For example, if you want to put a digit (2) after back-reference `\1`, you can't use it like `\12`. `\12` will mean `12th` back-reference not `\1` appended with a digit (1). In this case either use `\01` instead of `\1` or isolate the back-reference with `{}` i.e `\{1}`. 
+2. `\1`, `\2` etc.. is the captured groups. If you want to isolate a captured groups, wrap it around with `{}`. For example, if you want to put a digit (2) after captured group `\1`, you can't use it like `\12`. `\12` will mean `12th` captured group not `\1` appended with a digit (1). In this case isolate the captured group with `{}` i.e `\{1}`. 
 3. `\c` will convert the matched string to lowercase, and `\C` will convert it to uppercase. No other character is allowed in replace part if this is used. You can still concatenate different replace strings with `;`.
 4. `\p` is the prefix (i.e., the part of the target sequence that precedes the match)
 5. `\s` is the suffix (i.e., the part of the target sequence that follows the match).

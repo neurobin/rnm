@@ -317,7 +317,9 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 ACLOCAL_AMFLAGS = -I m4
 SUBDIRS = src
-EXTRA_DIST = autogen.sh
+EXTRA_DIST = autogen.sh \
+ README.md
+
 dist_man_MANS = rnm.1
 all: all-recursive
 
