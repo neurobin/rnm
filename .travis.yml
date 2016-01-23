@@ -1,0 +1,8 @@
+language: cpp
+addons:
+ apt:
+   sources:
+   - ubuntu-toolchain-r-test
+   packages:
+   - gcc-4.9.2
+   - g++-4.9.2
