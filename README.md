@@ -35,6 +35,9 @@ To install, simply do:
 make
 sudo make install
 ```
+
+If it seems too much of a work to compile the source, then download a binary branch (bin-release) of this repository which contains 32 and 64 bit binary build and follow the instructions on its' *README.md* file.
+
 ###Ubuntu:
 
 Aside from the above generalized method, you can also install it in Ubuntu from PPA (`ppa:neurobin/ppa`).
