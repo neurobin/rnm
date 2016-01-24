@@ -6,3 +6,4 @@ before_install:
   - sudo apt-get update -q
   - sudo apt-get install g++-4.9 -y
   - export CXX="g++-4.9"
+install: ./configure && make && sudo make distcheck
