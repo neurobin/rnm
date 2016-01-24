@@ -59,8 +59,9 @@ sudo apt-get install rnm
 <div id="un-install"></div>
 #Uninstall:
 
-1. Give the <span class="quote">uninstall</span> file execution permission and
-2. Run it or just drag and dropt it on terminal and hit <kbd>Enter</kbd> (requires root privilege).
+1. For ubuntu uninstall from software manager.
+2. If you used a binary branch during installation, follow the instructions on it's *README.md* file.
+3. If you compiled from the source, do `./configure && make && sudo make uninstall`
 
 <div id="usage"></div>
 #Usage:
