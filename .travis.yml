@@ -1,8 +1,10 @@
+sudo: required
+dist: trusty
 language: cpp
-addons:
- apt:
-   sources:
-   - ubuntu-toolchain-r-test
-   packages:
-   - gcc-4.9.2
-   - g++-4.9.2
+before_install:
+  - sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
+  - sudo apt-get update -q
+  - sudo apt-get install g++-4.9 -y
+  - export CXX="g++-4.9"
+install: ./configure && make && make check
+
