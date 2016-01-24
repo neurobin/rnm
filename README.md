@@ -71,10 +71,10 @@ sudo apt-get install rnm
 ```sh
 rnm directory/file/path -ns new_name [other options]
 rnm directory/file/path -rs "/search regex/replace string/gi" [other_options]
-rnm directory/file/path -nsf namestring/file/path
+rnm directory/file/path -ns/f namestring/file/path
 ```
 
-One of the options of `-ns` or `-nsf` or `-rs` is mandatory. Options are **not** sequential, their position in the argument list have no significance. For example, `rnm filepath -ns name` is the same as `rnm -ns name filepath`. Though passing the *Directory/File* path at the end of the argument list is considered to be safe and wise.
+One of the options of `-ns` or `-ns/f` or `-rs` is mandatory. Options are **not** sequential, their position in the argument list have no significance. For example, `rnm filepath -ns name` is the same as `rnm -ns name filepath`. Though passing the *Directory/File* path at the end of the argument list is considered to be safe and wise.
 
 Options are case insensitive, i.e `-ssF` and `-ssf` are the same.
 
@@ -92,7 +92,7 @@ Options | Description
 `-ifl`               | Index field length. Non occupied field will be filled with index field fillers (set with `-iff`). iff is set to the character `0` by default.
 `-iff`               | Not occupied field in index will be filled with a character which is set by this option.
 `-ifp`               | Index is a floating point decimal value. This sets the precision.
-`-ns/f`              | Name string file. File containing name string (one per line). `-nsf /hist/` i.e a value passed `/hist/` as Name string file, will try to take the file from history.
+`-ns/f`              | Name string file. File containing name string (one per line). `-ns/f /hist/` i.e a value passed `/hist/` as Name string file, will try to take the file from history.
 `-ns/fn`             | Name String file. This takes a null terminated *Name String* file, i.e filenames are terminated by null character (`\0`) instead of new line (`\n`).
 `-l`, `-sl`          | Start Line number in name string file.
 `-lv`, `-slv`        | Same as `-l` or `-sl`, except line number will be decremented in each iteration. 
@@ -145,8 +145,8 @@ Options | Description
 7. `/dc/` in name string will be replaced with directory count
 8. `/l/` in name string will be replaced with line number from *Name String File*.
 9. `/la/` in name string will be replaced with actual line number from *Name String File*.
-10. `/n/` in name string will be replaced with filename without extension. If used with `-nsf` option, the filename will be the name taken from the *Name String File*.
-11. `/fn/` in name string will be replaced with full name of the files. If used with `-nsf` option, full name will be the name taken from the *Name String File*.
+10. `/n/` in name string will be replaced with filename without extension. If used with `-ns/f` option, the filename will be the name taken from the *Name String File*.
+11. `/fn/` in name string will be replaced with full name of the files. If used with `-ns/f` option, full name will be the name taken from the *Name String File*.
 12. `/rn/` in name string will be replaced with Replaced Name.
 13. `/pd/` in name string will be replaced with parent directory  name of the current file or directory. 
 14. `/wd/`  in  name  string will be replaced with the current working directory name.
@@ -257,8 +257,8 @@ rnm ./New*/* -ns /i/.ext                         (globbing is allowed)
 rnm ./New*/* -ns /i/.ext -ed                     (-ed forces file only mode)
 rnm "./New Folder" -ns /id//dc/.ext -dp 1 -fo    (This will go inside the New Folder directory)
 rnm ./New* -ns /id/.ext -ss "regex"
-rnm -nsf filepath -ns /n//id/.ext
-rnm -nsf filepath
+rnm -ns/f filepath -ns /n//id/.ext
+rnm -ns/f filepath
 etc...
 ```
 
