@@ -1,0 +1,784 @@
+<!-- Creator     : groff version 1.22.2 -->
+<!-- CreationDate: Mon Feb  8 23:26:22 2016 -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta name="generator" content="groff -Thtml, see www.gnu.org">
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta name="Content-Style" content="text/css">
+<style type="text/css">
+       p       { margin-top: 0; margin-bottom: 0; vertical-align: top }
+       pre     { margin-top: 0; margin-bottom: 0; vertical-align: top }
+       table   { margin-top: 0; margin-bottom: 0; vertical-align: top }
+       h1      { text-align: center }
+</style>
+<title>rnm</title>
+
+</head>
+<body>
+
+<h1 align="center">rnm</h1>
+
+<a href="#NAME">NAME</a><br>
+<a href="#SYNOPSIS">SYNOPSIS</a><br>
+<a href="#DESCRIPTION">DESCRIPTION</a><br>
+<a href="#OPTIONS">OPTIONS</a><br>
+<a href="#TERMINOLOGY">TERMINOLOGY</a><br>
+<a href="#EXAMPLES">EXAMPLES</a><br>
+<a href="#LIMITS">LIMITS</a><br>
+<a href="#LOGDIR">LOGDIR</a><br>
+<a href="#EXITSTATUS">EXITSTATUS</a><br>
+<a href="#BUGREPORT">BUGREPORT</a><br>
+<a href="#AUTHOR">AUTHOR</a><br>
+<a href="#WEB">WEB</a><br>
+
+<hr>
+
+
+<h2>NAME
+<a name="NAME"></a>
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">rnm &minus;
+Bulk rename utility</p>
+
+<h2>SYNOPSIS
+<a name="SYNOPSIS"></a>
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>rnm [-ns</b>
+<i>name-string</i> <b>]</b> <i>file-path</i> <b>...</b></p>
+
+<p style="margin-left:11%; margin-top: 1em">One of the
+options of <b>-ns</b> or <b>-nsf</b> or <b>-rs</b> is
+mandatory. Options are **not** sequential, their position in
+the argument list have no significance. For example: <b>rnm
+filepath -ns name</b> is the same as <b>rnm -ns name
+filepath.</b> Though passing the directory/file path at the
+end of the argument list is considered to be safe and
+wise.</p>
+
+<p style="margin-left:11%; margin-top: 1em">Options are
+case insensitive, i.e <b>-ssF</b> and <b>-ssf</b> are the
+same.</p>
+
+<h2>DESCRIPTION
+<a name="DESCRIPTION"></a>
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">Bulk Rename
+Utility written in C++. Files and directories can be passed
+as command line arguments to rename them in bulk according
+to some naming scheme ( <b>Name String</b> ). If no file or
+directory path is passed as command line argument, it will
+wait for user to type the path i.e it will take the path
+from standard input (&gt;=version 3.0.1). It uses ECMAScript
+regex (aka JavaScript) as the default regex to provide
+search (and replace) functionality, other regex modes (
+POSIX compliant basic and extended regex) are available
+through ( <b>-re</b> ) option. It provides an undo
+functionality ( <b>rnm -u</b> )too to move back an unwanted
+rename operation. You can also run a simulation instead of
+actual rename to view the potential outcome as program
+output on terminal with the <b>-sim</b> option.</p>
+
+<h2>OPTIONS
+<a name="OPTIONS"></a>
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">-h, --help</p>
+
+<p style="margin-left:22%;">Show help menu.</p>
+
+<p style="margin-left:11%;">--index,--start-index, -i,</p>
+
+<p style="margin-left:22%;"><b>-si</b> <i>value</i> :
+Starting index.</p>
+
+<p style="margin-left:11%;">--end-index,</p>
+
+<p style="margin-left:22%;"><b>-ei</b> <i>value</i> : End
+index i.e index to stop renaming from. It is only for files
+inside a directory that is being recursively taken due to a
+depth value greater than 0, i.e it works on directory index.
+Note that directory index <b>/id/</b> will renew in each
+directory i.e in each directory rename will be performed
+from start index to end index.</p>
+
+<p style="margin-left:11%;">--increment-value,</p>
+
+<p style="margin-left:22%;"><b>-inc</b> <i>value</i> :
+Increment value (floating point decimal). The amount, index
+will be incremented or decremented in each iteration.
+Decremented index is available through name string rule:
+<b>/-i/</b> , <b>/-id/</b> etc..</p>
+
+<p style="margin-left:11%;">--line-increment-value,</p>
+
+<p style="margin-left:22%;"><b>-linc</b> <i>value</i> : The
+amount line count will be incremented or decremented in each
+iteration. This is always a positive integer.</p>
+
+<p style="margin-left:11%;">--index-flags,</p>
+
+<p style="margin-left:22%;"><b>-if</b> <i>flags</i> : This
+sets Index flags. This is a &rsquo;/&rsquo; separated list
+of flags that will be used to render the index within
+it&rsquo;s text field.</p>
+
+<p style="margin-left:22%; margin-top: 1em">The general
+format is <i>&rsquo;/keyword1/keyword2/...&rsquo;</i></p>
+
+<p style="margin-left:22%; margin-top: 1em">Valued flags
+are set with <i>keyword=value</i> format.</p>
+
+<p style="margin-left:22%; margin-top: 1em">Ex: <b>-if</b>
+<i>&rsquo;/uppercase/showpoint/showpos/showbase/left/length=4/precision=3/filler=*/latin-fallback=687678/&rsquo;</i></p>
+
+<p style="margin-left:22%; margin-top: 1em">See keywords
+section for details.</p>
+
+<p style="margin-left:11%;">--index-field-length,</p>
+
+<p style="margin-left:22%;"><b>-ifl</b> <i>value</i> :
+Index field length. Non occupied field will be filled with
+index field fillers (set with <b>-iff</b> ). iff is set to
+the character <i>0</i> by default. This can also be set
+using the <b>-if</b> option. The keyword is
+&rsquo;length&rsquo;.</p>
+
+<p style="margin-left:11%;">--index-field-filler,</p>
+
+<p style="margin-left:22%;"><b>-iff</b>
+<i>single-character</i> : Not occupied field in index will
+be filled with a character which is set by this option. This
+can also be set using the <b>-if</b> option. The keyword is
+&rsquo;filler&rsquo;.</p>
+
+<p style="margin-left:11%;">--index-field-precision,</p>
+
+<p style="margin-left:22%;"><b>-ifp</b> <i>value</i> :
+Index is a floating point decimal value. This sets the
+precision. If it is less than the number of digits left of
+the decimal point, the indexes may be rendered in scientific
+format.This option only sets the precision value. The result
+may be confusing and you shouldn&rsquo;t use this option
+unless you know what you are doing. This can also be set
+using the <b>-if</b> option. The keyword is
+&rsquo;precision&rsquo;.</p>
+
+<p style="margin-left:11%;">--name-string,</p>
+
+<p style="margin-left:22%;"><b>-ns</b> <i>string</i> : Name
+string.</p>
+
+<p style="margin-left:11%;">--name-string-file,</p>
+
+<p style="margin-left:22%;"><b>-ns/f</b> <i>file-path</i> :
+Name string file. File containing name string (one per
+line). <b>-ns/f</b> <i>/hist/</i> i.e a value <b>/hist/</b>
+passed as Name string file, will try to take the file from
+history.</p>
+
+
+<p style="margin-left:11%;">--name-string-file-null-terminated,</p>
+
+<p style="margin-left:22%;"><b>-ns/fn</b> <i>file-path</i>
+: Name String file. This takes a null terminated Name String
+file, i.e filenames are terminated by null character (\0)
+instead of new line (\n).</p>
+
+<p style="margin-left:11%;">--line, --start-line, -l,</p>
+
+<p style="margin-left:22%;"><b>-sl</b> : Start Line number
+in name string file.</p>
+
+<p style="margin-left:11%;">--line-reverse,
+--start-line-reverse, -lv,</p>
+
+<p style="margin-left:22%;"><b>-slv</b> <i>value</i> : Same
+as <b>-l or -sl</b> , except line number will be decremented
+in each iteration.</p>
+
+<p style="margin-left:11%;">--end-line,</p>
+
+<p style="margin-left:22%;"><b>-el</b> <i>value</i> : End
+line number. Line number to stop renaming from.</p>
+
+<p style="margin-left:11%;">--end-line-reverse,</p>
+
+<p style="margin-left:22%;"><b>-elv</b> <i>value</i> : Same
+as <b>-el</b> , except line number will be decremented in
+each iteration.</p>
+
+<p style="margin-left:11%;">--search-string,</p>
+
+<p style="margin-left:22%;"><b>-ss</b> <i>string</i> :
+Search string. String that will be used to search for files
+with matching names. This is generally a regex if not passed
+with <b>-ssf</b> option.</p>
+
+<p style="margin-left:11%;">--search-string-file,</p>
+
+<p style="margin-left:22%;"><b>-ss/f</b> <i>file_path</i> :
+Search string file. A file containing search string per
+line.</p>
+
+<p style="margin-left:11%;">--search-string-fixed,</p>
+
+<p style="margin-left:22%;"><b>-ssf</b> <i>string</i> :
+Fixed search string (not treated as regex).</p>
+
+
+<p style="margin-left:11%;">--search-string-fixed-file,</p>
+
+<p style="margin-left:22%;"><b>-ssf/f</b> <i>file_path</i>
+: Search string file. Contains fixed search string per
+line.</p>
+
+<p style="margin-left:11%;">--replace-string,</p>
+
+<p style="margin-left:22%;"><b>-rs</b> <i>string</i> :
+Replace string. A string in the form
+<b>/search_string/replace_string/modifier</b> , see
+<b>Replace String</b> in <b>TERMINOLOGY</b> section for
+details.</p>
+
+<p style="margin-left:11%;">--replace-string-file,</p>
+
+<p style="margin-left:22%;"><b>-rs/f</b> <i>file_path</i> :
+Replace string file. A file containing replace string per
+line.</p>
+
+<p style="margin-left:11%;">--regex</p>
+
+<p style="margin-left:22%;"><b>-re</b> <i>regex-mode</i> :
+Regex mode. Available regex modes are POSIX compliant
+<i>basic</i> &amp; <i>extended</i> regex, regex used by
+<i>grep</i> , <i>awk</i> , <i>egrep</i> and the default
+regex is <i>ECMAScript</i> regex.For example, to have a grep
+like regex, pass the option <b>-re</b> <i>grep</i> , to use
+POSIX compliant extended regex, pass <b>-re</b>
+<i>extended</i></p>
+
+<p style="margin-left:11%;">--regex-locale, -rel</p>
+
+<p style="margin-left:22%;">If this is passed as argument,
+regex will follow Locale. that is regex like <b>[a-z]</b>
+will have their meaning according to the system locale.</p>
+
+<p style="margin-left:11%;">--depth,</p>
+
+<p style="margin-left:22%;"><b>-dp</b> <i>value</i> : Depth
+of folder. -1(any negative number) means unlimited depth i.e
+all files and subdirectories will be included. Other values
+may be 0 1 2 3 etc... Default depth is 0, i.e directory
+contents will be ignored.</p>
+
+<p style="margin-left:11%;">--file-only, -fo</p>
+
+<p style="margin-left:22%;">File only mode. Only files are
+renamed (not directory). Goes to subdirectory/s if depth (
+<b>-dp</b> ) is set to 1 or greater. Default depth is set to
+0.</p>
+
+<p style="margin-left:11%;">--directory-only, -do</p>
+
+<p style="margin-left:22%;">Apply rename on directory
+only.</p>
+
+<p style="margin-left:11%;">--exclude-directory, -ed</p>
+
+<p style="margin-left:22%;">Apply rename on files only,
+exclude any and all directory and their contents. This is
+equivalent to file only mode with a zero depth ( <b>-fo -dp
+0</b> ).</p>
+
+<p style="margin-left:11%;">--count-directory, -cd</p>
+
+<p style="margin-left:22%;">Count directory in reserved
+index regardless of other options. Reserves indices for
+directories even if it is File Only mode.</p>
+
+<p style="margin-left:11%;">--count-file, -cf</p>
+
+<p style="margin-left:22%;">Count file in reserved index
+regardless of other options. Reserves indices for files even
+if it is Directory Only mode.</p>
+
+<p style="margin-left:11%;">--sort, -s</p>
+
+<p style="margin-left:22%;">Sort files or directories in a
+natural (human perceivable natural sort) manner.</p>
+
+<p style="margin-left:11%;">--sort/g, -s/g</p>
+
+<p style="margin-left:22%;">Sort files or directories in
+general manner (alphabetic sort).</p>
+
+<p style="margin-left:11%;">--sort/none, -s/none</p>
+
+<p style="margin-left:22%;">Force not to sort anything.
+Files or directories may or may not be at random order.</p>
+
+<p style="margin-left:11%;">--yes, -y</p>
+
+<p style="margin-left:22%;">Confirm Yes to all.</p>
+
+<p style="margin-left:11%;">--follow-link, -fl</p>
+
+<p style="margin-left:22%;">Follow symbolic link and rename
+the actual file/directory pointed by the link.</p>
+
+<p style="margin-left:11%;">--undo, -u</p>
+
+<p style="margin-left:22%;">Undo renaming</p>
+
+<p style="margin-left:11%;">--version, -v</p>
+
+<p style="margin-left:22%;">Version info.</p>
+
+<p style="margin-left:11%;">--quiet, -q</p>
+
+<p style="margin-left:22%;">Quiet operation.</p>
+
+<p style="margin-left:11%;">--force, -f</p>
+
+<p style="margin-left:22%;">Apply force. Enables renaming
+some non permitted files/directories.</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+<p>--</p></td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p>If this option is passed, anything and everything after
+it will be taken as file path. Put all options before
+passing this option.</p></td></tr>
+</table>
+
+<p style="margin-left:11%;">--show-options, -shop</p>
+
+<p style="margin-left:22%;">This shows an info about the
+various options passed as arguments and how they are being
+treated behind the scene.</p>
+
+<p style="margin-left:11%;">--simulation, -sim</p>
+
+<p style="margin-left:22%;">This runs a simulation of
+rename instead of actual rename operation, and prints all
+kinds of available outputs. <b>-q</b> option won&rsquo;t
+have any effect if this option is passed.</p>
+
+<h2>TERMINOLOGY
+<a name="TERMINOLOGY"></a>
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>Reserved
+Index</b></p>
+
+<p style="margin-left:22%;">Index will be incremented even
+if any file is skipped renaming in order to reserve the
+index for that skipped file</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>Reverse
+Index</b></p>
+
+<p style="margin-left:22%;">Decrementing index.</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>Name
+String</b></p>
+
+<p style="margin-left:22%;">A string, that is parsed to
+create names for new files. It can be fixed name which then
+can be modified for different files at runtime. Name sting
+is parsed by the following rules (must be wrapped around
+with filepath delimiter /):</p>
+
+<p style="margin-left:22%; margin-top: 1em"><b>/n/</b> in
+name string will be replaced with filename without
+extension. If used with -nsf option, the filename will be
+the name taken from the Name String File.</p>
+
+<p style="margin-left:22%; margin-top: 1em"><b>/fn/</b> in
+name string will be replaced with full name of the files. If
+used with -nsf option, full name will be the name taken from
+the Name String File.</p>
+
+<p style="margin-left:22%; margin-top: 1em"><b>/rn/</b> in
+name string will be replaced with Replaced Name.</p>
+
+<p style="margin-left:22%; margin-top: 1em"><b>/pd/</b> in
+name string will be replaced with parent directory name of
+the current file or directory.</p>
+
+<p style="margin-left:22%; margin-top: 1em"><b>/wd/</b> in
+name string will be replaced with the current working
+directory name.</p>
+
+<p style="margin-left:22%; margin-top: 1em"><b>/l/</b> in
+name string will be replaced with line number from Name
+String File.</p>
+
+<p style="margin-left:22%; margin-top: 1em"><b>/la/</b> in
+name string will be replaced with actual line number from
+Name String File.</p>
+
+<p style="margin-left:22%; margin-top: 1em"><b>/dc/</b> in
+name string will be replaced with directory count.</p>
+
+<p style="margin-left:22%; margin-top: 1em"><b>/i/</b> in
+name string will be replaced with index.</p>
+
+<p style="margin-left:22%; margin-top: 1em"><b>/ir/</b> in
+name string will be replaced with reserved index.</p>
+
+<p style="margin-left:22%; margin-top: 1em"><b>/id/</b> in
+name string will be replaced with directory index (index
+inside a directory).</p>
+
+<p style="margin-left:22%; margin-top: 1em"><b>/idr/</b> in
+name string will be replaced with reserved directory
+index.</p>
+
+<p style="margin-left:22%; margin-top: 1em"><b>/-i/</b> in
+name string will be replaced with inverse index.</p>
+
+<p style="margin-left:22%; margin-top: 1em">In general,
+<b>-i</b> ( <b>/-ir/ /-idr/</b> etc..) in the above
+replacement rules (applies to indexes excluding line index)
+will mean inverse index conforming to their meaning.</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>Extended
+Name String Rule</b></p>
+
+<p style="margin-left:22%;">This is an extension of the
+general purpose name string rules mentioned above.</p>
+
+<p style="margin-left:22%; margin-top: 1em"><b>Base
+conversion</b></p>
+
+<p style="margin-left:32%;"><b>/i-b2/</b> converts the
+index to base 2 i.e binary and <b>/i-b32/</b> will convert
+to base 32. This applies to all numbered name string
+rules.</p>
+
+<p style="margin-left:22%; margin-top: 1em"><b>Latin
+conversion</b></p>
+
+<p style="margin-left:32%;"><b>/i-l/</b> converts the index
+to Latin number. This applies to all numbered name string
+rules.</p>
+
+<p style="margin-left:22%; margin-top: 1em"><b>Scientific
+conversion</b></p>
+
+<p style="margin-left:32%;"><b>/i-s/</b> converts the index
+to scientific form. This applies to all numbered name string
+rules.</p>
+
+<p style="margin-left:22%; margin-top: 1em"><b>Extended
+/pd/ rules</b></p>
+
+<p style="margin-left:32%;">pd0 is the immediate parent
+directory, pd1 is the directory before pd0 and so forth.</p>
+
+<p style="margin-left:32%; margin-top: 1em">A range can
+also be supplied to combine all the directories in the level
+implied by the range. The general format of this rule is
+<b>/pd&lt;digits&gt;-&lt;digits&gt;-delimiter/</b></p>
+
+<p style="margin-left:32%; margin-top: 1em">For example:
+<b>/pd0-4--/</b> will combine all directories from level 0
+to 4 inserting the delimiter (- in this case) between them
+and the rule will become something like
+dir0-dir1-dir2-dir3-dir4.</p>
+
+<p style="margin-left:32%; margin-top: 1em">In place of
+&lt;digits&gt; you can also supply &rsquo;e&rsquo; which
+generally means the &rsquo;end&rsquo; i.e the deepest level
+available.</p>
+
+<p style="margin-left:32%; margin-top: 1em">Any unavailable
+level of directory will be ignored and be replaced with
+empty string.</p>
+
+<p style="margin-left:32%; margin-top: 1em">The range is
+bidirectional e.g <b>/pd4-0--/</b> will do the same in
+reverse order.</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>Name String
+File</b></p>
+
+<p style="margin-left:22%;">A file which contains a list of
+name string (one per line). Empty lines will be ignored and
+line number won&rsquo;t be counted. Actual line number
+(which counts the empty lines too) is available through name
+string rule: <b>/la/.</b> If the name string file path is
+passed through the option <b>-nsfn</b> , then it will expect
+the filenames to be null terminated instead of new line.</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>Search
+String</b></p>
+
+<p style="margin-left:22%;">A string that is used to search
+for files with matching filenames against the search string.
+By default it is a regex if <b>-ssF</b> option is not used.
+It is generally in the form <i>/regex/modifier</i> , where
+regex is the regex to search for and available modifier is
+<i>i</i> which implies case insensitive search. If no
+modifier is used, regex format can be reduced to
+<i>/regex/</i> or simply <i>regex</i></p>
+
+<p style="margin-left:22%; margin-top: 1em">Terminate
+multiple search strings with <i>;</i> , e.g
+<b>&rsquo;/regex/modifier;/regex2/modifier2;...&rsquo;</b></p>
+
+<p style="margin-left:22%; margin-top: 1em">Also you can
+provide multiple search strings with repeated <b>-ss</b>
+and/or <b>-ssf</b> options and files with repeated
+<b>-ss/f</b> and/or <b>-ssf/f</b> options. These options can
+be combined together too.</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>Index Field
+Length</b></p>
+
+<p style="margin-left:22%;">An integer value defining the
+field length of index. By default empty field will be filled
+with 0&rsquo;s. For example, if the value is 3, then index
+will be 001, 002, 003, etc.. Different filler (other than 0)
+can be provided with the <b>-iff</b> option.</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>Replaced
+Name</b></p>
+
+<p style="margin-left:22%;">The name can be modified at
+runtime using replace string. replace string will be parsed
+to create a new Name String rule: <b>/rn/</b> which can be
+used in Name String. If name string is not passed as
+argument, the new name of the file will be /rn/. Replaced
+Name is always generated from the old filename.</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>Replace
+String</b></p>
+
+<p style="margin-left:22%;">Replace String modifies the
+filename and the modified filename is available through name
+string rule: <b>/rn/</b> , If no Name String is provided,
+new name of the file will be the value of /rn/ by default.
+Replace String is a regex of the form:
+<b>/search_part/replace_part/modifier</b> where
+<i>search_part</i> is the regex to search for and
+<i>replace_part</i> is the string to replace with. Name
+string rules can be used in both <i>search_part</i> and
+<i>replace_part</i> in Replace String.</p>
+
+<p style="margin-left:22%; margin-top: 1em">Regarding the
+<i>replace_part</i> , there are several special cases:</p>
+
+<p style="margin-left:32%; margin-top: 1em">&amp; will be
+taken as the entire match found by the regex
+(search_part).</p>
+
+<p style="margin-left:32%; margin-top: 1em">\1, \2 etc.. is
+the captured groups or subpatterns. Up-to two digits after
+the \ will be taken as a captured group. If you want to
+isolate a captured group, wrap it around with {}. For
+example, if you want to put a digit (2) after the subpattern
+\1, you can&rsquo;t use it like \12. \12 will mean 12th
+subpattern not \1 appended with a digit (1). In this case
+isolate the subpattern with {} i.e \{1}.</p>
+
+<p style="margin-left:32%; margin-top: 1em">\c to convert
+to lowercase and \C to convert to uppercase. No other
+character is allowed in replace_part if \c or \C is
+used.</p>
+
+<p style="margin-left:32%; margin-top: 1em">\p is the
+prefix (i.e., the part of the target sequence that precedes
+the match).</p>
+
+<p style="margin-left:32%; margin-top: 1em">\s is the
+suffix (i.e., the part of the target sequence that follows
+the match).</p>
+
+<p style="margin-left:22%; margin-top: 1em">to insert a
+&amp; literally, use \&amp; and for \ use \\.</p>
+
+<p style="margin-left:22%; margin-top: 1em">Two modifiers
+are available: <i>g</i> and <i>i</i> ; <i>g</i> stands for
+global and replaces every instances of match found and
+<i>i</i> stands for case insensitive search (default is case
+sensitive).Replace String is always performed on old file
+name.</p>
+
+<p style="margin-left:22%; margin-top: 1em">Example:
+<b>&rsquo;/video/Episode /i//gi&rsquo;</b> will replace
+every instances of &rsquo;video&rsquo; with &rsquo;Episode
+index&rsquo; i.e you will get new rname as: Episode 1...,
+Episode 2..., etc...</p>
+
+<p style="margin-left:22%; margin-top: 1em">Terminate
+multiple replace strings with <i>;</i> e.g
+<b>&rsquo;/search1/replace1/gi;/search2/replace2/i;...&rsquo;</b></p>
+
+<p style="margin-left:22%; margin-top: 1em">Also you can
+provide multiple replace strings with repeated <b>-rs</b>
+option and multiple files with repeated <b>-rs/f</b>
+options. These options can be combined together too.</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>Regex</b></p>
+
+<p style="margin-left:22%;">Supported regexes are POSIX
+compliant <i>basic &amp; extended</i> regex, <i>grep,
+awk</i> and <i>egrep</i> type regexes and the default
+<i>ECMAScript</i> regex. Change regex mode with <b>-re</b>
+or <b>--regex</b> option.</p>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>Keywords</b></p>
+
+<p style="margin-left:22%;"><b>uppercase</b> : means
+uppercase.</p>
+
+
+<p style="margin-left:22%; margin-top: 1em"><b>showpoint</b>
+: show point regardless if it&rsquo;s an integer or floating
+point value.</p>
+
+
+<p style="margin-left:22%; margin-top: 1em"><b>showbase</b>
+: means show base (Hex or Oct).</p>
+
+<p style="margin-left:22%; margin-top: 1em"><b>showpos</b>
+: show + sign for positive numbers.</p>
+
+<p style="margin-left:22%; margin-top: 1em"><b>right</b> :
+adjust right.</p>
+
+<p style="margin-left:22%; margin-top: 1em"><b>left</b> :
+adjust left.</p>
+
+
+<p style="margin-left:22%; margin-top: 1em"><b>internal</b>
+: adjust internal.</p>
+
+
+<p style="margin-left:22%; margin-top: 1em"><b>precision</b>
+: set precision. Used like <i>precision=value</i></p>
+
+<p style="margin-left:22%; margin-top: 1em"><b>length</b> :
+sets length. Used like <i>length=value</i></p>
+
+<p style="margin-left:22%; margin-top: 1em"><b>filler</b> :
+sets filler. Used like <i>filler=value</i></p>
+
+<p style="margin-left:11%; margin-top: 1em">Only invalid
+characters for a file or directory name is the path
+delimiter and the null character (\0).</p>
+
+<h2>EXAMPLES
+<a name="EXAMPLES"></a>
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">rnm filename
+-ns newfilename</p>
+
+<p style="margin-left:22%;">renames from <i>filename</i> to
+<i>newfilename</i></p>
+
+<p style="margin-left:11%;">rnm filename -rs
+&rsquo;/f/F/&rsquo;</p>
+
+<p style="margin-left:22%;">renames <i>filename</i> to
+<i>Filename</i> , i.e f is replaced with F.</p>
+
+<p style="margin-left:11%;">rnm ./* -ns &rsquo;/fn/
+/i/&rsquo;</p>
+
+<p style="margin-left:22%;"><b>/fn/</b> is full name and
+<b>/i/</b> is the index i.e files and directories get
+indexed ( <i>filename 1</i> , <i>filename 2</i> ,
+etc..).</p>
+
+<p style="margin-left:11%;">rnm ./* -ns &rsquo;/fn/
+/i/&rsquo; -fo</p>
+
+<p style="margin-left:22%;">file only mode, i.e no
+directory will be renamed or indexed, unless depth is
+<b>&gt;0</b></p>
+
+<h2>LIMITS
+<a name="LIMITS"></a>
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>Maximum
+length of file name/path</b> : FILENAME_MAX</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>Default
+latin fallback</b> : 55555 (After this value latin
+conversion will fall back to decimal).</p>
+
+<h2>LOGDIR
+<a name="LOGDIR"></a>
+</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em">~/.neurobin/rnm</p>
+
+<h2>EXITSTATUS
+<a name="EXITSTATUS"></a>
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">0 on
+success</p>
+
+<p style="margin-left:11%; margin-top: 1em">1 on
+failure</p>
+
+<h2>BUGREPORT
+<a name="BUGREPORT"></a>
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">Report bugs to
+http://github.com/neurobin/rnm/issues</p>
+
+<h2>AUTHOR
+<a name="AUTHOR"></a>
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">MD. JAHIDUL
+HAMID <br>
+@github: http://github.com/neurobin <br>
+@bitbucket: http://bitbucket.com/neurobin</p>
+
+<h2>WEB
+<a name="WEB"></a>
+</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em">http://neurobin.github.io/rnm</p>
+<hr>
+</body>
+</html>
