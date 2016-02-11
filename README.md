@@ -265,16 +265,15 @@ etc...
 <div id="things-to-care"></div>
 #Things to care:
 
-
 1. All options should always be separated by space. For Example: `-vy` won't mean two option `-v` and `-y`, rather it will mean a single option `-vy`.
-2. Any non option argument will be treated as file or directory path. For example in <pre><code>rnm file1 file2 -- -ns fd</code></pre>`file1`, `file2` and `--` will be taken as file paths.
-3. Be wary of filename globbing. Command like `rnm ./*` will take all files and directories as arguments and thus the files and directories will be subject to rename operation. If you don't want to rename directories, use file only mode (`-fo`). If you want to go inside directories, use depth (`-dp`) greater than `0` with file only mode.
-4. If you run `rnm . -ns something` or `rnm ./ -ns something`, your current directory will be renamed (be careful).
-5. This is a dangerous tool like `rm`, so use with care. If you make a mistake and do some unwanted rename, run `rnm -u` to undo (before running any more `rnm` command).
-6. Pass all regex like strings within quotes even if they don't contain any white space.
-7. To pass a filename that resembles an option, use `./`, i.e `./-ns` to pass a file named `-ns` in the current directory. Or you can use the `--` option make it a non-option argument; in that case make sure to pass all "Option" arguments before `--`, because everything after `--` will be taken as file path/s.
-8. Pass file or directory path list at the end of the argument sequence. Use `--` to make all the arguments after it as paths (not options).
+2. Any non option argument will be treated as file or directory path. For example in <pre><code>rnm file1 file2 -dummy -ns fd</code></pre>`file1`, `file2` and `-dummy` will be taken as file paths.
+3. If filename/path argument may include `-` at the beginning, use `--` to make all the arguments after this option as paths/names (not options).
+4. Be wary of filename globbing. Command like `rnm ./*` will take all files and directories as arguments and thus the files and directories will be subject to rename operation. If you don't want to rename directories, use file only mode (`-fo`). If you want to go inside directories, use depth (`-dp`) greater than `0` with file only mode.
+6. If you run `rnm . -ns something` or `rnm ./ -ns something`, your current directory will be renamed (be careful).
+6. This is a dangerous tool like `rm`, so use with care. If you make a mistake and do some unwanted rename, run `rnm -u` to undo (before running any more `rnm` command).
+7. Pass all regex like strings within quotes even if they don't contain any white space.
+8. To pass a filename that resembles an option, use `./`, i.e `./-ns` to pass a file named `-ns` in the current directory. Or you can use the `--` option to make it a non-option argument; in that case make sure to pass all "Option" arguments before `--`, because everything after `--` will be taken as file path/s.
 
 
-#License:
-The project is released under GPL and every user is required to comply with the GPL (v3 or higher) License which ensures user's freedom of use. If you want the source code under a License other than GPL, email me; you may require to pay an initial fee to get it Licensed in any other way you like depending on your intention of use and your Licensing requirements.
+#Getting it Licensed other than GPL:
+The project is released under GPL and users are required to comply with the GPL (v3 or higher) License which ensures user's freedom of use. If you want the source code under a License other than GPL, email me; you may require to pay an initial fee to get it Licensed in any other way you like depending on your intention of use and your Licensing requirements.
