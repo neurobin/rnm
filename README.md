@@ -275,3 +275,6 @@ etc...
 7. To pass a filename that resembles an option, use `./`, i.e `./-ns` to pass a file named `-ns` in the current directory. Or you can use the `--` option make it a non-option argument; in that case make sure to pass all "Option" arguments before `--`, because everything after `--` will be taken as file path/s.
 8. Pass file or directory path list at the end of the argument sequence. Use `--` to make all the arguments after it as paths (not options).
 
+
+#License:
+The project is released under GPL and every user is required to comply with the GPL (v3 or higher) License which ensures user's freedom of use. If you want the source code under a License other than GPL, email me; you may require to pay an initial fee to get it Licensed in any other way you like depending on your intention of use and your Licensing requirements.
