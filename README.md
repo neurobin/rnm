@@ -277,4 +277,4 @@ etc...
 
 
 #Getting it Licensed other than GPL:
-The project is released under GPL and users are required to comply with the GPL (v3 or higher) License which ensures user's freedom of use. If you want the source code under a License other than GPL, email me ([or use this contact form](https://neurobin.org/about/contact/)); you may require to pay a one-time-only fee to get it Licensed in any other way you like depending on your intention of use and your Licensing requirements.
+The project is released under GPL and users are required to comply with the GPL (v3 or higher) License which ensures user's freedom of use. If you want the source code under a License other than GPL, email me ([or use this contact form](https://neurobin.org/about/contact/)); you may require to pay a one-time-only fee to get it Licensed in any other way you like depending on your intention of use and your Licensing terms.
