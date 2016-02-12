@@ -162,6 +162,7 @@ Options | Description
   * A range can also be supplied to combine all the directories in the level implied by the range. The general format of this rule is `/pd<digits>-<digits>-delimiter/`
   * For example: `/pd0-4--/` will combine all directories from level 0 to 4 inserting the delimiter (`-` in this case) between them and the rule will become something like `dir0-dir1-dir2-dir3-dir4`.
   * In place of `<digits>` you can also supply `e` which generally means the 'end' i.e the deepest level available.
+  * In place of `<digits>` you can also supply `w` which means the level of working directory.
   * Any unavailable level of directory will be ignored and be replaced with empty string.
   * The range is bidirectional e.g `/pd4-0--/` will do the same in reverse order. 
 
