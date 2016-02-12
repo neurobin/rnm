@@ -126,3 +126,7 @@ Bug fix: inconsistency in reserved directory index.
 ###`3.3.1`: <span class="light-quote">Sun Dec 20 18:52:22 UTC 2015</span>
 
 1. size optimization
+
+###`3.3.2`: <span class="light-quote">Fri Feb 12 14:56:09 UTC 2016</span>
+1. Added an extra term 'w' for extended /pd/ name string rule.
+2. A bug fixed regarding support for multiline regex pattern (which can be generated from multiline filename) in replace string. More details at https://github.com/neurobin/rnm/issues/6

@@ -242,6 +242,7 @@ String NEW_LINE="\n";
 
 /////Strings
 String path_delim="/";
+String second_delim="%";
 String root_filesystem="/";
 String CPDN="";
 String CWDN="";
@@ -271,11 +272,11 @@ String replace_string_file="";
 String name_string="";
 String name_string_file="";
 String rname="";
-RegexArray rs_search_re;
+///RegexArray rs_search_re; ///Unfortunately this can not be used. replace string is dynamic and depends on each filename.
 StringArray rs_search;
 StringArray rs_replace;
 StringArray rs_mod;
-RegexArray ss_search_re;
+RegexArray ss_search_re; ///search strings are static and do not depend on each filename, therefore they can be globalized
 StringArray ss_search;
 StringArray ss_mod;
 String sort_type="natural";
@@ -284,7 +285,7 @@ String sort_type="natural";
 /// Project Info
 String project_name="rnm";
 String executable_name="rnm";
-String version="3.3.1";
+String version="3.3.2";
 String author_name="Jahidul Hamid";
 String author_email="jahidulhamid@yahoo.com";
 String bug_report_url="http://github.com/neurobin/"+project_name+"/issues";

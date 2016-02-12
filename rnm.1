@@ -358,6 +358,8 @@ will combine all directories from level 0 to 4 inserting the delimiter (- in thi
 
 In place of <digits> you can also supply 'e' which generally means the 'end' i.e the deepest level available.
 
+Another term 'w' is available which points to the level of working directory. Note that the level of working directory is dynamically changed according to the total available levels in the directory tree and thus it makes it difficult for users to construct a range or level based on the current (working) directory, the 'w' term is provided to make it possible to indirectly point to this dynamically changed level. It is only useful when the directories/files to be renamed are child of the working directory. To simply include the working directory, however, use the /wd/ name-string rule.
+
 Any unavailable level of directory will be ignored and be replaced with empty string. 
 
 The range is bidirectional e.g

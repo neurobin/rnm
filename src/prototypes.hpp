@@ -44,7 +44,8 @@ String replaceStringWithDelims(String s,const String& rep, const String& delim1,
 String replaceStringWithDelims(String s,const String& rep, const String& delim);
 String replaceStringAllWithDelims(String s,const String& rep, const String& delim1, const String& delim2);
 String replaceStringAllWithDelims(String s,const String& rep, const String& delim);
-String parseNameString(const String& ns,const String& file,DirectoryIndex &);
+String parseNameString(const String& ns,const String& file,DirectoryIndex &, const String& delim=path_delim, 
+        const String& delim2="",bool encode=false); ///delim2 default must be empty string
 String regexReplace(const String& s,const String& search,const String& replace,const String& modifier,int user=0);
 void parseReplaceString(StringArray& rs ,const String& file,DirectoryIndex &);
 String copyFile(const String& src,const String& dst);
@@ -89,8 +90,10 @@ bool setIndexFlagAdjust(String s);
 String toStringAccordingToIFL(Double index,int ifl,int number_base=NUM_BASE,IOFormatFlag index_flag_float=INDEX_FLAG_FLOAT,bool latin=false);
 String toStringAccordingToMyConvention(int val);
 String toStringAccordingToMyConvention(double val);
-String processExtendedNameString_d(String ns,std::map<String,Double>& ns_rules,int ifl);
-String processExtendedPdNameStringRule(String ns, const String& file);
+String processExtendedNameString_d(String ns,std::map<String,Double>& ns_rules,int ifl, const String& delim, const String& delim2, bool sanitize);
+///delim2 default must be an empty string: processExtendedNameString_d()
+String processExtendedPdNameStringRule(String ns, const String& file, const String& delim, const String& delim2,bool sanitize=false);
+///delim2 default must be an empty string: processExtendedPdNameStringRule()
 template<typename T1, typename T2>
 bool existsInMap(std::map<T1,T2> mymap, T1 key);
 String removeInvalidNameStringRules(const String& ns);

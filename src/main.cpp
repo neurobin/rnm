@@ -510,15 +510,7 @@ int main(int argc, char* argv[]) {getCurrentDir(self_dir);self_path=self_dir+Str
         }
     if(search_string.size()!=0){
         for(Int i=0;i<(Int)search_string.size();i++){
-            if(stringContains(search_string[i],path_delim)){
                 parseSearchString(search_string[i],i); 
-            }
-            else {
-                ss_search.push_back(search_string[i]);
-                ss_mod.push_back("");
-                ss_fixed.push_back(fixed_ss[i]);
-            
-            }    
         }
     ///search_string and fixed_ss will no longer be uesed. Better free up some memory
     search_string.clear();fixed_ss.clear();
