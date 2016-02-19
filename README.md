@@ -92,6 +92,7 @@ Options | Description
 `-ifl`               | Index field length. Non occupied field will be filled with index field fillers (set with `-iff`). iff is set to the character `0` by default.
 `-iff`               | Not occupied field in index will be filled with a character which is set by this option.
 `-ifp`               | Index is a floating point decimal value. This sets the precision.
+`-ns`                | Name string. This is generally the new name for the file. Any part in this name string wrapped around with the path delimiter (/) is parsed as a name string rule and the new name is formed accordingly. See <a href="#name-string">Name String Rule</a> for more details.
 `-ns/f`              | Name string file. File containing name string (one per line). `-ns/f /hist/` i.e a value passed `/hist/` as Name string file, will try to take the file from history.
 `-ns/fn`             | Name String file. This takes a null terminated *Name String* file, i.e filenames are terminated by null character (`\0`) instead of new line (`\n`).
 `-l`, `-sl`          | Start Line number in name string file.
