@@ -1,69 +1,25 @@
-#include <string.h>
-#include <stdlib.h>
-#include <stdio.h>
+#include "func.hpp"
+#include <chrono>
+#include <gmpxx.h>
 
-char * normalizePath(char* pwd, const char * src, char* res) {
-	size_t res_len;
-	size_t src_len = strlen(src);
+typedef std::chrono::high_resolution_clock::time_point TimeVar;
 
-	const char * ptr = src;
-	const char * end = &src[src_len];
-	const char * next;
+#define duration(a) std::chrono::duration_cast<std::chrono::nanoseconds>(a).count()
 
-	if (src_len == 0 || src[0] != '/') {
-		// relative path
-		size_t pwd_len;
+#define timeNow() std::chrono::high_resolution_clock::now()
 
-		pwd_len = strlen(pwd);
-		memcpy(res, pwd, pwd_len);
-		res_len = pwd_len;
-	} else {
-		res_len = 0;
-	}
-
-	for (ptr = src; ptr < end; ptr=next+1) {
-		size_t len;
-		next = (char*)memchr(ptr, '/', end-ptr);
-		if (next == NULL) {
-			next = end;
-		}
-		len = next-ptr;
-		switch(len) {
-		case 2:
-			if (ptr[0] == '.' && ptr[1] == '.') {
-				const char * slash = (char*)memrchr(res, '/', res_len);
-				if (slash != NULL) {
-					res_len = slash - res;
-				}
-				continue;
-			}
-			break;
-		case 1:
-			if (ptr[0] == '.') {
-				continue;
-			}
-			break;
-		case 0:
-			continue;
-		}
-
-		if (res_len != 1)
-			res[res_len++] = '/';
-		
-		memcpy(&res[res_len], ptr, len);
-		res_len += len;
-	}
-
-	if (res_len == 0) {
-		res[res_len++] = '/';
-	}
-	res[res_len] = '\0';
-	return res;
-}
+std::string fun(char a){
+    if(a) return std::string(1,a);
+    return std::string();
+    }
 
 int main(){
-    char path[FILENAME_MAX+1];
-    printf("\n%s\n",normalizePath((char*)"/usr/share/local/apps",(char*)"./../../../",path));
+    std::string s("SS");
+    std::cout<<s;
+    s = std::string();
+    std::cout<<s;
+    
     return 0;
 }
+
 

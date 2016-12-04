@@ -1,24 +1,26 @@
 #include <iostream>
-#include <regex>
+#include <jpcre2.hpp>
 #include <string>
 
-typedef std::regex_iterator<std::string::iterator> RegexIterator;
 typedef std::string String;
-typedef std::regex Regex;
+typedef jpcre2::select<char> jp;
 
-bool isComplyingToRegex(String& s,Regex &re){
+bool isComplyingToRegex(String& s, jp::Regex &re){
     String total="";
-    RegexIterator it(s.begin(), s.end(), re);
-    RegexIterator it_end;
-    while(it!=it_end){total+=it->str();++it;}
-    if(s!=total){return false;}
-    else return true;
+    jp::VecNum v;
+    re.initMatch().setNumberedSubstringVector(&v).setFindAll();
+    re.match(s);
+    for(size_t i = 0; i < v.size(); ++i) {
+        std::cout<<"\n\t"<<v[i][0]<<"\t\t"<<total;
+        total += v[i][0];
+    }
+    return (s == total);
 }
 
 
 int main(){
-    String name="/jk/me/gi";
-    String pat = R"(^\s*/([^/]*)/([^/]*)/\s*([gi]{0,2})\s*([;]\s*|$))";
-    Regex multi_re (pat);
+    String name="/jk/me/gi;/fds/fsd/g;/hj/hj";
+    String pat = R"(\s*/([^/]*)/([^/]*)/\s*([gi]{0,2})\s*([;]\s*|$))";
+    jp::Regex multi_re (pat);
     std::cout<< isComplyingToRegex(name,multi_re);
 }

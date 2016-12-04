@@ -32,6 +32,15 @@
  
 #include "funcs.hpp"
 
+
+
+void checkArgAvailability(const StringArray& sa,int i){
+    if(i>=(int)sa.size()){
+        printErrorLog("One or more argument/s missing");
+        Exit(1);
+    }
+}
+
 int main(int argc, char* argv[]) {getCurrentDir(self_dir);self_path=self_dir+String(path_delim)+executable_name;
     CWD=toString(self_dir);
     CWDN=basename(self_dir);

@@ -1,7 +1,7 @@
 include([ax_cxx_compile_stdcxx.m4])
 AC_INIT([rnm], [3.3.2], [http://github.com/neurobin/rnm/issues])
 AC_CONFIG_AUX_DIR(config)
-prefix="/usr"
+#prefix="/usr"
 AC_CONFIG_SRCDIR([src/main.cpp])
 
 
@@ -11,7 +11,7 @@ AM_INIT_AUTOMAKE
 # Checks for programs.
 AC_PROG_CXX
 
-CXXFLAGS="-O2"
+CXXFLAGS=" -O2 "
 
 #check for c++11 support and add flags
 AX_CXX_COMPILE_STDCXX([11], [noext], [mandatory])

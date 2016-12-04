@@ -35,6 +35,7 @@
 
 
 /////includes
+#define _FILE_OFFSET_BITS 64
 #include <iostream>
 #include <iomanip>
 #include <cstdio>
@@ -240,190 +241,190 @@ String NEW_LINE="\n";
 
 
 
-/////Strings
-String path_delim="/";
-String second_delim="%";
-String root_filesystem="/";
-String CPDN="";
-String CWDN="";
-String CWD="";
-////getting Linux Home and defining some paths
-String getUnixHome(){const char *homedir;if ((homedir = getenv("HOME")) == NULL) {homedir = getpwuid(getuid())->pw_dir;}return String(homedir);}
-String HOME=getUnixHome();
-String LOG_DIR_PARENT=HOME+path_delim+".neurobin";
-String LOG_DIR=LOG_DIR_PARENT+path_delim+"rnm";
-String ERROR_LOG=LOG_DIR+path_delim+"errors.log";
-String OUT_LOG=LOG_DIR+path_delim+"out.log";
-String RNM_FILE_LOG_L=LOG_DIR+path_delim+"rfl.l.log";
-String RNM_FILE_LOG_R=LOG_DIR+path_delim+"rfl.r.log";
-String RNM_FILE_LOG_L_TMP=RNM_FILE_LOG_L+".tmp";
-String RNM_FILE_LOG_R_TMP=RNM_FILE_LOG_R+".tmp";
-String NSF_LIST_FILE=LOG_DIR+path_delim+"nsf.list";
+//~ /////Strings
+//~ String path_delim="/";
+//~ String second_delim="%";
+//~ String root_filesystem="/";
+//~ String CPDN="";
+//~ String CWDN="";
+//~ String CWD="";
+//~ ////getting Linux Home and defining some paths
+//~ String getUnixHome(){const char *homedir;if ((homedir = getenv("HOME")) == NULL) {homedir = getpwuid(getuid())->pw_dir;}return String(homedir);}
+//~ String HOME=getUnixHome();
+//~ String LOG_DIR_PARENT=HOME+path_delim+".neurobin";
+//~ String LOG_DIR=LOG_DIR_PARENT+path_delim+"rnm";
+//~ String ERROR_LOG=LOG_DIR+path_delim+"errors.log";
+//~ String OUT_LOG=LOG_DIR+path_delim+"out.log";
+//~ String RNM_FILE_LOG_L=LOG_DIR+path_delim+"rfl.l.log";
+//~ String RNM_FILE_LOG_R=LOG_DIR+path_delim+"rfl.r.log";
+//~ String RNM_FILE_LOG_L_TMP=RNM_FILE_LOG_L+".tmp";
+//~ String RNM_FILE_LOG_R_TMP=RNM_FILE_LOG_R+".tmp";
+//~ String NSF_LIST_FILE=LOG_DIR+path_delim+"nsf.list";
 
 
-//StringArray file_vector;
-char self_dir[FILENAME_MAX];
-String base_dir="";
-String self_path="";
-StringArray search_string;
-String search_string_file="";
-StringArray replace_string;
-String replace_string_file="";
-String name_string="";
-String name_string_file="";
-String rname="";
-///RegexArray rs_search_re; ///Unfortunately this can not be used. replace string is dynamic and depends on each filename.
-StringArray rs_search;
-StringArray rs_replace;
-StringArray rs_mod;
-RegexArray ss_search_re; ///search strings are static and do not depend on each filename, therefore they can be globalized
-StringArray ss_search;
-StringArray ss_mod;
-String sort_type="natural";
+//~ //StringArray file_vector;
+//~ char self_dir[FILENAME_MAX];
+//~ String base_dir="";
+//~ String self_path="";
+//~ StringArray search_string;
+//~ String search_string_file="";
+//~ StringArray replace_string;
+//~ String replace_string_file="";
+//~ String name_string="";
+//~ String name_string_file="";
+//~ String rname="";
+//~ ///RegexArray rs_search_re; ///Unfortunately this can not be used. replace string is dynamic and depends on each filename.
+//~ StringArray rs_search;
+//~ StringArray rs_replace;
+//~ StringArray rs_mod;
+//~ RegexArray ss_search_re; ///search strings are static and do not depend on each filename, therefore they can be globalized
+//~ StringArray ss_search;
+//~ StringArray ss_mod;
+//~ String sort_type="natural";
 
 
-/// Project Info
-String project_name="rnm";
-String executable_name="rnm";
-String version="3.3.2";
-String author_name="Jahidul Hamid";
-String author_email="jahidulhamid@yahoo.com";
-String bug_report_url="http://github.com/neurobin/"+project_name+"/issues";
+//~ /// Project Info
+//~ String project_name="rnm";
+//~ String executable_name="rnm";
+//~ String version="3.3.2";
+//~ String author_name="Jahidul Hamid";
+//~ String author_email="jahidulhamid@yahoo.com";
+//~ String bug_report_url="http://github.com/neurobin/"+project_name+"/issues";
 
 
 
-String version_info="\n\
-Rename Utility "+project_name+"\n\
-Version:        "+version+"\n\
-Author:         "+author_name+"\n\
-Author Email:   "+author_email+"\n\
-Bug Report:     "+bug_report_url+"\n\
-";
+//~ String version_info="\n\
+//~ Rename Utility "+project_name+"\n\
+//~ Version:        "+version+"\n\
+//~ Author:         "+author_name+"\n\
+//~ Author Email:   "+author_email+"\n\
+//~ Bug Report:     "+bug_report_url+"\n\
+//~ ";
 
 
-String help_message="\n\
-************** "+project_name+" "+version+" *******************\n\
-\n\
-Usage: "+project_name+" Directory/File/Path [options]\n\
-\n\
-One of the options of [-ns] or [-nsf] or [-rs] is mandatory.\n\
-Options are **not** sequential, their position in the argument list\n\
-have no significance. For example, `rnm filepath -ns name` is the same\n\
-as `rnm -ns name filepath`. Though passing the directory/file path at the end\n\
-of the argument list is considered to be safe and wise.\n\
-\n\
-Options are case insensitive, i.e `-ssF` and `-ssf` are the same.\n\
-\n\
-options:\n\
-\n\
--h             : Show help menu.\n\
-\n\
--i,-si   value : Starting index.\n\
-\n\
--ei    value   : End index i.e index to stop renaming from. It works on directory index.\n\
-                 \n\
--inc   value   : Increment value (floating point decimal). The amount, index will be\n\
-                 incremented or decremented in each iteration. Decremented index is\n\
-                 available through name string rule: `"+path_delim+"-i"+path_delim+"`, `"+path_delim+"-id"+path_delim+"` etc..\n\
-                 \n\
--linc  value   : The amount line count will be incremented or decremented in each iteration.\n\
-                 This is always a positive integer.\n\
-                 \n\
--if    value   : This sets Index flags. This is a "+path_delim+" separated list of flags\n\
-                 that will be used to render the index within it's text field.\n\
-\n\
--ifl   value   : Index field length. Non occupied field will be\n\
-                 filled with index field fillers (set with -iff). iff is set to the\n\
-                 character 0 by default.\n\
-                 This can also be set with the -if option.\n\
-\n\
--iff   value   : Not occupied field in index will be filled with a character\n\
-                 which is set by this option.\n\
-                 This can also be set with the -if option.\n\
-                 \n\
--ifp   value   : Index is a floating point decimal value. This sets the precision\n\
-                 i.e the number of digits that would be taken after the decimal point.\n\
-                 This can also be set with the -if option.\n\
-                 \n\
--ns    value   : Name string.\n\
-     \n\
--ns/f  value   : Name string file. File containing name string (one per line).\n\
-\n\
--ns/fn value   : Name String file. This takes a null terminated *Name String* file, i.e\n\
-                 filenames are terminated by null character (\\0) instead of new line (\\n).\n\
-                 \n\
--l, -sl value  : Start Line number in name string file.\n\
-\n\
--lv, -slv value: Same as -l or -sl, except line number will be decremented in each\n\
-                 iteration.\n\
-\n\
--el    value   : End line number. Line number to stop renaming from.\n\
-\n\
--elv   value   : Same as -el, except line number will be decremented in each iteration.\n\
-\n\
--ss    value   : Search string\n\
-                 String that will be used to search for files with matching names.\n\
-                 This is generally regex (ECMAScript regex) if not pass with -ssf.\n\
-                 \n\
--ss/f  value   : Search string file. Contains search strings per line.\n\
-     \n\
--ssf   value   : Fixed search string (not treated as regex).\n\
-\n\
--ssf/f value   : Fixed search string file. Contains fixed search string (per line).\n\
-\n\
--rs    value   : Replace string. A string in the form /search_string/replace_string/modifier \n\
-\n\
--rs/f  value   : Replace string file. Contains replace string (per line).\n\
-\n\
--re    value   : regex mode. Available regex modes are basic, extended, grep, awk, egrep, ecmascript.\n\
-                 ECMAScript regex is the default mode.\n\
-\n\
--rel           : If this is passed as argument, regex will follow Locale. that is regex like\n\
-                [a-z] will have their meaning according to the system locale.\n\
-                \n\
--dp    value   : Depth of folder. -1(any negative number) means unlimited depth i.e all files and subdirectories\n\
-                 will be included. Other values may be 0 1 2 3 etc...\n\
-                 Default depth is 0, i.e directory contents will be ignored.\n\
-       \n\
--fo            : File only mode. Only files are renamed (not directory).\n\
-                 Goes to subdirectory/s if depth (`-dp`) is set to `1` or greater.\n\
-                 Default depth is set to 0.\n\
-                 \n\
--do            : Apply rename on directory only.\n\
-\n\
--ed            : Apply rename on files only, exclude any and all directories and their\n\
-                 contents. equivalent to: '-fo -dp 0'\n\
-\n\
--cd            : Count directory in reserved index, regardless of other options.\n\
-\n\
--cf            : Count file in reserved index, regardless of other options.\n\
-\n\
--s             : Sort files. Default is natural sort. -s/g for general sort.\n\
-\n\
--y             : Confirm Yes to all.\n\
-\n\
--fl            : follow symlink.\n\
-\n\
--u             : Undo renaming.\n\
-\n\
--v             : Version info.\n\
-\n\
--q             : Quiet operation.\n\
-\n\
--f             : Apply force. Enables renaming some non permitted files/directories\n\
-                 except / (The root filesystem directory) and rnm itself.\n\
-\n\
---             : Everything after this will be taken as file paths.\n\
-\n\
--shop          : This shows an info about the various options passed as arguments\n\
-                 and how they are being treated behind the scene.\n\
-                 \n\
--sim           : This runs a simulation of rename instead of actual rename operation,\n\
-                 and prints all kinds of available outputs.\n\
-                 \n\
-Only invalid characters for a file or directory name is the path delimiter and the null character (\\0).\n\
-See more details on the manual (man rnm).\n\
-";
+//~ String help_message="\n\
+//~ ************** "+project_name+" "+version+" *******************\n\
+//~ \n\
+//~ Usage: "+project_name+" Directory/File/Path [options]\n\
+//~ \n\
+//~ One of the options of [-ns] or [-nsf] or [-rs] is mandatory.\n\
+//~ Options are **not** sequential, their position in the argument list\n\
+//~ have no significance. For example, `rnm filepath -ns name` is the same\n\
+//~ as `rnm -ns name filepath`. Though passing the directory/file path at the end\n\
+//~ of the argument list is considered to be safe and wise.\n\
+//~ \n\
+//~ Options are case insensitive, i.e `-ssF` and `-ssf` are the same.\n\
+//~ \n\
+//~ options:\n\
+//~ \n\
+//~ -h             : Show help menu.\n\
+//~ \n\
+//~ -i,-si   value : Starting index.\n\
+//~ \n\
+//~ -ei    value   : End index i.e index to stop renaming from. It works on directory index.\n\
+                 //~ \n\
+//~ -inc   value   : Increment value (floating point decimal). The amount, index will be\n\
+                 //~ incremented or decremented in each iteration. Decremented index is\n\
+                 //~ available through name string rule: `"+path_delim+"-i"+path_delim+"`, `"+path_delim+"-id"+path_delim+"` etc..\n\
+                 //~ \n\
+//~ -linc  value   : The amount line count will be incremented or decremented in each iteration.\n\
+                 //~ This is always a positive integer.\n\
+                 //~ \n\
+//~ -if    value   : This sets Index flags. This is a "+path_delim+" separated list of flags\n\
+                 //~ that will be used to render the index within it's text field.\n\
+//~ \n\
+//~ -ifl   value   : Index field length. Non occupied field will be\n\
+                 //~ filled with index field fillers (set with -iff). iff is set to the\n\
+                 //~ character 0 by default.\n\
+                 //~ This can also be set with the -if option.\n\
+//~ \n\
+//~ -iff   value   : Not occupied field in index will be filled with a character\n\
+                 //~ which is set by this option.\n\
+                 //~ This can also be set with the -if option.\n\
+                 //~ \n\
+//~ -ifp   value   : Index is a floating point decimal value. This sets the precision\n\
+                 //~ i.e the number of digits that would be taken after the decimal point.\n\
+                 //~ This can also be set with the -if option.\n\
+                 //~ \n\
+//~ -ns    value   : Name string.\n\
+     //~ \n\
+//~ -ns/f  value   : Name string file. File containing name string (one per line).\n\
+//~ \n\
+//~ -ns/fn value   : Name String file. This takes a null terminated *Name String* file, i.e\n\
+                 //~ filenames are terminated by null character (\\0) instead of new line (\\n).\n\
+                 //~ \n\
+//~ -l, -sl value  : Start Line number in name string file.\n\
+//~ \n\
+//~ -lv, -slv value: Same as -l or -sl, except line number will be decremented in each\n\
+                 //~ iteration.\n\
+//~ \n\
+//~ -el    value   : End line number. Line number to stop renaming from.\n\
+//~ \n\
+//~ -elv   value   : Same as -el, except line number will be decremented in each iteration.\n\
+//~ \n\
+//~ -ss    value   : Search string\n\
+                 //~ String that will be used to search for files with matching names.\n\
+                 //~ This is generally regex (ECMAScript regex) if not pass with -ssf.\n\
+                 //~ \n\
+//~ -ss/f  value   : Search string file. Contains search strings per line.\n\
+     //~ \n\
+//~ -ssf   value   : Fixed search string (not treated as regex).\n\
+//~ \n\
+//~ -ssf/f value   : Fixed search string file. Contains fixed search string (per line).\n\
+//~ \n\
+//~ -rs    value   : Replace string. A string in the form /search_string/replace_string/modifier \n\
+//~ \n\
+//~ -rs/f  value   : Replace string file. Contains replace string (per line).\n\
+//~ \n\
+//~ -re    value   : regex mode. Available regex modes are basic, extended, grep, awk, egrep, ecmascript.\n\
+                 //~ ECMAScript regex is the default mode.\n\
+//~ \n\
+//~ -rel           : If this is passed as argument, regex will follow Locale. that is regex like\n\
+                //~ [a-z] will have their meaning according to the system locale.\n\
+                //~ \n\
+//~ -dp    value   : Depth of folder. -1(any negative number) means unlimited depth i.e all files and subdirectories\n\
+                 //~ will be included. Other values may be 0 1 2 3 etc...\n\
+                 //~ Default depth is 0, i.e directory contents will be ignored.\n\
+       //~ \n\
+//~ -fo            : File only mode. Only files are renamed (not directory).\n\
+                 //~ Goes to subdirectory/s if depth (`-dp`) is set to `1` or greater.\n\
+                 //~ Default depth is set to 0.\n\
+                 //~ \n\
+//~ -do            : Apply rename on directory only.\n\
+//~ \n\
+//~ -ed            : Apply rename on files only, exclude any and all directories and their\n\
+                 //~ contents. equivalent to: '-fo -dp 0'\n\
+//~ \n\
+//~ -cd            : Count directory in reserved index, regardless of other options.\n\
+//~ \n\
+//~ -cf            : Count file in reserved index, regardless of other options.\n\
+//~ \n\
+//~ -s             : Sort files. Default is natural sort. -s/g for general sort.\n\
+//~ \n\
+//~ -y             : Confirm Yes to all.\n\
+//~ \n\
+//~ -fl            : follow symlink.\n\
+//~ \n\
+//~ -u             : Undo renaming.\n\
+//~ \n\
+//~ -v             : Version info.\n\
+//~ \n\
+//~ -q             : Quiet operation.\n\
+//~ \n\
+//~ -f             : Apply force. Enables renaming some non permitted files/directories\n\
+                 //~ except / (The root filesystem directory) and rnm itself.\n\
+//~ \n\
+//~ --             : Everything after this will be taken as file paths.\n\
+//~ \n\
+//~ -shop          : This shows an info about the various options passed as arguments\n\
+                 //~ and how they are being treated behind the scene.\n\
+                 //~ \n\
+//~ -sim           : This runs a simulation of rename instead of actual rename operation,\n\
+                 //~ and prints all kinds of available outputs.\n\
+                 //~ \n\
+//~ Only invalid characters for a file or directory name is the path delimiter and the null character (\\0).\n\
+//~ See more details on the manual (man rnm).\n\
+//~ ";
 
 
 

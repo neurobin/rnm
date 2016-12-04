@@ -66,13 +66,6 @@ bool undoRename(){
 }
 
 
-void checkArgAvailability(const StringArray& sa,int i){
-    if(i>=(int)sa.size()){
-        printErrorLog("One or more argument/s missing");
-        Exit(1);
-    }
-}
-
 
 bool isInvalidFile(const String& file){
     bool status=false;
@@ -104,40 +97,20 @@ bool isInvalidFile(const String& file){
 }
 
 
-int selectInput(){
-    String msg= "\nSelect action:\n\n\
-    1. Confirm for this file only.\n\
-    2. Confirm for all.\n\
-    3. Skip this file.\n\
-    4. Skip all and exit\n\n\
-Your choice (#?): \
-";
-
-    int a=0;
-    while(true){
-        print msg;
-        String s;
-        getLine(s);
-        Regex re("^[1-4]$");
-        if(!regexMatch(s,re)){print "\nInvalid choice.\n";}
-        else {a=stringTo<int>(s);break;}
-    }
-    return a;
-}
 
 
-String prepareLogDir(){
-    mkdir(LOG_DIR_PARENT.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
-    mkdir(LOG_DIR.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
-    FileStream file;
-    file.open(RNM_FILE_LOG_L_TMP.c_str(),$write);
-    if(!file.good()){printe strerror(errno);}
-    file.close();
-    file.open(RNM_FILE_LOG_R_TMP.c_str(),$write);
-    if(!file.good()){printe strerror(errno);}
-    file.close();
-    return toString(strerror(errno));
-}
+//~ String prepareLogDir(){
+    //~ mkdir(LOG_DIR_PARENT.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
+    //~ mkdir(LOG_DIR.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
+    //~ FileStream file;
+    //~ file.open(RNM_FILE_LOG_L_TMP.c_str(),$write);
+    //~ if(!file.good()){printe strerror(errno);}
+    //~ file.close();
+    //~ file.open(RNM_FILE_LOG_R_TMP.c_str(),$write);
+    //~ if(!file.good()){printe strerror(errno);}
+    //~ file.close();
+    //~ return toString(strerror(errno));
+//~ }
 
 
 bool Rename(const String& oldn,const String& newn,DirectoryIndex &di){
@@ -210,418 +183,397 @@ String toUpper(String s){
     }
     
 
-String replaceString(String str,const String& replace,const String& with){
-    std::size_t pos = str.find(replace);
-    if (pos!=String::npos){
-    return str.replace (pos,replace.length(),with);}
-    else return str;
+//~ String replaceString(String str,const String& replace,const String& with){
+    //~ std::size_t pos = str.find(replace);
+    //~ if (pos!=String::npos){
+    //~ return str.replace (pos,replace.length(),with);}
+    //~ else return str;
     
-}
+//~ }
 
 
-String replaceStringAll(String str, const String& replace, const String& with) {
-   if(replace!=""){
-   std::size_t pos = str.find(replace);
-    while ((pos = str.find(replace, pos)) != String::npos) {
-         str=str.replace(pos, replace.length(), with);
-         pos += with.length();
-    }
-}
-return str;
-}
+//~ String replaceStringAll(String str, const String& replace, const String& with) {
+   //~ if(replace!=""){
+   //~ std::size_t pos = str.find(replace);
+    //~ while ((pos = str.find(replace, pos)) != String::npos) {
+         //~ str=str.replace(pos, replace.length(), with);
+         //~ pos += with.length();
+    //~ }
+//~ }
+//~ return str;
+//~ }
 
-String encodeWithDelim(const String& s, const String& delim){
-    return replaceStringAll(s,delim,"["+delim+"]");
-}
+//~ String encodeWithDelim(const String& s, const String& delim){
+    //~ return replaceStringAll(s,delim,"["+delim+"]");
+//~ }
 
-String decodeWithDelim(const String& s, const String& delim){
-    return replaceStringAll(s,"["+delim+"]",delim);
-}
+//~ String decodeWithDelim(const String& s, const String& delim){
+    //~ return replaceStringAll(s,"["+delim+"]",delim);
+//~ }
 
-String replaceStringWithDelims(String s,const String& rep, const String& delim1,const String& delim2){
-    String::size_type pos1=s.find_first_of(delim1);
-    String::size_type pos2=s.find_first_of(delim2,pos1+1);
-    if(pos1!=String::npos&&pos2!=String::npos)
-    return s.replace(pos1,pos2-pos1+1,rep);
-    else return s;
-}
-///Make an overload of the above function to set default parameter
-String replaceStringWithDelims(String s,const String& rep, const String& delim){
-    return replaceStringWithDelims(s,rep,delim,delim);
-}
-
-
-String replaceStringAllWithDelims(String s,const String& rep, const String& delim1, const String& delim2) {
-    String::size_type pos1=s.find_first_of(delim1);
-    String::size_type pos2=s.find_first_of(delim2,pos1+1);
-    while ((pos1 = s.find_first_of(delim1,pos1)) != String::npos && (pos2 = s.find_first_of(delim2,pos1+1)) != String::npos) {
-         s=s.replace(pos1,pos2-pos1+1,rep);
-         pos1 += rep.length();
-    }
-return s;
-}
-///Make an overload of the above function to set default parameter
-String replaceStringAllWithDelims(String s,const String& rep, const String& delim){
-    return replaceStringAllWithDelims(s,rep,delim,delim);
-}
+//~ String replaceStringWithDelims(String s,const String& rep, const String& delim1,const String& delim2){
+    //~ String::size_type pos1=s.find_first_of(delim1);
+    //~ String::size_type pos2=s.find_first_of(delim2,pos1+1);
+    //~ if(pos1!=String::npos&&pos2!=String::npos)
+    //~ return s.replace(pos1,pos2-pos1+1,rep);
+    //~ else return s;
+//~ }
+//~ ///Make an overload of the above function to set default parameter
+//~ String replaceStringWithDelims(String s,const String& rep, const String& delim){
+    //~ return replaceStringWithDelims(s,rep,delim,delim);
+//~ }
 
 
-String convertToLatinNumber(Int num){
-    String res;
-    Int latin_num[9];
-    Int latin_fixed_value[9]={1000,500,100,50,10,9,5,4,1};
-    String latin_fixed_char[9]={"m","d","c","l","x","ix","v","iv","i"};
-    for(int i=0;i<9;i++){
-        latin_num[i] = num / latin_fixed_value[i];
-        num = num % latin_fixed_value[i];
-    }
-    for(int i=0;i<9;i++){
-        for(int j=0;j<latin_num[i];j++)res+=latin_fixed_char[i];
-    }
-    if(INDEX_FLAGS_I_B["uppercase"]){res=toUpper(res);}
-    return res;
-}
+//~ String replaceStringAllWithDelims(String s,const String& rep, const String& delim1, const String& delim2) {
+    //~ String::size_type pos1=s.find_first_of(delim1);
+    //~ String::size_type pos2=s.find_first_of(delim2,pos1+1);
+    //~ while ((pos1 = s.find_first_of(delim1,pos1)) != String::npos && (pos2 = s.find_first_of(delim2,pos1+1)) != String::npos) {
+         //~ s=s.replace(pos1,pos2-pos1+1,rep);
+         //~ pos1 += rep.length();
+    //~ }
+//~ return s;
+//~ }
+//~ ///Make an overload of the above function to set default parameter
+//~ String replaceStringAllWithDelims(String s,const String& rep, const String& delim){
+    //~ return replaceStringAllWithDelims(s,rep,delim,delim);
+//~ }
 
 
-String toStringAccordingToMyConvention(int val){
-    if(val==-1){return "unset";}
-    else return toString(val);
-   }
+//~ String convertToLatinNumber(Int num){
+    //~ String res;
+    //~ Int latin_num[9];
+    //~ Int latin_fixed_value[9]={1000,500,100,50,10,9,5,4,1};
+    //~ String latin_fixed_char[9]={"m","d","c","l","x","ix","v","iv","i"};
+    //~ for(int i=0;i<9;i++){
+        //~ latin_num[i] = num / latin_fixed_value[i];
+        //~ num = num % latin_fixed_value[i];
+    //~ }
+    //~ for(int i=0;i<9;i++){
+        //~ for(int j=0;j<latin_num[i];j++)res+=latin_fixed_char[i];
+    //~ }
+    //~ if(INDEX_FLAGS_I_B["uppercase"]){res=toUpper(res);}
+    //~ return res;
+//~ }
 
 
-String toStringAccordingToMyConvention(double val){
-    if(val==-1.0){return "unset";}
-    else return toString(val);
-   }
+//~ String toStringAccordingToMyConvention(int val){
+    //~ if(val==-1){return "unset";}
+    //~ else return toString(val);
+   //~ }
 
 
-int countMatchInRegex(const String& s,const String& re){
+//~ String toStringAccordingToMyConvention(double val){
+    //~ if(val==-1.0){return "unset";}
+    //~ else return toString(val);
+   //~ }
+
+
+//~ int countMatchInRegex(const String& s,const String& re){
  
-    std::regex words_regex(re);
-    auto words_begin = 
-    std::sregex_iterator(s.begin(), s.end(), words_regex);
-    auto words_end = std::sregex_iterator();
+    //~ std::regex words_regex(re);
+    //~ auto words_begin = 
+    //~ std::sregex_iterator(s.begin(), s.end(), words_regex);
+    //~ auto words_end = std::sregex_iterator();
  
-    return std::distance(words_begin, words_end);
+    //~ return std::distance(words_begin, words_end);
 
-}
-
-
-int countCharInString(String s, String delim){
-    int count=0;
-    String::size_type pos = s.find_first_of(delim);
-    while ((pos = s.find_first_of(delim, pos)) != String::npos){
-        count++;pos++;
-    }
-    return count;
-}
+//~ }
 
 
-int countMatchInString(String s, String match){
-    int count=0;
-    String::size_type pos = s.find(match);
-    while ((pos = s.find(match, pos)) != String::npos){
-        count++;pos+=match.length();
-    }
-    return count;
-}
+//~ int countCharInString(String s, String delim){
+    //~ int count=0;
+    //~ String::size_type pos = s.find_first_of(delim);
+    //~ while ((pos = s.find_first_of(delim, pos)) != String::npos){
+        //~ count++;pos++;
+    //~ }
+    //~ return count;
+//~ }
 
 
-int countCharWithAlgorithm(String s, char delim){
-    return std::count(s.begin(),s.end(),delim);
-}
+//~ int countMatchInString(String s, String match){
+    //~ int count=0;
+    //~ String::size_type pos = s.find(match);
+    //~ while ((pos = s.find(match, pos)) != String::npos){
+        //~ count++;pos+=match.length();
+    //~ }
+    //~ return count;
+//~ }
 
 
-StringArray split(const String &text, char sep) {
-    StringArray tokens;
-    int start = 0, end = 0;
-    while ((Int)(end = text.find(sep, start)) != (Int)String::npos) {
-        String temp=text.substr(start, end - start);
-        if(temp!="")tokens.push_back(temp);
-        start = end + 1;
-    }
-    String temp=text.substr(start);
-    if(temp!="")tokens.push_back(temp);
-    return tokens;
-}
+//~ int countCharWithAlgorithm(String s, char delim){
+    //~ return std::count(s.begin(),s.end(),delim);
+//~ }
 
 
-String ltrim(String s,const String& delim){return s.erase(0,s.find_first_not_of(delim));}
-String rtrim(String s,const String& delim){return s.erase(s.find_last_not_of(delim)+1);}
-String trim(String s,const String& delim){return rtrim(ltrim(s,delim),delim);}
+//~ StringArray split(const String &text, char sep) {
+    //~ StringArray tokens;
+    //~ int start = 0, end = 0;
+    //~ while ((Int)(end = text.find(sep, start)) != (Int)String::npos) {
+        //~ String temp=text.substr(start, end - start);
+        //~ if(temp!="")tokens.push_back(temp);
+        //~ start = end + 1;
+    //~ }
+    //~ String temp=text.substr(start);
+    //~ if(temp!="")tokens.push_back(temp);
+    //~ return tokens;
+//~ }
 
 
-String trimZeroFromScientificNumber(const String& s){
-    if(!stringContains(s,"."))return s;
-    int pos = s.find_first_of("eE");
-    if(pos!=(int)String::npos){
-        return rtrim(rtrim(s.substr(0,pos),"0"),".")+s.substr(pos,1)+ltrim(s.substr(pos+1,String::npos),"0");
-    }
-    else return s;
-}
+//~ String ltrim(String s,const String& delim){return s.erase(0,s.find_first_not_of(delim));}
+//~ String rtrim(String s,const String& delim){return s.erase(s.find_last_not_of(delim)+1);}
+//~ String trim(String s,const String& delim){return rtrim(ltrim(s,delim),delim);}
 
 
-String trimFloatingZero(const String& s){
-    if(!stringContains(s,"."))return s;
-    int pos = s.find_first_of("eE");
-    if(pos!=(int)String::npos){
-        return rtrim(rtrim(s.substr(0,pos),"0"),".")+s.substr(pos,1)+ltrim(s.substr(pos+1,String::npos),"0");
-    }
-    else return rtrim(rtrim(s,"0"),".");
-}
+//~ String trimZeroFromScientificNumber(const String& s){
+    //~ if(!stringContains(s,"."))return s;
+    //~ int pos = s.find_first_of("eE");
+    //~ if(pos!=(int)String::npos){
+        //~ return rtrim(rtrim(s.substr(0,pos),"0"),".")+s.substr(pos,1)+ltrim(s.substr(pos+1,String::npos),"0");
+    //~ }
+    //~ else return s;
+//~ }
 
 
-void updateIndexFlagsFromFlagMaps(){
-    IFP=index_int_flag["precision"];
-    index_field_length=index_int_flag["width"];
-    IFF=index_string_flag["filler"];
-    latin_fall_back_threshold=index_int_flag["latin-fallback"];
-}
+//~ String trimFloatingZero(const String& s){
+    //~ if(!stringContains(s,"."))return s;
+    //~ int pos = s.find_first_of("eE");
+    //~ if(pos!=(int)String::npos){
+        //~ return rtrim(rtrim(s.substr(0,pos),"0"),".")+s.substr(pos,1)+ltrim(s.substr(pos+1,String::npos),"0");
+    //~ }
+    //~ else return rtrim(rtrim(s,"0"),".");
+//~ }
 
 
-bool parseTwoStepIndexFlag(const String& s){
-    String key,val;
-    int pos = s.find_first_of("=");
-    if(pos!=(int)String::npos){
-        key=s.substr(0,pos);
-        val=s.substr(pos+1,String::npos);
-        if(existsInMap(index_int_flag,key)){
-            if(isPositiveInt(val)){
-            index_int_flag[key]=stringTo<int>(val);
-            updateIndexFlagsFromFlagMaps();
-            return true;
-            }
-        }
-        else if(existsInMap(index_string_flag,key)){
-            if(isSingleCharacter(val)){
-                index_string_flag[key]=val;
-                updateIndexFlagsFromFlagMaps();
-                return true;
-                }
-        }
-    }
-    return false;
-}
+//~ void updateIndexFlagsFromFlagMaps(){
+    //~ IFP=index_int_flag["precision"];
+    //~ index_field_length=index_int_flag["width"];
+    //~ IFF=index_string_flag["filler"];
+    //~ latin_fall_back_threshold=index_int_flag["latin-fallback"];
+//~ }
 
 
 //~ bool parseTwoStepIndexFlag(const String& s){
-    //~ String res=trim(s);
-    //~ Regex re ("(^[^=]+)=([^=]+$)");
-    //~ RegexResult match;
-    //~ if(std::regex_match(s,match,re)){
-        //~ if(existsInMap(index_int_flag,String(match[1]))){
-            //~ if(isPositiveInt(String(match[2]))){
-            //~ index_int_flag[String(match[1])]=stringTo<int>(match[2]);
+    //~ String key,val;
+    //~ int pos = s.find_first_of("=");
+    //~ if(pos!=(int)String::npos){
+        //~ key=s.substr(0,pos);
+        //~ val=s.substr(pos+1,String::npos);
+        //~ if(existsInMap(index_int_flag,key)){
+            //~ if(isPositiveInt(val)){
+            //~ index_int_flag[key]=stringTo<int>(val);
             //~ updateIndexFlagsFromFlagMaps();
             //~ return true;
             //~ }
         //~ }
-        //~ else if(existsInMap(index_string_flag,String(match[1]))){
-            //~ if(isSingleCharacter(String(match[2]))){
-                //~ index_string_flag[String(match[1])]=String(match[2]);
+        //~ else if(existsInMap(index_string_flag,key)){
+            //~ if(isSingleCharacter(val)){
+                //~ index_string_flag[key]=val;
                 //~ updateIndexFlagsFromFlagMaps();
                 //~ return true;
                 //~ }
         //~ }
     //~ }
-    //~ return false;}
+    //~ return false;
+//~ }
 
 
-bool setIndexFlagAdjust(String s){
-    s=trim(s);
-    for(int i=0;i<(int)INDEX_FLAGS_AV_A.size();i++){
-        if(s==INDEX_FLAGS_AV_A[i]){
-            index_flag_adjust=INDEX_FLAGS_A[i];
-            index_flag_adjust_s=INDEX_FLAGS_AV_A[i];
-            return true;
-        }
-    }
-    return false;
-}
 
 
-bool setIndexFlagInd(String s){
-    s=trim(s);
-    for(int j=0;j<(int)INDEX_FLAGS_AV_I.size();j++){
-        if(s==INDEX_FLAGS_AV_I[j]){
-            INDEX_FLAGS_I_B[INDEX_FLAGS_AV_I[j]]=true;
-            index_flag_ind.push_back(INDEX_FLAGS_I[j]);
-            index_flag_ind_s.push_back(INDEX_FLAGS_AV_I[j]);
-            std::sort( index_flag_ind.begin(), index_flag_ind.end() );
-            index_flag_ind.erase( unique( index_flag_ind.begin(), index_flag_ind.end() ), index_flag_ind.end() );
+//~ bool setIndexFlagAdjust(String s){
+    //~ s=trim(s);
+    //~ for(int i=0;i<(int)INDEX_FLAGS_AV_A.size();i++){
+        //~ if(s==INDEX_FLAGS_AV_A[i]){
+            //~ index_flag_adjust=INDEX_FLAGS_A[i];
+            //~ index_flag_adjust_s=INDEX_FLAGS_AV_A[i];
+            //~ return true;
+        //~ }
+    //~ }
+    //~ return false;
+//~ }
+
+
+//~ bool setIndexFlagInd(String s){
+    //~ s=trim(s);
+    //~ for(int j=0;j<(int)INDEX_FLAGS_AV_I.size();j++){
+        //~ if(s==INDEX_FLAGS_AV_I[j]){
+            //~ INDEX_FLAGS_I_B[INDEX_FLAGS_AV_I[j]]=true;
+            //~ index_flag_ind.push_back(INDEX_FLAGS_I[j]);
+            //~ index_flag_ind_s.push_back(INDEX_FLAGS_AV_I[j]);
+            //~ std::sort( index_flag_ind.begin(), index_flag_ind.end() );
+            //~ index_flag_ind.erase( unique( index_flag_ind.begin(), index_flag_ind.end() ), index_flag_ind.end() );
             
-            std::sort( index_flag_ind_s.begin(), index_flag_ind_s.end() );
-            index_flag_ind_s.erase( unique( index_flag_ind_s.begin(), index_flag_ind_s.end() ), index_flag_ind_s.end() );
-            return true;
-        }
-    }
-    return false;
-}
+            //~ std::sort( index_flag_ind_s.begin(), index_flag_ind_s.end() );
+            //~ index_flag_ind_s.erase( unique( index_flag_ind_s.begin(), index_flag_ind_s.end() ), index_flag_ind_s.end() );
+            //~ return true;
+        //~ }
+    //~ }
+    //~ return false;
+//~ }
 
 
-void parseIndexFlags(const String& s){
-    bool er=true;
-    StringArray tokens=split(s,FLAG_DELIM);
-    for(int i=0;i<(int)tokens.size();i++){
-        er=true;
-        if(parseTwoStepIndexFlag(tokens[i])){
-            er=false;
-            continue;
-        }
+//~ void parseIndexFlags(const String& s){
+    //~ bool er=true;
+    //~ StringArray tokens=split(s,FLAG_DELIM);
+    //~ for(int i=0;i<(int)tokens.size();i++){
+        //~ er=true;
+        //~ if(parseTwoStepIndexFlag(tokens[i])){
+            //~ er=false;
+            //~ continue;
+        //~ }
         
-        if(setIndexFlagAdjust(tokens[i])){
-            er=false;
-            continue;
-        }
+        //~ if(setIndexFlagAdjust(tokens[i])){
+            //~ er=false;
+            //~ continue;
+        //~ }
             
-        if(setIndexFlagInd(tokens[i])){
-            er=false;
-            continue;
-        }
-        if(er){printErrorLog("Invalid index flag: "+tokens[i]);Exit(1);}
+        //~ if(setIndexFlagInd(tokens[i])){
+            //~ er=false;
+            //~ continue;
+        //~ }
+        //~ if(er){printErrorLog("Invalid index flag: "+tokens[i]);Exit(1);}
     
-    }
-}
+    //~ }
+//~ }
 
 
-void printIndexFlags(){
-    print "Width: "<<index_field_length<<NEW_LINE;
-    print "Filler: "<<IFF<<NEW_LINE;
-    print "Precision: "<<toStringAccordingToMyConvention(IFP)<<NEW_LINE;
-    print "Adjust field: "+index_flag_adjust_s+NEW_LINE;
-    print "Other flags: ";
-    for(int i=0;i<(int)index_flag_ind_s.size();i++){
-        print index_flag_ind_s[i];
-        if(i<(int)index_flag_ind_s.size()-1){print ", ";}
-        }
-    print NEW_LINE;
+//~ void printIndexFlags(){
+    //~ print "Width: "<<index_field_length<<NEW_LINE;
+    //~ print "Filler: "<<IFF<<NEW_LINE;
+    //~ print "Precision: "<<toStringAccordingToMyConvention(IFP)<<NEW_LINE;
+    //~ print "Adjust field: "+index_flag_adjust_s+NEW_LINE;
+    //~ print "Other flags: ";
+    //~ for(int i=0;i<(int)index_flag_ind_s.size();i++){
+        //~ print index_flag_ind_s[i];
+        //~ if(i<(int)index_flag_ind_s.size()-1){print ", ";}
+        //~ }
+    //~ print NEW_LINE;
     
-    }
+    //~ }
 
 
-String convertBase(Double x,int base){
-    if(base<NUM_BASE_MIN||base>NUM_BASE_MAX){base=NUM_BASE;}
-    String res="";
-    String res_left="",res_right="";
-    String val="0123456789abcdefghijklmnopqrstuvwxyz";
-    Double intp,fractp;
-    int prec;
-    if(IFP<0){prec=DoubleLimit::max_digits10+2;}
-    else{prec=IFP;}
-    fractp=std::modf(x, &intp);
-    int i=0;
-    do{
-        int rem=(Int)intp%(Int)base;
-        intp=Int((Int)intp/(Int)base);
-        res_left+=val[rem];
-        i++;}while(intp!=0);
-    i=0;
-    Double fractph;
-    do{
-        if((int)i>=(int)prec){break;}
-        Double newp=fractp*base;
-        Double newintp;
-        fractph=fractp;
-        fractp=std::modf(newp,&newintp);
-        if(fractph<=fractp*1.01&&fractph>=fractp*0.99){
-            if(IFP<0){if(i>3)break;}
-            else if(i>IFP){break;}
-        }
-        res_right+=val[(Int)newintp];
-        i++;}
-    while(i<50 && fractp!=0);
+//~ String convertBase(Double x,int base){
+    //~ if(base<NUM_BASE_MIN||base>NUM_BASE_MAX){base=NUM_BASE;}
+    //~ String res="";
+    //~ String res_left="",res_right="";
+    //~ String val="0123456789abcdefghijklmnopqrstuvwxyz";
+    //~ Double intp,fractp;
+    //~ int prec;
+    //~ if(IFP<0){prec=DoubleLimit::max_digits10+2;}
+    //~ else{prec=IFP;}
+    //~ fractp=std::modf(x, &intp);
+    //~ int i=0;
+    //~ do{
+        //~ int rem=(Int)intp%(Int)base;
+        //~ intp=Int((Int)intp/(Int)base);
+        //~ res_left+=val[rem];
+        //~ i++;}while(intp!=0);
+    //~ i=0;
+    //~ Double fractph;
+    //~ do{
+        //~ if((int)i>=(int)prec){break;}
+        //~ Double newp=fractp*base;
+        //~ Double newintp;
+        //~ fractph=fractp;
+        //~ fractp=std::modf(newp,&newintp);
+        //~ if(fractph<=fractp*1.01&&fractph>=fractp*0.99){
+            //~ if(IFP<0){if(i>3)break;}
+            //~ else if(i>IFP){break;}
+        //~ }
+        //~ res_right+=val[(Int)newintp];
+        //~ i++;}
+    //~ while(i<50 && fractp!=0);
         
-    res_left=reverseString(res_left);
-    if(res_right=="0"){res_right="";}
-    for(int j=0;j<(int)index_flag_ind.size();j++){
-        if(index_flag_ind[j]==std::ios::showbase){
-            if(base==16)res_left="0x"+res_left;
-            if(base==8)res_left="0"+res_left;
-        }
-        if(index_flag_ind[j]==std::ios::showpoint){
-            for(int i=(int)res_right.length();i<IFP;i++){
-                res_right+="0";
-            }
-        }
-        if(index_flag_ind[j]==std::ios::uppercase){
-            res_left=toUpper(res_left);res_right=toUpper(res_right);
-        }
-    }
+    //~ res_left=reverseString(res_left);
+    //~ if(res_right=="0"){res_right="";}
+    //~ for(int j=0;j<(int)index_flag_ind.size();j++){
+        //~ if(index_flag_ind[j]==std::ios::showbase){
+            //~ if(base==16)res_left="0x"+res_left;
+            //~ if(base==8)res_left="0"+res_left;
+        //~ }
+        //~ if(index_flag_ind[j]==std::ios::showpoint){
+            //~ for(int i=(int)res_right.length();i<IFP;i++){
+                //~ res_right+="0";
+            //~ }
+        //~ }
+        //~ if(index_flag_ind[j]==std::ios::uppercase){
+            //~ res_left=toUpper(res_left);res_right=toUpper(res_right);
+        //~ }
+    //~ }
     
-    res=rtrim(res_left+"."+toString(res_right),".");
-    return res;
-}
+    //~ res=rtrim(res_left+"."+toString(res_right),".");
+    //~ return res;
+//~ }
     
 
-String doubleToString(Double x, int ifl,int number_base,IOFormatFlag index_flag_float,bool latin){
-    Stream buffer;
-    String res;
-    ///set float format
+//~ String doubleToString(Double x, int ifl,int number_base,IOFormatFlag index_flag_float,bool latin){
+    //~ Stream buffer;
+    //~ String res;
+    //~ ///set float format
     
-    buffer.setf(index_flag_float);
+    //~ buffer.setf(index_flag_float);
     
     
-    ///set other flags
-    for(int i=0;i<(int)index_flag_ind.size();i++){
-        if(index_flag_ind[i]==std::ios::showpos){continue;}
-        if(index_flag_ind[i]==std::ios::showbase){continue;}
-        buffer.setf(index_flag_ind[i]);
-        }
+    //~ ///set other flags
+    //~ for(int i=0;i<(int)index_flag_ind.size();i++){
+        //~ if(index_flag_ind[i]==std::ios::showpos){continue;}
+        //~ if(index_flag_ind[i]==std::ios::showbase){continue;}
+        //~ buffer.setf(index_flag_ind[i]);
+        //~ }
     
-    ///set precision if given
-    if(IFP>=0)buffer.precision(IFP);
+    //~ ///set precision if given
+    //~ if(IFP>=0)buffer.precision(IFP);
     
-    ///pass double to buffer if base is dec or pass int otherwise
-    if(!latin){
-        if(number_base!=10){buffer<<convertBase(x,number_base);}
-        else{ buffer << x;}
-    }
-    else{
-        if((Int)x<=latin_fall_back_threshold){
-            buffer<<convertToLatinNumber((Int)round(x));
-        }
-        else{
-            printWarningLog("Latin format is too large, falling back to decimal.");
-            if(number_base!=10){buffer<<convertBase(x,number_base);}
-            else{ buffer << x;}
-        }
-    }
-    res= buffer.str();
+    //~ ///pass double to buffer if base is dec or pass int otherwise
+    //~ if(!latin){
+        //~ if(number_base!=10){buffer<<convertBase(x,number_base);}
+        //~ else{ buffer << x;}
+    //~ }
+    //~ else{
+        //~ if((Int)x<=latin_fall_back_threshold){
+            //~ buffer<<convertToLatinNumber((Int)round(x));
+        //~ }
+        //~ else{
+            //~ printWarningLog("Latin format is too large, falling back to decimal.");
+            //~ if(number_base!=10){buffer<<convertBase(x,number_base);}
+            //~ else{ buffer << x;}
+        //~ }
+    //~ }
+    //~ res= buffer.str();
     
-    ///trim zeros from end 1.2000 and 1.2000e+32 1.2000E+32 etc...
-    if(number_base==10&&IFP<0&&!latin&&stringContains(res,".")){
-        res=trimFloatingZero(res);
-    }
+    //~ ///trim zeros from end 1.2000 and 1.2000e+32 1.2000E+32 etc...
+    //~ if(number_base==10&&IFP<0&&!latin&&stringContains(res,".")){
+        //~ res=trimFloatingZero(res);
+    //~ }
     
-    if(!latin){
-        for(int i=0;i<(int)index_flag_ind.size();i++){
-            if(index_flag_ind[i]==std::ios::showpoint){
-                if(!stringContains(res,"."))res+=".0";
-                break;
-            }
-        }
-    }
-    return res;}
+    //~ if(!latin){
+        //~ for(int i=0;i<(int)index_flag_ind.size();i++){
+            //~ if(index_flag_ind[i]==std::ios::showpoint){
+                //~ if(!stringContains(res,"."))res+=".0";
+                //~ break;
+            //~ }
+        //~ }
+    //~ }
+    //~ return res;}
 
 
-String toStringAccordingToIFL(Double index,int ifl,int number_base,IOFormatFlag index_flag_float,bool latin){
-    bool negative_flag=false;
-    if(index<0){index=fabs(index);negative_flag=true;}
-    String res=doubleToString(index,ifl,number_base,index_flag_float,latin);
-    Stream buffer;
-    buffer.width(ifl);
-    buffer.setf(index_flag_adjust);
-    buffer.fill(IFF[0]);
-    buffer <<res;
-    if(negative_flag){
-    res= "-"+buffer.str();}
-    else {res= buffer.str();}
+//~ String toStringAccordingToIFL(Double index,int ifl,int number_base,IOFormatFlag index_flag_float,bool latin){
+    //~ bool negative_flag=false;
+    //~ if(index<0){index=fabs(index);negative_flag=true;}
+    //~ String res=doubleToString(index,ifl,number_base,index_flag_float,latin);
+    //~ Stream buffer;
+    //~ buffer.width(ifl);
+    //~ buffer.setf(index_flag_adjust);
+    //~ buffer.fill(IFF[0]);
+    //~ buffer <<res;
+    //~ if(negative_flag){
+    //~ res= "-"+buffer.str();}
+    //~ else {res= buffer.str();}
     
-    for(int i=0;i<(int)index_flag_ind.size();i++){
-        if(index_flag_ind[i]==std::ios::showpos&&!negative_flag){res="+"+res;}
-    }
+    //~ for(int i=0;i<(int)index_flag_ind.size();i++){
+        //~ if(index_flag_ind[i]==std::ios::showpos&&!negative_flag){res="+"+res;}
+    //~ }
             
-    return res;}
+    //~ return res;}
     
     
 String changeCaseAccordingToSS(String s,const String& search,const String& replace,const String& modifier,int user=0){
@@ -849,15 +801,15 @@ void parseReplaceString(StringArray &rs,const String& file,DirectoryIndex &di){
 }
 
 
-bool isComplyingToRegex(String& s,Regex &re){
-    if(s=="")return false;
-    String total="";
-    RegexIterator it(s.begin(), s.end(), re);
-    RegexIterator it_end;
-    while(it!=it_end){total+=it->str();++it;}
-    if(s!=total){return false;}
-    else {return true;}
-    }
+//~ bool isComplyingToRegex(String& s,Regex &re){
+    //~ if(s=="")return false;
+    //~ String total="";
+    //~ RegexIterator it(s.begin(), s.end(), re);
+    //~ RegexIterator it_end;
+    //~ while(it!=it_end){total+=it->str();++it;}
+    //~ if(s!=total){return false;}
+    //~ else {return true;}
+//~ }
 
 
 void parseSearchString(String ss,Int index){
@@ -919,10 +871,10 @@ void parseSearchString(String ss,Int index){
 }
 
 
-bool stringContains(String s1,const String& s2){
-    if (s1.find(s2) != String::npos) {return true;}
-    else return false;
-}
+//~ bool stringContains(String s1,const String& s2){
+    //~ if (s1.find(s2) != String::npos) {return true;}
+    //~ else return false;
+//~ }
 
 
 bool isComplyingToSearchString(const String& file){
@@ -952,11 +904,11 @@ String removeInvalidNameStringRules(const String& ns){
 }
 
 
-template<typename T1, typename T2>
-bool existsInMap(std::map<T1,T2> mymap, T1 key){
-    if ( mymap.find(key) == mymap.end() ) return false;
-    else return true;
-}
+//~ template<typename T1, typename T2>
+//~ bool existsInMap(std::map<T1,T2> mymap, T1 key){
+    //~ if ( mymap.find(key) == mymap.end() ) return false;
+    //~ else return true;
+//~ }
 
 
 String processExtendedNameString_d(String ns,std::map<String,Double>& ns_rules,int ifl, const String& delim, const String& delim2,bool sanitize){
@@ -1177,87 +1129,87 @@ String parseNameString(const String& ns,const String& file,DirectoryIndex &di, c
 }
 
 
-String appendToFile(const String& filename, const String& str){
-    const char* name=filename.c_str();
-    FileStream file;
-    file.open(name,$append);
-    file<<str;
-    file.close();
-    return strerror(errno);
-}
+//~ String appendToFile(const String& filename, const String& str){
+    //~ const char* name=filename.c_str();
+    //~ FileStream file;
+    //~ file.open(name,$append);
+    //~ file<<str;
+    //~ file.close();
+    //~ return strerror(errno);
+//~ }
 
 
-String printErrorLog(String str){
-    str="E: "+str;
-    printe str+NEW_LINE;
-    time_t now = time(0);
-    char* dt = ctime(&now);
-    return appendToFile(ERROR_LOG,str+"\t\t\t\t@"+dt);
+//~ String printErrorLog(String str){
+    //~ str="E: "+str;
+    //~ printe str+NEW_LINE;
+    //~ time_t now = time(0);
+    //~ char* dt = ctime(&now);
+    //~ return appendToFile(ERROR_LOG,str+"\t\t\t\t@"+dt);
     
-}
+//~ }
 
 
-String printWarningLog(String str){
-    str="W: "+str;
-    if(!quiet){printe str+NEW_LINE;}
-    time_t now = time(0);
-    char* dt = ctime(&now);
-    return appendToFile(ERROR_LOG,str+"\t\t\t\t@"+dt)+appendToFile(OUT_LOG,str+"\t\t\t\t@"+dt);
+//~ String printWarningLog(String str){
+    //~ str="W: "+str;
+    //~ if(!quiet){printe str+NEW_LINE;}
+    //~ time_t now = time(0);
+    //~ char* dt = ctime(&now);
+    //~ return appendToFile(ERROR_LOG,str+"\t\t\t\t@"+dt)+appendToFile(OUT_LOG,str+"\t\t\t\t@"+dt);
     
-}
+//~ }
 
     
-String printOutLog(const String& str){
-    if(!quiet)print NEW_LINE+str+NEW_LINE;
-    time_t now = time(0);
-    char* dt = ctime(&now);
-    return appendToFile(OUT_LOG,str+"\t\t        @"+dt);
+//~ String printOutLog(const String& str){
+    //~ if(!quiet)print NEW_LINE+str+NEW_LINE;
+    //~ time_t now = time(0);
+    //~ char* dt = ctime(&now);
+    //~ return appendToFile(OUT_LOG,str+"\t\t        @"+dt);
 
-}
+//~ }
 
 
-String appendToRFLTMP(const String& str1,const String& str2){
+//~ String appendToRFLTMP(const String& str1,const String& str2){
     
-    const char* filename_l=RNM_FILE_LOG_L_TMP.c_str();
-    const char* filename_r=RNM_FILE_LOG_R_TMP.c_str();
-    FileStream file;
-    file.open(filename_l,$binary | $append);
-    file<<str1;file<<'\0';
-    file.close();
+    //~ const char* filename_l=RNM_FILE_LOG_L_TMP.c_str();
+    //~ const char* filename_r=RNM_FILE_LOG_R_TMP.c_str();
+    //~ FileStream file;
+    //~ file.open(filename_l,$binary | $append);
+    //~ file<<str1;file<<'\0';
+    //~ file.close();
     
-    file.open(filename_r,$binary | $append);
-    file<<str2;file<<'\0';
-    file.close();
-    finalizeRFL();
-    return strerror(errno);
+    //~ file.open(filename_r,$binary | $append);
+    //~ file<<str2;file<<'\0';
+    //~ file.close();
+    //~ finalizeRFL();
+    //~ return strerror(errno);
 
-}
-
-
-void finalizeRFL(){
-    copyFile2(RNM_FILE_LOG_L_TMP,RNM_FILE_LOG_L);
-    copyFile2(RNM_FILE_LOG_R_TMP,RNM_FILE_LOG_R);
-}
+//~ }
 
 
-String copyFile(const String& src, const String& dest){
-    int outfd = open(dest.c_str(),O_RDWR);
-    int infd = open(src.c_str(),O_RDWR);          
-    struct stat stat_buf ;
-    fstat(infd,&stat_buf);
-    ssize_t size = sendfile(outfd,infd,0,stat_buf.st_size);
-    return toString(size);
-}
+//~ void finalizeRFL(){
+    //~ copyFile2(RNM_FILE_LOG_L_TMP,RNM_FILE_LOG_L);
+    //~ copyFile2(RNM_FILE_LOG_R_TMP,RNM_FILE_LOG_R);
+//~ }
 
 
-String copyFile2(const String& src,const String& dst){
-    std::ifstream source(src, $binary);
-    std::ofstream dest(dst, $binary);
-    dest << source.rdbuf();
-    source.close();
-    dest.close();
-    return strerror(errno);
-}
+//~ String copyFile(const String& src, const String& dest){
+    //~ int outfd = open(dest.c_str(),O_RDWR);
+    //~ int infd = open(src.c_str(),O_RDWR);          
+    //~ struct stat stat_buf ;
+    //~ fstat(infd,&stat_buf);
+    //~ ssize_t size = sendfile(outfd,infd,0,stat_buf.st_size);
+    //~ return toString(size);
+//~ }
+
+
+//~ String copyFile2(const String& src,const String& dst){
+    //~ std::ifstream source(src, $binary);
+    //~ std::ofstream dest(dst, $binary);
+    //~ dest << source.rdbuf();
+    //~ source.close();
+    //~ dest.close();
+    //~ return strerror(errno);
+//~ }
 
 
 bool isDir(const String& file){
@@ -1356,36 +1308,36 @@ String getAbsolutePath(const String& x){
 }
 
 
-String dirname(const String& file){
-    std::size_t found = file.find_last_of(path_delim);
-    return file.substr(0,found);
+//~ String dirname(const String& file){
+    //~ std::size_t found = file.find_last_of(path_delim);
+    //~ return file.substr(0,found);
     
-}
+//~ }
 
 
-String basename(const String& file){
-    std::size_t found = file.find_last_of(path_delim);
-    return file.substr(found+1);
-}
+//~ String basename(const String& file){
+    //~ std::size_t found = file.find_last_of(path_delim);
+    //~ return file.substr(found+1);
+//~ }
 
 
-String getParentDirectoryName(const String& file){
-    return basename(dirname(file));
-}
+//~ String getParentDirectoryName(const String& file){
+    //~ return basename(dirname(file));
+//~ }
 
 
-String fileExtension(const String& file){
-    String::size_type pos=file.find_last_of('.');
-    if(pos!=String::npos&&pos!=0)return file.substr(pos+1);
-    else return "";
-}
+//~ String fileExtension(const String& file){
+    //~ String::size_type pos=file.find_last_of('.');
+    //~ if(pos!=String::npos&&pos!=0)return file.substr(pos+1);
+    //~ else return "";
+//~ }
 
 
-String fileNameWithoutExtension(const String& file){
-    String::size_type pos=file.find_last_of('.');
-    if(pos!=String::npos&&pos!=0)return file.substr(0,pos);
-    else return file;
-}
+//~ String fileNameWithoutExtension(const String& file){
+    //~ String::size_type pos=file.find_last_of('.');
+    //~ if(pos!=String::npos&&pos!=0)return file.substr(0,pos);
+    //~ else return file;
+//~ }
 
 
 bool isImmediateChild(const String& prevf,const String& newf){
@@ -1487,53 +1439,53 @@ bool isPositiveNumber(const std::string& s){
 
 
 
-void mustBeANumber(const String& name,const String& x){
-    if(!isNumber(x)){
-       printErrorLog(name+" must be a valid number");
-       Exit(1);
-       }
-}
+//~ void mustBeANumber(const String& name,const String& x){
+    //~ if(!isNumber(x)){
+       //~ printErrorLog(name+" must be a valid number");
+       //~ Exit(1);
+       //~ }
+//~ }
     
     
 
-void mustBeAPositiveNumber(const String& name,const String& extra,const String& x){
-    if(!isPositiveNumber(x)){
-       printErrorLog(name+" must be a valid positive number."+extra);
-       Exit(1);
-       }
-}
+//~ void mustBeAPositiveNumber(const String& name,const String& extra,const String& x){
+    //~ if(!isPositiveNumber(x)){
+       //~ printErrorLog(name+" must be a valid positive number."+extra);
+       //~ Exit(1);
+       //~ }
+//~ }
     
 
-void mustBeAnInteger(const String& name,const String& x){
-    if(!isInt(x)){
-       printErrorLog(name+" must be a valid integer");
-       Exit(1);
-       }
-}
+//~ void mustBeAnInteger(const String& name,const String& x){
+    //~ if(!isInt(x)){
+       //~ printErrorLog(name+" must be a valid integer");
+       //~ Exit(1);
+       //~ }
+//~ }
 
 
-void mustBeAPositiveInteger(const String& name,const String& x){
-    if(!isPositiveInt(x)){
-       printErrorLog(name+" must be a valid positive integer.");
-       Exit(1);
-       }
-}    
+//~ void mustBeAPositiveInteger(const String& name,const String& x){
+    //~ if(!isPositiveInt(x)){
+       //~ printErrorLog(name+" must be a valid positive integer.");
+       //~ Exit(1);
+       //~ }
+//~ }    
 
 
-bool isSingleCharacter(const String& x){
-    String s=toString(x);
-    if(s.length()!=1)return false;
-    else return true;
-}
+//~ bool isSingleCharacter(const String& x){
+    //~ String s=toString(x);
+    //~ if(s.length()!=1)return false;
+    //~ else return true;
+//~ }
     
     
-void mustBeAValidSingleCharacter(const String& name,const String& x){
-    String s=toString(x);
-    if(s.length()!=1){
-        printErrorLog(name+" must be a valid single character");
-        Exit(1);
-        }
-}
+//~ void mustBeAValidSingleCharacter(const String& name,const String& x){
+    //~ String s=toString(x);
+    //~ if(s.length()!=1){
+        //~ printErrorLog(name+" must be a valid single character");
+        //~ Exit(1);
+        //~ }
+//~ }
     
 
 StringArray getLineFromFileAndReturnVector(const String& filename){
