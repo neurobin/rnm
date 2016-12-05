@@ -680,15 +680,15 @@ String stripPathDelimiter(const String& s){
 }
 
     
-void sortVector(StringArray &files){
-    if(sort_type=="natural"){std::sort(files.begin(), files.end(), compareNat);}
-    else if(sort_type=="general"){std::sort(files.begin(), files.end());}
-    else if(sort_type=="none"){}
-    else{std::sort(files.begin(), files.end(), compareNat);}
+//~ void sortVector(StringArray &files){
+    //~ if(sort_type=="natural"){std::sort(files.begin(), files.end(), compareNat);}
+    //~ else if(sort_type=="general"){std::sort(files.begin(), files.end());}
+    //~ else if(sort_type=="none"){}
+    //~ else{std::sort(files.begin(), files.end(), compareNat);}
     
-    ///reverse the sort if reverse_sort is true
-    if(reverse_sort){std::reverse(files.begin(), files.end());}
-}
+    //~ ///reverse the sort if reverse_sort is true
+    //~ if(reverse_sort){std::reverse(files.begin(), files.end());}
+//~ }
 
     
 String processReplacementString(String replace){
@@ -1212,100 +1212,100 @@ String parseNameString(const String& ns,const String& file,DirectoryIndex &di, c
 //~ }
 
 
-bool isDir(const String& file){
-    struct stat info;
-    if( stat( file.c_str(), &info ) != 0 )return false;
-    else if( S_ISDIR(info.st_mode) )return true;
-    else return false;  
-}
+//~ bool isDir(const String& file){
+    //~ struct stat info;
+    //~ if( stat( file.c_str(), &info ) != 0 )return false;
+    //~ else if( S_ISDIR(info.st_mode) )return true;
+    //~ else return false;  
+//~ }
 
 
-bool isFile(const String& file){
-    struct stat info;
-    if( stat( file.c_str(), &info ) != 0 )return false;
-    else if( S_ISREG(info.st_mode) )return true;
-    else return false;
-}
+//~ bool isFile(const String& file){
+    //~ struct stat info;
+    //~ if( stat( file.c_str(), &info ) != 0 )return false;
+    //~ else if( S_ISREG(info.st_mode) )return true;
+    //~ else return false;
+//~ }
     
     
-bool isPathValid(const String& file){
-    struct stat info;
-    if( stat( file.c_str(), &info ) != 0 )return false;
-    else if( S_ISREG(info.st_mode) || S_ISDIR(info.st_mode) )return true;
-    else return false;
-}
+//~ bool isPathValid(const String& file){
+    //~ struct stat info;
+    //~ if( stat( file.c_str(), &info ) != 0 )return false;
+    //~ else if( S_ISREG(info.st_mode) || S_ISDIR(info.st_mode) )return true;
+    //~ else return false;
+//~ }
 
 
-char * normalizePath(char* pwd, const char * src, char* res) {
-	size_t res_len;
-	size_t src_len = strlen(src);
+//~ char * normalizePath(char* pwd, const char * src, char* res) {
+	//~ size_t res_len;
+	//~ size_t src_len = strlen(src);
 
-	const char * ptr = src;
-	const char * end = &src[src_len];
-	const char * next;
+	//~ const char * ptr = src;
+	//~ const char * end = &src[src_len];
+	//~ const char * next;
 
-	if (src_len == 0 || src[0] != '/') {
-		// relative path
-		size_t pwd_len;
+	//~ if (src_len == 0 || src[0] != '/') {
+		//~ // relative path
+		//~ size_t pwd_len;
 
-		pwd_len = strlen(pwd);
-		memcpy(res, pwd, pwd_len);
-		res_len = pwd_len;
-	} else {
-		res_len = 0;
-	}
+		//~ pwd_len = strlen(pwd);
+		//~ memcpy(res, pwd, pwd_len);
+		//~ res_len = pwd_len;
+	//~ } else {
+		//~ res_len = 0;
+	//~ }
 
-	for (ptr = src; ptr < end; ptr=next+1) {
-		size_t len;
-		next = (char*)memchr(ptr, '/', end-ptr);
-		if (next == NULL) {
-			next = end;
-		}
-		len = next-ptr;
-		switch(len) {
-		case 2:
-			if (ptr[0] == '.' && ptr[1] == '.') {
-				const char * slash = (char*)memrchr(res, '/', res_len);
-				if (slash != NULL) {
-					res_len = slash - res;
-				}
-				continue;
-			}
-			break;
-		case 1:
-			if (ptr[0] == '.') {
-				continue;
-			}
-			break;
-		case 0:
-			continue;
-		}
+	//~ for (ptr = src; ptr < end; ptr=next+1) {
+		//~ size_t len;
+		//~ next = (char*)memchr(ptr, '/', end-ptr);
+		//~ if (next == NULL) {
+			//~ next = end;
+		//~ }
+		//~ len = next-ptr;
+		//~ switch(len) {
+		//~ case 2:
+			//~ if (ptr[0] == '.' && ptr[1] == '.') {
+				//~ const char * slash = (char*)memrchr(res, '/', res_len);
+				//~ if (slash != NULL) {
+					//~ res_len = slash - res;
+				//~ }
+				//~ continue;
+			//~ }
+			//~ break;
+		//~ case 1:
+			//~ if (ptr[0] == '.') {
+				//~ continue;
+			//~ }
+			//~ break;
+		//~ case 0:
+			//~ continue;
+		//~ }
 
-		if (res_len != 1)
-			res[res_len++] = '/';
+		//~ if (res_len != 1)
+			//~ res[res_len++] = '/';
 		
-		memcpy(&res[res_len], ptr, len);
-		res_len += len;
-	}
+		//~ memcpy(&res[res_len], ptr, len);
+		//~ res_len += len;
+	//~ }
 
-	if (res_len == 0) {
-		res[res_len++] = '/';
-	}
-	res[res_len] = '\0';
-	return res;
-}
+	//~ if (res_len == 0) {
+		//~ res[res_len++] = '/';
+	//~ }
+	//~ res[res_len] = '\0';
+	//~ return res;
+//~ }
 
 
-String getAbsolutePath(const String& x){
-    char path[FILENAME_MAX+1];
-    if(follow_symlink){
-        realpath(x.c_str(),path);
-        return toString(path);
-    }
-    else {
-        return toString(normalizePath((char*)CWD.c_str(),(const char*)x.c_str(),path));
-    }
-}
+//~ String getAbsolutePath(const String& x){
+    //~ char path[FILENAME_MAX+1];
+    //~ if(follow_symlink){
+        //~ realpath(x.c_str(),path);
+        //~ return toString(path);
+    //~ }
+    //~ else {
+        //~ return toString(normalizePath((char*)CWD.c_str(),(const char*)x.c_str(),path));
+    //~ }
+//~ }
 
 
 //~ String dirname(const String& file){
@@ -1340,70 +1340,70 @@ String getAbsolutePath(const String& x){
 //~ }
 
 
-bool isImmediateChild(const String& prevf,const String& newf){
-        if(prevf==dirname(newf))return true;
-        else return false; 
-}
+//~ bool isImmediateChild(const String& prevf,const String& newf){
+        //~ if(prevf==dirname(newf))return true;
+        //~ else return false; 
+//~ }
 
 
-bool isChild(const String& parent,const String& child){
-  std::size_t found = child.find(parent+path_delim);
-  if (found!=String::npos && found==0) return true;
-  else return false;
-}
+//~ bool isChild(const String& parent,const String& child){
+  //~ std::size_t found = child.find(parent+path_delim);
+  //~ if (found!=String::npos && found==0) return true;
+  //~ else return false;
+//~ }
 
 
-bool isChildDir(const String& parent,const String& child){
-    if(isDir(child))return isChild(parent,child);
-    else return isChild(parent,dirname(child));
-}
+//~ bool isChildDir(const String& parent,const String& child){
+    //~ if(isDir(child))return isChild(parent,child);
+    //~ else return isChild(parent,dirname(child));
+//~ }
 
 
-Int childDepth(const String& parent,const String& child){
-    String childstr=child;
-    if(isChildDir( parent, child)){
-        if(isDir(child)){
-            childstr=replaceString(child,parent+path_delim,String(""));
-        }
-        else{
-            childstr=replaceString(dirname(child),parent+path_delim,String(""));
-        }
-        return countMatchInRegex(childstr,path_delim+"?[^"+path_delim+"]+"+path_delim+"?");
-    }
-    else return LOWEST_DEPTH;
-}
+//~ Int childDepth(const String& parent,const String& child){
+    //~ String childstr=child;
+    //~ if(isChildDir( parent, child)){
+        //~ if(isDir(child)){
+            //~ childstr=replaceString(child,parent+path_delim,String(""));
+        //~ }
+        //~ else{
+            //~ childstr=replaceString(dirname(child),parent+path_delim,String(""));
+        //~ }
+        //~ return countMatchInRegex(childstr,path_delim+"?[^"+path_delim+"]+"+path_delim+"?");
+    //~ }
+    //~ else return LOWEST_DEPTH;
+//~ }
 
 
-bool isInt(const String& s, int base){
-   if(s.empty() || std::isspace(s[0])) return false ;
-   char * p ;
-   strtol(s.c_str(), &p, base) ;
-   return (*p == 0) ;
-}
+//~ bool isInt(const String& s, int base){
+   //~ if(s.empty() || std::isspace(s[0])) return false ;
+   //~ char * p ;
+   //~ strtol(s.c_str(), &p, base) ;
+   //~ return (*p == 0) ;
+//~ }
 
 
-bool isPositiveInt(const String& s, int base){
-   if(s.empty() || std::isspace(s[0]) || s[0]=='-') return false ;
-   char * p ;
-   strtol(s.c_str(), &p, base) ;
-   return (*p == 0) ;
-}
+//~ bool isPositiveInt(const String& s, int base){
+   //~ if(s.empty() || std::isspace(s[0]) || s[0]=='-') return false ;
+   //~ char * p ;
+   //~ strtol(s.c_str(), &p, base) ;
+   //~ return (*p == 0) ;
+//~ }
 
 
-bool isNegativeInt(const String& s, int base){
-   if(s.empty() || std::isspace(s[0]) || s[0]!='-') return false ;
-   char * p ;
-   strtol(s.c_str(), &p, base) ;
-   return (*p == 0) ;
-}
+//~ bool isNegativeInt(const String& s, int base){
+   //~ if(s.empty() || std::isspace(s[0]) || s[0]!='-') return false ;
+   //~ char * p ;
+   //~ strtol(s.c_str(), &p, base) ;
+   //~ return (*p == 0) ;
+//~ }
 
 
-bool isNumber(const std::string& s){
-   if(s.empty() || std::isspace(s[0]) || std::isalpha(s[0])) return false ;
-   char * p ;
-   strtod(s.c_str(), &p) ;
-   return (*p == 0) ;
-}
+//~ bool isNumber(const std::string& s){
+   //~ if(s.empty() || std::isspace(s[0]) || std::isalpha(s[0])) return false ;
+   //~ char * p ;
+   //~ strtod(s.c_str(), &p) ;
+   //~ return (*p == 0) ;
+//~ }
 
 
 //~ template<typename T>
@@ -1418,12 +1418,12 @@ bool isNumber(const std::string& s){
 //~ }
     
     
-bool isPositiveNumber(const std::string& s){
-   if(s.empty() || std::isspace(s[0]) || std::isalpha(s[0]) || s[0]=='-') return false ;
-   char * p ;
-   strtod(s.c_str(), &p) ;
-   return (*p == 0) ;
-}
+//~ bool isPositiveNumber(const std::string& s){
+   //~ if(s.empty() || std::isspace(s[0]) || std::isalpha(s[0]) || s[0]=='-') return false ;
+   //~ char * p ;
+   //~ strtod(s.c_str(), &p) ;
+   //~ return (*p == 0) ;
+//~ }
 
 
 //~ template<typename T>
@@ -1488,62 +1488,62 @@ bool isPositiveNumber(const std::string& s){
 //~ }
     
 
-StringArray getLineFromFileAndReturnVector(const String& filename){
-    StringArray list;
-    String line;
-    char delim='\n';
-    FileStream file;
-    file.open(filename,$read);
-    if(!file.good()){printErrorLog("Couldn't open name string file: "+filename);Exit(1);}
-    while(getLineFromFile(file,line,delim)){
-        if ( line.size() && line[line.size()-1] == '\r' ) {line = line.substr( 0, line.size() - 1 );}
-        if(line=="" || line == toString('\0')){continue;}
-        list.push_back(line);
-    }
-    file.close();
+//~ StringArray getLineFromFileAndReturnVector(const String& filename){
+    //~ StringArray list;
+    //~ String line;
+    //~ char delim='\n';
+    //~ FileStream file;
+    //~ file.open(filename,$read);
+    //~ if(!file.good()){printErrorLog("Couldn't open name string file: "+filename);Exit(1);}
+    //~ while(getLineFromFile(file,line,delim)){
+        //~ if ( line.size() && line[line.size()-1] == '\r' ) {line = line.substr( 0, line.size() - 1 );}
+        //~ if(line=="" || line == toString('\0')){continue;}
+        //~ list.push_back(line);
+    //~ }
+    //~ file.close();
     
-    return list;
-}
+    //~ return list;
+//~ }
 
 
-NameList getNameListFromFile(const String& filename,Int si,Int ei,int mod=1){
-    NameList list;
-    String line;
-    Int lc=0,abslc=0;
-    Int start=si,end=ei;
-    if(si>ei && ei!=0){start=ei;end=si;}
-    else if(ei==0 && !reverse_line ){start=si;end=INT_MAX;}
-    else if(ei==0 && reverse_line){start=1;end=si;}
-    char delim='\n';
-    if(mod==0){delim='\0';}
-    FileStream file;
-    if(mod==1){file.open(filename,$read);}
-    else {file.open(filename,$binary | $read);}
-    if(!file.good()){printErrorLog("Couldn't open name string file: "+filename);Exit(1);}
-    Int tmplinc=linc;
-    while(getLineFromFile(file,line,delim) && lc<end){
-        abslc++;
-        if(mod==1){
-            if ( line.size() && line[line.size()-1] == '\r' ) {
-               line = line.substr( 0, line.size() - 1 );
-            }
-        }
-        if(line=="" || line == toString('\0')){
-            continue;}
-        lc++;
-        tmplinc--;
+//~ NameList getNameListFromFile(const String& filename,Int si,Int ei,int mod=1){
+    //~ NameList list;
+    //~ String line;
+    //~ Int lc=0,abslc=0;
+    //~ Int start=si,end=ei;
+    //~ if(si>ei && ei!=0){start=ei;end=si;}
+    //~ else if(ei==0 && !reverse_line ){start=si;end=INT_MAX;}
+    //~ else if(ei==0 && reverse_line){start=1;end=si;}
+    //~ char delim='\n';
+    //~ if(mod==0){delim='\0';}
+    //~ FileStream file;
+    //~ if(mod==1){file.open(filename,$read);}
+    //~ else {file.open(filename,$binary | $read);}
+    //~ if(!file.good()){printErrorLog("Couldn't open name string file: "+filename);Exit(1);}
+    //~ Int tmplinc=linc;
+    //~ while(getLineFromFile(file,line,delim) && lc<end){
+        //~ abslc++;
+        //~ if(mod==1){
+            //~ if ( line.size() && line[line.size()-1] == '\r' ) {
+               //~ line = line.substr( 0, line.size() - 1 );
+            //~ }
+        //~ }
+        //~ if(line=="" || line == toString('\0')){
+            //~ continue;}
+        //~ lc++;
+        //~ tmplinc--;
         
-        if(lc>=start && lc<=end && tmplinc<=0){
-            list[lc]=line;abslc_list[lc]=abslc;
-            tmplinc=linc;
+        //~ if(lc>=start && lc<=end && tmplinc<=0){
+            //~ list[lc]=line;abslc_list[lc]=abslc;
+            //~ tmplinc=linc;
             
-        }
+        //~ }
         
-    }
-    file.close();
+    //~ }
+    //~ file.close();
     
-    return list;
-}
+    //~ return list;
+//~ }
 
 
 String doRename(const String& file,DirectoryIndex &di){
@@ -1667,26 +1667,26 @@ String doRename(const String& file,DirectoryIndex &di){
 }
 
 
-StringArray getFilesFromDir(const String& file){
-                StringArray files;
-                DIR *dir;
-                struct dirent *ent;
-                if ((dir = opendir (file.c_str())) != NULL) {
-                    while ((ent = readdir (dir)) != NULL) {
+//~ StringArray getFilesFromDir(const String& file){
+                //~ StringArray files;
+                //~ DIR *dir;
+                //~ struct dirent *ent;
+                //~ if ((dir = opendir (file.c_str())) != NULL) {
+                    //~ while ((ent = readdir (dir)) != NULL) {
                         
-                        String filename=file+path_delim+ent->d_name;
-                        if(basename(filename)=="." || basename(filename)==".."){continue;}
-                        files.push_back(filename);
-                    }
-                    closedir (dir);
-                } 
-                else {
-                    printErrorLog((String(strerror(errno))+": "+file).c_str());
-                }
-                sortVector(files);
-                return files;
+                        //~ String filename=file+path_delim+ent->d_name;
+                        //~ if(basename(filename)=="." || basename(filename)==".."){continue;}
+                        //~ files.push_back(filename);
+                    //~ }
+                    //~ closedir (dir);
+                //~ } 
+                //~ else {
+                    //~ printErrorLog((String(strerror(errno))+": "+file).c_str());
+                //~ }
+                //~ sortVector(files);
+                //~ return files;
     
-}
+//~ }
 
 
 void startInDepthRenamingTaskOnDirectory(const String& dir,String base_dir=base_dir){

@@ -34,6 +34,7 @@
 #define __CLASS_HPP
 
 #include "global.hpp"
+#include "strutils.hpp"
 
 char * normalizePath(char* pwd, const char * src, char* res) {
 	Uint res_len;
@@ -205,7 +206,7 @@ class Options{
 
 
 struct File {
-    char type;      //'f': file, 'd': directory, 'l': link, 0: non-existent
+    char type;      //'f': file, 'd': directory, 'l': link, 0 (NULL): non-existent
     time_t atime;   //file access time (st_atime)
     time_t mtime;   //file modification time (st_mtime)
     time_t ctime;   //file status change time (st_ctime)
@@ -220,8 +221,6 @@ struct File {
     Uint blocks;    //number of 512B blocks allocated (st_blocks)
     String path;    //Absolute path (Absolute path is essential for the undo operation)
     
-    bool is_file;   //not a dir, can be a file or a link. should be used to check if it's a file or directory
-    
     //permission
     String perm_oct;
     String perm_ls;
@@ -229,7 +228,6 @@ struct File {
     
     void init() {
         type = 0;
-        is_file = false;
         atime = 0;
         mtime = 0;
         ctime = 0;
@@ -254,9 +252,9 @@ struct File {
             type = 0;
         } else{
             //file exists
-            if(S_ISREG(finfo.st_mode)) { type = 'f'; is_file = true; }
-            if(S_ISDIR(finfo.st_mode)) { type = 'd'; is_file = false;}
-            if(S_ISLNK(finfo.st_mode)) { type = 'l'; is_file = true; }
+            if(S_ISREG(finfo.st_mode)) { type = 'f'; }
+            if(S_ISDIR(finfo.st_mode)) { type = 'd'; }
+            if(S_ISLNK(finfo.st_mode)) { type = 'l'; }
             
             atime = finfo.st_atime;
             mtime = finfo.st_mtime;
@@ -288,8 +286,96 @@ struct File {
     explicit operator bool() const {
         return (type != 0);
     }
+    
+    bool isFile(){
+        return (type == 'f');
+    }
+    
+    bool isDir(){
+        return (type == 'd');
+    }
+    
+    bool isLink(){
+        return (type == 'l');
+    }
 };
 
+
+
+bool isImmediateChild(const File& prevf,const File& newf){
+        if(prevf.path==dirname(newf.path))return true;
+        else return false; 
+}
+
+
+bool isChild(const File& parent, const File& child){
+  std::size_t found = child.path.find(parent.path+path_delim);
+  if (found!=String::npos && found==0) return true;
+  else return false;
+}
+
+
+bool isChildDir(const File& parent, File child){
+    if(child.isDir()) return isChild(parent,child);
+    else return isChild(parent, File(dirname(child.path)));
+}
+
+
+Int childDepth(const File& parent, File child){
+    String childstr=child.path;
+    if(isChildDir( parent, child)){
+        if(child.isDir()){
+            childstr=replaceString(child.path,parent.path+path_delim,String(""));
+        }
+        else{
+            childstr=replaceString(dirname(child.path),parent.path+path_delim,String(""));
+        }
+        return split(childstr,'/').size();
+    }
+    else return LOWEST_DEPTH;
+}
+
+
+
+bool compareNatV(const File& a, const File& b){
+    return compareNat(a.path, b.path);
+}
+
+bool compareNatG(const File& a, const File& b){
+    return (a.path<b.path);
+}
+
+    
+void sortVector(FileArray& files){
+    if(sort_type=="natural"){ std::sort(files.begin(), files.end(), compareNatV); }
+    else if(sort_type=="general"){std::sort(files.begin(), files.end(), compareNatG);}
+    else if(sort_type=="none"){}
+    else{std::sort(files.begin(), files.end(), compareNatV);}
+    
+    ///reverse the sort if reverse_sort is true
+    if(reverse_sort){std::reverse(files.begin(), files.end());}
+}
+
+
+FileArray getFilesFromDir(const String& file){
+    FileArray files;
+    DIR *dir;
+    struct dirent *ent;
+    if ((dir = opendir (file.c_str())) != NULL) {
+        while ((ent = readdir (dir)) != NULL) {
+            
+            String filename=file+path_delim+ent->d_name;
+            if(basename(filename)=="." || basename(filename)==".."){continue;}
+            files.push_back(File(filename));
+        }
+        closedir (dir);
+    } 
+    else {
+        printErrorLog((String(strerror(errno))+": "+file).c_str());
+    }
+    sortVector(files);
+    return files;
+}
 
 
 #endif

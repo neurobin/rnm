@@ -37,6 +37,13 @@
 #include "global.hpp"
 #include "inout.hpp"
 
+
+
+static String toString(Char a){
+    if (a) return String(1, a);
+    else return String();
+}
+
 String toUpper(const String& s, const char* loc_s = 0){
     icu::Locale loc(loc_s);
     icu::UnicodeString us(s.c_str());
@@ -55,13 +62,13 @@ String toLower(const String& s, const char* loc_s = 0){
 
 
 String toLower0(String s){
-    for(int i=0;i<(int)s.length();i++){s[i]=tolower(s[i]);}
+    for(size_t i=0;i<s.length();i++){s[i]=tolower(s[i]);}
     return s;
 }
 
 
 String toUpper0(String s){
-    for(int i=0;i<(int)s.length();i++){s[i]=toupper(s[i]);}
+    for(size_t i=0;i<s.length();i++){s[i]=toupper(s[i]);}
     return s;
 }
 
@@ -180,8 +187,8 @@ size_t countMatchInString(String s, String match){
 
 StringArray split(const String &text, char sep) {
     StringArray tokens;
-    int start = 0, end = 0;
-    while ((Int)(end = text.find(sep, start)) != (Int)String::npos) {
+    size_t start = 0, end = 0;
+    while ((end = text.find(sep, start)) != String::npos) {
         String temp=text.substr(start, end - start);
         if(temp!="")tokens.push_back(temp);
         start = end + 1;

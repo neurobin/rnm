@@ -65,8 +65,11 @@
 #include <unicode/locid.h> //icu::Locale
 #include <cstdint> //Fixed width integral types: uint_fast64_t, uint_fast8_t
 #include <gmpxx.h> //mpf_class, mpz_class
+#include "strnatcmp.hpp"
 #include "/home/jahid/Git/Github/jpcre2/jpcre2/src/jpcre2.hpp"
 
+//forward decl
+class File;
 
 /////typedefs
 typedef uint_fast64_t Uint;
@@ -86,6 +89,7 @@ typedef std::fstream FileStream;
 typedef jpcre2::select<char> jp;
 typedef std::vector<jp::Regex> RegexArray;
 typedef std::vector<bool> BoolArray;
+typedef std::vector<File> FileArray;
 
 thread_local static std::ostringstream oss_buffer;
 
@@ -227,12 +231,18 @@ String rname="";
 StringArray rs_search;
 StringArray rs_replace;
 StringArray rs_mod;
+
+
 RegexArray ss_search_re; ///search strings are static and do not depend on each filename, therefore they can be globalized
 StringArray ss_search;
 StringArray ss_mod;
 BoolArray fixed_ss;
 BoolArray ss_fixed;
-String FIXED_SS_MOD = "-";
+String SS_MOD_F_ALL = "fdl";
+String SS_MOD_ALL = "ifdl!";
+
+jp::Regex multi_sre("\\s*/([^/]*?)/\\s*(["+SS_MOD_ALL+"]*)(\\s*;\\s*|$)",0,jpcre2::JIT_COMPILE);
+
 String sort_type="natural";
 
 

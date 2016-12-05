@@ -32,7 +32,6 @@
 #ifndef FUNC_HPP
 #define FUNC_HPP
 
-#include "strnatcmp.hpp"
 #include "inout.hpp"
 #include "class.hpp"
 #include "strutils.hpp"
@@ -152,6 +151,105 @@ void printIndexFlags(){
     
     }
 
+void parseSearchString(String ss, size_t index){
+    if(!stringContains(ss,path_delim)){
+        ss_search.push_back(ss);
+        ss_mod.push_back(SS_MOD_ALL);
+        jp::Regex re;
+        if(!fixed_ss[index]){
+            re.setPattern(ss)
+              .resetErrors()
+              .compile();
+            if(!re){
+                printErrorLog("Invalid search string regex: "+ss+ ". "+re.getErrorMessage());
+                Exit(1);
+            }
+        }
+        ss_search_re.push_back(re);
+    } else {
+        String search, mod;
+        jp::RegexMatch m(&multi_sre);
+        jp::VecNum vn;
+        size_t count = m.setSubject(ss)
+                        .setNumberedSubstringVector(&vn)
+                        .addJpcre2Option(jpcre2::FIND_ALL)
+                        .match();
+        if(count){
+            for(size_t i=0;i<vn.size();++i){
+                jp::Regex re;
+                search = vn[i][1];
+                mod = vn[i][2];
+                ss_search.push_back(search);
+                
+                ss_mod.push_back(mod);
+                if(!fixed_ss[index]){
+                    re.setModifier(mod)
+                      .setPattern(search)
+                      .resetErrors()
+                      .compile();
+                    if(!re){
+                        printErrorLog("Invalid search string regex: "+search+ ". "+re.getErrorMessage());
+                        Exit(1);
+                    }
+                }
+                //if fixed ss then the follwoing re will be non-compiled
+                ss_search_re.push_back(re);
+            }
+        } else {
+            ///search string is a regex and with no modifier syntax `regex` in place of /regex/ is allowed.
+            if(!fixed_ss[index])
+            printErrorLog("Invalid search regex: "+ss+"\nNote that "+path_delim+" is not allowed inside regex. \n\
+            Format: '"+path_delim+"regex(No"+path_delim+")"+path_delim+"modifier;' or 'regex(No"+path_delim+")'");
+            else 
+            printErrorLog("Invalid search string: "+ss+"\nNote that "+path_delim+" is not allowed in a string. \n\
+            Format: '"+path_delim+"string(No"+path_delim+")"+path_delim+"modifier;' or 'string(No"+path_delim+")'");
+            Exit(1);
+        }
+    }
+}
+
+
+bool isInvMatch(const String& mod){
+    if(stringContains(mod, "!")) return true;
+    else return false;
+}
+
+bool isComplyingToSearchString(const File& file){
+    String name=basename(file.path);
+    jp::RegexMatch m;
+    m.setSubject(name);
+    for(size_t i=0;i<ss_search.size();i++){
+        bool inv = isInvMatch(ss_mod[i]);
+        if(stringContains(ss_mod[i],toString(file.type)) ||
+            (
+            !stringContains(ss_mod[i],"f") &&
+            !stringContains(ss_mod[i],"d") &&
+            !stringContains(ss_mod[i],"l")
+            )){
+        } else continue;
+        if(ss_search_re[i]){
+            m.setRegexObject(&ss_search_re[i])
+             .setModifier(ss_mod[i]);
+            if(m.match()){
+                 if(inv) continue;
+            } else if(!inv) continue;
+        } else {
+            if(stringContains(ss_mod[i],"i")) {
+                if(stringContains(toLower(name),toLower(ss_search[i]))){
+                    if(inv) continue;
+                } else if(!inv) continue;
+            }
+            else{
+                if(stringContains(name,ss_search[i])){
+                    if(inv) continue;
+                } else if(!inv) continue;
+            }
+        }
+        return true;
+    }
+    
+    return false;
+}
 
 
 

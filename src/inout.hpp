@@ -44,7 +44,6 @@ void print(const T& s){ std::cout<<NEW_LINE<<s<<NEW_LINE;}
 void Exit(int a){ std::exit(a); }
 
 void getLine(String& s){ std::getline(std::cin, s); }
-void getLineFromFile(FileStream f, String& l,char delim){ std::getline(f,l,delim); }
 
 String getCurrentDir(void){
     char c[PATH_MAX];
@@ -225,6 +224,58 @@ String getSingleCharacterStringOrExit(const String& name, const String& s){
         Exit(1);
     }
     return s;
+}
+
+
+
+
+StringArray getLineFromFileAndReturnVector(const String& filename){
+    StringArray list;
+    String line;
+    char delim='\n';
+    FileStream file;
+    file.open(filename,std::ios::in);
+    if(!file.good()){printErrorLog("Couldn't open file: "+filename);Exit(1);}
+    while(std::getline(file,line,delim)){
+        if ( line.size() && line[line.size()-1] == '\r' ) {line = line.substr( 0, line.size() - 1 );}
+        if(line.empty()){continue;}
+        list.push_back(line);
+    }
+    file.close();
+    
+    return list;
+}
+
+
+NameList getNameListFromFile(const String& filename, Uint si, Uint ei,
+                                int mod=1, bool reverse = reverse_line){
+    NameList list;
+    String line;
+    Uint lc=0,abslc=0;
+    Uint start=si,end=ei;
+    if(ei!=0 && si>ei ){start=ei;end=si; reverse ^= reverse;}
+    char delim='\n';
+    if(mod==0){delim='\0';}
+    FileStream file;
+    if(mod==1){file.open(filename,std::ios::in);}
+    else {file.open(filename,std::ios::binary | std::ios::in);}
+    if(!file.good()){printErrorLog("Couldn't open file: "+filename);Exit(1);}
+    while(std::getline(file,line,delim) && (lc<end || end == 0)){
+        abslc++;
+        if(mod==1){
+            if ( line.size() && line[line.size()-1] == '\r' ) {
+               line = line.substr( 0, line.size() - 1 );
+            }
+        }
+        if(line.empty()) continue;
+        lc++;
+        if(lc>=start && (lc <= end || end == 0) ){
+            list.push_back(line);abslc_list.push_back(abslc);
+        }
+    }
+    file.close();
+    if(reverse) std::reverse(list.begin(), list.end());
+    return list;
 }
 
 
