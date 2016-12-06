@@ -35,6 +35,7 @@
 
 
 #include "global.hpp"
+#include "strutils.hpp"
 
 
 size_t countMatchInRegex(const String& s,const String& re){
@@ -60,6 +61,13 @@ bool isComplyingToRegex(const String& s, jp::Regex &re){
     }
     if(s!=total){return false;}
     else {return true;}
+}
+
+
+String sanitizeStringForRegex(const String& s){
+    String s1 = s;
+    s1 = sanity_regex.replace(s1,"[$0]","g");
+    return replaceStringAll(s1, "\\","\\\\");
 }
 
 

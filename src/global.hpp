@@ -48,6 +48,7 @@
 #include <cerrno>
 #include <cstdlib>
 #include <ctime>
+#include <csignal>
 #include <sys/sendfile.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -61,6 +62,7 @@
 #include <cmath>
 #include <algorithm>
 #include <locale>
+#include <exception>
 #include <unicode/unistr.h>//icu::UnicodeString
 #include <unicode/locid.h> //icu::Locale
 #include <cstdint> //Fixed width integral types: uint_fast64_t, uint_fast8_t
@@ -169,10 +171,11 @@ String getUnixHome(){const char *homedir;if ((homedir = getenv("HOME")) == NULL)
 String HOME=getUnixHome();
 String LOG_DIR_PARENT=HOME+"/.cache/neurobin";
 String LOG_DIR=LOG_DIR_PARENT+"/rnm";
+String LOG_DIR_UNDO=LOG_DIR+"/unrec";
 String ERROR_LOG=LOG_DIR+"/errors.log";
 String OUT_LOG=LOG_DIR+"/out.log";
-String RNM_FILE_LOG_L=LOG_DIR+"/rfl.l.log";
-String RNM_FILE_LOG_R=LOG_DIR+"/rfl.r.log";
+String RNM_FILE_LOG_L=LOG_DIR_UNDO+"/rfl.l";
+String RNM_FILE_LOG_R=LOG_DIR_UNDO+"/rfl.r";
 String RNM_FILE_LOG_L_TMP=RNM_FILE_LOG_L+".tmp";
 String RNM_FILE_LOG_R_TMP=RNM_FILE_LOG_R+".tmp";
 String NSF_LIST_FILE=LOG_DIR+"/nsf.list";
@@ -211,6 +214,7 @@ std::map<String,bool> INDEX_FLAGS_I_B={{"uppercase",false},{"showbase",false},{"
 IOFormatFlagArray INDEX_FLAGS_I={std::ios::uppercase,std::ios::showbase,std::ios::showpoint,std::ios::showpos};
 ///The above array couples must be in sync, don't change the sequence, they are important
 
+IOFormatFlag INDEX_FLAGS = (IOFormatFlag)0;
 
 
 /////Strings
@@ -242,6 +246,7 @@ String SS_MOD_F_ALL = "fdl";
 String SS_MOD_ALL = "ifdl!";
 
 jp::Regex multi_sre("\\s*/([^/]*?)/\\s*(["+SS_MOD_ALL+"]*)(\\s*;\\s*|$)",0,jpcre2::JIT_COMPILE);
+jp::Regex sanity_regex("[\\s\\S]",0,jpcre2::JIT_COMPILE);
 
 String sort_type="natural";
 

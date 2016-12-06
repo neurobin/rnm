@@ -37,64 +37,35 @@
 
 StringArray files;
 
-bool undoRename(){
-    FileStream file_l,file_r;
-    String l,r;
-    StringArray left,right;
-    DirectoryIndex di;
-    file_l.open(RNM_FILE_LOG_L,$binary | $read);
-    file_r.open(RNM_FILE_LOG_R,$binary | $read);
-    if(file_l.good() && file_r.good()){
-    while(getLineFromFile(file_l,l,'\0') && getLineFromFile(file_r,r,'\0')){
-        left.push_back(l);right.push_back(r);
-        }
-    file_l.close();file_r.close();
-    for(Int i=(Int)left.size()-1;i>=0;i--){
-        ///do rename and log into rfl
-        if(!quiet){print NEW_LINE+right[i]+"    ---->    "+left[i]+NEW_LINE;}
-        Rename(right[i],left[i],di);
-        }
+//~ bool undoRename(){
+    //~ FileStream file_l,file_r;
+    //~ String l,r;
+    //~ StringArray left,right;
+    //~ DirectoryIndex di;
+    //~ file_l.open(RNM_FILE_LOG_L,$binary | $read);
+    //~ file_r.open(RNM_FILE_LOG_R,$binary | $read);
+    //~ if(file_l.good() && file_r.good()){
+    //~ while(getLineFromFile(file_l,l,'\0') && getLineFromFile(file_r,r,'\0')){
+        //~ left.push_back(l);right.push_back(r);
+        //~ }
+    //~ file_l.close();file_r.close();
+    //~ for(Int i=(Int)left.size()-1;i>=0;i--){
+        //~ ///do rename and log into rfl
+        //~ if(!quiet){print NEW_LINE+right[i]+"    ---->    "+left[i]+NEW_LINE;}
+        //~ Rename(right[i],left[i],di);
+        //~ }
     
-    return true;
-    }
+    //~ return true;
+    //~ }
     
-    else {
-        printErrorLog("Undo failed. Required log files not found.");
-        return false;
-    }
+    //~ else {
+        //~ printErrorLog("Undo failed. Required log files not found.");
+        //~ return false;
+    //~ }
     
-}
+//~ }
 
 
-
-bool isInvalidFile(const String& file){
-    bool status=false;
-    StringArray invf={HOME,\
-        path_delim+"bin",path_delim+"usr",path_delim+"usr"+path_delim+"bin",path_delim+"tmp",\
-        path_delim+"dev",path_delim+"etc",path_delim+"proc",path_delim+"home",\
-        path_delim+"boot",path_delim+"root",path_delim+"lib",path_delim+"media",path_delim+"opt",\
-        path_delim+"srv",path_delim+"sbin",path_delim+"sys",path_delim+"var",path_delim+"include",\
-        path_delim+"local",path_delim+"libexec",path_delim+"log",path_delim+"mail",path_delim+"spool",
-        path_delim+"mnt",path_delim+"share",path_delim+"unix"};
-    for(int i=0;i<(int)invf.size();i++){
-        if(file==invf[i]){
-            if(!force){
-                status=true;printWarningLog("rename not permitted: "+file);
-            }
-        }
-    }
-    
-    if(file==path_delim+"usr"+path_delim+"bin"+path_delim+"rnm"){status=true;printWarningLog("rename not permitted: "+file);}
-    if(file==root_filesystem){status=true;printWarningLog("rename not permitted: "+file);}
-    if(file==self_path){status=true;printWarningLog("rename not permitted: "+file);}
-    if(file==RNM_FILE_LOG_L_TMP){status=true;printWarningLog("rename not permitted: "+file);}
-    if(file==RNM_FILE_LOG_R_TMP){status=true;printWarningLog("rename not permitted: "+file);}
-    if(file==LOG_DIR_PARENT){status=true;printWarningLog("rename not permitted: "+file);}
-    if(file==LOG_DIR){status=true;printWarningLog("rename not permitted: "+file);}
-    
-    
-    return status;
-}
 
 
 
@@ -113,74 +84,74 @@ bool isInvalidFile(const String& file){
 //~ }
 
 
-bool Rename(const String& oldn,const String& newn,DirectoryIndex &di){
-    bool success=false;
-    if(isPathValid(newn)){
-        printWarningLog("A file or directory with new name exists: "+newn);
-    }
-    else {
-        if(!simulation){
+//~ bool Rename(const String& oldn,const String& newn,DirectoryIndex &di){
+    //~ bool success=false;
+    //~ if(isPathValid(newn)){
+        //~ printWarningLog("A file or directory with new name exists: "+newn);
+    //~ }
+    //~ else {
+        //~ if(!simulation){
             
-            if(rename(oldn.c_str(),newn.c_str()) == 0){
-                appendToRFLTMP(oldn,newn);
-                current_index+=inc;
-                reverse_index-=inc;
-                di.directory_index+=inc;
-                di.directory_reverse_index-=inc;
-                rnc++;
-                success=true;
-            }
-            else {printErrorLog(strerror(errno));}
-        }
-        else {
+            //~ if(rename(oldn.c_str(),newn.c_str()) == 0){
+                //~ appendToRFLTMP(oldn,newn);
+                //~ current_index+=inc;
+                //~ reverse_index-=inc;
+                //~ di.directory_index+=inc;
+                //~ di.directory_reverse_index-=inc;
+                //~ rnc++;
+                //~ success=true;
+            //~ }
+            //~ else {printErrorLog(strerror(errno));}
+        //~ }
+        //~ else {
             
-                current_index+=inc;
-                reverse_index-=inc;
-                di.directory_index+=inc;
-                di.directory_reverse_index-=inc;
-                rnc++;
-        }
+                //~ current_index+=inc;
+                //~ reverse_index-=inc;
+                //~ di.directory_index+=inc;
+                //~ di.directory_reverse_index-=inc;
+                //~ rnc++;
+        //~ }
         
         
-    }
-    return success;
-}
+    //~ }
+    //~ return success;
+//~ }
 
 
-template<typename T>
-String toString(T a){
-    Stream ss;
-    ss <<a;
-    return ss.str();
-}
+//~ template<typename T>
+//~ String toString(T a){
+    //~ Stream ss;
+    //~ ss <<a;
+    //~ return ss.str();
+//~ }
 
 
-template<typename T>
-T stringTo(const String& s){
-    T a;
-    Stream ss;
-    ss <<s;
-    ss >>a;
-    return a;
-}
+//~ template<typename T>
+//~ T stringTo(const String& s){
+    //~ T a;
+    //~ Stream ss;
+    //~ ss <<s;
+    //~ ss >>a;
+    //~ return a;
+//~ }
 
 
-String reverseString(const String& s){
-    String temp="";
-    for(int i=s.length()-1;i>=0;i--){temp+=s[i];}
-    return temp;}
+//~ String reverseString(const String& s){
+    //~ String temp="";
+    //~ for(int i=s.length()-1;i>=0;i--){temp+=s[i];}
+    //~ return temp;}
     
 
-String toLower(String s){
-    for(int i=0;i<(int)s.length();i++){s[i]=tolower(s[i]);}
-    return s;
-}
+//~ String toLower(String s){
+    //~ for(int i=0;i<(int)s.length();i++){s[i]=tolower(s[i]);}
+    //~ return s;
+//~ }
 
 
-String toUpper(String s){
-    for(int i=0;i<(int)s.length();i++){s[i]=toupper(s[i]);}
-    return s;
-    }
+//~ String toUpper(String s){
+    //~ for(int i=0;i<(int)s.length();i++){s[i]=toupper(s[i]);}
+    //~ return s;
+    //~ }
     
 
 //~ String replaceString(String str,const String& replace,const String& with){
@@ -622,10 +593,10 @@ String changeCaseAccordingToSS(String s,const String& search,const String& repla
     return replaced_string;
 }
 
-String sanitizeRegexString(const String& s){
-    std::regex re(R"([\s\S])");
-    return std::regex_replace (s,re,"[$&]",std::regex_constants::format_default);
-}
+//~ String sanitizeRegexString(const String& s){
+    //~ std::regex re(R"([\s\S])");
+    //~ return std::regex_replace (s,re,"[$&]",std::regex_constants::format_default);
+//~ }
 
 String regexReplace(const String& s,const String& search,const String& replace,const String& modifier,int user){
     ///user=0 is for internal use. user=1 for users.
@@ -675,9 +646,9 @@ String regexReplace(std::regex re,const String& s,const String& search,const Str
 }
 
     
-String stripPathDelimiter(const String& s){
-    return replaceStringAll(s,path_delim,"");
-}
+//~ String stripPathDelimiter(const String& s){
+    //~ return replaceStringAll(s,path_delim,"");
+//~ }
 
     
 //~ void sortVector(StringArray &files){
@@ -812,63 +783,63 @@ void parseReplaceString(StringArray &rs,const String& file,DirectoryIndex &di){
 //~ }
 
 
-void parseSearchString(String ss,Int index){
-    Regex multi_re("\\s*"+path_delim+"([^"+path_delim+"]*?)"+path_delim+"\\s*(i?)(\\s*;\\s*|$)");
-    int subm[]={1,2,3};
-    if(isComplyingToRegex(ss,multi_re)){
-        RegexTokenIterator end; //default constructor=end of sequence
-        RegexTokenIterator toit (ss.begin(), ss.end(), multi_re,subm);
+//~ void parseSearchString(String ss,Int index){
+    //~ Regex multi_re("\\s*"+path_delim+"([^"+path_delim+"]*?)"+path_delim+"\\s*(i?)(\\s*;\\s*|$)");
+    //~ int subm[]={1,2,3};
+    //~ if(isComplyingToRegex(ss,multi_re)){
+        //~ RegexTokenIterator end; //default constructor=end of sequence
+        //~ RegexTokenIterator toit (ss.begin(), ss.end(), multi_re,subm);
         
-        while (toit != end){
-            String s=*toit++,m=*toit++;
-            ss_search.push_back(s);
-            ss_mod.push_back(m);
-            ss_fixed.push_back(fixed_ss[index]);
-            toit++;
+        //~ while (toit != end){
+            //~ String s=*toit++,m=*toit++;
+            //~ ss_search.push_back(s);
+            //~ ss_mod.push_back(m);
+            //~ ss_fixed.push_back(fixed_ss[index]);
+            //~ toit++;
             
-            std::regex re;
-            ///Let's compile the regex if it's not a fixed string
-            bool case_sensitive=true;
-            if(m=="i"){case_sensitive=false;}
-            if(!fixed_ss[index]){
-                try {
-                    re=createRegex(s, case_sensitive);
-                } 
-                catch (std::regex_error& e) {
-                    printErrorLog("Invalid search string regex: "+s);
-                    Exit(1);
-                }
-            }
-            ///Fill the ss_search_re vector
-            ss_search_re.push_back(re);
-        }
-    }
-    else if(!stringContains(ss,path_delim)){
-        ss_search.push_back(ss);
-        ss_mod.push_back("");
-        ss_fixed.push_back(fixed_ss[index]);
-        std::regex re;
-        try {
-            re=createRegex(ss, true);
-        } 
-        catch (std::regex_error& e) {
-            printErrorLog("Invalid search string regex: "+ss);
-            Exit(1);
-        }
-        ///Fill the ss_search_re vector
-        ss_search_re.push_back(re);
-    }
-    else{
-        ///search string is a regex and with no modifier syntax `regex` in place of /regex/ is allowed.
-        if(!fixed_ss[index])
-        printErrorLog("Invalid search regex: "+ss+"\nNote that "+path_delim+" is not allowed inside regex. \n\
-        Format: '"+path_delim+"regex(No"+path_delim+")"+path_delim+"modifier;' or 'regex(No"+path_delim+")'");
-        else 
-        printErrorLog("Invalid search string: "+ss+"\nNote that "+path_delim+" is not allowed in a string. \n\
-        Format: '"+path_delim+"string(No"+path_delim+")"+path_delim+"modifier;' or 'string(No"+path_delim+")'");
-        Exit(1);
-    }
-}
+            //~ std::regex re;
+            //~ ///Let's compile the regex if it's not a fixed string
+            //~ bool case_sensitive=true;
+            //~ if(m=="i"){case_sensitive=false;}
+            //~ if(!fixed_ss[index]){
+                //~ try {
+                    //~ re=createRegex(s, case_sensitive);
+                //~ } 
+                //~ catch (std::regex_error& e) {
+                    //~ printErrorLog("Invalid search string regex: "+s);
+                    //~ Exit(1);
+                //~ }
+            //~ }
+            //~ ///Fill the ss_search_re vector
+            //~ ss_search_re.push_back(re);
+        //~ }
+    //~ }
+    //~ else if(!stringContains(ss,path_delim)){
+        //~ ss_search.push_back(ss);
+        //~ ss_mod.push_back("");
+        //~ ss_fixed.push_back(fixed_ss[index]);
+        //~ std::regex re;
+        //~ try {
+            //~ re=createRegex(ss, true);
+        //~ } 
+        //~ catch (std::regex_error& e) {
+            //~ printErrorLog("Invalid search string regex: "+ss);
+            //~ Exit(1);
+        //~ }
+        //~ ///Fill the ss_search_re vector
+        //~ ss_search_re.push_back(re);
+    //~ }
+    //~ else{
+        //~ ///search string is a regex and with no modifier syntax `regex` in place of /regex/ is allowed.
+        //~ if(!fixed_ss[index])
+        //~ printErrorLog("Invalid search regex: "+ss+"\nNote that "+path_delim+" is not allowed inside regex. \n\
+        //~ Format: '"+path_delim+"regex(No"+path_delim+")"+path_delim+"modifier;' or 'regex(No"+path_delim+")'");
+        //~ else 
+        //~ printErrorLog("Invalid search string: "+ss+"\nNote that "+path_delim+" is not allowed in a string. \n\
+        //~ Format: '"+path_delim+"string(No"+path_delim+")"+path_delim+"modifier;' or 'string(No"+path_delim+")'");
+        //~ Exit(1);
+    //~ }
+//~ }
 
 
 //~ bool stringContains(String s1,const String& s2){
@@ -877,31 +848,31 @@ void parseSearchString(String ss,Int index){
 //~ }
 
 
-bool isComplyingToSearchString(const String& file){
-    String name=basename(file);
-    for(Int i=0;i<(Int)ss_search.size();i++){
-        //~ bool case_sensitive=true;
-        //~ if(ss_mod[i]=="i"){case_sensitive=false;}
-        if(!ss_fixed[i]){
-                if(std::regex_search(name,ss_search_re[i])){return true;}
-        }
-        else{
-            if(ss_mod[i]=="i"){
-                if(stringContains(toLower(name),toLower(ss_search[i]))){return true;}
-            }
-            else{
-                if(stringContains(name,ss_search[i])){return true;}
-            }
-        }
-    }
+//~ bool isComplyingToSearchString(const String& file){
+    //~ String name=basename(file);
+    //~ for(Int i=0;i<(Int)ss_search.size();i++){
+        //bool case_sensitive=true;
+        //if(ss_mod[i]=="i"){case_sensitive=false;}
+        //~ if(!ss_fixed[i]){
+                //~ if(std::regex_search(name,ss_search_re[i])){return true;}
+        //~ }
+        //~ else{
+            //~ if(ss_mod[i]=="i"){
+                //~ if(stringContains(toLower(name),toLower(ss_search[i]))){return true;}
+            //~ }
+            //~ else{
+                //~ if(stringContains(name,ss_search[i])){return true;}
+            //~ }
+        //~ }
+    //~ }
     
-    return false;
-}
+    //~ return false;
+//~ }
 
 
-String removeInvalidNameStringRules(const String& ns){
-    return replaceStringAllWithDelims(ns,"",path_delim);
-}
+//~ String removeInvalidNameStringRules(const String& ns){
+    //~ return replaceStringAllWithDelims(ns,"",path_delim);
+//~ }
 
 
 //~ template<typename T1, typename T2>
@@ -911,222 +882,222 @@ String removeInvalidNameStringRules(const String& ns){
 //~ }
 
 
-String processExtendedNameString_d(String ns,std::map<String,Double>& ns_rules,int ifl, const String& delim, const String& delim2,bool sanitize){
-    ///_d stands for double
-    String name=ns;
-    int subm[]={0,1,2,3,4},base=NUM_BASE;
-    Regex multi_re (""+delim+"(-?[^"+delim+"-]+)-([^/"+delim+"])(\\d*)("+delim+")");
-    RegexTokenIterator end; ///default constructor=end of sequence
-    RegexTokenIterator toit (ns.begin(), ns.end(), multi_re,subm);
-    while (toit != end){
-        String tot,rulep, basenp,basep;
-        tot=*toit++;rulep=*toit++;basenp=*toit++;basep=*toit++;toit++;
-        ///print tot+NEW_LINE;print rulep+NEW_LINE;print basenp+NEW_LINE;print basep+NEW_LINE;
+//~ String processExtendedNameString_d(String ns,std::map<String,Double>& ns_rules,int ifl, const String& delim, const String& delim2,bool sanitize){
+    //~ ///_d stands for double
+    //~ String name=ns;
+    //~ int subm[]={0,1,2,3,4},base=NUM_BASE;
+    //~ Regex multi_re (""+delim+"(-?[^"+delim+"-]+)-([^/"+delim+"])(\\d*)("+delim+")");
+    //~ RegexTokenIterator end; ///default constructor=end of sequence
+    //~ RegexTokenIterator toit (ns.begin(), ns.end(), multi_re,subm);
+    //~ while (toit != end){
+        //~ String tot,rulep, basenp,basep;
+        //~ tot=*toit++;rulep=*toit++;basenp=*toit++;basep=*toit++;toit++;
+        //~ ///print tot+NEW_LINE;print rulep+NEW_LINE;print basenp+NEW_LINE;print basep+NEW_LINE;
         
-        if(delim2!=""){///This tells us to convert the delim based rules to delim2 based rules, no further processing
-            name=replaceString(name,tot,replaceStringAll(tot,delim,delim2));
-            continue;
-        }
+        //~ if(delim2!=""){///This tells us to convert the delim based rules to delim2 based rules, no further processing
+            //~ name=replaceString(name,tot,replaceStringAll(tot,delim,delim2));
+            //~ continue;
+        //~ }
         
-        if(basenp=="b"){///Base conversion
-            if(isPositiveInt(basep)){
-                base=stringTo<int>(basep);
-                if(base>=NUM_BASE_MIN&&base<=NUM_BASE_MAX){
-                    if(existsInMap(ns_rules,String(rulep))){
-                        String tmp = toStringAccordingToIFL(ns_rules[rulep],index_field_length,base);
-                        if(sanitize){tmp=sanitizeRegexString(tmp);}
-                        name=replaceString(name,tot,tmp);
-                    }
-                }
-            }
-        }
-        else if(basenp=="s"){///scientific conversion
-            if(basep==""){
-                if(existsInMap(ns_rules,String(rulep))){
-                    String tmp = toStringAccordingToIFL(ns_rules[rulep],index_field_length,10,std::ios::scientific);
-                    if(sanitize){tmp=sanitizeRegexString(tmp);}
-                    name=replaceString(name,tot,tmp);
-                }
-            }
-        }
-        else if(basenp=="l"){///Latin conversion
-            if(basep==""){
-                if(existsInMap(ns_rules,String(rulep))){
-                    String tmp = toStringAccordingToIFL(ns_rules[rulep],index_field_length,10,std::ios::fixed,true);
-                    if(sanitize){tmp=sanitizeRegexString(tmp);}
-                    name=replaceString(name,tot,tmp);
-                }
-            }
-        }
-    }
-return name;
-}
+        //~ if(basenp=="b"){///Base conversion
+            //~ if(isPositiveInt(basep)){
+                //~ base=stringTo<int>(basep);
+                //~ if(base>=NUM_BASE_MIN&&base<=NUM_BASE_MAX){
+                    //~ if(existsInMap(ns_rules,String(rulep))){
+                        //~ String tmp = toStringAccordingToIFL(ns_rules[rulep],index_field_length,base);
+                        //~ if(sanitize){tmp=sanitizeRegexString(tmp);}
+                        //~ name=replaceString(name,tot,tmp);
+                    //~ }
+                //~ }
+            //~ }
+        //~ }
+        //~ else if(basenp=="s"){///scientific conversion
+            //~ if(basep==""){
+                //~ if(existsInMap(ns_rules,String(rulep))){
+                    //~ String tmp = toStringAccordingToIFL(ns_rules[rulep],index_field_length,10,std::ios::scientific);
+                    //~ if(sanitize){tmp=sanitizeRegexString(tmp);}
+                    //~ name=replaceString(name,tot,tmp);
+                //~ }
+            //~ }
+        //~ }
+        //~ else if(basenp=="l"){///Latin conversion
+            //~ if(basep==""){
+                //~ if(existsInMap(ns_rules,String(rulep))){
+                    //~ String tmp = toStringAccordingToIFL(ns_rules[rulep],index_field_length,10,std::ios::fixed,true);
+                    //~ if(sanitize){tmp=sanitizeRegexString(tmp);}
+                    //~ name=replaceString(name,tot,tmp);
+                //~ }
+            //~ }
+        //~ }
+    //~ }
+//~ return name;
+//~ }
 
 
-String processExtendedPdNameStringRule(String ns, const String& file, const String& p_delim, const String& delim2,bool sanitize){
-    ///file must contain whole path.
-    String name=ns;
-    int subm[]={0,1,2,3,4};
+//~ String processExtendedPdNameStringRule(String ns, const String& file, const String& p_delim, const String& delim2,bool sanitize){
+    //~ ///file must contain whole path.
+    //~ String name=ns;
+    //~ int subm[]={0,1,2,3,4};
     
-    ///Let's first find pd_max and all the parent directory names
-    StringArray pd_names=split(dirname(file),path_delim[0]);
-    Int pd_max=(Int)(pd_names.size()-1);
+    //~ ///Let's first find pd_max and all the parent directory names
+    //~ StringArray pd_names=split(dirname(file),path_delim[0]);
+    //~ Int pd_max=(Int)(pd_names.size()-1);
     
-    ///Reverse the order of pd_names so that the right most directory name comes in 0th index
-    std::reverse(pd_names.begin(),pd_names.end());
+    //~ ///Reverse the order of pd_names so that the right most directory name comes in 0th index
+    //~ std::reverse(pd_names.begin(),pd_names.end());
     
     
-    Regex multi_re (""+p_delim+"pd(\\d*|[ew])-?(\\d*|[ew])-?([^/"+p_delim+"]*)("+p_delim+")",ICASE);
-    RegexTokenIterator end; ///default constructor=end of sequence
-    RegexTokenIterator toit (ns.begin(), ns.end(), multi_re,subm);
+    //~ Regex multi_re (""+p_delim+"pd(\\d*|[ew])-?(\\d*|[ew])-?([^/"+p_delim+"]*)("+p_delim+")",ICASE);
+    //~ RegexTokenIterator end; ///default constructor=end of sequence
+    //~ RegexTokenIterator toit (ns.begin(), ns.end(), multi_re,subm);
     
-    ///Iterate over the regex iterator to get all substrings
-    while (toit != end){
-        String tot,si,ei,delim;
-        String pd_name_c="";
+    //~ ///Iterate over the regex iterator to get all substrings
+    //~ while (toit != end){
+        //~ String tot,si,ei,delim;
+        //~ String pd_name_c="";
         
-        ///Get the matches
-        tot=*toit++;si=*toit++;ei=*toit++;delim=*toit++;toit++;
-        if(delim2!=""){///This tells us to convert the delim based rules to delim2 based rules, no further processing
-            name=replaceString(name,tot,replaceStringAll(tot,p_delim,delim2));
-            continue;
-        }
-        //~ ///manage default delim
-        //~ if(ei=="")delim=PD_DELIM;
+        //~ ///Get the matches
+        //~ tot=*toit++;si=*toit++;ei=*toit++;delim=*toit++;toit++;
+        //~ if(delim2!=""){///This tells us to convert the delim based rules to delim2 based rules, no further processing
+            //~ name=replaceString(name,tot,replaceStringAll(tot,p_delim,delim2));
+            //~ continue;
+        //~ }
+        ///manage default delim
+        //if(ei=="")delim=PD_DELIM;
         
-        ///Trim left zeros from si and ei
-        ///If there was only zeros in si or ei then both will be empty, make them 0
-        if(si!=""){
-            si=ltrim(si,"0");
-            if(si=="")si="0";
-        }
+        //~ ///Trim left zeros from si and ei
+        //~ ///If there was only zeros in si or ei then both will be empty, make them 0
+        //~ if(si!=""){
+            //~ si=ltrim(si,"0");
+            //~ if(si=="")si="0";
+        //~ }
         
-        if(ei!=""){
-            ei=ltrim(ei,"0");
-            if(ei=="")ei="0";
-        }
+        //~ if(ei!=""){
+            //~ ei=ltrim(ei,"0");
+            //~ if(ei=="")ei="0";
+        //~ }
         
-        ///Get the range in integer
-        Int si_int=stringTo<Int>(si);
-        Int ei_int=stringTo<Int>(ei);
+        //~ ///Get the range in integer
+        //~ Int si_int=stringTo<Int>(si);
+        //~ Int ei_int=stringTo<Int>(ei);
         
-        std::regex re("^"+sanitizeRegexString(CWD)+"("+path_delim+"[\\s\\S]*|$)");
-        Int cd_max=(Int)split(CWD,path_delim[0]).size()-1;
-        if(cd_max<0)cd_max=0;
+        //~ std::regex re("^"+sanitizeRegexString(CWD)+"("+path_delim+"[\\s\\S]*|$)");
+        //~ Int cd_max=(Int)split(CWD,path_delim[0]).size()-1;
+        //~ if(cd_max<0)cd_max=0;
         
-        if(toLower(si)=="e"){si_int=pd_max;}
-        if(toLower(ei)=="e"){ei_int=pd_max;}
+        //~ if(toLower(si)=="e"){si_int=pd_max;}
+        //~ if(toLower(ei)=="e"){ei_int=pd_max;}
         
-        if(std::regex_search(file,re)){
-            if(toLower(si)=="w"){si_int=pd_max-cd_max;}
-            if(toLower(ei)=="w"){ei_int=pd_max-cd_max;}
-        } else {si_int=ei_int=-1;}
+        //~ if(std::regex_search(file,re)){
+            //~ if(toLower(si)=="w"){si_int=pd_max-cd_max;}
+            //~ if(toLower(ei)=="w"){ei_int=pd_max-cd_max;}
+        //~ } else {si_int=ei_int=-1;}
         
-        ///Set overflowed range to pd_max.
-        ///This should not be done unless user wants it to be this way.
-        ///By default overflowed range will be replaced with empty string.
-        //~ if(si_int>pd_max){si_int=pd_max;}
-        //~ if(ei_int>pd_max){ei_int=pd_max;}
+        //~ ///Set overflowed range to pd_max.
+        //~ ///This should not be done unless user wants it to be this way.
+        //~ ///By default overflowed range will be replaced with empty string.
+        //if(si_int>pd_max){si_int=pd_max;}
+        //if(ei_int>pd_max){ei_int=pd_max;}
         
-        ///Handle empty si and ei, this must be the end of si_int and ei_int modification
-        if(si=="")si_int=0;
-        if(ei=="")ei_int=si_int;
+        //~ ///Handle empty si and ei, this must be the end of si_int and ei_int modification
+        //~ if(si=="")si_int=0;
+        //~ if(ei=="")ei_int=si_int;
         
-        //print tot+NEW_LINE;print si<<": "<<si_int<<NEW_LINE;print ei<<": "<<ei_int<<NEW_LINE;print delim+NEW_LINE<<pd_max<<NEW_LINE;
+        //~ //print tot+NEW_LINE;print si<<": "<<si_int<<NEW_LINE;print ei<<": "<<ei_int<<NEW_LINE;print delim+NEW_LINE<<pd_max<<NEW_LINE;
         
-        ///Create a string combining all parent directory names with delims added
+        //~ ///Create a string combining all parent directory names with delims added
         
-        if(si_int<=ei_int){
-            for(Int i=si_int;i<=ei_int;i++){
-                ///if si ei both empty and delim is not empty, then it is an invalid rule
-                if(si==""&&ei==""&&delim!="")continue;    ///must continue
-                if(i>pd_max || i<0)break;                 ///Overflow, break will suffice 
-                if(pd_name_c!="")pd_name_c+=delim+pd_names[i];
-                else pd_name_c+=pd_names[i];
-            }
-        }
-        else{
-            for(Int i=si_int;i>=ei_int;i--){
-                ///if si ei both empty and delim is not empty, then it is an invalid rule
-                if(si==""&&ei==""&&delim!="")continue;    ///must continue
-                if(i>pd_max || i<0)continue;              ///Overflow, must continue
-                if(pd_name_c!="")pd_name_c+=delim+pd_names[i];
-                else pd_name_c+=pd_names[i];
-            }
-        }
-        ///Finaly replace the pd rule with the newly created combined name
-        if(sanitize){pd_name_c=sanitizeRegexString(pd_name_c);}
-        name=replaceString(name,tot,pd_name_c);
-    }
-return name;
-}
+        //~ if(si_int<=ei_int){
+            //~ for(Int i=si_int;i<=ei_int;i++){
+                //~ ///if si ei both empty and delim is not empty, then it is an invalid rule
+                //~ if(si==""&&ei==""&&delim!="")continue;    ///must continue
+                //~ if(i>pd_max || i<0)break;                 ///Overflow, break will suffice 
+                //~ if(pd_name_c!="")pd_name_c+=delim+pd_names[i];
+                //~ else pd_name_c+=pd_names[i];
+            //~ }
+        //~ }
+        //~ else{
+            //~ for(Int i=si_int;i>=ei_int;i--){
+                //~ ///if si ei both empty and delim is not empty, then it is an invalid rule
+                //~ if(si==""&&ei==""&&delim!="")continue;    ///must continue
+                //~ if(i>pd_max || i<0)continue;              ///Overflow, must continue
+                //~ if(pd_name_c!="")pd_name_c+=delim+pd_names[i];
+                //~ else pd_name_c+=pd_names[i];
+            //~ }
+        //~ }
+        //~ ///Finaly replace the pd rule with the newly created combined name
+        //~ if(sanitize){pd_name_c=sanitizeRegexString(pd_name_c);}
+        //~ name=replaceString(name,tot,pd_name_c);
+    //~ }
+//~ return name;
+//~ }
 
 
-String parseNameString(const String& ns,const String& file,DirectoryIndex &di, const String& delim,
-                         const String& delim2, bool sanitize){
-    String fname=basename(file);
-    if(replace_string.size()==0){rname=fname;}
-    String name=ns;
-    String fnamewe=fileNameWithoutExtension(fname);
-    String ext=fileExtension(fname);
-    std::map<String,Double> ns_rules;
-    ns_rules["i"]=current_index;
-    ns_rules["-i"]=reverse_index;
-    ns_rules["ir"]=current_index_rd;
-    ns_rules["-ir"]=reverse_index_rd;
-    ns_rules["id"]=di.directory_index;
-    ns_rules["idr"]=di.directory_index_rd;
-    ns_rules["-id"]=di.directory_reverse_index;
-    ns_rules["-idr"]=di.directory_reverse_index_rd;
-    ns_rules["dc"]=directory_count;
+//~ String parseNameString(const String& ns,const String& file,DirectoryIndex &di, const String& delim,
+                         //~ const String& delim2, bool sanitize){
+    //~ String fname=basename(file);
+    //~ if(replace_string.size()==0){rname=fname;}
+    //~ String name=ns;
+    //~ String fnamewe=fileNameWithoutExtension(fname);
+    //~ String ext=fileExtension(fname);
+    //~ std::map<String,Double> ns_rules;
+    //~ ns_rules["i"]=current_index;
+    //~ ns_rules["-i"]=reverse_index;
+    //~ ns_rules["ir"]=current_index_rd;
+    //~ ns_rules["-ir"]=reverse_index_rd;
+    //~ ns_rules["id"]=di.directory_index;
+    //~ ns_rules["idr"]=di.directory_index_rd;
+    //~ ns_rules["-id"]=di.directory_reverse_index;
+    //~ ns_rules["-idr"]=di.directory_reverse_index_rd;
+    //~ ns_rules["dc"]=directory_count;
     
-    if(name_string_file!=""){
-        ns_rules["l"]=(Double)current_line;
-        ns_rules["la"]=(Double)current_abs_line;
-    }
-    
-    
-    
-    std::map<String,String>ns_rules_s;
-    ns_rules_s["fn"]=fname;
-    ns_rules_s["n"]=fnamewe;
-    ns_rules_s["e"]=ext;
-    ns_rules_s["rn"]=rname;
-    //ns_rules_s["pd"]=CPDN;           ///This will be handled with extended function
-    ns_rules_s["wd"]=CWDN;
+    //~ if(name_string_file!=""){
+        //~ ns_rules["l"]=(Double)current_line;
+        //~ ns_rules["la"]=(Double)current_abs_line;
+    //~ }
     
     
-    if(ns!=""){
+    
+    //~ std::map<String,String>ns_rules_s;
+    //~ ns_rules_s["fn"]=fname;
+    //~ ns_rules_s["n"]=fnamewe;
+    //~ ns_rules_s["e"]=ext;
+    //~ ns_rules_s["rn"]=rname;
+    //~ //ns_rules_s["pd"]=CPDN;           ///This will be handled with extended function
+    //~ ns_rules_s["wd"]=CWDN;
+    
+    
+    //~ if(ns!=""){
         
-        for(auto const& ent : ns_rules_s){
-            ///ent.first is the key, ent.second is the value    
-            if(delim2!=""){name=replaceStringAll(name,delim+ent.first+delim,delim2+ent.first+delim2);continue;}
-            String tmp = ent.second;
-            if(sanitize){tmp=sanitizeRegexString(tmp);}
-            name=replaceStringAll(name,delim+ent.first+delim,tmp);
-        }
+        //~ for(auto const& ent : ns_rules_s){
+            //~ ///ent.first is the key, ent.second is the value    
+            //~ if(delim2!=""){name=replaceStringAll(name,delim+ent.first+delim,delim2+ent.first+delim2);continue;}
+            //~ String tmp = ent.second;
+            //~ if(sanitize){tmp=sanitizeRegexString(tmp);}
+            //~ name=replaceStringAll(name,delim+ent.first+delim,tmp);
+        //~ }
         
         
-        for(auto const& ent : ns_rules){
-            ///ent.first is the key, ent.second is the value    
-            if(delim2!=""){name=replaceStringAll(name,delim+ent.first+delim,delim2+ent.first+delim2);continue;}
-            String tmp = toStringAccordingToIFL(ent.second,index_field_length);
-            if(sanitize){tmp=sanitizeRegexString(tmp);}
-            name=replaceStringAll(name,delim+ent.first+delim,tmp);
-        }
+        //~ for(auto const& ent : ns_rules){
+            //~ ///ent.first is the key, ent.second is the value    
+            //~ if(delim2!=""){name=replaceStringAll(name,delim+ent.first+delim,delim2+ent.first+delim2);continue;}
+            //~ String tmp = toStringAccordingToIFL(ent.second,index_field_length);
+            //~ if(sanitize){tmp=sanitizeRegexString(tmp);}
+            //~ name=replaceStringAll(name,delim+ent.first+delim,tmp);
+        //~ }
         
-        ///for name string rules like /i-b16/, b16 stands for base 16
-        name=processExtendedNameString_d(name,ns_rules,index_field_length,delim,delim2,sanitize);
+        //~ ///for name string rules like /i-b16/, b16 stands for base 16
+        //~ name=processExtendedNameString_d(name,ns_rules,index_field_length,delim,delim2,sanitize);
         
-        ///Process /pd/ along with extended pd name string rules
-        name=processExtendedPdNameStringRule(name,file,delim,delim2,sanitize);  ///file must be the full path
+        //~ ///Process /pd/ along with extended pd name string rules
+        //~ name=processExtendedPdNameStringRule(name,file,delim,delim2,sanitize);  ///file must be the full path
         
-        }
-    else{
-    printErrorLog("Name String can not be empty");Exit(1);
-    }
-    return name;
-}
+        //~ }
+    //~ else{
+    //~ printErrorLog("Name String can not be empty");Exit(1);
+    //~ }
+    //~ return name;
+//~ }
 
 
 //~ String appendToFile(const String& filename, const String& str){
@@ -1856,24 +1827,24 @@ void detectLineUpwardOrDownward(){
     }
 
 
-Regex createRegex(const String& s, bool case_sensitive){
-    if(re_locale){
-        if(!case_sensitive){
-            return Regex(s,REGEX_TYPE | REGEX_LOCALE | ICASE);
-            }
-        else{
-            return Regex(s,REGEX_TYPE | REGEX_LOCALE);
-            }
-        }
-    else {
-        if(!case_sensitive){
-            return Regex(s,REGEX_TYPE | REGEX_LOCALE | ICASE);
-            }
-        else{
-            return Regex(s,REGEX_TYPE | REGEX_LOCALE);
-            }
-        }
-}
+//~ Regex createRegex(const String& s, bool case_sensitive){
+    //~ if(re_locale){
+        //~ if(!case_sensitive){
+            //~ return Regex(s,REGEX_TYPE | REGEX_LOCALE | ICASE);
+            //~ }
+        //~ else{
+            //~ return Regex(s,REGEX_TYPE | REGEX_LOCALE);
+            //~ }
+        //~ }
+    //~ else {
+        //~ if(!case_sensitive){
+            //~ return Regex(s,REGEX_TYPE | REGEX_LOCALE | ICASE);
+            //~ }
+        //~ else{
+            //~ return Regex(s,REGEX_TYPE | REGEX_LOCALE);
+            //~ }
+        //~ }
+//~ }
 
 
 void printOpts(){

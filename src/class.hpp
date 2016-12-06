@@ -206,6 +206,11 @@ class Options{
 
 
 struct File {
+    private:
+    bool isfile;
+    bool isdir;
+    
+    public:
     char type;      //'f': file, 'd': directory, 'l': link, 0 (NULL): non-existent
     time_t atime;   //file access time (st_atime)
     time_t mtime;   //file modification time (st_mtime)
@@ -234,6 +239,8 @@ struct File {
         size = 0;
         blksize = 0;
         blocks = 0;
+        isfile = false;
+        isdir = false;
         }
     
     File(const String& file) {
@@ -247,14 +254,16 @@ struct File {
             path = String(normalizePath((char*)(CWD.c_str()),(const char*)(file.c_str()),abspath));
         }
         struct stat finfo;
-        if(stat(path.c_str(), &finfo ) != 0 ) {
+        if((follow_symlink?stat(path.c_str(), &finfo ):lstat(path.c_str(), &finfo )) != 0 ) {
             //file doesn't exist
             type = 0;
         } else{
             //file exists
-            if(S_ISREG(finfo.st_mode)) { type = 'f'; }
-            if(S_ISDIR(finfo.st_mode)) { type = 'd'; }
-            if(S_ISLNK(finfo.st_mode)) { type = 'l'; }
+            if(S_ISREG(finfo.st_mode)) { type = 'f'; isfile = true; }
+            else
+            if(S_ISDIR(finfo.st_mode)) { type = 'd'; isdir = true;}
+            //this can point to dir or file (must not use else)
+            if(S_ISLNK(finfo.st_mode)) { type = 'l'; } 
             
             atime = finfo.st_atime;
             mtime = finfo.st_mtime;
@@ -287,16 +296,30 @@ struct File {
         return (type != 0);
     }
     
-    bool isFile(){
-        return (type == 'f');
+    bool isFile() const {
+        return (isfile && type != 0);
     }
     
-    bool isDir(){
-        return (type == 'd');
+    bool isDir() const{
+        return (isdir && type != 0);
     }
     
-    bool isLink(){
+    bool isLink() const{
         return (type == 'l');
+    }
+    
+    bool isValidWithMod(const String& mod) const{
+        if(type == 0)  return false;
+        size_t len = mod.length();
+        for(size_t i = 0;i<len;++i){
+            switch(mod[i]){
+                case 'f': if(isFile()) return true; else break;
+                case 'd': if(isDir())  return true; else break;
+                case 'l': if(isLink()) return true; else break;
+                default:  break;
+            }
+        }
+        return false;
     }
 };
 
@@ -375,6 +398,37 @@ FileArray getFilesFromDir(const String& file){
     }
     sortVector(files);
     return files;
+}
+
+
+bool isInvalidFile(const File& f){
+    String file = f.path;
+    bool status=false;
+    StringArray invf={HOME,
+        "/bin","/usr","/usr/bin","/tmp",
+        "/dev","/etc","/proc","/home",
+        "/boot","/root","/lib","/media","/opt",
+        "/srv","/sbin","/sys","/var","/include",
+        "/local","/libexec","/log","/mail","/spool",
+        "/mnt","/share","/unix"};
+    for(int i=0;i<(int)invf.size();i++){
+        if(file==invf[i]){
+            if(!force){
+                status=true;printWarningLog("rename not permitted: "+file);
+            }
+        }
+    }
+    
+    if(file==root_filesystem){status=true;printWarningLog("rename not permitted: "+file);}
+    if(file==self_path){status=true;printWarningLog("rename not permitted: "+file);}
+    if(file==RNM_FILE_LOG_L_TMP){status=true;printWarningLog("rename not permitted: "+file);}
+    if(file==RNM_FILE_LOG_R_TMP){status=true;printWarningLog("rename not permitted: "+file);}
+    if(file==LOG_DIR_PARENT){status=true;printWarningLog("rename not permitted: "+file);}
+    if(file==LOG_DIR){status=true;printWarningLog("rename not permitted: "+file);}
+    if(file==LOG_DIR_UNDO){status=true;printWarningLog("rename not permitted: "+file);}
+    
+    
+    return status;
 }
 
 

@@ -56,6 +56,7 @@ String getCurrentDir(void){
 String prepareLogDir(){
     mkdir(LOG_DIR_PARENT.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
     mkdir(LOG_DIR.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
+    mkdir(LOG_DIR_UNDO.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
     FileStream file;
     file.open(RNM_FILE_LOG_L_TMP.c_str(),std::ios::out);
     if(!file.good()){std::cerr<<strerror(errno);}

@@ -39,7 +39,7 @@
 
 
 
-static String toString(Char a){
+String toString(Char a){
     if (a) return String(1, a);
     else return String();
 }
@@ -170,6 +170,17 @@ String replaceStringAllWithDelims(String s,const String& rep, const String& deli
 }
 
 
+    
+String stripPathDelimiter(const String& s){
+    return replaceStringAll(s,path_delim,"");
+}
+
+
+String removeInvalidNameStringRules(const String& ns){
+    return replaceStringAllWithDelims(ns,"",path_delim);
+}
+
+
 size_t countCharInString(String s, char delim){
     return std::count(s.begin(),s.end(),delim);
 }
@@ -237,6 +248,7 @@ String fixIFL(const String& s, const Int& ifl, const String& iff, IOFormatFlag f
 String convertBase( const Double& x, Ush base, const Int& ifl,
                     Int prec, const String& iff,
                     IOFormatFlag flags = (IOFormatFlag)0){
+    if(base < 2 || base > 36) base = 10;
     String s;
     mp_exp_t exp;
     s = x.get_str(exp, (int)base, 0);
