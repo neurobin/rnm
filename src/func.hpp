@@ -217,7 +217,7 @@ void printIndexFlags(){
 void parseSearchString(String ss, size_t index){
     if(!stringContains(ss,path_delim)){
         ss_search.push_back(ss);
-        ss_mod.push_back(SS_MOD_ALL);
+        ss_mod.push_back("");
         jp::Regex re;
         if(!fixed_ss[index]){
             re.setPattern(ss)
@@ -243,7 +243,7 @@ void parseSearchString(String ss, size_t index){
                 search = vn[i][1];
                 mod = vn[i][2];
                 ss_search.push_back(search);
-                
+                validateModifier(mod, SS_MOD_ALL, "search string in " + ss);
                 ss_mod.push_back(mod);
                 if(!fixed_ss[index]){
                     re.setModifier(mod)
@@ -314,50 +314,48 @@ bool isComplyingToSearchString(const File& file){
 
 
 
-String processExtendedNameString_d(const String& ns,std::map<String,Double>& ns_rules,Int ifl, const String& delim, const String& delim2,bool sanitize){
+String processExtendedNameString_d(const String& ns,std::map<String,Double>& ns_rules,Int ifl,
+                                   const String& delim, const String& delim2,char sanitize, bool ignore_err = false){
     ///_d stands for double
     String name=ns;
     int base=NUM_BASE_DEFAULT;
     jp::Regex multi_nre ("(?<total>"+delim+"(?<rule>-?\\w+)(-?|-(?<exn>[bsl])-?(?<exv>\\d+)?)?"+delim+")",0,jpcre2::JIT_COMPILE);
     jp::RegexMatch m(&multi_nre);
     jp::VecNas vn;
-    size_t c = m.setSubject(name).setJpcre2Option(jpcre2::FIND_ALL).setNamedSubstringVector(&vn).match();
-    if(c){
-        for(size_t i=0;i<vn.size();++i){
-            String total = vn[i]["total"],rule = vn[i]["rule"], exn = vn[i]["exn"], exv = vn[i]["exv"];
-            if(!existsInMap(ns_rules, vn[i]["rule"])) {
+    m.setSubject(name).setJpcre2Option(jpcre2::FIND_ALL).setNamedSubstringVector(&vn).match();
+    for(size_t i=0;i<vn.size();++i){
+        String total = vn[i]["total"],rule = vn[i]["rule"], exn = vn[i]["exn"], exv = vn[i]["exv"];
+        if(!existsInMap(ns_rules, vn[i]["rule"])) {
+            if(!ignore_err){
                 printErrorLog("Invalid name string rule '"+vn[i]["rule"]+"' in: "+total);
                 Exit(1);
-            }
-            if(delim2!=""){///This tells us to convert the delim based rules to delim2 based rules, no further processing
-                name=replaceString(name,total,replaceStringAll(total,delim,delim2));
-                continue;
-            }
-            if(exn=="b"){///Base conversion
-                base=std::stoi(exv);
-                String tmp = toString(ns_rules[rule],base, index_field_length,0,IFF,INDEX_FLAGS);
-                if(sanitize){tmp=sanitizeStringForRegex(tmp);}
-                name=replaceString(name,total,tmp);
-            } else if(exn=="s"){///scientific conversion
-                String tmp = toString(ns_rules[rule],base, index_field_length,0,IFF,std::ios::scientific|INDEX_FLAGS);
-                if(sanitize){tmp=sanitizeStringForRegex(tmp);}
-                name=replaceString(name,total,tmp);
-            } else if(exn=="l"){///Latin conversion
-                String tmp = toString(ns_rules[rule],base, index_field_length,0,IFF,INDEX_FLAGS,true);
-                if(sanitize){tmp=sanitizeStringForRegex(tmp);}
-                name=replaceString(name,total,tmp);
-            }
+            } else continue;
         }
-    } else {
-        printErrorLog("Invalid name string rule: "+ns);
-        Exit(1);
+        if(delim2!=""){///This tells us to convert the delim based rules to delim2 based rules, no further processing
+            name=replaceString(name,total,replaceStringAll(total,delim,delim2));
+            continue;
+        }
+        if(exn=="b"){///Base conversion
+            base=std::stoi(exv);
+            String tmp = toString(ns_rules[rule],base, index_field_length,0,IFF,INDEX_FLAGS);
+            tmp=sanitizeStringForRegex(tmp,sanitize);
+            name=replaceString(name,total,tmp);
+        } else if(exn=="s"){///scientific conversion
+            String tmp = toString(ns_rules[rule],base, index_field_length,0,IFF,std::ios::scientific|INDEX_FLAGS);
+            tmp=sanitizeStringForRegex(tmp,sanitize);
+            name=replaceString(name,total,tmp);
+        } else if(exn=="l"){///Latin conversion
+            String tmp = toString(ns_rules[rule],base, index_field_length,0,IFF,INDEX_FLAGS,true);
+            tmp=sanitizeStringForRegex(tmp,sanitize);
+            name=replaceString(name,total,tmp);
+        }
     }
     return name;
 }
 
 
 
-String processExtendedPdNameStringRule(const String& ns, const File& file, const String& p_delim, const String& delim2,bool sanitize){
+String processExtendedPdNameStringRule(const String& ns, const File& file, const String& p_delim, const String& delim2,char sanitize){
     ///file must contain whole path.
     String name=ns;
     ///Let's first find pd_max and all the parent directory names
@@ -370,79 +368,74 @@ String processExtendedPdNameStringRule(const String& ns, const File& file, const
                                                                 p_delim+"]*)?"+p_delim+")",0,jpcre2::JIT_COMPILE);
     jp::RegexMatch m(&multi_pdre);
     jp::VecNas vn;
-    size_t c = m.setSubject(name).setJpcre2Option(jpcre2::FIND_ALL).setNamedSubstringVector(&vn).match();
-    if(c){
-        for(size_t i=0;i<vn.size();++i){
-            String pd_name_c;
-            String total = vn[i]["total"],rule = vn[i]["rule"], si = vn[i]["si"], ei = vn[i]["ei"], delim=vn[i]["delim"];
-            //~ std::cout<<"\ntotal: "<<total<<"\trule: "<<rule<<"\tsi: "<<si<<"\tei: "<<ei<<"\tdelim: "+delim+NEW_LINE;
-            if(delim2!=""){///This tells us to convert the delim based rules to delim2 based rules, no further processing
-                name=replaceString(name,total,replaceStringAll(total,p_delim,delim2));
-                continue;
-            }
-            ///Trim left zeros from si and ei
-            ///If there was only zeros in si or ei then both will be empty, make them 0
-            if(!si.empty()){
-                si = ltrim(si,"0");
-                if(si.empty()) si="0"; //this should only be done if si was not empty
-            }
-            if(!ei.empty()){
-                ei = ltrim(ei,"0");
-                if(ei.empty()) ei="0"; //this should only be done if ei was not empty
-            }
-            jp::Regex re("^"+sanitizeStringForRegex(CWD)+"(/[\\s\\S]*|$)");
-            Int cd_max=split(CWD,path_delim[0]).size()-1;
-            if(cd_max<0)cd_max=0;
-            if(si=="e"){si=pd_max_s;}
-            if(ei=="e"){ei=pd_max_s;}
-            if(si == "w" || ei == "w"){
-                if(re.match(file.path)){
-                    Int x = pd_max-cd_max;
-                    String s = x.get_str();
-                    if(si=="w"){si=s;}
-                    if(ei=="w"){ei=s;}
-                } else si=ei="-1";
-            }
-            ///Set overflowed range to pd_max.
-            ///This should not be done unless user wants it to be this way.
-            ///By default overflowed range will be replaced with empty string.
-            //~ //if(si_int>pd_max){si_int=pd_max;}
-            //~ //if(ei_int>pd_max){ei_int=pd_max;}
-            ///Handle empty si and ei, this must be the end of si_int and ei_int modification
-            if(si.empty())si="0";
-            if(ei.empty())ei=si;
-            
-            //~ std::cout<<si<<ei;
-            ///Get the range in integer
-            Int siint(si);
-            Int eiint(ei);
-            //~ std::cout<< total+NEW_LINE<< si<<": "<<siint<<NEW_LINE<< ei<<": "<<eiint<<NEW_LINE<< delim+NEW_LINE<<pd_max<<NEW_LINE;
-            ///Create a string combining all parent directory names with delims added
-            if(siint<=eiint){
-                for(Int i=siint;i<=eiint;i++){
-                    ///if si ei both empty and delim is not empty, then it is an invalid rule
-                    //~ if(si==""&&ei==""&&delim!="")continue;    ///must continue
-                    if(i>pd_max || i<0)break;                 ///Overflow, break will suffice 
-                    if(!pd_name_c.empty())pd_name_c+=delim+pd_names[i.get_ui()];
-                    else pd_name_c+=pd_names[i.get_ui()];
-                }
-            }
-            else{
-                for(Int i=siint;i>=eiint;i--){
-                    ///if si ei both empty and delim is not empty, then it is an invalid rule
-                    //~ if(si==""&&ei==""&&delim!="")continue;    ///must continue
-                    if(i>pd_max || i<0)continue;              ///Overflow, must continue
-                    if(pd_name_c!="")pd_name_c+=delim+pd_names[i.get_ui()];
-                    else pd_name_c+=pd_names[i.get_ui()];
-                }
-            }
-            ///Finaly replace the pd rule with the newly created combined name
-            if(sanitize){pd_name_c=sanitizeStringForRegex(pd_name_c);}
-            name=replaceString(name,total,pd_name_c);
+    m.setSubject(name).setJpcre2Option(jpcre2::FIND_ALL).setNamedSubstringVector(&vn).match();
+    for(size_t i=0;i<vn.size();++i){
+        String pd_name_c;
+        String total = vn[i]["total"],rule = vn[i]["rule"], si = vn[i]["si"], ei = vn[i]["ei"], delim=vn[i]["delim"];
+        //~ std::cout<<"\ntotal: "<<total<<"\trule: "<<rule<<"\tsi: "<<si<<"\tei: "<<ei<<"\tdelim: "+delim+NEW_LINE;
+        if(delim2!=""){///This tells us to convert the delim based rules to delim2 based rules, no further processing
+            name=replaceString(name,total,replaceStringAll(total,p_delim,delim2));
+            continue;
         }
-    } else {
-        printErrorLog("Invalid name string rule: "+ns);
-        Exit(1);
+        ///Trim left zeros from si and ei
+        ///If there was only zeros in si or ei then both will be empty, make them 0
+        if(!si.empty()){
+            si = ltrim(si,"0");
+            if(si.empty()) si="0"; //this should only be done if si was not empty
+        }
+        if(!ei.empty()){
+            ei = ltrim(ei,"0");
+            if(ei.empty()) ei="0"; //this should only be done if ei was not empty
+        }
+        jp::Regex re("^"+sanitizeStringForRegex(CWD,'s')+"(/[\\s\\S]*|$)");
+        Int cd_max=split(CWD,path_delim[0]).size()-1;
+        if(cd_max<0)cd_max=0;
+        if(si=="e"){si=pd_max_s;}
+        if(ei=="e"){ei=pd_max_s;}
+        if(si == "w" || ei == "w"){
+            if(re.match(file.path)){
+                Int x = pd_max-cd_max;
+                String s = x.get_str();
+                if(si=="w"){si=s;}
+                if(ei=="w"){ei=s;}
+            } else si=ei="-1";
+        }
+        ///Set overflowed range to pd_max.
+        ///This should not be done unless user wants it to be this way.
+        ///By default overflowed range will be replaced with empty string.
+        //~ //if(si_int>pd_max){si_int=pd_max;}
+        //~ //if(ei_int>pd_max){ei_int=pd_max;}
+        ///Handle empty si and ei, this must be the end of si_int and ei_int modification
+        if(si.empty())si="0";
+        if(ei.empty())ei=si;
+        
+        //~ std::cout<<si<<ei;
+        ///Get the range in integer
+        Int siint(si);
+        Int eiint(ei);
+        //~ std::cout<< total+NEW_LINE<< si<<": "<<siint<<NEW_LINE<< ei<<": "<<eiint<<NEW_LINE<< delim+NEW_LINE<<pd_max<<NEW_LINE;
+        ///Create a string combining all parent directory names with delims added
+        if(siint<=eiint){
+            for(Int i=siint;i<=eiint;i++){
+                ///if si ei both empty and delim is not empty, then it is an invalid rule
+                //~ if(si==""&&ei==""&&delim!="")continue;    ///must continue
+                if(i>pd_max || i<0)break;                 ///Overflow, break will suffice 
+                if(!pd_name_c.empty())pd_name_c+=delim+pd_names[i.get_ui()];
+                else pd_name_c+=pd_names[i.get_ui()];
+            }
+        }
+        else{
+            for(Int i=siint;i>=eiint;i--){
+                ///if si ei both empty and delim is not empty, then it is an invalid rule
+                //~ if(si==""&&ei==""&&delim!="")continue;    ///must continue
+                if(i>pd_max || i<0)continue;              ///Overflow, must continue
+                if(pd_name_c!="")pd_name_c+=delim+pd_names[i.get_ui()];
+                else pd_name_c+=pd_names[i.get_ui()];
+            }
+        }
+        ///Finaly replace the pd rule with the newly created combined name
+        pd_name_c = sanitizeStringForRegex(pd_name_c, sanitize);
+        name=replaceString(name,total,pd_name_c);
     }
     return name;
 }
@@ -450,7 +443,7 @@ String processExtendedPdNameStringRule(const String& ns, const File& file, const
 
 
 String parseNameString(const String& ns,const File& file,DirectoryIndex &di, const String& delim,
-                         const String& delim2, bool sanitize){
+                         const String& delim2, char sanitize, bool ignore_err = false){
     String fname=basename(file.path);
     if(replace_string.size()==0){rname=fname;}
     String name=ns;
@@ -480,9 +473,12 @@ String parseNameString(const String& ns,const File& file,DirectoryIndex &di, con
     if(!ns.empty()){
         for(auto const& ent : ns_rules_s){
             ///ent.first is the key, ent.second is the value    
-            if(delim2!=""){name=replaceStringAll(name,delim+ent.first+delim,delim2+ent.first+delim2);continue;}
+            if(delim2 != ""){
+                name = replaceStringAll(name,delim+ent.first+delim,delim2+ent.first+delim2);
+                continue;
+            }
             String tmp = ent.second;
-            if(sanitize){tmp=sanitizeStringForRegex(tmp);}
+            tmp=sanitizeStringForRegex(tmp,sanitize);
             name=replaceStringAll(name,delim+ent.first+delim,tmp);
         }
         //~ for(auto const& ent : ns_rules){
@@ -496,12 +492,90 @@ String parseNameString(const String& ns,const File& file,DirectoryIndex &di, con
         name=processExtendedPdNameStringRule(name,file,delim,delim2,sanitize);  ///file must be the full path
         ///for name string rules like /i-b16/, b16 stands for base 16
         ///this should be the last rules to parse
-        name=processExtendedNameString_d(name,ns_rules,index_field_length,delim,delim2,sanitize);
-    } else {
-        printErrorLog("Name String can not be empty");Exit(1);
+        name=processExtendedNameString_d(name,ns_rules,index_field_length,delim,delim2,sanitize,ignore_err);
+    } else if(!ignore_err) {
+        printErrorLog("Name String can not be empty");
+        Exit(1);
     }
     return name;
 }
 
+
+bool isATotalMatchWithReplaceStringRegex(const String& s, const jp::VecNum& vn){
+    String tot;
+    for(size_t i=0;i<vn.size();++i) {
+        tot += vn[i][0];
+        //~ std::cout<<"\ntot: "<<tot<<"\tvn["<<i<<"][0]"<<vn[i][0]<<"\ts: "<<s<<"\n";
+    }
+    return (tot == s);
+}
+
+void parseReplaceString(const StringArray &rs,const File& file,DirectoryIndex &di){
+    bool ns_used = false;
+    String name;
+    jp::VecNum vn;
+    jp::RegexMatch rm(&multi_rre);
+    rm.setSubject(&name)
+      .setNumberedSubstringVector(&vn)
+      .setFindAll(true);
+    for(size_t i = 0;i < rs.size();i++) {
+        name = ltrim(rs[i]);
+        rm.match();
+        if(name != "" && !isATotalMatchWithReplaceStringRegex(name, vn)){
+            ///rs[i] may contain name string rules
+            ///We must strip the first slash from it before sending it for name string processing.
+            std::cout<<name<<"\n";
+            if(name[0] == '/') 
+                name = name.substr(1, String::npos);
+            else
+                errorExit("Invalid replace string format: "+rs[i]);
+            std::cout<<name<<"\n";
+            ///Now encode second_delim, we need to guard the second delim before we convert path_delim rules to second_delim rules
+            name = encodeWithDelim(name, second_delim);
+            ///convert path_delim rules to second_delim rule
+            name = parseNameString(name, file, di, path_delim, second_delim, 0, true);
+            ///Now, for a valid replace string rule, it must match the multi_re, otherwise throw an error.
+            ///restore the slash at beginning
+            name="/"+name;
+            ns_used = true;
+            rm.match(); //perform the match again.
+        }
+        /// Carefull!!! must not use else if
+        if(name!="" && isATotalMatchWithReplaceStringRegex(name, vn)){
+            /// Populate rs_search, rs_replace and rs_mod with valid values
+            String tot;
+            for(size_t j = 0;j<vn.size();++j){
+                String se, rep, mod;
+                se = vn[j][1];
+                rep = vn[j][2];
+                mod = vn[j][3];
+        //~ std::cout<<"\nse: "<<se<<"\trep: "<<rep<<"\tmod: "<<mod;
+                ///do name string parse if ns was detected
+                if(ns_used){
+                    ///convert second delim to path_delim for ns rules
+                    se = parseNameString(se,file,di,second_delim,path_delim, false);
+                    rep = parseNameString(rep,file,di,second_delim,path_delim, false);
+                    ///decode second delim
+                    se=decodeWithDelim(se,second_delim);
+                    rep=decodeWithDelim(rep,second_delim);
+                    ///do the ns parsing
+                    ///ns rules in se must be sanitized
+                    se = parseNameString(se,file,di,path_delim,"",'s');
+                    ///                                         ^must be empty
+                    rep = parseNameString(rep,file,di,path_delim,"", 'r');
+                    ///                                           ^must be empty
+                }
+                rs_search.push_back(se);
+                rs_replace.push_back(processReplacementString(rep));
+                validateModifier(mod, RR_MOD_ALL, "replace string in " + rs[i]);
+                rs_mod.push_back(mod);
+                
+                
+            }
+        } else 
+            errorExit("Invalid replace string format: "+rs[i]);
+    }
+
+}
 
 #endif

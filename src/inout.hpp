@@ -43,6 +43,7 @@ void print(const T& s){ std::cout<<NEW_LINE<<s<<NEW_LINE;}
 
 void Exit(int a){ std::exit(a); }
 
+
 void getLine(String& s){ std::getline(std::cin, s); }
 
 String getCurrentDir(void){
@@ -106,6 +107,11 @@ String printOutLog(const String& str){
 
 }
 
+
+void errorExit(const String& s){
+    printErrorLog(s);
+    Exit(1);
+}
 
 
 String copyFile(const String& src, const String& dest){

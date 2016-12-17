@@ -221,7 +221,7 @@ IOFormatFlag INDEX_FLAGS = (IOFormatFlag)0;
 
 
 //StringArray file_vector;
-char self_dir[FILENAME_MAX];
+String self_dir;
 String base_dir="";
 String self_path="";
 StringArray search_string;
@@ -244,9 +244,8 @@ BoolArray fixed_ss;
 BoolArray ss_fixed;
 String SS_MOD_F_ALL = "fdl";
 String SS_MOD_ALL = "ifdl!";
+String RR_MOD_ALL = "gifdl";
 
-jp::Regex multi_sre("\\s*/([^/]*?)/\\s*(["+SS_MOD_ALL+"]*)(\\s*;\\s*|$)",0,jpcre2::JIT_COMPILE);
-jp::Regex sanity_regex("[\\s\\S]",0,jpcre2::JIT_COMPILE);
 
 String sort_type="natural";
 

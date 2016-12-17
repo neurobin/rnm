@@ -1,7 +1,6 @@
 
 #include "func.hpp"
 
-jp::Regex multi_rre("\\s*/([^/]*?)/\\s*([ifdl]*)(\\s*;\\s*|$)",0,jpcre2::JIT_COMPILE);
 
 void cleanExit(){
     throw (std::exception());
@@ -17,12 +16,54 @@ void signalHandler( int signum ) {
     cleanExit();
 }
 
+String changeCaseAccordingToSS(String s,const String& search,const String& replace,const String& modifier,int user=0){
+    if(replace!="\\c"&&replace!="\\C"){
+        printWarningLog("Invalid case definition: "+replace+" Only \\c or \\C is allowed");
+        return s;
+    }
+    
+    jp::Regex re (search, modifier);
+    jp::RegexReplace rr(&re);
+
+    if(replace=="\\C"){
+        s = rr.replace(s,toUpper(match), modifier);
+    }
+    else if(replace=="\\c"){
+        s = rr.replace(s,toLower(match), modifier);
+    } else {
+        printErrorLog("Invalid replace string regex: "+search);
+        Exit(1);
+    }
+    return s;
+}
+
+//~ void processReplaceString(StringArray &rs,const File& file,DirectoryIndex &di){
+    //~ ///clear rs_* vectors. These are modified according to each file name and thus previous value can not be retained.
+    //~ rs_search.clear();rs_replace.clear();rs_mod.clear();
+    //~ parseReplaceString(rs,file,di);
+    //~ ///we now have valid rs_search, rs_replace and rs_mod
+    //~ rname=basename(file.path);
+    //~ for(size_t i=0;i<rs_search.size();i++){
+        //~ if(stringContains(rs_replace[i],"\\c")||stringContains(rs_replace[i],"\\C")){
+            //~ rname=changeCaseAccordingToSS(rname,rs_search[i],rs_replace[i],rs_mod[i],1);
+        //~ }
+        //~ ///Add other specialized replace rules here.
+        //~ else {
+            //~ rname=regexReplace(rname,rs_search[i],rs_replace[i],rs_mod[i],1);
+        //~ }
+        //~ ///Now a modified name rname is available
+    //~ }
+//~ }
+   
 
 int main(){
-    try{
-    CWD = getCurrentDir();
+    try{self_dir = getCurrentDir();
+    self_path=self_dir+String(path_delim)+executable_name;
+    CWD=String(self_dir);
+    CWDN=basename(self_dir);
+    prepareLogDir();
     //~ std::cout<<"current dir:"<<getCurrentDir()+NEW_LINE;
-    File file1("/media/jahid/StorageP3/Games3/NARUTO SHIPPUDEN Ultimate Ninja STORM 4-CODEX/codex-naruto.shippuden.ultimate.ninja.storm.4.iso");
+    File file1("/media/jahid/StorageP3/Games3/NARUTO SHIPPUDEN Ultimate Ninja STORM 4-CODEX/codex-naruto.sh[i[p][]puden&\\$\\.ultimate.ninja.storm.4.iso");
     
     //~ std::cout<<"size: "<<std::scientific<<getSizeByUnit(Double(file.size),0,10,2,0,IFF," ",std::ios::uppercase)<<"\n"<<formatTime(file.atime, "%d.%m.%Y %H:%M:%S %d %z")
     //~ <<NEW_LINE<<getSizeByUnit(Double(file.blocks),GB, 10,4)
@@ -129,9 +170,20 @@ int main(){
     std::cout<<parseNameString("/i-s-3342//pd0-2+/",file1,di,"/","", false);
 
     //~ std::cout<<processExtendedPdNameStringRule("/pd0-w%/", file1,"/","",0);
+    
+    String reps = R"(\67\{78}fdsjfkj${} \$\${name} fds lk\{name} & \&)";
 
-
-
+    std::cout<<"\nreps: "<<processReplacementString(reps);
+    std::cout<<"\n#########################\n";
+    
+    String rs = "//fn//e//&$1/gilf!;/fsd//fn/fds&/";
+    StringArray rsa;
+    rsa.push_back(rs);
+    parseReplaceString(rsa, file1, di);
+    
+    for(size_t i=0;i<rs_search.size();++i){
+        std::cout<<"\nrs_s: "<<rs_search[i]<<"\trs_r: "<<rs_replace[i]<<"\trs_m: "<<rs_mod[i];
+    }
 
     return 0;
     } catch(const std::exception& e){

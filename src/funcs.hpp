@@ -662,30 +662,30 @@ String regexReplace(std::regex re,const String& s,const String& search,const Str
 //~ }
 
     
-String processReplacementString(String replace){
-    /// \1 \2 etc will be converted to c++ backreference $1 $2
-    /// & will be converted to c++ $& (a copy of the entire match)
-    /// \p will be converted to c++ $` (prefix)
-    /// \s will be converted to c++ $' (suffix)
-    /// $ will be converted to c++ $$
-    /// \& will be &
+//~ String processReplacementString(String replace){
+    //~ /// \1 \2 etc will be converted to c++ backreference $1 $2
+    //~ /// & will be converted to c++ $& (a copy of the entire match)
+    //~ /// \p will be converted to c++ $` (prefix)
+    //~ /// \s will be converted to c++ $' (suffix)
+    //~ /// $ will be converted to c++ $$
+    //~ /// \& will be &
     
-    replace=replaceStringAll(replace,"$","$$");
-    replace=replaceStringAll(replace,"&","$&");
-    replace=replaceStringAll(replace,"\\&","&");
-    replace=replaceStringAll(replace,"\\p","$`");
-    replace=replaceStringAll(replace,"\\s","$'");
-    replace=regexReplace(replace,"\\\\(\\d{1,2})","$$$1","g");
-    replace=regexReplace(replace,"\\\\\\{(\\d)\\}","$$0$1","g");
-    replace=regexReplace(replace,"\\\\\\{(\\d\\d)\\}","$$$1","g");
+    //~ replace=replaceStringAll(replace,"$","$$");
+    //~ replace=replaceStringAll(replace,"&","$&");
+    //~ replace=replaceStringAll(replace,"\\&","&");
+    //~ replace=replaceStringAll(replace,"\\p","$`");
+    //~ replace=replaceStringAll(replace,"\\s","$'");
+    //~ replace=regexReplace(replace,"\\\\(\\d{1,2})","$$$1","g");
+    //~ replace=regexReplace(replace,"\\\\\\{(\\d)\\}","$$0$1","g");
+    //~ replace=regexReplace(replace,"\\\\\\{(\\d\\d)\\}","$$$1","g");
     
     
-    ///Finally strip invalid namestring rules and slashes
-    replace=removeInvalidNameStringRules(replace);
-    replace=stripPathDelimiter(replace);
+    //~ ///Finally strip invalid namestring rules and slashes
+    //~ replace=removeInvalidNameStringRules(replace);
+    //~ replace=stripPathDelimiter(replace);
     
-    return replace;
-}
+    //~ return replace;
+//~ }
     
     
 void processReplaceString(StringArray &rs,const String& file,DirectoryIndex &di){
@@ -707,69 +707,69 @@ void processReplaceString(StringArray &rs,const String& file,DirectoryIndex &di)
 }
     
 
-void parseReplaceString(StringArray &rs,const String& file,DirectoryIndex &di){
-    bool ns_used = false;
-    String name;
-    Regex multi_re ("\\s*"+path_delim+"([^"+path_delim+"]*?)"+path_delim+"([^"+path_delim+"]*?)"+path_delim+"\\s*([gi]{0,2})\\s*(;\\s*|$)");
-    int subm[]={1,2,3,4};
-    for(Int i=0;i<(Int)rs.size();i++){
-        name=rs[i];
-        if(name!=""&&!isComplyingToRegex(name,multi_re)){
-            ///rs[i] may contain name string rules
-            ///We must strip the first slash from it before sending it for name string processing.
-            name=regexReplace(name,"^\\s*"+path_delim,"","");
-            ///Now encode second_delim, we need to guard the second delim before we convert path_delim rules to second_delim rules
-            name=encodeWithDelim(name,second_delim);
-            ///convert path_delim rules to second_delim rule
-            name=parseNameString(name,file,di,path_delim,second_delim);
-            ///Now, for a valid replace string rule, it must match the multi_re, otherwise throw an error.
-            ///restore the slash at beginning
-            name=path_delim+name;
-            if(isComplyingToRegex(name,multi_re)){
-                ///let it pass but set a flag
-                ns_used = true;
-            }
-            else{
-                printErrorLog("Failed to recognize name string rule. Invalid replace string format: "+rs[i]);
-                Exit(1);
-            }
-            ///name string parse won't be done here.
-            ////name=parseNameString( rs[i], file,di);
-        }
-        /// Carefull!!! must not use else if
-        if(name!="" && isComplyingToRegex(name,multi_re)){
-            /// Populate rs_search, rs_replace and rs_mod with valid values
-            RegexTokenIterator end; ///default constructor=end of sequence
-            RegexTokenIterator toit (name.begin(), name.end(), multi_re,subm);
-            while (toit != end){
-                String se, rep, mod;
-                se=*toit++;rep=*toit++;mod=*toit++;toit++;
-                ///do name string parse if ns was detected
-                if(ns_used){
-                    ///convert second delim to path_delim for ns rules
-                    se = parseNameString(se,file,di,second_delim,path_delim);
-                    rep = parseNameString(rep,file,di,second_delim,path_delim);
-                    ///decode second delim
-                    se=decodeWithDelim(se,second_delim);
-                    rep=decodeWithDelim(rep,second_delim);
-                    ///do the ns parsing
-                    ///ns rules in se must be sanitized
-                    se = parseNameString(se,file,di,path_delim,"",true);
-                    ///                                        ^must be empty
-                    rep = parseNameString(rep,file,di,path_delim);
-                }
-                rs_search.push_back(se);
-                rs_replace.push_back(processReplacementString(rep));
-                rs_mod.push_back(mod);
-            }
-        }
-        else{
-            printErrorLog("Invalid replace string format: "+rs[i]);
-            Exit(1);
-        }
-    }
+//~ void parseReplaceString(StringArray &rs,const String& file,DirectoryIndex &di){
+    //~ bool ns_used = false;
+    //~ String name;
+    //~ Regex multi_re ("\\s*"+path_delim+"([^"+path_delim+"]*?)"+path_delim+"([^"+path_delim+"]*?)"+path_delim+"\\s*([gi]{0,2})\\s*(;\\s*|$)");
+    //~ int subm[]={1,2,3,4};
+    //~ for(Int i=0;i<(Int)rs.size();i++){
+        //~ name=rs[i];
+        //~ if(name!=""&&!isComplyingToRegex(name,multi_re)){
+            //~ ///rs[i] may contain name string rules
+            //~ ///We must strip the first slash from it before sending it for name string processing.
+            //~ name=regexReplace(name,"^\\s*"+path_delim,"","");
+            //~ ///Now encode second_delim, we need to guard the second delim before we convert path_delim rules to second_delim rules
+            //~ name=encodeWithDelim(name,second_delim);
+            //~ ///convert path_delim rules to second_delim rule
+            //~ name=parseNameString(name,file,di,path_delim,second_delim);
+            //~ ///Now, for a valid replace string rule, it must match the multi_re, otherwise throw an error.
+            //~ ///restore the slash at beginning
+            //~ name=path_delim+name;
+            //~ if(isComplyingToRegex(name,multi_re)){
+                //~ ///let it pass but set a flag
+                //~ ns_used = true;
+            //~ }
+            //~ else{
+                //~ printErrorLog("Failed to recognize name string rule. Invalid replace string format: "+rs[i]);
+                //~ Exit(1);
+            //~ }
+            //~ ///name string parse won't be done here.
+            //~ ////name=parseNameString( rs[i], file,di);
+        //~ }
+        //~ /// Carefull!!! must not use else if
+        //~ if(name!="" && isComplyingToRegex(name,multi_re)){
+            //~ /// Populate rs_search, rs_replace and rs_mod with valid values
+            //~ RegexTokenIterator end; ///default constructor=end of sequence
+            //~ RegexTokenIterator toit (name.begin(), name.end(), multi_re,subm);
+            //~ while (toit != end){
+                //~ String se, rep, mod;
+                //~ se=*toit++;rep=*toit++;mod=*toit++;toit++;
+                //~ ///do name string parse if ns was detected
+                //~ if(ns_used){
+                    //~ ///convert second delim to path_delim for ns rules
+                    //~ se = parseNameString(se,file,di,second_delim,path_delim);
+                    //~ rep = parseNameString(rep,file,di,second_delim,path_delim);
+                    //~ ///decode second delim
+                    //~ se=decodeWithDelim(se,second_delim);
+                    //~ rep=decodeWithDelim(rep,second_delim);
+                    //~ ///do the ns parsing
+                    //~ ///ns rules in se must be sanitized
+                    //~ se = parseNameString(se,file,di,path_delim,"",true);
+                    //~ ///                                        ^must be empty
+                    //~ rep = parseNameString(rep,file,di,path_delim);
+                //~ }
+                //~ rs_search.push_back(se);
+                //~ rs_replace.push_back(processReplacementString(rep));
+                //~ rs_mod.push_back(mod);
+            //~ }
+        //~ }
+        //~ else{
+            //~ printErrorLog("Invalid replace string format: "+rs[i]);
+            //~ Exit(1);
+        //~ }
+    //~ }
 
-}
+//~ }
 
 
 //~ bool isComplyingToRegex(String& s,Regex &re){

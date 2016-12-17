@@ -90,6 +90,11 @@ bool stringContains(String subject,const String& search){
     else return false;
 }
 
+bool stringContains(String subject,const char search){
+    if (subject.find(search) != String::npos) {return true;}
+    else return false;
+}
+
 String ltrim(String s,const String& delim=" \n\r\t"){return s.erase(0,s.find_first_not_of(delim));}
 String rtrim(String s,const String& delim=" \n\r\t"){return s.erase(s.find_last_not_of(delim)+1);}
 String trim(String s,const String& delim=" \n\r\t"){return rtrim(ltrim(s,delim),delim);}
@@ -425,5 +430,10 @@ String fileNameWithoutExtension(const String& file){
     else return file;
 }
 
+void validateModifier(const String& mod, const String& valid_mods, const String& err_m_for){
+    for(size_t i=0;i<mod.length();++i)
+        if(!stringContains(valid_mods, mod[i]))
+            errorExit("Invalid modifier '"+toString(mod[i])+"' for "+err_m_for);
+}
 
 #endif

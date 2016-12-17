@@ -37,6 +37,14 @@
 #include "global.hpp"
 #include "strutils.hpp"
 
+jp::Regex multi_sre("\\s*/([^/]*?)/\\s*([^/;]*)(\\s*;\\s*|$)",0,jpcre2::JIT_COMPILE);
+jp::Regex sanity_regex("[^\\\\[\\]]",0,jpcre2::JIT_COMPILE);
+jp::Regex repl_sanit_re(R"(\\(\d+|\{[^}]+\}))",0,jpcre2::JIT_COMPILE);
+jp::Regex repl_sanit_dol_re(R"(\\\$|\$(?!\d+|\{[^}]+\}))", 0, jpcre2::JIT_COMPILE);
+jp::Regex repl_sanit_and_re(R"((?<!\\)&)");
+jp::Regex multi_rre (R"(\s*/([^/]*?)/([^/]*?)/\s*([^/;]*)\s*(;\s*|$))",0,jpcre2::JIT_COMPILE);
+
+
 
 size_t countMatchInRegex(const String& s,const String& re){
     return jp::Regex(re)
@@ -64,11 +72,46 @@ bool isComplyingToRegex(const String& s, jp::Regex &re){
 }
 
 
-String sanitizeStringForRegex(const String& s){
+String sanitizeStringForRegex(const String& s, char mode){
     String s1 = s;
-    s1 = sanity_regex.replace(s1,"[$0]","g");
-    return replaceStringAll(s1, "\\","\\\\");
+    if(mode == 's'){
+        s1 = replaceStringAll(s1, "\\","\\\\");
+        s1 = replaceStringAll(s1, "[","\\[");
+        s1 = replaceStringAll(s1, "]","\\]");
+        s1 = sanity_regex.replace(s1,"[$0\\d]","g");
+        return s1;
+    } else if( mode == 'r') {
+        s1 = replaceStringAll(s1, "\\$","\\\\$");
+        return replaceStringAll(s1, "&","\\&");
+    }
+    return s1;
 }
 
+
+String processReplacementString(String replace){
+    /// \1 \2 etc will be converted to PCRE2 backreference $1 $2
+    /// $ (not capture group) will be converted to $$
+    /// \$ will be converted to $$
+    /// & will be converted to $0 (the entire match)
+    /// \& will be &
+    jp::RegexReplace rr(&repl_sanit_re);
+    ///capture groups \1, \{22}, \{name}
+    rr.setSubject(&replace).setPcre2Option(PCRE2_SUBSTITUTE_GLOBAL);
+    replace = rr.setReplaceWith("$$$1").replace();
+    ///dangling $
+    rr.setRegexObject(&repl_sanit_dol_re);
+    replace = rr.setReplaceWith("$$$$").replace();
+    ///&
+    rr.setRegexObject(&repl_sanit_and_re);
+    replace = rr.setReplaceWith("$$0").replace();
+    //std::cout<<rr.getErrorMessage();
+    
+    ///Finally strip invalid namestring rules and slashes
+    replace=removeInvalidNameStringRules(replace);
+    replace=stripPathDelimiter(replace);
+    replace = replaceStringAll(replace, "\\&", "&");
+    
+    return replace;
+}
 
 #endif
