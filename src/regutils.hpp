@@ -78,7 +78,7 @@ String sanitizeStringForRegex(const String& s, char mode){
         s1 = replaceStringAll(s1, "\\","\\\\");
         s1 = replaceStringAll(s1, "[","\\[");
         s1 = replaceStringAll(s1, "]","\\]");
-        s1 = sanity_regex.replace(s1,"[$0\\d]","g");
+        s1 = sanity_regex.replace(s1,"[$0]","g");
         return s1;
     } else if( mode == 'r') {
         s1 = replaceStringAll(s1, "\\$","\\\\$");

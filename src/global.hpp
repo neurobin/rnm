@@ -157,6 +157,9 @@ Int rnc=0; //rename count
 IntVec abslc_list;
 
 
+//////// nsf related
+NameList nsflist;
+
 /////Strings
 String blank_str="";
 String NEW_LINE="\n";

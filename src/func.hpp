@@ -538,6 +538,7 @@ void parseReplaceString(const StringArray &rs,const File& file,DirectoryIndex &d
             ///restore the slash at beginning
             name="/"+name;
             ns_used = true;
+            //~ std::cout<<"###: "<<name;
             rm.match(); //perform the match again.
         }
         /// Carefull!!! must not use else if
@@ -562,6 +563,7 @@ void parseReplaceString(const StringArray &rs,const File& file,DirectoryIndex &d
                     ///ns rules in se must be sanitized
                     se = parseNameString(se,file,di,path_delim,"",'s');
                     ///                                         ^must be empty
+                    //~ std::cout<<"###: "<<se;
                     rep = parseNameString(rep,file,di,path_delim,"", 'r');
                     ///                                           ^must be empty
                 }
@@ -577,5 +579,371 @@ void parseReplaceString(const StringArray &rs,const File& file,DirectoryIndex &d
     }
 
 }
+
+
+String changeCaseAccordingToSS(String s,const String& search,const String& replace,const String& modifier,int user=0){
+    if(replace!="\\c"&&replace!="\\C"){
+        printWarningLog("Invalid case definition: "+replace+" Only \\c or \\C is allowed");
+        return s;
+    }
+    
+    jp::Regex re (search, modifier);
+    jp::RegexReplace rr(&re);
+    rr.setSubject(&s)
+      .setModifier(modifier);
+
+    if(replace=="\\C"){
+        s = rr.nreplace(jp::MatchEvaluator([](jp::NumSub m, void*, void*){ return toUpper(m[0]); }));
+    }
+    else if(replace=="\\c"){
+        s = rr.nreplace(jp::MatchEvaluator([](jp::NumSub m, void*, void*){ return toLower(m[0]); }));
+    } else {
+        printErrorLog("Invalid replace string regex: "+search);
+        Exit(1);
+    }
+    return s;
+}
+
+void processReplaceString(StringArray &rs,const File& file,DirectoryIndex &di){
+    ///clear rs_* vectors. These are modified according to each file name and thus previous value can not be retained.
+    rs_search.clear();rs_replace.clear();rs_mod.clear();
+    parseReplaceString(rs,file,di);
+    ///we now have valid rs_search, rs_replace and rs_mod
+    rname=basename(file.path);
+    for(size_t i=0;i<rs_search.size();i++){
+        if(stringContains(rs_replace[i],"\\c")||stringContains(rs_replace[i],"\\C")){
+            rname=changeCaseAccordingToSS(rname,rs_search[i],rs_replace[i],rs_mod[i],1);
+        }
+        ///Add other specialized replace rules here.
+        else {
+            jp::Regex re(rs_search[i], rs_mod[i]);
+            jp::RegexReplace rr(&re);
+            rname=rr.setSubject(rname).setModifier(rs_mod[i]).setReplaceWith(rs_replace[i]).replace();
+        }
+        ///Now a modified name rname is available
+    }
+}
+
+
+void incrementReservedIndexes(DirectoryIndex &di){
+        ///increment reserved indexes
+        di.directory_index_rd+=inc;
+        di.directory_reverse_index_rd-=inc;
+        current_index_rd+=inc;
+        reverse_index_rd-=inc;
+}
+
+
+String parseTrueFalse(bool a){
+    if(a)return "true";
+    else return "false";
+}
+
+void printOpts(){
+    
+    std::cout<< "\n\nInfo about this session:\n\
+    Executable: "+self_path+"\n\
+    Name String: " +name_string+"\n\
+    Name String File: " +name_string_file+"\n\
+    Fixed Search String: " +parseTrueFalse(ss_fixed[0])+"\n\
+    Replace String (first): " +replace_string[0]+"\n\
+    Replace String search part (first): "+rs_search[0]+"\n\
+    Replace String replace part (first): "+rs_replace[0]+"\n\
+    Replace String modifier part (first): "+rs_mod[0]+"\n\
+    Regex Locale: "+parseTrueFalse(re_locale)+"\n\
+    Depth: "<<depth<<"\n\
+    Input Field Length: "<<index_field_length<<"\n\
+    Undo: "+parseTrueFalse(undo)+"\n\
+    Start Index: "<<start_index<<"\n\
+    End Index: "<<end_index<<"\n\
+    Start Line: "<<start_line<<"\n\
+    End Line: "<<end_line<<"\n\
+    Reverse Line: "+parseTrueFalse(reverse_line)+"\n\
+    Quiet: "+parseTrueFalse(quiet)+"\n\
+    File Only: "+parseTrueFalse(file_only)+"\n\
+    Directory Only: "+parseTrueFalse(directory_only)+"\n\
+    Exclude Directory: "+parseTrueFalse(exclude_directory)+"\n\
+    Count Directory (force): "+parseTrueFalse(count_directory)+"\n\
+    Count File (force): "+parseTrueFalse(count_file)+"\n\
+    Increment Value: "<<inc<<"\n\
+    Line Increment Value: "<<linc<<"\n\
+    Apply force: "+parseTrueFalse(force)+"\n\
+";
+    printIndexFlags();
+    std::cout<< "Simulation: "+parseTrueFalse(simulation)+"\n\n";
+    
+    }
+
+
+void showResult(){
+    if(!quiet){
+        printOutLog(rnc.get_str()+" file/s renamed");
+        if(simulation) std::cout<< " (simulation)"+NEW_LINE;
+    }
+    if(show_options) printOpts();
+    
+}
+
+
+
+String doRename(const File& file,DirectoryIndex &di){
+    bool not_skipped=true;
+    
+    if(isInvalidFile(file)){return file.path;}
+    
+    if(ss_search.size()!=0){
+        if(!isComplyingToSearchString(file)){
+            return file.path;
+        }
+    }
+    
+    
+    String oldn=basename(file.path);
+    String dir=dirname(file.path);
+    String name;
+    if(replace_string.size()!=0){processReplaceString(replace_string,file,di);}
+    
+    if(!name_string.empty()){
+        name=parseNameString(name_string,file,di,path_delim, "",0);
+        
+        
+    } else if(!name_string_file.empty()){
+        
+        if(!nsflist[current_line.get_ui()].empty()){
+            current_abs_line=abslc_list[current_line.get_ui()];
+            name=parseNameString(nsflist[current_line.get_ui()],file,di,path_delim, "",0);
+            
+            
+            if(!reverse_line){current_line+=linc;}
+            else{current_line-=linc;}
+        
+        }
+    }
+    else if(replace_string.size()!=0){name=rname;}
+        
+    else {printErrorLog("One of the options: -ns or -nsf or -rs is mandatory");Exit(1);}
+    
+    
+    ///sanitize name by removing invalid name string rules and path delimiter
+    name=removeInvalidNameStringRules(name);
+    name=stripPathDelimiter(name);
+    
+    
+    if(!name.empty()){
+        if(!quiet){std::cout<< NEW_LINE+file.path+"    ---->    "+dir+path_delim+name+NEW_LINE;}
+        ///do rename
+        int confirm;
+        
+        if(!all_yes){
+            if(!single_mode){confirm=selectInput();}
+            else{confirm=1;}
+            
+            switch(confirm){
+                case 1:
+                      not_skipped=Rename(file.path,dir+path_delim+name,di);
+                      break;
+                case 2:
+                      all_yes=true;
+                      not_skipped=Rename(file.path,dir+path_delim+name,di);
+                      break;
+                case 3:
+                      break;
+                case 4:
+                      all_yes=false;
+                      showResult();
+                      Exit(0);
+                default:
+                       all_yes=false;
+                       break;
+            }
+            
+        }
+        else{
+            ///do rename finally
+            not_skipped=Rename(file.path,dir+path_delim+name,di);
+            
+        }
+        
+    }
+    else{
+        printWarningLog("Name can not be empty, skipped. ("+file.path+")");not_skipped=false;
+    }
+    
+
+  if(!name_string_file.empty()){
+    if(current_line<=0){showResult();Exit(1);}
+      
+    if(line_upward && end_line!=0){
+        if(current_line>end_line){printOutLog("End line reached.");showResult();Exit(1);}
+    }
+    else if(end_line==0){
+        if(current_index_rd>=nsflist.size()){printWarningLog("Name string file ran out of names.");showResult();Exit(1);}
+        
+        }
+    else{
+        if(current_line<end_line){printOutLog("End line reached");
+            showResult();
+            Exit(1);
+        }
+    }
+  }
+    String filename_to_return;
+    if(not_skipped) filename_to_return=dir+path_delim+name;
+    else filename_to_return=file.path;
+    
+    return filename_to_return;
+}
+
+
+
+
+void startInDepthRenamingTaskOnDirectory(const String& dir,String base_dir=base_dir){
+    FileArray files;
+    files=getFilesFromDir(dir);
+    
+    directory_count++;
+    DirectoryIndex di;
+    
+    for(size_t i=0;i<files.size();i++){
+        if(abs(di.directory_index)>abs(end_index)){continue;}
+        String file=files[i].path;
+
+        if(childDepth(base_dir,file)>depth){continue;}
+        String parent="";
+        String src_name="";
+        if(!files[i]){printWarningLog("No such file or directory: "+file);continue;}
+        src_name=basename(file);
+        parent=dirname(file);
+        CPDN=getParentDirectoryName(file);
+    
+        if(files[i].isDir()){
+            
+            if(file_only){
+                
+                if(childDepth(base_dir,file)<=depth){
+                    
+                    startInDepthRenamingTaskOnDirectory(file);
+                }
+                else{
+                
+                }
+                if(count_directory){incrementReservedIndexes(di);}
+                
+            }
+            
+            else if(exclude_directory){
+                if(count_directory){incrementReservedIndexes(di);}
+                continue;
+            }
+            
+            else{
+                
+                files[i]=doRename(file,di);
+                incrementReservedIndexes(di);
+                src_name=basename(file);
+                parent=dirname(file);
+                CPDN=getParentDirectoryName(file);
+                if(childDepth(base_dir,file)<=depth){
+                    
+                    startInDepthRenamingTaskOnDirectory(file);
+                }
+            }
+            
+        }
+        else if(files[i].isFile()){
+            
+            if(!directory_only){
+                files[i]=doRename(file,di);
+                incrementReservedIndexes(di);
+            }
+            else if(count_file){incrementReservedIndexes(di);}
+        }
+        else {
+            incrementReservedIndexes(di);
+            printWarningLog("Not a valid file or directory");
+            continue;
+        }
+    }
+}
+
+
+
+void startTask(FileArray& files){
+    
+    directory_count++;
+    DirectoryIndex di;
+
+    for(size_t i=0;i<files.size();i++){
+        String file=files[i].path;
+        String parent="";
+        String src_name="";
+        if(!files[i]){printWarningLog("No such file or directory: "+files[i].path);continue;}
+        src_name=basename(file);
+        parent=dirname(file);
+        CPDN=getParentDirectoryName(file);
+
+        if(files[i].isDir()){
+            base_dir=dirname(file);
+        
+            if(file_only){
+
+                if(childDepth(base_dir,file)<=depth){
+
+                    startInDepthRenamingTaskOnDirectory(file);
+                }
+                else{
+                
+                
+                }
+                if(count_directory){incrementReservedIndexes(di);}
+                
+            }
+            
+            else if(exclude_directory){
+                if(count_directory){incrementReservedIndexes(di);}
+                continue;
+            }
+            
+            else{
+                
+                files[i]=doRename(file,di);
+                incrementReservedIndexes(di);
+                src_name=basename(file);
+                parent=dirname(file);
+                CPDN=getParentDirectoryName(file);
+                base_dir=dirname(file);
+                if(childDepth(base_dir,file)<=depth){
+                    
+                    startInDepthRenamingTaskOnDirectory(file);
+                }
+            }
+            
+            
+        }
+        else if(files[i].isFile()){
+            
+            if(!directory_only){
+                files[i]=doRename(file,di);
+                incrementReservedIndexes(di);
+            }
+            else if(count_file){incrementReservedIndexes(di);}
+     
+        }
+        else {
+            incrementReservedIndexes(di);
+            printWarningLog("Not a valid file or directory");
+            continue;
+        }
+        
+    }
+}
+
+
+void detectLineUpwardOrDownward(){
+    if(start_line<=end_line || end_line==0){line_upward=true;}
+    else{line_upward=false;reverse_line=true;}
+    if(reverse_line){current_line=(start_line>end_line)?start_line:end_line;}
+}
+
 
 #endif

@@ -16,46 +16,6 @@ void signalHandler( int signum ) {
     cleanExit();
 }
 
-String changeCaseAccordingToSS(String s,const String& search,const String& replace,const String& modifier,int user=0){
-    if(replace!="\\c"&&replace!="\\C"){
-        printWarningLog("Invalid case definition: "+replace+" Only \\c or \\C is allowed");
-        return s;
-    }
-    
-    jp::Regex re (search, modifier);
-    jp::RegexReplace rr(&re);
-
-    if(replace=="\\C"){
-        s = rr.replace(s,toUpper(match), modifier);
-    }
-    else if(replace=="\\c"){
-        s = rr.replace(s,toLower(match), modifier);
-    } else {
-        printErrorLog("Invalid replace string regex: "+search);
-        Exit(1);
-    }
-    return s;
-}
-
-//~ void processReplaceString(StringArray &rs,const File& file,DirectoryIndex &di){
-    //~ ///clear rs_* vectors. These are modified according to each file name and thus previous value can not be retained.
-    //~ rs_search.clear();rs_replace.clear();rs_mod.clear();
-    //~ parseReplaceString(rs,file,di);
-    //~ ///we now have valid rs_search, rs_replace and rs_mod
-    //~ rname=basename(file.path);
-    //~ for(size_t i=0;i<rs_search.size();i++){
-        //~ if(stringContains(rs_replace[i],"\\c")||stringContains(rs_replace[i],"\\C")){
-            //~ rname=changeCaseAccordingToSS(rname,rs_search[i],rs_replace[i],rs_mod[i],1);
-        //~ }
-        //~ ///Add other specialized replace rules here.
-        //~ else {
-            //~ rname=regexReplace(rname,rs_search[i],rs_replace[i],rs_mod[i],1);
-        //~ }
-        //~ ///Now a modified name rname is available
-    //~ }
-//~ }
-   
-
 int main(){
     try{self_dir = getCurrentDir();
     self_path=self_dir+String(path_delim)+executable_name;
@@ -176,10 +136,17 @@ int main(){
     std::cout<<"\nreps: "<<processReplacementString(reps);
     std::cout<<"\n#########################\n";
     
-    String rs = "//fn//e//&$1/gilf!;/fsd//fn/fds&/";
+    String rs = "//fn//e//&$1/gilf;/fsd//fn/fds&/";
     StringArray rsa;
     rsa.push_back(rs);
     parseReplaceString(rsa, file1, di);
+    
+    //~ try{
+        //~ Double x("fds");
+    //~ } catch (const std::exception& e){
+        //~ std::cout<<e.what();
+    //~ }
+    
     
     for(size_t i=0;i<rs_search.size();++i){
         std::cout<<"\nrs_s: "<<rs_search[i]<<"\trs_r: "<<rs_replace[i]<<"\trs_m: "<<rs_mod[i];

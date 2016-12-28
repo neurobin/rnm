@@ -30,7 +30,7 @@
  * ********************************************************************/
  
  
-#include "funcs.hpp"
+#include "func.hpp"
 
 
 
@@ -41,12 +41,16 @@ void checkArgAvailability(const StringArray& sa,int i){
     }
 }
 
-int main(int argc, char* argv[]) {getCurrentDir(self_dir);self_path=self_dir+String(path_delim)+executable_name;
-    CWD=toString(self_dir);
+int main(int argc, char* argv[]) {
+    ///The following must be the first line
+    self_dir = getCurrentDir();
+    self_path=self_dir+path_delim+executable_name;
+    CWD=self_dir;
     CWDN=basename(self_dir);
     prepareLogDir();
     
-    
+    ///FileArray
+    FileArray files;
 
     
     //////////////////////////////// Opt parse////////////////////////////////////////////
@@ -83,11 +87,11 @@ int main(int argc, char* argv[]) {getCurrentDir(self_dir);self_path=self_dir+Str
       
      if(!noopt){
       if(opt=="-h"||opt=="--help"){
-          printe help_message;
+          std::cout<< help_message;
           return 0;
         }
       else if(opt=="-v"||opt=="--version"){
-          printe version_info;
+          std::cout<< version_info;
           return 0;
         }
         
@@ -113,9 +117,8 @@ int main(int argc, char* argv[]) {getCurrentDir(self_dir);self_path=self_dir+Str
         
       else if(opt=="-inc"||opt=="--increment-value"){
           checkArgAvailability(args,i+1);
-          mustBeAPositiveNumber("Increment Value","\nNegative increment i.e decrement will be available using name string rule:\n\
+          inc = getPositiveNumberOrExit("Increment Value","\nNegative increment i.e decrement will be available using name string rule:\n\
 "+path_delim+"-i"+path_delim+", "+path_delim+"-ir"+path_delim+", "+path_delim+"-id"+path_delim+" etc..\n",args[i+1]);
-          inc=stringTo<decltype(inc)>(args[i+1]);
           skipcount=true;
           
           inc_obj.count++;
@@ -124,8 +127,7 @@ int main(int argc, char* argv[]) {getCurrentDir(self_dir);self_path=self_dir+Str
         
       else if(opt=="-linc"||opt=="--line-increment-value"){
           checkArgAvailability(args,i+1);
-          mustBeAPositiveInteger("Line Increment Value",args[i+1]);
-          linc=stringTo<decltype(linc)>(args[i+1]);
+          linc = getPositiveIntOrExit("Line Increment Value",args[i+1]);
           skipcount=true;
           
           linc_obj.count++;
@@ -135,8 +137,7 @@ int main(int argc, char* argv[]) {getCurrentDir(self_dir);self_path=self_dir+Str
         
       else if(opt=="-i"||opt=="-si"||opt=="--index"||opt=="--start-index"){
           checkArgAvailability(args,i+1);
-          mustBeANumber("Start Index",args[i+1]);
-          start_index=stringTo<decltype(start_index)>(args[i+1]);
+          start_index=getNumberOrExit("Start Index",args[i+1]);;
           current_index=start_index;
           current_index_rd=start_index;
           reverse_index=start_index;
@@ -151,8 +152,7 @@ int main(int argc, char* argv[]) {getCurrentDir(self_dir);self_path=self_dir+Str
         
       else if(opt=="-ei"||opt=="--end-index"){
           checkArgAvailability(args,i+1);
-          mustBeANumber("End Index",args[i+1]);
-          end_index=stringTo<decltype(end_index)>(args[i+1]);
+          end_index=getNumberOrExit("End Index",args[i+1]);
           skipcount=true;
           
           ei_obj.count++;
@@ -170,8 +170,7 @@ int main(int argc, char* argv[]) {getCurrentDir(self_dir);self_path=self_dir+Str
         
       else if(opt=="-ifl"||opt=="--index-field-length"){
           checkArgAvailability(args,i+1);
-          mustBeAPositiveInteger("Index field length",args[i+1]);
-          index_field_length=stringTo<decltype(index_field_length)>(args[i+1]);
+          index_field_length=getPositiveIntOrExit("Index field length",args[i+1]);
           skipcount=true;
           
           ifl_obj.count++;
@@ -180,8 +179,7 @@ int main(int argc, char* argv[]) {getCurrentDir(self_dir);self_path=self_dir+Str
         
       else if(opt=="-ifp"||opt=="--index-field-precision"){
           checkArgAvailability(args,i+1);
-          mustBeAPositiveInteger("Index field precision",args[i+1]);
-          IFP=stringTo<decltype(IFP)>(args[i+1]);
+          IFP=getPositiveIntOrExit("Index field precision",args[i+1]);
           skipcount=true;
           
           ifp_obj.count++;
@@ -191,8 +189,7 @@ int main(int argc, char* argv[]) {getCurrentDir(self_dir);self_path=self_dir+Str
         
       else if(opt=="-iff"||opt=="--index-field-filler"){
           checkArgAvailability(args,i+1);
-          mustBeAValidSingleCharacter("Index field filler",args[i+1]);
-          IFF=stringTo<decltype(IFF)>(args[i+1]);
+          IFF=getSingleCharacterStringOrExit("Index field filler",args[i+1]);
           IFF=replaceStringAll(IFF,"\\","");
           skipcount=true;
           
@@ -232,8 +229,8 @@ int main(int argc, char* argv[]) {getCurrentDir(self_dir);self_path=self_dir+Str
         
       else if(opt=="-l"||opt=="-sl"||opt=="--line"||opt=="--start-line"){
           checkArgAvailability(args,i+1);
-          mustBeAPositiveInteger("Start Line",args[i+1]);
-          start_line=stringTo<decltype(start_line)>(args[i+1]);
+          
+          start_line=getPositiveIntOrExit("Start Line",args[i+1]);
           current_line=start_line;
           skipcount=true;
           
@@ -243,8 +240,8 @@ int main(int argc, char* argv[]) {getCurrentDir(self_dir);self_path=self_dir+Str
         
       else if(opt=="-lv"||opt=="-slv"||opt=="--line-reverse"||opt=="--start-line-reverse"){
           checkArgAvailability(args,i+1);
-          mustBeAPositiveInteger("Start Line",args[i+1]);
-          start_line=stringTo<decltype(start_line)>(args[i+1]);
+          
+          start_line=getPositiveIntOrExit("Start Line",args[i+1]);
           current_line=start_line;
           skipcount=true;
           reverse_line=true;
@@ -255,8 +252,8 @@ int main(int argc, char* argv[]) {getCurrentDir(self_dir);self_path=self_dir+Str
         
       else if(opt=="-el"||opt=="--end-line"){
           checkArgAvailability(args,i+1);
-          mustBeAPositiveInteger("End Line",args[i+1]);
-          end_line=stringTo<decltype(end_line)>(args[i+1]);
+          
+          end_line=getPositiveIntOrExit("End Line",args[i+1]);
           skipcount=true;
           
           el_obj.count++;
@@ -265,8 +262,8 @@ int main(int argc, char* argv[]) {getCurrentDir(self_dir);self_path=self_dir+Str
       
       else if(opt=="-elv"||opt=="--end-line-reverse"){
           checkArgAvailability(args,i+1);
-          mustBeAPositiveInteger("End Line",args[i+1]);
-          end_line=stringTo<decltype(end_line)>(args[i+1]);
+          
+          end_line=getPositiveIntOrExit("End Line",args[i+1]);
           skipcount=true;
           reverse_line=true;
           
@@ -290,7 +287,7 @@ int main(int argc, char* argv[]) {getCurrentDir(self_dir);self_path=self_dir+Str
           search_string_file=args[i+1];
           skipcount=true;
           
-          if(isFile(search_string_file)){
+          if(File(search_string_file).isFile()){
             StringArray temp=getLineFromFileAndReturnVector(search_string_file);
             ///append temp to search_string
             search_string.insert(search_string.end(),temp.begin(),temp.end());
@@ -323,7 +320,7 @@ int main(int argc, char* argv[]) {getCurrentDir(self_dir);self_path=self_dir+Str
           checkArgAvailability(args,i+1);
           search_string_file=args[i+1];
           skipcount=true;
-          if(isFile(search_string_file)){
+          if(File(search_string_file).isFile()){
             StringArray temp=getLineFromFileAndReturnVector(search_string_file);
             ///append temp to search_string
             search_string.insert(search_string.end(),temp.begin(),temp.end());
@@ -355,7 +352,7 @@ int main(int argc, char* argv[]) {getCurrentDir(self_dir);self_path=self_dir+Str
           checkArgAvailability(args,i+1);
           replace_string_file=args[i+1];
           skipcount=true;
-          if(isFile(replace_string_file)){
+          if(File(replace_string_file).isFile()){
               StringArray temp=getLineFromFileAndReturnVector(replace_string_file);
             replace_string.insert(replace_string.end(),temp.begin(),temp.end());
           }
@@ -367,25 +364,11 @@ int main(int argc, char* argv[]) {getCurrentDir(self_dir);self_path=self_dir+Str
           ///multple is allowed
         }
         
-      else if(opt=="-re" || opt == "--regex"){
-          checkArgAvailability(args,i+1);
-          re_type=toLower(args[i+1]);
-          skipcount=true;
-          
-          re_obj.count++;
-          if(re_obj.count>1){printWarningLog("Regex mode overwritten");}
-        }
-        
-        else if(opt=="-rel"||opt=="--regex-locale"){
-          re_locale=true;
-          
-        }
-        
        
       else if(opt=="-dp"||opt=="--depth"){
           checkArgAvailability(args,i+1);
-          mustBeAnInteger("Depth",args[i+1]);
-          depth=stringTo<decltype(depth)>(args[i+1]);
+          
+          depth=getIntOrExit("Depth",args[i+1]);
           if(depth<0){depth=std::numeric_limits<Int>::max();}
           skipcount=true;
           
@@ -473,7 +456,7 @@ int main(int argc, char* argv[]) {getCurrentDir(self_dir);self_path=self_dir+Str
         }
         
         else {
-            files.push_back(String(args[i]));
+            files.push_back(File(args[i]));
             
             
         }
@@ -481,7 +464,7 @@ int main(int argc, char* argv[]) {getCurrentDir(self_dir);self_path=self_dir+Str
      }
         
      else {
-            files.push_back(String(args[i]));
+            files.push_back(File(args[i]));
             
             
      }
@@ -518,7 +501,7 @@ int main(int argc, char* argv[]) {getCurrentDir(self_dir);self_path=self_dir+Str
         Exit(1);
         }
     if(search_string.size()!=0){
-        for(Int i=0;i<(Int)search_string.size();i++){
+        for(size_t i=0;i<search_string.size();i++){
                 parseSearchString(search_string[i],i); 
         }
     ///search_string and fixed_ss will no longer be uesed. Better free up some memory
@@ -528,36 +511,22 @@ int main(int argc, char* argv[]) {getCurrentDir(self_dir);self_path=self_dir+Str
     
     if(name_string_file!=""){
         if(name_string_file==path_delim+"hist"+path_delim){
-            if(isFile(NSF_LIST_FILE)){name_string_file=NSF_LIST_FILE;}
+            if(File(NSF_LIST_FILE).isFile()){name_string_file=NSF_LIST_FILE;}
             else{printErrorLog("History not found.");Exit(1);}
         }
-        else if(!isFile(name_string_file)){
+        else if(!File(name_string_file).isFile()){
             printErrorLog("Name String File not found: "+name_string_file);
             Exit(1);
         }
         detectLineUpwardOrDownward();
         copyFile2(name_string_file,NSF_LIST_FILE);
-        if(!quiet){print "Reading name string file..."+NEW_LINE;}
-        if(!nsf_n){nsflist=getNameListFromFile(name_string_file,start_line,end_line);}
-        else{nsflist=getNameListFromFile(name_string_file,start_line,end_line,0);}
+        if(!quiet){std::cout<< "Reading name string file..."+NEW_LINE;}
+        if(!nsf_n)
+            nsflist=getNameListFromFile(name_string_file,start_line.get_ui(),end_line.get_ui());
+        else
+            nsflist=getNameListFromFile(name_string_file,start_line.get_ui(),end_line.get_ui(),0);
     
     }
-
-
-    /// check regex type
-    if(re_type!=""){
-        
-        if(re_type=="default"){REGEX_TYPE=REGEX_DEFAULT;}
-        else if(re_type=="awk"){REGEX_TYPE=REGEX_AWK;}
-        else if(re_type=="grep"){REGEX_TYPE=REGEX_GREP;}
-        else if(re_type=="egrep"){REGEX_TYPE=REGEX_EGREP;}
-        else if(re_type=="basic"){REGEX_TYPE=REGEX_BASIC;}
-        else if(re_type=="extended"){REGEX_TYPE=REGEX_EXTENDED;}
-        else if(re_type=="ecmascript"){REGEX_TYPE=REGEX_ECMASCRIPT;}
-        else {printErrorLog("Invalid regex type: "+re_type);Exit(1);}
-        
-        }
-    else {REGEX_TYPE=REGEX_DEFAULT;}
 
     
     ////////////////////////////////// Various checks end here//////////////////////////////
