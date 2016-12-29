@@ -313,15 +313,18 @@ struct File {
     bool isValidWithMod(const String& mod) const{
         if(type == 0)  return false;
         size_t len = mod.length();
+        size_t flag = 0;
         for(size_t i = 0;i<len;++i){
             switch(mod[i]){
                 case 'f': if(isFile()) return true; else break;
                 case 'd': if(isDir())  return true; else break;
                 case 'l': if(isLink()) return true; else break;
-                default:  break;
+                default: ++flag; break;
             }
         }
-        return false;
+        //if f, d, l neither was present, it will pass the test by default.
+        if(flag == len) return true; 
+        else return false;
     }
 };
 
