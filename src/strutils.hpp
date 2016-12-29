@@ -246,8 +246,13 @@ String fixIFL(const String& s, const Int& ifl, const String& iff, IOFormatFlag f
     oss_buffer.width(ifl.get_ui());
     oss_buffer.setf(flags);
     oss_buffer.fill(iff[0]);
-    oss_buffer<<s;
-    return oss_buffer.str();
+    if(s[0] == '-') {
+        oss_buffer<<s.substr(1,String::npos);
+        return "-"+oss_buffer.str(); 
+    } else {
+        oss_buffer<<s;
+        return oss_buffer.str();
+    }
 }
 
 String convertBase( const Double& x, Ush base, const Int& ifl,
@@ -279,7 +284,7 @@ String convertBase( const Double& x, Ush base, const Int& ifl,
                 (prec > (x>0?s.length()-1:s.length()-2) || prec == 0)
                 ) s+="0";
     if(stringContains(s,".")) s = fixPrec(x,s,prec,ind);
-    s = fixIFL(s, ifl, iff, flags);
+    s = fixIFL(rtrim(s,"."), ifl, iff, flags);
     if((flags & std::ios::showbase)!=0){
         switch(base){
             case 8: if(x>=0) s = "0" + s; else s.insert(1,"0");break;
@@ -288,7 +293,7 @@ String convertBase( const Double& x, Ush base, const Int& ifl,
         }
     }
     if(x >= 0 &&(flags & std::ios::showpos)!=0) s="+"+s;
-    return rtrim(s,".");
+    return s;
 }
 
 String convertToScientific( const Double& x, const Int& ifl,
@@ -356,7 +361,7 @@ String toString(const Double& x, Ush base, Int ifl, const Int& prec, const Strin
     String s;
     if(latin){
         if(x<=latin_fall_back_threshold){
-            s = convertToLatin(Int(convertBase(round(x),10,ifl,0,iff)), flags);
+            s = convertToLatin(Int(convertBase(round(x),10,0,0,"")), flags);
         } else{
             printWarningLog("Latin format is too large, falling back to decimal.");
             s = convertBase(x,10,ifl,prec,iff,flags);

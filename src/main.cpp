@@ -473,7 +473,6 @@ int main(int argc, char* argv[]) {
       
     }
   } //objects from Options class are destroyed here
-    
     //file_vector=files;
     //////////////////////////////////////// Opt parse ends here/////////////////////////////////
 

@@ -204,19 +204,15 @@ std::map<String,Int> index_int_flag={{"precision",IFP},{"length",index_field_len
 std::map<String,String> index_string_flag={{"filler",IFF}};
 
 String IFP_s="unset";
-IOFormatFlag FLAG_FLOAT=std::ios::fixed; //std::ios::scientific
-IOFormatFlag index_flag_adjust=std::ios::right;
-String index_flag_adjust_s="right";
-IOFormatFlagArray index_flag_ind {};
-StringArray index_flag_ind_s {};
-///The following array couples must be in sync, don't change the sequence, they are important
-StringArray INDEX_FLAGS_AV_A={"internal","right","left"};
-IOFormatFlagArray INDEX_FLAGS_A={std::ios::internal,std::ios::right,std::ios::left};
-StringArray INDEX_FLAGS_AV_I={"uppercase","showbase","showpoint","showpos"};
-std::map<String,bool> INDEX_FLAGS_I_B={{"uppercase",false},{"showbase",false},{"showpoint",false},{"showpos",false}};
-IOFormatFlagArray INDEX_FLAGS_I={std::ios::uppercase,std::ios::showbase,std::ios::showpoint,std::ios::showpos};
-///The above array couples must be in sync, don't change the sequence, they are important
-
+std::map<String, IOFormatFlag> INDEX_FLAGS_M = {
+                                                    { "internal",   std::ios::internal },
+                                                    { "right",      std::ios::right },
+                                                    { "left",       std::ios::left },
+                                                    { "uppercase",  std::ios::uppercase },
+                                                    { "showbase",   std::ios::showbase },
+                                                    { "showpoint",  std::ios::showpoint },
+                                                    { "showpos",    std::ios::showpos }
+                                                };
 IOFormatFlag INDEX_FLAGS = (IOFormatFlag)0;
 
 
@@ -225,15 +221,15 @@ IOFormatFlag INDEX_FLAGS = (IOFormatFlag)0;
 
 //StringArray file_vector;
 String self_dir;
-String base_dir="";
-String self_path="";
+String base_dir;
+String self_path;
 StringArray search_string;
-String search_string_file="";
+String search_string_file;
 StringArray replace_string;
-String replace_string_file="";
-String name_string="";
-String name_string_file="";
-String rname="";
+String replace_string_file;
+String name_string;
+String name_string_file;
+String rname;
 ///RegexArray rs_search_re; ///Unfortunately this can not be used. replace string is dynamic and depends on each filename.
 StringArray rs_search;
 StringArray rs_replace;
@@ -256,7 +252,7 @@ String sort_type="natural";
 /// Project Info
 String project_name="rnm";
 String executable_name="rnm";
-String version="3.3.2";
+String version="4.0.0";
 String author_name="Jahidul Hamid";
 String author_email="jahidulhamid@yahoo.com";
 String bug_report_url="http://github.com/neurobin/"+project_name+"/issues";

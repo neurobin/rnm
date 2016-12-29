@@ -111,7 +111,7 @@ bool undoRename(){
 
 void updateIndexFlagsFromFlagMaps(){
     IFP=index_int_flag["precision"];
-    index_field_length=index_int_flag["width"];
+    index_field_length=index_int_flag["length"];
     IFF=index_string_flag["filler"];
     latin_fall_back_threshold=index_int_flag["latin-fallback"];
 }
@@ -143,37 +143,6 @@ bool parseTwoStepIndexFlag(const String& s){
     return false;
 }
 
-bool setIndexFlagAdjust(String s){
-    s=trim(s);
-    for(int i=0;i<(int)INDEX_FLAGS_AV_A.size();i++){
-        if(s==INDEX_FLAGS_AV_A[i]){
-            index_flag_adjust=INDEX_FLAGS_A[i];
-            index_flag_adjust_s=INDEX_FLAGS_AV_A[i];
-            return true;
-        }
-    }
-    return false;
-}
-
-
-bool setIndexFlagInd(String s){
-    s=trim(s);
-    for(int j=0;j<(int)INDEX_FLAGS_AV_I.size();j++){
-        if(s==INDEX_FLAGS_AV_I[j]){
-            INDEX_FLAGS_I_B[INDEX_FLAGS_AV_I[j]]=true;
-            index_flag_ind.push_back(INDEX_FLAGS_I[j]);
-            index_flag_ind_s.push_back(INDEX_FLAGS_AV_I[j]);
-            std::sort( index_flag_ind.begin(), index_flag_ind.end() );
-            index_flag_ind.erase( unique( index_flag_ind.begin(), index_flag_ind.end() ), index_flag_ind.end() );
-            
-            std::sort( index_flag_ind_s.begin(), index_flag_ind_s.end() );
-            index_flag_ind_s.erase( unique( index_flag_ind_s.begin(), index_flag_ind_s.end() ), index_flag_ind_s.end() );
-            return true;
-        }
-    }
-    return false;
-}
-
 
 void parseIndexFlags(const String& s){
     bool er=true;
@@ -185,17 +154,12 @@ void parseIndexFlags(const String& s){
             continue;
         }
         
-        if(setIndexFlagAdjust(tokens[i])){
-            er=false;
-            continue;
-        }
-            
-        if(setIndexFlagInd(tokens[i])){
+        if(existsInMap(INDEX_FLAGS_M, tokens[i])){
+            INDEX_FLAGS |= INDEX_FLAGS_M[tokens[i]];
             er=false;
             continue;
         }
         if(er){printErrorLog("Invalid index flag: "+tokens[i]);Exit(1);}
-    
     }
 }
 
@@ -204,12 +168,12 @@ void printIndexFlags(){
     std::cout<< "Width: "<<index_field_length<<NEW_LINE;
     std::cout<< "Filler: "<<IFF<<NEW_LINE;
     std::cout<< "Precision: "<<IFP.get_str()<<NEW_LINE;
-    std::cout<< "Adjust field: "+index_flag_adjust_s+NEW_LINE;
-    std::cout<< "Other flags: ";
-    for(int i=0;i<(int)index_flag_ind_s.size();i++){
-        std::cout<< index_flag_ind_s[i];
-        if(i<(int)index_flag_ind_s.size()-1){std::cout<< ", ";}
-        }
+    //~ std::cout<< "Adjust field: "+index_flag_adjust_s+NEW_LINE;
+    //~ std::cout<< "Other flags: ";
+    //~ for(int i=0;i<(int)index_flag_ind_s.size();i++){
+        //~ std::cout<< index_flag_ind_s[i];
+        //~ if(i<(int)index_flag_ind_s.size()-1){std::cout<< ", ";}
+        //~ }
     std::cout<< NEW_LINE;
     
     }
@@ -331,21 +295,25 @@ String processExtendedNameString_d(const String& ns,std::map<String,Double>& ns_
                 Exit(1);
             } else continue;
         }
-        if(delim2!=""){///This tells us to convert the delim based rules to delim2 based rules, no further processing
+        if(!delim2.empty()){///This tells us to convert the delim based rules to delim2 based rules, no further processing
             name=replaceString(name,total,replaceStringAll(total,delim,delim2));
             continue;
         }
         if(exn=="b"){///Base conversion
             base=std::stoi(exv);
-            String tmp = toString(ns_rules[rule],base, index_field_length,0,IFF,INDEX_FLAGS);
+            String tmp = toString(ns_rules[rule],base, index_field_length,IFP,IFF,INDEX_FLAGS);
             tmp=sanitizeStringForRegex(tmp,sanitize);
             name=replaceString(name,total,tmp);
         } else if(exn=="s"){///scientific conversion
-            String tmp = toString(ns_rules[rule],base, index_field_length,0,IFF,std::ios::scientific|INDEX_FLAGS);
+            String tmp = toString(ns_rules[rule],base, index_field_length,IFP,IFF,std::ios::scientific|INDEX_FLAGS);
             tmp=sanitizeStringForRegex(tmp,sanitize);
             name=replaceString(name,total,tmp);
         } else if(exn=="l"){///Latin conversion
-            String tmp = toString(ns_rules[rule],base, index_field_length,0,IFF,INDEX_FLAGS,true);
+            String tmp = toString(ns_rules[rule],base, index_field_length,IFP,IFF,INDEX_FLAGS,true);
+            tmp=sanitizeStringForRegex(tmp,sanitize);
+            name=replaceString(name,total,tmp);
+        } else if(exn.empty()){
+            String tmp = toString(ns_rules[rule],base, index_field_length,IFP,IFF,INDEX_FLAGS);
             tmp=sanitizeStringForRegex(tmp,sanitize);
             name=replaceString(name,total,tmp);
         }
