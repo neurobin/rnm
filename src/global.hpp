@@ -69,29 +69,9 @@
 #include <gmpxx.h> //mpf_class, mpz_class
 #include "strnatcmp.hpp"
 #include "/home/jahid/Git/Github/jpcre2/jpcre2/src/jpcre2.hpp"
+#include "proto.hpp"
+#include "futil.hpp"
 
-//forward decl
-class File;
-
-/////typedefs
-typedef uint_fast64_t Uint;
-typedef uint_fast8_t Ush;
-typedef int_fast16_t Short;
-typedef mpf_class Double;
-typedef mpz_class Int;
-typedef char Char;
-typedef std::string String;
-typedef std::ios_base::fmtflags IOFormatFlag;
-typedef std::vector<IOFormatFlag> IOFormatFlagArray;
-typedef std::vector<String> StringArray;
-typedef std::vector<String> NameList;
-typedef std::vector<Int> IntVec;
-typedef std::vector<Uint> UintVec;
-typedef std::fstream FileStream;
-typedef jpcre2::select<char> jp;
-typedef std::vector<jp::Regex> RegexArray;
-typedef std::vector<bool> BoolArray;
-typedef std::vector<File> FileArray;
 
 thread_local static std::ostringstream oss_buffer;
 
@@ -176,11 +156,19 @@ String LOG_DIR_PARENT=HOME+"/.cache/neurobin";
 String LOG_DIR=LOG_DIR_PARENT+"/rnm";
 String LOG_DIR_UNDO=LOG_DIR+"/unrec";
 String ERROR_LOG=LOG_DIR+"/errors.log";
+FileStream ERROR_LOG_F;
 String OUT_LOG=LOG_DIR+"/out.log";
+FileStream OUT_LOG_F;
+String RNM_LOCK_FILE = LOG_DIR + ".lock";
+futil::FileStream RNM_LOCK_FILE_F;
 String RNM_FILE_LOG_L=LOG_DIR_UNDO+"/rfl.l";
+FileStream RNM_FILE_LOG_L_F;
 String RNM_FILE_LOG_R=LOG_DIR_UNDO+"/rfl.r";
+FileStream RNM_FILE_LOG_R_F;
 String RNM_FILE_LOG_L_TMP=RNM_FILE_LOG_L+".tmp";
+FileStream RNM_FILE_LOG_L_TMP_F;
 String RNM_FILE_LOG_R_TMP=RNM_FILE_LOG_R+".tmp";
+FileStream RNM_FILE_LOG_R_TMP_F;
 String NSF_LIST_FILE=LOG_DIR+"/nsf.list";
 
 /////Name string related

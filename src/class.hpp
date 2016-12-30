@@ -150,13 +150,13 @@ String lsperms(int mode)
     return(String(bits));
 }
 
-class DirectoryIndex{
-    
-    public:
-    
+struct DirectoryIndex{
     Double directory_index,directory_index_rd,directory_reverse_index,directory_reverse_index_rd;
+    Int IFL;
+    
     
     DirectoryIndex(){
+        init();
         directory_index=DIRECTORY_INDEX;
         directory_index_rd=DIRECTORY_INDEX;
         directory_reverse_index=DIRECTORY_REVERSE_INDEX;
@@ -165,6 +165,7 @@ class DirectoryIndex{
         
         
     DirectoryIndex(const Double& di, const Double& dri){
+        init();
         directory_index=di;
         directory_index_rd=di;
         directory_reverse_index=dri;
@@ -173,6 +174,7 @@ class DirectoryIndex{
         
         
     DirectoryIndex(const Double& di){
+        init();
         directory_index=di;
         directory_index_rd=di;
         directory_reverse_index=di;
@@ -180,6 +182,10 @@ class DirectoryIndex{
         }
     
     
+    private:
+    void init(){
+        IFL = index_field_length;
+    }
     
 };
 

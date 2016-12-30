@@ -79,43 +79,43 @@ int main(){
       //~ sleep(1);
    //~ }
    
-    //~ const char* file = "/home/jahid/test1/index.html";
-    //~ int fd;
-    //~ struct flock lock;
+    const char* file = "/home/jahid/test1/index.html";
+    int fd;
+    struct flock lock;
 
-    //~ printf ("opening %s\n", file);
-    //~ /* Open a file descriptor to the file. */
-    //~ fd = open (file, O_RDWR);
-    //~ printf ("locking\n");
-    //~ /* Initialize the flock structure. */
-    //~ //memset (&lock, 0, sizeof(lock));
-    //~ lock.l_type = F_WRLCK;
-    //~ lock.l_whence = SEEK_SET;
-    //~ /* Place a write lock on the file. */
-    //~ if(fcntl (fd, F_SETLKW, &lock) == -1){
-        //~ if (errno == EACCES || errno == EAGAIN) {
-            //~ printf("Already locked by another process\n");
-
-
-            //~ /* We cannot get the lock at the moment */
+    printf ("opening %s\n", file);
+    /* Open a file descriptor to the file. */
+    fd = open (file, O_RDWR);
+    printf ("locking\n");
+    /* Initialize the flock structure. */
+    //memset (&lock, 0, sizeof(lock));
+    lock.l_type = F_WRLCK;
+    lock.l_whence = SEEK_SET;
+    /* Place a write lock on the file. */
+    if(fcntl (fd, F_SETLKW, &lock) == -1){
+        if (errno == EACCES || errno == EAGAIN) {
+            printf("Already locked by another process\n");
 
 
-        //~ } else {
-            //~ /* Handle unexpected error */;
-        //~ }
-    //~ }else { /* Lock was granted... */
+            /* We cannot get the lock at the moment */
 
-    //~ printf ("locked; hit Enter to unlock... ");
-    //~ /* Wait for the user to hit Enter. */
-    //~ getchar ();
 
-    //~ printf ("unlocking\n");
-    //~ /* Release the lock. */
-    //~ lock.l_type = F_UNLCK;
-    //~ fcntl (fd, F_SETLKW, &lock);
+        } else {
+            /* Handle unexpected error */;
+        }
+    }else { /* Lock was granted... */
 
-    //~ close (fd);
-    //~ }
+    printf ("locked; hit Enter to unlock... ");
+    /* Wait for the user to hit Enter. */
+    getchar ();
+
+    printf ("unlocking\n");
+    /* Release the lock. */
+    lock.l_type = F_UNLCK;
+    fcntl (fd, F_SETLKW, &lock);
+
+    close (fd);
+    }
 
     //~ String s1 = "3jlfsd.fds3[]$ [ffds]er[][sd][[f]sd\\[\\]";
     //~ String s2 = sanitizeRegexString(s1);
@@ -123,23 +123,23 @@ int main(){
     //~ std::cout<< jp::Regex(s2).match(s1,"g");
 
 
-    DirectoryIndex di;
+    //~ DirectoryIndex di;
 
 
 
-    std::cout<<parseNameString("/i-s-3342//pd0-2+/",file1,di,"/","", false);
+    //~ std::cout<<parseNameString("/i-s-3342//pd0-2+/",file1,di,"/","", false);
 
     //~ std::cout<<processExtendedPdNameStringRule("/pd0-w%/", file1,"/","",0);
     
-    String reps = R"(\67\{78}fdsjfkj${} \$\${name} fds lk\{name} & \&)";
+    //~ String reps = R"(\67\{78}fdsjfkj${} \$\${name} fds lk\{name} & \&)";
 
-    std::cout<<"\nreps: "<<processReplacementString(reps);
-    std::cout<<"\n#########################\n";
+    //~ std::cout<<"\nreps: "<<processReplacementString(reps);
+    //~ std::cout<<"\n#########################\n";
     
-    String rs = "//fn//e//&$1/gilf;/fsd//fn/fds&/";
-    StringArray rsa;
-    rsa.push_back(rs);
-    parseReplaceString(rsa, file1, di);
+    //~ String rs = "//fn//e//&$1/gilf;/fsd//fn/fds&/";
+    //~ StringArray rsa;
+    //~ rsa.push_back(rs);
+    //~ parseReplaceString(rsa, file1, di);
     
     //~ try{
         //~ Double x("fds");
@@ -148,9 +148,9 @@ int main(){
     //~ }
     
     
-    for(size_t i=0;i<rs_search.size();++i){
-        std::cout<<"\nrs_s: "<<rs_search[i]<<"\trs_r: "<<rs_replace[i]<<"\trs_m: "<<rs_mod[i];
-    }
+    //~ for(size_t i=0;i<rs_search.size();++i){
+        //~ std::cout<<"\nrs_s: "<<rs_search[i]<<"\trs_r: "<<rs_replace[i]<<"\trs_m: "<<rs_mod[i];
+    //~ }
 
     return 0;
     } catch(const std::exception& e){

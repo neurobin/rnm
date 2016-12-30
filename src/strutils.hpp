@@ -62,13 +62,13 @@ String toLower(const String& s, const char* loc_s = 0){
 
 
 String toLower0(String s){
-    for(size_t i=0;i<s.length();i++){s[i]=tolower(s[i]);}
+    for(size_t i=0;i<s.length();i++){s[i]=::tolower(s[i]);}
     return s;
 }
 
 
 String toUpper0(String s){
-    for(size_t i=0;i<s.length();i++){s[i]=toupper(s[i]);}
+    for(size_t i=0;i<s.length();i++){s[i]=::toupper(s[i]);}
     return s;
 }
 

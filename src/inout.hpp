@@ -41,9 +41,6 @@ template<typename T>
 void print(const T& s){ std::cout<<NEW_LINE<<s<<NEW_LINE;}
 
 
-void Exit(int a){ std::exit(a); }
-
-
 void getLine(String& s){ std::getline(std::cin, s); }
 
 String getCurrentDir(void){
@@ -68,49 +65,64 @@ String prepareLogDir(){
     return String(strerror(errno));
 }
 
-
-
-String appendToFile(const String& filename, const String& str){
-    FileStream file;
-    file.open(filename.c_str(),std::ios::app);
-    file<<str;
-    file.close();
+String openLogFiles(){
+    //~ RNM_FILE_LOG_L_F.open(RNM_FILE_LOG_L.c_str(), std::ios::binary | std::ios::out);
+    //~ RNM_FILE_LOG_R_F.open(RNM_FILE_LOG_R.c_str(), std::ios::binary | std::ios::out);
+    RNM_FILE_LOG_L_TMP_F.open(RNM_FILE_LOG_L_TMP.c_str(), std::ios::binary | std::ios::out);
+    RNM_FILE_LOG_R_TMP_F.open(RNM_FILE_LOG_R_TMP.c_str(), std::ios::binary | std::ios::out);
+    ERROR_LOG_F.open(ERROR_LOG.c_str(), std::ios::app);
+    OUT_LOG_F.open(OUT_LOG.c_str(), std::ios::app);
+    RNM_LOCK_FILE_F.open(RNM_LOCK_FILE, "w+b");
+    if(!RNM_LOCK_FILE_F.setLock()){
+        errorExit("Couldn't get lock. Another "+project_name+" process is running on current directory. Let it finish first. Abort.", false);
+    }
     return strerror(errno);
 }
 
+void closeLogFiles(){
+    RNM_FILE_LOG_L_TMP_F.close();
+    RNM_FILE_LOG_R_TMP_F.close();
+    ERROR_LOG_F.close();
+    OUT_LOG_F.close();
+    RNM_LOCK_FILE_F.close();
+}
 
-String printErrorLog(String str){
+void cleanFiles(){
+    std::remove(RNM_FILE_LOG_L_TMP.c_str());
+    std::remove(RNM_FILE_LOG_R_TMP.c_str());
+    std::remove(RNM_LOCK_FILE.c_str());
+}
+
+void printErrorLog(String str){
     str="E: "+str;
     std::cerr<<str+NEW_LINE;
     time_t now = time(0);
     char* dt = ctime(&now);
-    return appendToFile(ERROR_LOG,str+"\t\t\t\t@"+dt);
-    
+    ERROR_LOG_F<<str+"\t\t\t\t@"+dt;
 }
 
 
-String printWarningLog(String str){
+void printWarningLog(String str){
     str="W: "+str;
     if(!quiet){std::cerr<<str+NEW_LINE;}
     time_t now = time(0);
     char* dt = ctime(&now);
-    return appendToFile(ERROR_LOG,str+"\t\t\t\t@"+dt)+appendToFile(OUT_LOG,str+"\t\t\t\t@"+dt);
-    
+    ERROR_LOG_F<<str+"\t\t\t\t@"+dt;
+    OUT_LOG_F<<str+"\t\t\t\t@"+dt;
 }
 
     
-String printOutLog(const String& str){
+void printOutLog(const String& str){
     if(!quiet)std::cout<<NEW_LINE+str+NEW_LINE;
     time_t now = time(0);
     char* dt = ctime(&now);
-    return appendToFile(OUT_LOG,str+"\t\t        @"+dt);
-
+    OUT_LOG_F<<str+"\t\t        @"+dt;
 }
 
 
-void errorExit(const String& s){
+void errorExit(const String& s, bool cleanfs){
     printErrorLog(s);
-    Exit(1);
+    Exit(1, cleanfs);
 }
 
 
@@ -141,18 +153,8 @@ void finalizeRFL(){
 
 
 String appendToRFLTMP(const String& str1,const String& str2){
-    
-    const char* filename_l=RNM_FILE_LOG_L_TMP.c_str();
-    const char* filename_r=RNM_FILE_LOG_R_TMP.c_str();
-    FileStream file;
-    file.open(filename_l,std::ios::binary | std::ios::app);
-    file<<str1;file<<'\0';
-    file.close();
-    
-    file.open(filename_r,std::ios::binary | std::ios::app);
-    file<<str2;file<<'\0';
-    file.close();
-    finalizeRFL();
+    RNM_FILE_LOG_L_TMP_F<<str1<<'\0';
+    RNM_FILE_LOG_R_TMP_F<<str2<<'\0';
     return strerror(errno);
 
 }
@@ -284,6 +286,27 @@ NameList getNameListFromFile(const String& filename, Uint si, Uint ei,
     if(reverse) std::reverse(list.begin(), list.end());
     return list;
 }
+
+
+
+void cleanup(bool cleanfs){
+    closeLogFiles();
+    finalizeRFL();
+    if(cleanfs) cleanFiles();
+}
+
+struct Except: virtual public std::exception{
+    int status;
+    explicit Except(int a): status(a)
+    {}
+    virtual ~Except() throw () {}
+};
+
+void Exit(int a, bool cleanfs){
+    cleanup(cleanfs);
+    throw Except(a);
+}
+
 
 
 #endif

@@ -79,24 +79,22 @@ bool undoRename(){
     file_l.open(RNM_FILE_LOG_L,std::ios::binary | std::ios::in);
     file_r.open(RNM_FILE_LOG_R,std::ios::binary | std::ios::in);
     if(file_l.good() && file_r.good()){
-    while(std::getline(file_l,l,'\0') && std::getline(file_r,r,'\0')){
-        left.push_back(l);right.push_back(r);
+        while(std::getline(file_l,l,'\0') && std::getline(file_r,r,'\0')){
+            left.push_back(l);right.push_back(r);
         }
-    file_l.close();file_r.close();
-    for(size_t i=left.size()-1;i>=0;i--){
-        ///do rename and log into rfl
-        if(!quiet){std::cout<< NEW_LINE+right[i]+"    ---->    "+left[i]+NEW_LINE;}
-        Rename(right[i],left[i],di);
+        file_l.close();file_r.close();
+        std::reverse(left.begin(), left.end());
+        std::reverse(right.begin(), right.end());
+        for(size_t i=0;i<left.size();++i){
+            ///do rename and log into rfl
+            if(!quiet){std::cout<< NEW_LINE+right[i]+"    ---->    "+left[i]+NEW_LINE;}
+            Rename(right[i],left[i],di);
         }
-    
-    return true;
-    }
-    
-    else {
-        printErrorLog("Undo failed. Required log files not found.");
+        return true;
+    } else {
+        printErrorLog("Undo failed. Required log files not found");
         return false;
     }
-    
 }
 
 
@@ -278,7 +276,7 @@ bool isComplyingToSearchString(const File& file){
 
 
 
-String processExtendedNameString_d(const String& ns,std::map<String,Double>& ns_rules,Int ifl,
+String processExtendedNameString_d(const String& ns,std::map<String,Double>& ns_rules, Int ifl,
                                    const String& delim, const String& delim2,char sanitize, bool ignore_err = false){
     ///_d stands for double
     String name=ns;
@@ -301,19 +299,19 @@ String processExtendedNameString_d(const String& ns,std::map<String,Double>& ns_
         }
         if(exn=="b"){///Base conversion
             base=std::stoi(exv);
-            String tmp = toString(ns_rules[rule],base, index_field_length,IFP,IFF,INDEX_FLAGS);
+            String tmp = toString(ns_rules[rule],base, ifl,IFP,IFF,INDEX_FLAGS);
             tmp=sanitizeStringForRegex(tmp,sanitize);
             name=replaceString(name,total,tmp);
         } else if(exn=="s"){///scientific conversion
-            String tmp = toString(ns_rules[rule],base, index_field_length,IFP,IFF,std::ios::scientific|INDEX_FLAGS);
+            String tmp = toString(ns_rules[rule],base, ifl,IFP,IFF,std::ios::scientific|INDEX_FLAGS);
             tmp=sanitizeStringForRegex(tmp,sanitize);
             name=replaceString(name,total,tmp);
         } else if(exn=="l"){///Latin conversion
-            String tmp = toString(ns_rules[rule],base, index_field_length,IFP,IFF,INDEX_FLAGS,true);
+            String tmp = toString(ns_rules[rule],base, ifl,IFP,IFF,INDEX_FLAGS,true);
             tmp=sanitizeStringForRegex(tmp,sanitize);
             name=replaceString(name,total,tmp);
         } else if(exn.empty()){
-            String tmp = toString(ns_rules[rule],base, index_field_length,IFP,IFF,INDEX_FLAGS);
+            String tmp = toString(ns_rules[rule],base, ifl,IFP,IFF,INDEX_FLAGS);
             tmp=sanitizeStringForRegex(tmp,sanitize);
             name=replaceString(name,total,tmp);
         }
@@ -460,7 +458,7 @@ String parseNameString(const String& ns,const File& file,DirectoryIndex &di, con
         name=processExtendedPdNameStringRule(name,file,delim,delim2,sanitize);  ///file must be the full path
         ///for name string rules like /i-b16/, b16 stands for base 16
         ///this should be the last rules to parse
-        name=processExtendedNameString_d(name,ns_rules,index_field_length,delim,delim2,sanitize,ignore_err);
+        name=processExtendedNameString_d(name,ns_rules,di.IFL,delim,delim2,sanitize,ignore_err);
     } else if(!ignore_err) {
         printErrorLog("Name String can not be empty");
         Exit(1);
@@ -492,12 +490,12 @@ void parseReplaceString(const StringArray &rs,const File& file,DirectoryIndex &d
         if(name != "" && !isATotalMatchWithReplaceStringRegex(name, vn)){
             ///rs[i] may contain name string rules
             ///We must strip the first slash from it before sending it for name string processing.
-            std::cout<<name<<"\n";
+            //~ std::cout<<name<<"\n";
             if(name[0] == '/') 
                 name = name.substr(1, String::npos);
             else
                 errorExit("Invalid replace string format: "+rs[i]);
-            std::cout<<name<<"\n";
+            //~ std::cout<<name<<"\n";
             ///Now encode second_delim, we need to guard the second delim before we convert path_delim rules to second_delim rules
             name = encodeWithDelim(name, second_delim);
             ///convert path_delim rules to second_delim rule
