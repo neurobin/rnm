@@ -99,6 +99,12 @@ String openTmpFiles(){
     return strerror(errno);
 }
 
+String openTmpFilesForAppend(){
+    RNM_FILE_LOG_L_TMP_F.open(RNM_FILE_LOG_L_TMP.c_str(), std::ios::binary | std::ios::app);
+    RNM_FILE_LOG_R_TMP_F.open(RNM_FILE_LOG_R_TMP.c_str(), std::ios::binary | std::ios::app);
+    return strerror(errno);
+}
+
 String openLogFiles(){
     ERROR_LOG_F.open(ERROR_LOG.c_str(), std::ios::app);
     OUT_LOG_F.open(OUT_LOG.c_str(), std::ios::app);
@@ -134,7 +140,7 @@ void cleanFiles(){
 }
 
 void printErrorLog0(String str, const String& fn, size_t line){
-    str="E: (rnm/"+fn+"/"+std::to_string(line)+"/): "+str;
+    str="E: "+str+" (@rnm/"+fn+"/"+std::to_string(line)+")";
     std::cerr<<str+NEW_LINE;
     time_t now = time(0);
     char* dt = ctime(&now);
@@ -144,7 +150,7 @@ void printErrorLog0(String str, const String& fn, size_t line){
 #define printErrorLog(a) printErrorLog0(a, __FILE__, __LINE__)
 
 void printWarningLog0(String str, const String& fn, size_t line){
-    str="W: (rnm/"+fn+"/"+std::to_string(line)+"/): "+str;
+    str="W: "+str+" (@rnm/"+fn+"/"+std::to_string(line)+")";
     if(!quiet){std::cerr<<str+NEW_LINE;}
     time_t now = time(0);
     char* dt = ctime(&now);

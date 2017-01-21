@@ -364,7 +364,7 @@ Int childDepth(const File& parent, File child){
         else{
             childstr=replaceString(dirname(child.path),parent.path+path_delim,String(""));
         }
-        LOG(split(childstr,'/').size()<<"<size")
+        //~ LOG("depth: ("<<parent.path<<"->"<<childstr<<")"<<split(childstr,'/').size())
         return split(childstr,'/').size();
     }
     else return LOWEST_DEPTH;

@@ -61,7 +61,7 @@ bool Rename(const String& oldn,const String& newn,DirectoryIndex &di){
                     if(rename(tmp_log_l.c_str(), RNM_FILE_LOG_L_TMP.c_str())!=0 || rename(tmp_log_r.c_str(), RNM_FILE_LOG_R_TMP.c_str())!=0){
                         printWarningLog("Failed to create log files, undo facility will be broken for this operation.");
                     }
-                    openTmpFiles();
+                    openTmpFilesForAppend();
                     //recreate lock files
                     RNM_LOCK_FILE = RNM_LOCK_FILE_BKP + signature;
                     openLockFile(futil::lock_op::ImmediateLock, true); //closing is done automatically
@@ -297,7 +297,7 @@ String processInfoNameStringRule(const String& ns, const File& file,const String
     multi_re_info.initMatch().setNumberedSubstringVector(&v).setFindAll().match(ns);
     String tot, prop, op;
     for(size_t i=0;i<v.size();++i){
-        std::cout<<"0: "<<v[i][0]<<"\t1: "<<v[i][1]<<"\t2: "<<v[i][2]<<"\n";
+        //~ std::cout<<"0: "<<v[i][0]<<"\t1: "<<v[i][1]<<"\t2: "<<v[i][2]<<"\n";
         tot = v[i][0];
         prop = toLower0(v[i][1]);
         op = v[i][2];
@@ -776,14 +776,15 @@ void showResult(){
 
 
 
-String doRename(const File& file,DirectoryIndex &di){
+File doRename(const File& file,DirectoryIndex &di){
     bool not_skipped=true;
+    File file_to_return = file;
     
-    if(isInvalidFile(file)){return file.path;}
+    if(isInvalidFile(file)){return file_to_return;}
     
     if(ss_search.size()!=0){
         if(!isComplyingToSearchString(file)){
-            return file.path;
+            return file_to_return;
         }
     }
     
@@ -877,11 +878,9 @@ String doRename(const File& file,DirectoryIndex &di){
         }
     }
   }
-    String filename_to_return;
-    if(not_skipped) filename_to_return=dir+path_delim+name;
-    else filename_to_return=file.path;
+    if(not_skipped) file_to_return=File(dir+path_delim+name);
     
-    return filename_to_return;
+    return file_to_return;
 }
 
 
@@ -930,6 +929,7 @@ void startInDepthRenamingTaskOnDirectory(const String& dir,String base_dir=base_
                 
                 files[i]=doRename(file,di);
                 incrementReservedIndexes(di);
+                file = files[i].path;
                 src_name=basename(file);
                 parent=dirname(file);
                 CPDN=getParentDirectoryName(file);
@@ -998,6 +998,7 @@ void startTask(FileArray& files){
                 
                 files[i]=doRename(file,di);
                 incrementReservedIndexes(di);
+                file = files[i].path;
                 src_name=basename(file);
                 parent=dirname(file);
                 CPDN=getParentDirectoryName(file);

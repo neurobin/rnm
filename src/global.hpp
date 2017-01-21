@@ -75,7 +75,7 @@
 //#define RNM_RELEASE //uncomment it when going for production release
 
 #ifndef RNM_RELEASE
-#define LOG(a) std::cout<<a;
+#define LOG(a) std::cout<<a<<"\n";
 #else
 #define LOG(a) 
 #endif
