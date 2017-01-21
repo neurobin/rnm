@@ -33,10 +33,6 @@
 #include "func.hpp"
 
 
-void signalHandler( int signum ) { 
-    Exit(1);
-}
-
 void checkArgAvailability(const StringArray& sa,int i){
     if(i>=(int)sa.size()){
         printErrorLog("One or more argument/s missing");
@@ -45,7 +41,12 @@ void checkArgAvailability(const StringArray& sa,int i){
 }
 
 int main(int argc, char* argv[]) {
-    signal(SIGINT, signalHandler); 
+    signal(SIGINT, signalHandler);      //interactive attention signal
+    signal(SIGABRT, signalHandler);     //Abort , abnormal termination
+    signal(SIGFPE, signalHandler);      //Erroneous Arithmetic operation
+    signal(SIGILL, signalHandler);      //Illigal instruction
+    signal(SIGSEGV, signalHandler);     //Invalid access of storage
+    signal(SIGTERM, signalHandler);     //A termination request
     try{
         ///The following must be the first line
         self_dir = getCurrentDir();
@@ -288,7 +289,7 @@ int main(int argc, char* argv[]) {
                 } else if(opt=="-dp"||opt=="--depth"){
                   checkArgAvailability(args,i+1); 
                   depth=getIntOrExit("Depth",args[i+1]);
-                  if(depth<0){depth=std::numeric_limits<Int>::max();}
+                  if(depth<0){depth=std::numeric_limits<size_t>::max();}
                   skipcount=true; 
                   dp_obj.count++;
                   if(dp_obj.count>1){printWarningLog("Directory depth overwritten");}

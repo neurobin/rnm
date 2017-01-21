@@ -37,17 +37,37 @@
 #include "global.hpp"
 
 
+void signalHandler( int signum ) { 
+    Exit(1);
+}
+
+void unsafeExitSignalHandler(int signum){
+    unsafeExit(1);
+}
+
+struct Except: virtual public std::exception{
+    int status;
+    explicit Except(int a): status(a)
+    {}
+    virtual ~Except() throw () {}
+};
+
 template<typename T>
 void print(const T& s){ std::cout<<NEW_LINE<<s<<NEW_LINE;}
 
 
-void getLine(String& s){ std::getline(std::cin, s); }
+void getLine(String& s){
+    std::cin.clear();
+    //~ std::cin.ignore(std::numeric_limits<std::streamsize>::max());
+    std::getline(std::cin, s);
+}
+
 
 String getCurrentDir(void){
     char c[PATH_MAX];
     char * ptr = getcwd(c, sizeof(c)/sizeof(char));
     if(ptr) return String(c);
-    else return String();
+    else return ".";
 }
 
 
@@ -147,8 +167,10 @@ String copyFile2(const String& src,const String& dst){
 
 
 void finalizeRFL(){
-    copyFile2(RNM_FILE_LOG_L_TMP,RNM_FILE_LOG_L);
-    copyFile2(RNM_FILE_LOG_R_TMP,RNM_FILE_LOG_R);
+    if(rnc > 0 && !simulation){//do this only if files were actually renamed
+        copyFile2(RNM_FILE_LOG_L_TMP,RNM_FILE_LOG_L);
+        copyFile2(RNM_FILE_LOG_R_TMP,RNM_FILE_LOG_R);
+    }
 }
 
 
@@ -171,14 +193,16 @@ Your choice (#?): \
     while(true){
         std::cout<<msg;
         String s;
+        signal(SIGINT, unsafeExitSignalHandler); //agressive exit needed
         getLine(s);
+        signal(SIGINT, signalHandler); //restore to safe signal handler
         if(s.length()!=1) s="-"+s;
         switch(s[0]){
             case '1': return 1;
             case '2': return 2;
             case '3': return 3;
             case '4': return 4;
-            default: std::cerr<<"\nInvalid choice!\n";
+            default: std::cerr<<"\nInvalid choice!\n";break;
         }
     }
 }
@@ -295,12 +319,11 @@ void cleanup(bool cleanfs){
     if(cleanfs) cleanFiles();
 }
 
-struct Except: virtual public std::exception{
-    int status;
-    explicit Except(int a): status(a)
-    {}
-    virtual ~Except() throw () {}
-};
+
+void unsafeExit(int a, bool cleanfs){
+    cleanup(cleanfs);
+    std::exit(a);
+}
 
 void Exit(int a, bool cleanfs){
     cleanup(cleanfs);

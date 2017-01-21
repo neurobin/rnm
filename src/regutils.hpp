@@ -43,7 +43,7 @@ jp::Regex repl_sanit_re(R"(\\(\d+|\{[^}]+\}))",0,jpcre2::JIT_COMPILE);
 jp::Regex repl_sanit_dol_re(R"(\\\$|\$(?!\d+|\{[^}]+\}))", 0, jpcre2::JIT_COMPILE);
 jp::Regex repl_sanit_and_re(R"((?<!\\)&)");
 jp::Regex multi_rre (R"(\s*/([^/]*?)/([^/]*?)/\s*([^/;]*)\s*(;\s*|$))",0,jpcre2::JIT_COMPILE);
-
+jp::Regex multi_re_info(R"(/info-([^/-]+)-?([^/]*)/)","ejS");
 
 
 size_t countMatchInRegex(const String& s,const String& re){

@@ -12,20 +12,20 @@
     
 
 
-void signalHandler( int signum ) {
-   Exit(1);
-}
+//~ void signalHandler( int signum ) {
+   //~ Exit(1);
+//~ }
 
 int main(){
-    try{
-    signal(SIGINT, signalHandler);  
+    //~ try{
+    //~ signal(SIGINT, signalHandler);  
     //~ std::cout<< futil::io_t::W;
     
-    futil::FileStream file, file1;
+    //~ futil::FileStream file, file1;
     
-    file.open("/home/jahid/Git/Github/neurobin/rnm/src/test.txt", "w+b");
+    //~ file.open("/home/jahid/Git/Github/neurobin/rnm/src/test.txt", "w+b");
     
-    if(file) std::cout<<"good\n";
+    //~ if(file) std::cout<<"good\n";
     
     //~ if(file.setLock()){
         //~ std::cout<<"Locked\n";
@@ -33,17 +33,17 @@ int main(){
         //~ std::cout<<"Couldn't lock";
     //~ }
     
-    while (1) {
-        if(file.setLock()){
-            std::cout<<"locked\n";
-            file<<"locked\n";
-            file.flush();
-            sleep(5);
-        } else {
-            std::cout<<"waiting\n";
-            sleep(2);
-        }
-    }
+    //~ while (1) {
+        //~ if(file.setLock()){
+            //~ std::cout<<"locked\n";
+            //~ file<<"locked\n";
+            //~ file.flush();
+            //~ sleep(5);
+        //~ } else {
+            //~ std::cout<<"waiting\n";
+            //~ sleep(2);
+        //~ }
+    //~ }
     //~ file1.open("/home/jahid/Git/Github/neurobin/rnm/src/test.txt", futil::io_t::W);
     //~ std::cout<<strerror(file1.getStatus());
     
@@ -52,11 +52,11 @@ int main(){
     //~ } else {
         //~ std::cout<<"Couldn't lock";
     //~ }
-    } catch (const Except& e){
-        return e.status;
-    }
+    //~ } catch (const Except& e){
+        //~ return e.status;
+    //~ }
     
-    return 0;
+    //~ return 0;
 }
 
 

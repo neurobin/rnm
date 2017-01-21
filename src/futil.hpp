@@ -121,7 +121,7 @@ namespace futil{
             lock.l_type = lock_t::UnLock;
             int ret = fcntl(fd, lop, &lock);
             lock_status = errno;
-            std::cout<<"unlocked\n";
+            //~ std::cout<<"unlocked\n";
             return (ret != -1);
         }
         

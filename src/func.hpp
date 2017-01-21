@@ -234,6 +234,103 @@ void parseSearchString(String ss, size_t index){
 }
 
 
+String processSize(const String& subj, const String& repl, const Double& size, const String& unit_s, const String& errm, char sanitize){
+    String res = subj;
+    Double unit;
+    if(!unit_s.empty())
+        unit = getNumberOrExit(errm, unit_s);
+    else
+        unit = 0;
+    return replaceString(res, repl, sanitizeStringForRegex(getSizeByUnit(size, unit), sanitize));
+}
+
+///Info Name String Rule.
+///This name string rule provides various information about a file: modification time, size, permission etc.
+///The general format of this rule is: `/info-propertyname-additional part/`
+///This name string rule starts with `/info-` and ends with `/`
+///The second part of the string is the property name (access time, modification time, size etc..). Property names are case insensitive
+///The third part of the string is optional and used for pre-formatting the property in a desirable way.
+///Property Name | Details | Additional part
+///------------- | ------- | ---------
+///mtime | Last file modification time (local time) | [Time format](http://man7.org/linux/man-pages/man3/strftime.3.html#DESCRIPTION) (e.g: %d-%m-%Y)
+///atime | Last file access time (local time) | [Time format](http://man7.org/linux/man-pages/man3/strftime.3.html#DESCRIPTION) (e.g: %d-%m-%Y)
+///ctime | Last status change time (local time) | [Time format](http://man7.org/linux/man-pages/man3/strftime.3.html#DESCRIPTION) (e.g: %d-%m-%Y)
+///mtime,GMT | Last file modification time (GMT) | [Time format](http://man7.org/linux/man-pages/man3/strftime.3.html#DESCRIPTION) (e.g: %d-%m-%Y)
+///atime,GMT | Last file access time (GMT) | [Time format](http://man7.org/linux/man-pages/man3/strftime.3.html#DESCRIPTION) (e.g: %d-%m-%Y)
+///ctime,GMT | Last status change time (GMT) | [Time format](http://man7.org/linux/man-pages/man3/strftime.3.html#DESCRIPTION) (e.g: %d-%m-%Y)
+///size | Size of the file | Divide by unit (a positive number, e.g: 1024)
+///blksize | Block size of filesystem I/O | Divide by unit (a positive number, e.g: 1024)
+///blocks | Number of 512B blocks | N/A
+///perm | Permission of the file | 'oct' for octal permission, 'ls' for human readable permission scheme like the 'ls' command on Linux
+///uid | User ID of the owner | N/A
+///gid | Group ID of the owner | N/A
+///dev | Devic ID of the device containing the file | N/A
+///inode | inode number | N/A
+///mode | File mode | N/A
+///nlink | Number of hard links | N/A
+String processInfoNameStringRule(const String& ns, const File& file,const String& delim, const String& delim2,char sanitize){
+    String res = ns;
+    jp::VecNum v;
+    multi_re_info.initMatch().setNumberedSubstringVector(&v).setFindAll().match(ns);
+    String tot, prop, op;
+    for(size_t i=0;i<v.size();++i){
+        std::cout<<"0: "<<v[i][0]<<"\t1: "<<v[i][1]<<"\t2: "<<v[i][2]<<"\n";
+        tot = v[i][0];
+        prop = toLower0(v[i][1]);
+        op = v[i][2];
+        
+        if(!delim2.empty()){///This tells us to convert the delim based rules to delim2 based rules, no further processing
+            res = replaceString(res, tot, replaceStringAll(tot,delim,delim2));
+            continue;
+        }
+        
+        if("mtime" == prop){
+            res = replaceString(res, tot, sanitizeStringForRegex(formatTime(file.mtime, op), sanitize));
+        } else if("mtime,gmt" == prop){
+            res = replaceString(res, tot, sanitizeStringForRegex(formatTime(file.mtime, op, 'g'), sanitize));
+        } else if("atime" == toLower0(prop)){
+            res = replaceString(res, tot, sanitizeStringForRegex(formatTime(file.atime, op), sanitize));
+        } else if("atime,gmt" == prop){
+            res = replaceString(res, tot, sanitizeStringForRegex(formatTime(file.atime, op, 'g'), sanitize));
+        } else if("ctime" == prop){
+            res = replaceString(res, tot, sanitizeStringForRegex(formatTime(file.ctime, op), sanitize));
+        } else if("ctime,gmt" == prop){
+            res = replaceString(res, tot, sanitizeStringForRegex(formatTime(file.ctime, op, 'g'), sanitize));
+        } else if("size" == prop){
+            res = processSize(res, tot, file.size, op, "Unit of size", sanitize);
+        } else if("blksize" == prop){
+            res = processSize(res, tot, file.blksize, op, "Unit of blksize", sanitize);
+        } else if("blocks" == prop){
+            res = replaceString(res, tot, sanitizeStringForRegex(std::to_string(file.blocks), sanitize));
+        } else if("perm" == prop){
+            if("ls" == op)
+                res = replaceString(res, tot, sanitizeStringForRegex(file.perm_ls, sanitize));
+            else if("oct" == op)
+                res = replaceString(res, tot, sanitizeStringForRegex(file.perm_oct, sanitize));
+            else
+                res = replaceString(res, tot, sanitizeStringForRegex(file.perm, sanitize));
+        } else if("uid" == prop){
+            res = replaceString(res, tot, sanitizeStringForRegex(file.uid, sanitize));
+        } else if("gid" == prop){
+            res = replaceString(res, tot, sanitizeStringForRegex(file.gid, sanitize));
+        } else if("dev" == prop){
+            res = replaceString(res, tot, sanitizeStringForRegex(file.dev, sanitize));
+        } else if("inode" == prop){
+            res = replaceString(res, tot, sanitizeStringForRegex(file.inode, sanitize));
+        } else if("mode" == prop){
+            res = replaceString(res, tot, sanitizeStringForRegex(file.mode, sanitize));
+        } else if("nlink"){
+            res = replaceString(res, tot, sanitizeStringForRegex(file.nlink, sanitize));
+        } else {
+            errorExit("Invalid info property name: "+prop);
+        }
+    }
+    return res;
+}
+
+
+
+
 bool isInvMatch(const String& mod){
     if(stringContains(mod, "!")) return true;
     else return false;
@@ -456,6 +553,10 @@ String parseNameString(const String& ns,const File& file,DirectoryIndex &di, con
         //~ }
         ///Process /pd/ along with extended pd name string rules
         name=processExtendedPdNameStringRule(name,file,delim,delim2,sanitize);  ///file must be the full path
+        
+        ///process /info-../ 
+        name = processInfoNameStringRule(name,file,delim,delim2,sanitize);
+        
         ///for name string rules like /i-b16/, b16 stands for base 16
         ///this should be the last rules to parse
         name=processExtendedNameString_d(name,ns_rules,di.IFL,delim,delim2,sanitize,ignore_err);

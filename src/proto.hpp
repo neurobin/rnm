@@ -58,6 +58,7 @@ typedef std::vector<File> FileArray;
 
 //function prototypes
 void Exit(int, bool cleanfs=true);
+void unsafeExit(int, bool cleanfs=true);
 void errorExit(const String& s, bool cleanfs=true);
 
 

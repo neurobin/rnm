@@ -377,7 +377,8 @@ String toString(const Double& x, Ush base, Int ifl, const Int& prec, const Strin
 
 
 String getSizeByUnit(   const Double& x, 
-                        Double unit,
+                        Double unit, //if unit is 0, we will find a suitable unit
+                        bool add_unit_s = true,
                         Ush base = NUM_BASE_DEFAULT,
                         const Int& ifl = 0,
                         const Int& prec = 0,
@@ -395,11 +396,13 @@ String getSizeByUnit(   const Double& x,
         else if(ax >= KB)  unit = KB;
         else               unit = 1;
     }
-    if(unit >= TB)      unit_s = "TB";
-    else if(unit >= GB) unit_s = "GB";
-    else if(unit >= MB) unit_s = "MB";
-    else if(unit >= KB) unit_s = "KB";
-    else if(unit >= 1)  unit_s = "B";
+    if(add_unit_s){
+        if(unit == TB)      unit_s = "TB";
+        else if(unit == GB) unit_s = "GB";
+        else if(unit == MB) unit_s = "MB";
+        else if(unit == KB) unit_s = "KB";
+        else if(unit == 1)  unit_s = "B";
+    }
     return toString(x/unit,base,ifl, prec, iff, flags, latin) +delim+ unit_s;
 }
 

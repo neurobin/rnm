@@ -1,26 +1,11 @@
-#include <iostream>
-#include <jpcre2.hpp>
-#include <string>
+#include "func.hpp"
 
-typedef std::string String;
-typedef jpcre2::select<char> jp;
 
-bool isComplyingToRegex(String& s, jp::Regex &re){
-    String total="";
-    jp::VecNum v;
-    re.initMatch().setNumberedSubstringVector(&v).setFindAll();
-    re.match(s);
-    for(size_t i = 0; i < v.size(); ++i) {
-        std::cout<<"\n\t"<<v[i][0]<<"\t\t"<<total;
-        total += v[i][0];
-    }
-    return (s == total);
-}
 
 
 int main(){
-    String name="/jk/me/gi;/fds/fsd/g;/hj/hj";
-    String pat = R"(\s*/([^/]*)/([^/]*)/\s*([gi]{0,2})\s*([;]\s*|$))";
-    jp::Regex multi_re (pat);
-    std::cout<< isComplyingToRegex(name,multi_re);
+    File file("/home/jahid/Git/Github/neurobin/rnm/src/test.txt");
+    std::cout<<"size: "<<file.dev;
+    std::cout<<processInfoNameStringRule("/info-mtime,gmt-%d-%m-%Y/@/info-atime-%d-%Y/ size: /info-blksize-1/perm: /info-perm-ls/ dev: /info-dev/", file);
+    return 0;
 }
