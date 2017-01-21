@@ -38,7 +38,6 @@
 #include "regutils.hpp"
 
 
-
 bool Rename(const String& oldn,const String& newn,DirectoryIndex &di){
     bool success=false;
     if(File(newn)){
@@ -53,15 +52,8 @@ bool Rename(const String& oldn,const String& newn,DirectoryIndex &di){
                     String signature = getPathSignature(newn);
                     
                     //recreate tmp files
-                    closeTmpFiles();
-                    String tmp_log_l = RNM_FILE_LOG_L_TMP;
-                    String tmp_log_r = RNM_FILE_LOG_R_TMP;
-                    RNM_FILE_LOG_L_TMP = RNM_FILE_LOG_L_TMP_BKP + signature;
-                    RNM_FILE_LOG_R_TMP = RNM_FILE_LOG_R_TMP_BKP + signature;
-                    if(rename(tmp_log_l.c_str(), RNM_FILE_LOG_L_TMP.c_str())!=0 || rename(tmp_log_r.c_str(), RNM_FILE_LOG_R_TMP.c_str())!=0){
-                        printWarningLog("Failed to create log files, undo facility will be broken for this operation.");
-                    }
-                    openTmpFilesForAppend();
+                    recreateTmpFiles(signature);
+                    
                     //recreate lock files
                     RNM_LOCK_FILE = RNM_LOCK_FILE_BKP + signature;
                     openLockFile(futil::lock_op::ImmediateLock, true); //closing is done automatically

@@ -352,10 +352,14 @@ int main(int argc, char* argv[]) {
         if(simulation&&quiet){printWarningLog("Quiet option won't have any effect with simulation mode");}
         
         
-        if(files.size()<=0){String filename_from_stdin;std::getline(std::cin,filename_from_stdin,'\0');
+        if(files.size()<=0){
+            String filename_from_stdin;
+            signal(SIGINT, unsafeExitSignalHandler); //agressive exit needed
+            std::getline(std::cin,filename_from_stdin,'\0');
+            signal(SIGINT, signalHandler); //restore to safe signal handler
             files.push_back(filename_from_stdin);
             //printErrorLog("No file or directory specified");Exit(1);
-            }
+        }
         if(files.size()==1){if(!file_only || depth<=0){single_mode=true;}}
         if(simulation){quiet=false;}
         

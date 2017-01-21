@@ -1,6 +1,10 @@
 #include "func.hpp"
 
 
+void recreateTmpFiles(){
+    
+    
+}
 
 
 int main(){

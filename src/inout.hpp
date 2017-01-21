@@ -59,7 +59,9 @@ void print(const T& s){ std::cout<<NEW_LINE<<s<<NEW_LINE;}
 void getLine(String& s){
     std::cin.clear();
     //~ std::cin.ignore(std::numeric_limits<std::streamsize>::max());
+    signal(SIGINT, unsafeExitSignalHandler); //agressive exit needed
     std::getline(std::cin, s);
+    signal(SIGINT, signalHandler); //restore to safe signal handler
 }
 
 
@@ -221,9 +223,7 @@ Your choice (#?): \
     while(true){
         std::cout<<msg;
         String s;
-        signal(SIGINT, unsafeExitSignalHandler); //agressive exit needed
         getLine(s);
-        signal(SIGINT, signalHandler); //restore to safe signal handler
         if(s.length()!=1) s="-"+s;
         switch(s[0]){
             case '1': return 1;
@@ -360,6 +360,22 @@ void Exit(int a, bool cleanfs){
     throw Except(a);
 }
 
+
+void recreateTmpFiles(const String& signature){
+    closeTmpFiles();
+    //recreate tmp files
+    String tmp_log_l = RNM_FILE_LOG_L_TMP;
+    String tmp_log_r = RNM_FILE_LOG_R_TMP;
+    RNM_FILE_LOG_L_TMP = RNM_FILE_LOG_L_TMP_BKP + signature;
+    RNM_FILE_LOG_R_TMP = RNM_FILE_LOG_R_TMP_BKP + signature;
+    if(rename(tmp_log_l.c_str(), RNM_FILE_LOG_L_TMP.c_str()) == 0 && rename(tmp_log_r.c_str(), RNM_FILE_LOG_R_TMP.c_str()) == 0){
+        //success
+    } else {
+        printWarningLog("Problem creating log files. undo may not work for this rnm operation.");
+    }
+    //open tmp files for append
+    openTmpFilesForAppend();
+}
 
 
 #endif
