@@ -1,7 +1,7 @@
 /***********************************************************************
  * futil (File utility)
  * Author: Md. Jahidul Hamid <jahidulhamid@yahoo.com>
- * Copyright (C) 2015 by Md. Jahidul Hamid <jahidulhamid@yahoo.com>
+ * Copyright (C) 2016 -2017 by Md. Jahidul Hamid <jahidulhamid@yahoo.com>
  *   
  * This software is provided 'as-is', without any express or implied
  * warranty.  In no event will the authors be held liable for any damages

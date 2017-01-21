@@ -61,5 +61,9 @@ void Exit(int, bool cleanfs=true);
 void unsafeExit(int, bool cleanfs=true);
 void errorExit(const String& s, bool cleanfs=true);
 
+void printWarningLog(String str);
+void printErrorLog(String str);
+void printOutLog(const String& str);
+
 
 #endif

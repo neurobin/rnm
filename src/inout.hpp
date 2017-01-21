@@ -85,45 +85,66 @@ String prepareLogDir(){
     return String(strerror(errno));
 }
 
-String openLogFiles(){
-    //~ RNM_FILE_LOG_L_F.open(RNM_FILE_LOG_L.c_str(), std::ios::binary | std::ios::out);
-    //~ RNM_FILE_LOG_R_F.open(RNM_FILE_LOG_R.c_str(), std::ios::binary | std::ios::out);
-    RNM_FILE_LOG_L_TMP_F.open(RNM_FILE_LOG_L_TMP.c_str(), std::ios::binary | std::ios::out);
-    RNM_FILE_LOG_R_TMP_F.open(RNM_FILE_LOG_R_TMP.c_str(), std::ios::binary | std::ios::out);
-    ERROR_LOG_F.open(ERROR_LOG.c_str(), std::ios::app);
-    OUT_LOG_F.open(OUT_LOG.c_str(), std::ios::app);
-    RNM_LOCK_FILE_F.open(RNM_LOCK_FILE, "w+b");
-    if(!RNM_LOCK_FILE_F.setLock()){
-        errorExit("Couldn't get lock. Another "+project_name+" process is running on current directory. Let it finish first. Abort.", false);
+String openLockFile(futil::lock_op ltype = futil::lock_op::ImmediateLock, bool cleanfs_on_exit = false){
+    RNM_LOCK_FILE_F.open(RNM_LOCK_FILE, "w+b"); //futil automatically closes a file if opened already
+    if(!RNM_LOCK_FILE_F.setLock(ltype)){
+        errorExit("Couldn't get lock. Another rnm process is running on current directory. Let it finish first. Abort.", cleanfs_on_exit);
     }
     return strerror(errno);
 }
 
-void closeLogFiles(){
+String openTmpFiles(){
+    RNM_FILE_LOG_L_TMP_F.open(RNM_FILE_LOG_L_TMP.c_str(), std::ios::binary | std::ios::out);
+    RNM_FILE_LOG_R_TMP_F.open(RNM_FILE_LOG_R_TMP.c_str(), std::ios::binary | std::ios::out);
+    return strerror(errno);
+}
+
+String openLogFiles(){
+    ERROR_LOG_F.open(ERROR_LOG.c_str(), std::ios::app);
+    OUT_LOG_F.open(OUT_LOG.c_str(), std::ios::app);
+    return strerror(errno);
+}
+
+void closeTmpFiles(){
     RNM_FILE_LOG_L_TMP_F.close();
     RNM_FILE_LOG_R_TMP_F.close();
-    ERROR_LOG_F.close();
-    OUT_LOG_F.close();
+}
+
+void closeLockFile(){
     RNM_LOCK_FILE_F.close();
 }
 
-void cleanFiles(){
-    std::remove(RNM_FILE_LOG_L_TMP.c_str());
-    std::remove(RNM_FILE_LOG_R_TMP.c_str());
+void closeLogFiles(){
+    ERROR_LOG_F.close();
+    OUT_LOG_F.close();
+}
+
+void removeLockFile(){
     std::remove(RNM_LOCK_FILE.c_str());
 }
 
-void printErrorLog(String str){
-    str="E: "+str;
+void removeTempFiles(){
+    std::remove(RNM_FILE_LOG_L_TMP.c_str());
+    std::remove(RNM_FILE_LOG_R_TMP.c_str());
+}
+
+void cleanFiles(){
+    removeTempFiles();
+    removeLockFile();
+}
+
+void printErrorLog0(String str, const String& fn, size_t line){
+    str="E: (rnm/"+fn+"/"+std::to_string(line)+"/): "+str;
     std::cerr<<str+NEW_LINE;
     time_t now = time(0);
     char* dt = ctime(&now);
     ERROR_LOG_F<<str+"\t\t\t\t@"+dt;
 }
 
+#define printErrorLog(a) printErrorLog0(a, __FILE__, __LINE__)
 
-void printWarningLog(String str){
-    str="W: "+str;
+void printWarningLog0(String str, const String& fn, size_t line){
+    str="W: (rnm/"+fn+"/"+std::to_string(line)+"/): "+str;
     if(!quiet){std::cerr<<str+NEW_LINE;}
     time_t now = time(0);
     char* dt = ctime(&now);
@@ -131,6 +152,7 @@ void printWarningLog(String str){
     OUT_LOG_F<<str+"\t\t\t\t@"+dt;
 }
 
+#define printWarningLog(a) printWarningLog0(a, __FILE__, __LINE__)
     
 void printOutLog(const String& str){
     if(!quiet)std::cout<<NEW_LINE+str+NEW_LINE;
@@ -315,6 +337,8 @@ NameList getNameListFromFile(const String& filename, Uint si, Uint ei,
 
 void cleanup(bool cleanfs){
     closeLogFiles();
+    closeTmpFiles();
+    closeLockFile();
     finalizeRFL();
     if(cleanfs) cleanFiles();
 }

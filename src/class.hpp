@@ -364,6 +364,7 @@ Int childDepth(const File& parent, File child){
         else{
             childstr=replaceString(dirname(child.path),parent.path+path_delim,String(""));
         }
+        LOG(split(childstr,'/').size()<<"<size")
         return split(childstr,'/').size();
     }
     else return LOWEST_DEPTH;
@@ -415,6 +416,12 @@ FileArray getFilesFromDir(const String& file){
 bool isInvalidFile(const File& f){
     String file = f.path;
     bool status=false;
+    
+    if(CWD==f.path && !force){
+        status = true;
+        printWarningLog("renaming working directory not permitted. If you insist, try applying force.");
+    }
+    
     StringArray invf={HOME,
         "/bin","/usr","/usr/bin","/tmp",
         "/dev","/etc","/proc","/home",
@@ -425,11 +432,13 @@ bool isInvalidFile(const File& f){
     for(int i=0;i<(int)invf.size();i++){
         if(file==invf[i]){
             if(!force){
-                status=true;printWarningLog("rename not permitted: "+file);
+                status=true;
+                printWarningLog("rename not permitted: "+file);
             }
         }
     }
     
+    //these are not permitted even with force
     if(file==root_filesystem){status=true;printWarningLog("rename not permitted: "+file);}
     if(file==self_path){status=true;printWarningLog("rename not permitted: "+file);}
     if(file==RNM_FILE_LOG_L_TMP){status=true;printWarningLog("rename not permitted: "+file);}

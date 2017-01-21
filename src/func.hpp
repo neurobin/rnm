@@ -48,6 +48,29 @@ bool Rename(const String& oldn,const String& newn,DirectoryIndex &di){
         if(!simulation){
             
             if(rename(oldn.c_str(),newn.c_str()) == 0){
+                if(CWD == oldn){
+                    //undo depends on current directory, but the current directory itself has been renamed
+                    String signature = getPathSignature(newn);
+                    
+                    //recreate tmp files
+                    closeTmpFiles();
+                    String tmp_log_l = RNM_FILE_LOG_L_TMP;
+                    String tmp_log_r = RNM_FILE_LOG_R_TMP;
+                    RNM_FILE_LOG_L_TMP = RNM_FILE_LOG_L_TMP_BKP + signature;
+                    RNM_FILE_LOG_R_TMP = RNM_FILE_LOG_R_TMP_BKP + signature;
+                    if(rename(tmp_log_l.c_str(), RNM_FILE_LOG_L_TMP.c_str())!=0 || rename(tmp_log_r.c_str(), RNM_FILE_LOG_R_TMP.c_str())!=0){
+                        printWarningLog("Failed to create log files, undo facility will be broken for this operation.");
+                    }
+                    openTmpFiles();
+                    //recreate lock files
+                    RNM_LOCK_FILE = RNM_LOCK_FILE_BKP + signature;
+                    openLockFile(futil::lock_op::ImmediateLock, true); //closing is done automatically
+                    
+                    //change original undo file names
+                    RNM_FILE_LOG_L = RNM_FILE_LOG_L_BKP + signature;
+                    RNM_FILE_LOG_R = RNM_FILE_LOG_R_BKP + signature;
+                    
+                }
                 appendToRFLTMP(oldn,newn);
                 current_index+=inc;
                 reverse_index-=inc;

@@ -444,4 +444,9 @@ void validateModifier(const String& mod, const String& valid_mods, const String&
             errorExit("Invalid modifier '"+toString(mod[i])+"' for "+err_m_for);
 }
 
+String getPathSignature(const String& path){
+    return replaceStringAll(path, "/",".");
+}
+
+
 #endif

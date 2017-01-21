@@ -72,6 +72,14 @@
 #include "proto.hpp"
 #include "futil.hpp"
 
+//#define RNM_RELEASE //uncomment it when going for production release
+
+#ifndef RNM_RELEASE
+#define LOG(a) std::cout<<a;
+#else
+#define LOG(a) 
+#endif
+
 
 thread_local static std::ostringstream oss_buffer;
 
@@ -159,16 +167,27 @@ String ERROR_LOG=LOG_DIR+"/errors.log";
 FileStream ERROR_LOG_F;
 String OUT_LOG=LOG_DIR+"/out.log";
 FileStream OUT_LOG_F;
+
 String RNM_LOCK_FILE = LOG_DIR + ".lock";
+String RNM_LOCK_FILE_BKP = RNM_LOCK_FILE;
 futil::FileStream RNM_LOCK_FILE_F;
+
 String RNM_FILE_LOG_L=LOG_DIR_UNDO+"/rfl.l";
+String RNM_FILE_LOG_L_BKP = RNM_FILE_LOG_L;
 FileStream RNM_FILE_LOG_L_F;
-String RNM_FILE_LOG_R=LOG_DIR_UNDO+"/rfl.r";
+
+String RNM_FILE_LOG_R = LOG_DIR_UNDO+"/rfl.r";
+String RNM_FILE_LOG_R_BKP = RNM_FILE_LOG_R;
 FileStream RNM_FILE_LOG_R_F;
-String RNM_FILE_LOG_L_TMP=RNM_FILE_LOG_L+".tmp";
+
+String RNM_FILE_LOG_L_TMP = RNM_FILE_LOG_L+".tmp";
+String RNM_FILE_LOG_L_TMP_BKP = RNM_FILE_LOG_L_TMP;
 FileStream RNM_FILE_LOG_L_TMP_F;
-String RNM_FILE_LOG_R_TMP=RNM_FILE_LOG_R+".tmp";
+
+String RNM_FILE_LOG_R_TMP = RNM_FILE_LOG_R+".tmp";
+String RNM_FILE_LOG_R_TMP_BKP = RNM_FILE_LOG_R_TMP;
 FileStream RNM_FILE_LOG_R_TMP_F;
+
 String NSF_LIST_FILE=LOG_DIR+"/nsf.list";
 
 /////Name string related
