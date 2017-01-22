@@ -68,7 +68,7 @@
 #include <cstdint> //Fixed width integral types: uint_fast64_t, uint_fast8_t
 #include <gmpxx.h> //mpf_class, mpz_class
 #include "strnatcmp.hpp"
-#include "/home/jahid/Git/Github/jpcre2/jpcre2/src/jpcre2.hpp"
+#include <jpcre2.hpp>
 #include "proto.hpp"
 #include "futil.hpp"
 

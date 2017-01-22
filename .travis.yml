@@ -10,8 +10,8 @@ before_install:
   - mkdir -p gmpxx
   - wget https://gmplib.org/download/gmp/gmp-6.1.2.tar.lz
   - tar --lzip -xf gmp-6.1.2.tar.lz --strip-components=1 -C gmpxx
-  - git --branch=release --depth=1 clone https://github.com/jpcre2/pcre2
-  - git --branch=master --depth=1 clone https://github.com/jpcre2/jpcre2
+  - git clone --branch=release --depth=1 https://github.com/jpcre2/pcre2
+  - git clone --branch=release --depth=1 clone https://github.com/jpcre2/jpcre2
   - cd jpcre2
   - ./autogen.sh
   - ./configure
