@@ -1,0 +1,597 @@
+.TH rnm 1 "Fri Feb 12 2016" Unix "Utility"
+.SH NAME
+rnm \- Bulk rename utility
+.SH SYNOPSIS
+.B rnm [-ns
+.I name-string
+.B ]
+.I file-path
+.B ...
+
+One of the options of 
+.B -ns
+or 
+.B -nsf
+or 
+.B -rs
+is mandatory. Options are **not** sequential, their position in the argument list have no significance. For example: 
+.B rnm filepath -ns name
+is the same as 
+.B rnm -ns name filepath. 
+Though passing the directory/file path at the end of the argument list is considered to be safe and wise.
+
+Options are case insensitive, i.e 
+.B -ssF
+and 
+.B -ssf
+are the same.
+.SH DESCRIPTION
+Bulk Rename Utility written in C++. Files and directories can be passed as command line arguments to rename them in bulk according to some naming scheme (
+.B Name String
+). If no file or directory path is passed as command line argument, it will wait for user to type the path i.e it will take the path from standard input (>=version 3.0.1). It uses ECMAScript regex (aka JavaScript) as the default regex to provide search (and replace) functionality, other regex modes ( POSIX compliant basic and extended regex) are available through (
+.B -re
+) option. It provides an undo functionality (
+.B rnm -u
+)too to move back an unwanted rename operation. You can also run a simulation instead of actual rename to view the potential outcome as program output on terminal with the 
+.BR -sim
+option.
+.SH OPTIONS
+.IP "-h, --help"
+Show help menu.
+.IP "--index,--start-index, -i,"
+.B -si
+.I value
+: Starting index.
+.IP "--end-index,"
+.B -ei 
+.I value
+: End index i.e index to stop renaming from. It is only for files inside a directory that is being recursively taken due to a depth value greater than 0, i.e it works on directory index. Note that directory index 
+.B /id/
+will renew in each directory i.e in each directory rename will be performed from start index to end index.
+
+.IP "--increment-value,"
+.B -inc
+.I value
+: Increment value (floating point decimal). The amount, index will be incremented or decremented in each iteration. Decremented index is available through name string rule: 
+.B /-i/
+, 
+.B /-id/
+etc..
+
+.IP "--line-increment-value,"
+.B -linc
+.I value
+: The amount line count will be incremented or decremented in each iteration. This is always a positive integer.
+
+.IP "--index-flags,"
+.B -if
+.I flags
+: This sets Index flags. This is a '/' separated list of flags that will be used to render the index within it's text field.
+
+The general format is 
+.I '/keyword1/keyword2/...'
+
+Valued flags are set with
+.I keyword=value
+format.
+
+Ex:
+.B -if
+.I '/uppercase/showpoint/showpos/showbase/left/length=4/precision=3/filler=*/latin-fallback=687678/'
+
+See keywords section for details.
+
+.IP --index-field-length,
+.B -ifl
+.I value
+: Index field length. Non occupied field will be filled with index field fillers (set with 
+.B -iff
+). iff is set to the character 
+.I 0
+by default. This can also be set using the 
+.B -if
+option. The keyword is 'length'.
+
+.IP "--index-field-filler,"
+.B -iff
+.I single-character
+: Not occupied field in index will be filled with a character which is set by this option. This can also be set using the 
+.B -if
+option. The keyword is 'filler'.
+
+.IP "--index-field-precision,"
+.B -ifp
+.I value
+: Index is a floating point decimal value. This sets the precision. If it is less than the number of digits left of the decimal point, the indexes may be rendered in scientific format.This option only sets the precision value. The result may be confusing and you shouldn't use this option unless you know what you are doing. This can also be set using the 
+.B -if
+option. The keyword is 'precision'.
+
+.IP --name-string,
+.B -ns
+.I string
+: Name string.
+
+.IP "--name-string-file,"
+.B -ns/f
+.I file-path
+: Name string file. File containing name string (one per line).
+.B -ns/f
+.I /hist/
+i.e a value 
+.B /hist/
+passed as Name string file, will try to take the file from history.
+
+.IP "--name-string-file-null-terminated,"
+.B -ns/fn
+.I file-path
+: Name String file. This takes a null terminated Name String file, i.e filenames are terminated by null character (\\0) instead of new line (\\n).
+
+.IP "--line, --start-line, -l,"
+.B "-sl"
+: Start Line number in name string file.
+.IP "--line-reverse, --start-line-reverse, -lv,"
+.B "-slv"
+.I value
+: Same as 
+.B -l or 
+.B -sl
+, except line number will be decremented in each iteration.
+
+.IP "--end-line,"
+.B "-el"
+.I value
+: End line number. Line number to stop renaming from.
+.IP "--end-line-reverse,"
+.B "-elv"
+.I value
+: Same as 
+.B -el
+, except line number will be decremented in each iteration.
+.IP "--search-string,"
+.B "-ss"
+.I string
+: Search string. String that will be used to search for files with matching names. This is generally a regex if not passed with
+.B -ssf
+option.
+.IP "--search-string-file,"
+.B -ss/f
+.I file_path
+: Search string file. A file containing search string per line.
+.IP "--search-string-fixed,"
+.B -ssf
+.I string
+: Fixed search string (not treated as regex).
+.IP "--search-string-fixed-file,"
+.B -ssf/f
+.I file_path
+: Search string file. Contains fixed search string per line.
+.IP "--replace-string,"
+.B -rs
+.I string
+: Replace string. A string in the form 
+.B /search_string/replace_string/modifier
+, see 
+.B Replace String
+in 
+.B TERMINOLOGY
+section for details.
+.IP "--replace-string-file,"
+.B -rs/f
+.I file_path
+: Replace string file. A file containing replace string per line.
+.IP "--regex",
+.B -re
+.I regex-mode
+: Regex mode. Available regex modes are POSIX compliant 
+.I basic
+& 
+.I extended
+regex, regex used by 
+.I grep
+, 
+.I awk
+, 
+.I egrep
+and the default regex is 
+.I ECMAScript
+regex.For example, to have a grep like regex, pass the option 
+.B -re
+.I grep
+, to use POSIX compliant extended regex, pass 
+.B -re
+.I extended
+
+.IP "--regex-locale, -rel"
+If this is passed as argument, regex will follow Locale. that is regex like 
+.B [a-z]
+will have their meaning according to the system locale.
+
+.IP "--depth,"
+.B -dp
+.I value
+: Depth of folder. -1(any negative number) means unlimited depth i.e all files and subdirectories will be included. Other values may be 0 1 2 3 etc... Default depth is 0, i.e directory contents will be ignored.
+
+.IP "--file-only, -fo"
+File only mode. Only files are renamed (not directory). Goes to subdirectory/s if depth (
+.B -dp
+) is set to 1 or greater. Default depth is set to 0.
+
+.IP "--directory-only, -do"
+Apply rename on directory only.
+
+.IP "--exclude-directory, -ed"
+Apply rename on files only, exclude any and all directory and their contents. This is equivalent to file only mode with a zero depth (
+.B "-fo -dp 0"
+).
+.IP "--count-directory, -cd"
+Count directory in reserved index regardless of other options. Reserves indices for directories even if it is File Only mode.
+.IP "--count-file, -cf"
+Count file in reserved index regardless of other options. Reserves indices for files even if it is Directory Only mode.
+.IP "--sort, -s"
+Sort files or directories in a natural (human perceivable natural sort) manner. 
+.IP "--sort/g, -s/g"
+Sort files or directories in general manner (alphabetic sort).
+.IP "--sort/none, -s/none"
+Force not to sort anything. Files or directories may or may not be at random order.
+.IP "--yes, -y"
+Confirm Yes to all.
+.IP "--follow-link, -fl"
+Follow symbolic link and rename the actual file/directory pointed by the link.
+.IP "--undo, -u"
+Undo renaming
+.IP "--version, -v"
+Version info.
+.IP "--quiet, -q"
+Quiet operation.
+
+.IP "--force, -f"
+Apply force. Enables renaming some non permitted files/directories.
+
+.IP "--"
+If this option is passed, anything and everything after it will be taken as file path. Put all options before passing this option.
+
+.IP "--show-options, -shop"
+This shows an info about the various options passed as arguments and how they are being treated behind the scene.
+
+.IP "--simulation, -sim"
+This runs a simulation of rename instead of actual rename operation, and prints all kinds of available outputs. 
+.B -q
+option won't have any effect if this option is passed.
+.SH TERMINOLOGY
+.B Reserved Index
+.RS
+Index will be incremented even if any file is skipped renaming in order to reserve the index for that skipped file
+.RE
+
+.B Reverse Index
+.RS
+Decrementing index.
+.RE
+
+.B Name String
+.RS
+A string, that is parsed to create names for new files. It can be fixed name which then can be modified for different files at runtime. Name sting is parsed by the following rules (must be wrapped around with filepath delimiter /):
+
+
+.B /n/
+in name string will be replaced with filename without extension. If used with -nsf option, the filename will be the name taken from the Name String File.
+
+.B /fn/
+in name string will be replaced with full name of the files. If used with -nsf option, full name will be the name taken from the Name String File.
+
+.B /rn/
+in name string will be replaced with Replaced Name.
+
+.B /pd/
+in name string will be replaced with parent directory name of the current file or directory.
+
+.B /wd/
+in name string will be replaced with the current working directory name.
+
+.B /l/
+in name string will be replaced with line number from Name String File.
+
+.B /la/
+in name string will be replaced with actual line number from Name String File.
+
+.B /dc/
+in name string will be replaced with directory count.
+
+.B /i/
+in name string will be replaced with index.
+
+.B /ir/
+in name string will be replaced with reserved index.
+
+.B /id/
+in name string will be replaced with directory index (index inside a directory).
+
+.B /idr/
+in name string will be replaced with reserved directory index.
+
+.B /-i/
+in name string will be replaced with inverse index.
+
+In general, 
+.B -i
+(
+.B /-ir/
+.B /-idr/
+etc..) in the above replacement rules (applies to indexes excluding line index) will mean inverse index conforming to their meaning.
+
+.RE
+
+.B Extended Name String Rule
+.RS
+This is an extension of the general purpose name string rules mentioned above.
+
+.B Base conversion
+.RS
+.B /i-b2/
+converts the index to base 2 i.e binary and
+.B /i-b32/
+will convert to base 32. This applies to all numbered name string rules.
+.RE
+
+.B Latin conversion
+.RS
+.B /i-l/
+converts the index to Latin number. This applies to all numbered name string rules.
+.RE
+
+.B Scientific conversion
+.RS
+.B /i-s/
+converts the index to scientific form. This applies to all numbered name string rules.
+.RE
+
+.B Extended /pd/ rules
+.RS
+pd0 is the immediate parent directory, pd1 is the directory before pd0 and so forth. 
+
+A range can also be supplied to combine all the directories in the level implied by the range. The general format of this rule is
+.B /pd<digits>-<digits>-delimiter/
+
+For example:
+.B /pd0-4--/
+will combine all directories from level 0 to 4 inserting the delimiter (- in this case) between them and the rule will become something like dir0-dir1-dir2-dir3-dir4. 
+
+In place of <digits> you can also supply 'e' which generally means the 'end' i.e the deepest level available.
+
+Another term 'w' is available which points to the level of working directory. Note that the level of working directory is dynamically changed according to the total available levels in the directory tree and thus it makes it difficult for users to construct a range or level based on the current (working) directory, the 'w' term is provided to make it possible to indirectly point to this dynamically changed level. It is only useful when the directories/files to be renamed are child of the working directory. To simply include the working directory, however, use the /wd/ name-string rule.
+
+Any unavailable level of directory will be ignored and be replaced with empty string. 
+
+The range is bidirectional e.g
+.B /pd4-0--/
+will do the same in reverse order.
+.RE
+.RE
+
+.B Name String File
+.RS
+A file which contains a list of name string (one per line). Empty lines will be ignored and line number won't be counted. Actual line number (which counts the empty lines too) is available through name string rule: 
+.B /la/.
+If the name string file path is passed through the option
+.B -nsfn
+, then it will expect the filenames to be null terminated instead of new line.
+.RE
+
+.B Search String
+.RS
+A string that is used to search for files with matching filenames against the search string. By default it is a regex if 
+.B -ssF
+option is not used. It is generally in the form 
+.I /regex/modifier
+, where regex is the regex to search for and available modifier is 
+.I i
+which implies case insensitive search. If no modifier is used, regex format can be reduced to
+.I /regex/
+or simply 
+.I regex
+
+Terminate multiple search strings with
+.I ;
+, e.g
+.B "'/regex/modifier;/regex2/modifier2;...'"
+
+Also you can provide multiple search strings with repeated 
+.B -ss
+and/or
+.B -ssf
+options and files with repeated 
+.B -ss/f
+and/or
+.B -ssf/f
+options. These options can be combined together too.
+.RE
+
+.B Index Field Length
+.RS
+An integer value defining the field length of index. By default empty field will be filled with 0's. For example, if the value is 3, then index will be 001, 002, 003, etc.. Different filler (other than 0) can be provided with the 
+.B -iff
+option.
+.RE
+
+.B Replaced Name
+.RS
+The name can be modified at runtime using replace string. replace string will be parsed to create a new Name String rule: 
+.B /rn/
+which can be used in Name String. If name string is not passed as argument, the new name of the file will be /rn/. Replaced Name is always generated from the old filename.
+.RE
+
+.B Replace String
+.RS
+Replace String modifies the filename and the modified filename is available through name string rule:
+.B /rn/
+, If no Name String is provided, new name of the file will be the value of /rn/ by default. Replace String is a regex of the form: 
+.B /search_part/replace_part/modifier
+where 
+.I search_part
+is the regex to search for and 
+.I replace_part
+is the string to replace with. Name string rules can be used in both 
+.I search_part
+and
+.I replace_part
+in Replace String.
+
+Regarding the
+.I replace_part
+, there are several special cases:
+.RS
+
+& will be taken as the entire match found by the regex (search_part).
+
+\\1, \\2 etc.. is the captured groups or subpatterns. Up-to two digits after the \\ will be taken as a captured group. If you want to isolate a captured group, wrap it around with {}. For example, if you want to put a digit (2) after the subpattern \\1, you can't use it like \\12. \\12 will mean 12th subpattern not \\1 appended with a digit (1). In this case isolate the subpattern with {} i.e \\{1}.
+
+\\c to convert to lowercase and \\C to convert to uppercase. No other character is allowed in replace_part if \\c or \\C is used.
+
+\\p is the prefix (i.e., the part of the target sequence that precedes the match).
+
+\\s is the suffix (i.e., the part of the target sequence that follows the match).
+.RE
+
+to insert a & literally, use \\& and for \\ use \\\\.
+
+Two modifiers are available: 
+.I g
+and 
+.I i
+;
+.I g
+stands for global and replaces every instances of match found and 
+.I i
+stands for case insensitive search (default is case sensitive).Replace String is always performed on old file name.
+
+Example: 
+.B '/video/Episode /i//gi'
+will replace every instances of 'video' with 'Episode index' i.e you will get new rname as: Episode 1..., Episode 2..., etc...
+
+Terminate multiple replace strings with
+.I ;
+e.g 
+.B "'/search1/replace1/gi;/search2/replace2/i;...'"
+
+Also you can provide multiple replace strings with repeated
+.B -rs
+option and multiple files with repeated
+.B -rs/f
+options. These options can be combined together too.
+.RE
+
+.B Regex
+.RS
+Supported regexes are POSIX compliant 
+.I basic & 
+.I extended 
+regex, 
+.I grep, 
+.I awk 
+and 
+.I egrep
+type regexes and the default 
+.I ECMAScript
+regex. Change regex mode with
+.B -re
+or
+.B --regex
+option.
+.RE
+
+.B Keywords
+.RS
+.B uppercase
+: means uppercase.
+
+.B showpoint
+: show point regardless if it's an integer or floating point value.
+
+.B showbase
+: means show base (Hex or Oct).
+
+.B showpos
+: show + sign for positive numbers.
+
+.B right
+: adjust right.
+
+.B left
+: adjust left.
+
+.B internal
+: adjust internal.
+
+.B precision
+: set precision. Used like 
+.I precision=value
+
+.B length
+: sets length. Used like
+.I length=value
+
+.B filler
+: sets filler. Used like
+.I filler=value
+.RE
+
+Only invalid characters for a file or directory name is the path delimiter and the null character (\\0).
+
+.SH EXAMPLES
+.IP "rnm filename -ns newfilename"
+.RS
+renames from 
+.I filename
+to 
+.I newfilename
+.RE
+.IP "rnm filename -rs '/f/F/'"
+.RS
+renames 
+.I filename
+to
+.I Filename
+, i.e f is replaced with F.
+.RE
+.IP "rnm ./* -ns '/fn/ /i/'"
+.RS
+.B /fn/
+is full name and
+.B /i/
+is the index i.e files and directories get indexed (
+.I filename 1
+,
+.I filename 2
+, etc..).
+.RE
+.IP "rnm ./* -ns '/fn/ /i/' -fo"
+.RS
+file only mode, i.e no directory will be renamed or indexed, unless depth is
+.B >0
+
+.SH LIMITS
+
+.B Maximum length of file name/path
+: FILENAME_MAX
+
+.B Default latin fallback
+: 55555 (After this value latin conversion will fall back to decimal).
+
+.SH LOGDIR
+
+~/.neurobin/rnm
+
+.SH EXITSTATUS
+
+0 on success
+
+1 on failure
+
+.SH BUGREPORT
+Report bugs to http://github.com/neurobin/rnm/issues
+.SH AUTHOR
+.IP "MD. JAHIDUL HAMID
+.IP "@github: http://github.com/neurobin"
+.IP "@bitbucket: http://bitbucket.com/neurobin"
+.SH WEB
+http://neurobin.github.io/rnm
