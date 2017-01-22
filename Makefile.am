@@ -4,7 +4,8 @@ EXTRA_DIST = autogen.sh \
  README.md \
  .travis.yml \
  .gitattributes \
- .gitignore
+ .gitignore \
+ m4/ax_cxx_compile_stdcxx.m4
 
 dist_man_MANS = rnm.1
 
