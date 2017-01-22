@@ -10,14 +10,20 @@ before_install:
   - mkdir -p gmpxx
   - wget https://gmplib.org/download/gmp/gmp-6.1.2.tar.lz
   - tar --lzip -xf gmp-6.1.2.tar.lz --strip-components=1 -C gmpxx
-  - rm -rf pcre2
-  - git clone https://github.com/jpcre2/pcre2
+  - git --branch=release --depth=1 clone https://github.com/jpcre2/pcre2
+  - git --branch=master --depth=1 clone https://github.com/jpcre2/jpcre2
+  - cd jpcre2
+  - ./autogen.sh
+  - ./configure
+  - make
+  - sudo make install
+  - cd -
   - wget https://raw.githubusercontent.com/Amerge/icu/master/icu4c-58_2-src.tgz
   - tar -xf icu4c-58_2-src.tgz
   - mv -f icu/source/* icu
 script: 
   - ./autogen.sh
-  - ./configure --enable-static --disable-shared --enable-cxx
+  - ./configure --enable-static --disable-shared --enable-cxx --enable-jit --with-parens-nest-limit=500
   - make
   - make checkrnm
 
