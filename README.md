@@ -25,10 +25,9 @@ Bulk Rename Utility written in `C++`. Files and directories can be passed as com
 #New features:
 
 1. Unlimited precission for numbers i.e you can perform base conversion, scientific conversion etc.. on an arbitrarily big number. This functionality is provided by GMP BigNum library (GNU Multi-precesion library).
-2. base conversion, scientific conversion, latin conversion can be performed selectively with regex replace.
-3. File information is available, e.g modification time, access time, status change time (time string can be formatted using format string e.g %d-%m-%Y), permission, owner id, group id, size, block, inode number, mode etc...
-4. Inverse search is possible.
-5. Each regex operation can be associated with either link, file or directory, for example, if a replace string is associated with only file, it will not work on directories or links.
+2. File information is available, e.g modification time, access time, status change time (time string can be formatted using format string e.g %d-%m-%Y), permission, owner id, group id, size, block, inode number, mode etc...
+3. Inverse search is possible.
+4. Each regex operation can be associated with either link, file or directory, for example, if a replace string is associated with only file, it will not work on directories or links.
 
 #Features that were dropped:
 
@@ -52,9 +51,9 @@ sh prepare.sh
 
 It will download three different projects:
 
-1. pcre2
-2. jpcre2
-3. gmplib
+1. [pcre2](http://pcre.org/)
+2. [jpcre2](https::/docs.neurobin.org/jpcre2)
+3. [gmplib](https://gmplib.org/)
 
 ####Install rnm:
 After you have all the dependencies at hand, you can simply do:
@@ -110,7 +109,7 @@ rnm directory/file/path -rs "/search regex/replace string/gi" [other_options]
 rnm directory/file/path -ns/f namestring/file/path
 ```
 
-One of the options of `-ns` or `-ns/f` or `-rs` is mandatory. Options are **not** sequential, their position in the argument list have no significance. For example, `rnm filepath -ns name` is the same as `rnm -ns name filepath`. Though passing the *Directory/File* path at the end of the argument list is considered to be safe and wise.
+One of the options of `-ns` or `-ns/f` or `-rs` is mandatory. Options are **not** sequential, their position in the argument list holds no significance. For example, `rnm filepath -ns name` is the same as `rnm -ns name filepath`. Though passing the *directory/file* path at the end of the argument list is considered to be safe.
 
 Options are case insensitive, i.e `-ssF` and `-ssf` are the same.
 
@@ -141,8 +140,6 @@ Options | Description
 `-ssf/f`             | Search string file. Contains fixed search string per line. 
 `-rs`                | Replace string. A string in the form `/search_string/replace_string/modifier`. See **Replace String** in <a href="#technical-terms">Terminology</a> for details. 
 `-rs/f`              | Replace string file. A file containing replace string per line. 
-`-re`                | regex mode. Available regex modes are POSIX compliant basic & extended regex, regex used by grep, awk, egrep and the default regex is ECMAScript regex. For example, to have a grep like regex, pass the option `-re grep`, to use POSIX compliant extended regex, pass `-re extended`.
-`-rel`               | If this is passed as argument, regex will follow Locale. that is regex like [a-z] will have their meaning according to the system locale. 
 `-dp`                | Depth of folder. -1(any negative number) means unlimited depth i.e all files and subdirectories will be included. Other values may be 0 1 2 3 etc... Default depth is `0`, i.e directory contents will be ignored.
 `-fo`                | File only mode. Only files are renamed (not directory). Goes to subdirectory/s if depth (`-dp`) is set to `1` or greater. depth is set to 0. 
 `-do`                | Apply rename on directory only. 
@@ -153,7 +150,7 @@ Options | Description
 `-y`                 | Confirm Yes to all.
 `-fl`                | Follow symbolic link.
 `-u`                 | Undo renaming
-`--force`, `-f`      | Force rename. Enables renaming some restricted files except `/` and the program itself.
+`--force`, `-f`      | Force rename. Enables renaming some restricted files except `/`.
 `-v`                 | Version info.
 `-q`                 | Quiet operation.
 `--`                 | If this option is passed, anything and everything after it will be taken as file path. Put all options before passing this option.
@@ -161,114 +158,137 @@ Options | Description
 `-sim`               | This runs a simulation of rename instead of actual rename operation, prints all kinds of available outputs. `-q` option won't have any effect if this option is passed.
 
 <div id="technical-terms"></div>
-##Technical Terms:
+#Technical Terms:
+These are the technical terms that will be thrown around a bit for convenience.
 
-**Reserved Index    :** Index will be incremented even if 
-                    any file is skipped renaming in order
-                    to reserve the index for that skipped file
-                    
-**Reverse Index     :** Decrementing index.
+##Reserved Index
+Index will be incremented even if  any file is skipped renaming in order to reserve the index for that skipped file. These are constructed by appending the `r` character with the index identifier, e.g `/ir/`, `/-idr/` etc..
 
-<div id="name-string"></div>
-**Name String       :** A string, that is parsed to create names for new files. It can be fixed name which then can be modified for different files at runtime.
-                    Name sting is parsed by the following rules (must be wrapped around with filepath delimiter `/`):
-                    
-1. `/i/` in name string will be replaced with index.
-2. `/ir/` in name string will be replaced with reserved index.
-3. `/id/` in name string will be replaced with directory index (index inside a directory).
-4. `/idr/` in name string will be replaced with reserved directory index
-5. `/-i/` in name string will be replaced with inverse index.
-6. `/-ir/` in name string will be replaced with inverse reserved index. In general, `-i` in the above replacement rules (applies to indexes excluding line indexes) will mean inverse index conforming to their meaning.
-7. `/dc/` in name string will be replaced with directory count
-8. `/l/` in name string will be replaced with line number from *Name String File*.
-9. `/la/` in name string will be replaced with actual line number from *Name String File*.
-10. `/n/` in name string will be replaced with filename without extension. If used with `-ns/f` option, the filename will be the name taken from the *Name String File*.
-11. `/fn/` in name string will be replaced with full name of the files. If used with `-ns/f` option, full name will be the name taken from the *Name String File*.
-12. `/rn/` in name string will be replaced with Replaced Name.
-13. `/pd/` in name string will be replaced with parent directory  name of the current file or directory. 
-14. `/wd/`  in  name  string will be replaced with the current working directory name.
+
+##Reverse Index
+Decrementing index. These are constructed by inserting a `-` before the index indentifier e.g `/-i/`, `/-id/` etc..
+
+
+##Name String
+A string, that is parsed to create names for new files. It can be fixed name which then can be modified for different files at runtime. Name sting is parsed by some rules (Name String Rule). (must be wrapped around with filepath delimiter `/`).
+
+
+##Name String Rule
+A name string rule starts and end with a `/` character, These special forms are parsed and expanded to their meaning. For example `/i/` would expand to file index.
+
+<div id="name-string-rules"></div>
+###General Name String Rules:
+
+1. `/i/` will be expanded to index.
+2. `/ir/` will be expanded to reserved index.
+3. `/id/` will be expanded to directory index (index inside a directory).
+4. `/idr/` will be expanded to reserved directory index
+5. `/-i/` will be expanded to inverse index.
+6. `/-ir/` will be expanded to inverse reserved index. In general, `-i` in the above replacement rules (applies to indexes excluding line indexes) will mean inverse index conforming to their meaning.
+7. `/dc/` will be expanded to directory count
+8. `/l/` will be expanded to line number from *Name String File*.
+9. `/la/` will be expanded to actual line number from *Name String File*.
+10. `/n/` will be expanded to filename without extension. If used with `-ns/f` option, the filename will be the name taken from the *Name String File*.
+11. `/fn/` will be expanded to full name of the files. If used with `-ns/f` option, full name will be the name taken from the *Name String File*.
+12. `/rn/` will be expanded to Replaced Name.
+13. `/pd/` will be expanded to parent directory  name of the current file or directory. 
+14. `/wd/` will be expanded to the current working directory name.
 
 <div id="extended-name-string-rule"></div>
-**Extended Name String Rule :** This is an extension of the general purpose name string rules mentioned above.
+###Extended Name String Rules:
+This is an extension of the general purpose name string rules mentioned above.
 
 1. Base conversion: `/i-b2/` converts the index to base 2 i.e binary and `/i-b32/` will convert to base 32. This applies to all numbered name string rules. 
 2. Latin conversion: `/i-l/` converts the index to Latin number. This applies to all numbered name string rules. 
 3. Scientific conversion: `/i-s/` converts the index to scientific form. This applies to all numbered name string rules. 
-4. Extended /pd/ rules:
-  * `pd0` is the immediate parent directory, `pd1` is the directory before pd0 and so forth.
+4. Extended `/pd/` rules:
+  * `pd0` is the immediate parent directory, `pd1` is the directory before `pd0` and so forth.
   * A range can also be supplied to combine all the directories in the level implied by the range. The general format of this rule is `/pd<digits>-<digits>-delimiter/`
   * For example: `/pd0-4--/` will combine all directories from level 0 to 4 inserting the delimiter (`-` in this case) between them and the rule will become something like `dir0-dir1-dir2-dir3-dir4`.
   * In place of `<digits>` you can also supply `e` which generally means the 'end' i.e the deepest level available.
   * In place of `<digits>` you can also supply `w` which means the level of working directory.
   * Any unavailable level of directory will be ignored and be replaced with empty string.
-  * The range is bidirectional e.g `/pd4-0--/` will do the same in reverse order. 
+  * The range is bidirectional e.g `/pd4-0--/` will do the same in reverse order.
+
+<div id="info-name-string-rule"></div>
+###Info-Name String Rules
+This name string rule provides basic information about a file, directory or link. The general format of this rule is: `/info-prop-op/`, where `info-` is the identifier for this rule, `prop` is the property name and `op` is an optional entry which is used for additional formatting.
+
+Property | Details | Formatting operation
+-------- | ------- | -------------------
+`mtime` | File modification time | A format string (see <a href="#time-format-string">Time Format String</a> below)
+`mtime,GMT` |  File modification time in GMT | A format string (see <a href="#time-format-string">Time Format String</a> below)
+`atime` | File access time | A format string (see <a href="#time-format-string">Time Format String</a> below)
+`atime,GMT` | File access time in GMT | A format string (see <a href="#time-format-string">Time Format String</a> below)
+`ctime` | File status change time | A format string (see <a href="#time-format-string">Time Format String</a> below)
+`ctime,GMT` | File status change time in GMT | A format string (see <a href="#time-format-string">Time Format String</a> below)
+`size` | Size of file  | Unit, if not given a suitable unit will be chosen.
+`blksize` | Size of system I/O block | Unit
+`blocks` | Number of 512B blocks | N/A
+`perm` | File permission | Either `ls` or `oct`
+`uid` | Owner ID | N/A
+`gid` | Group ID | N/A
+`dev` | Device ID | N/A
+`inode`| inode number | N/A
+`mode` | File mode | N/A
+`nlink` | Number of hard links | N/A
+
+<div id="time-format-string"></div>
+####Time Format String
+This format string is used to specify an arbitrary date-time format. For example, `%d-%m%-Y` would produce something like `22-01-2017`. This format string is exactly the same as the format string taken by strftime(3) function. Some frequently used character sequences:
+
+* `%a, %A`: week day name short and full respectively
+* `%b, %B`: month name short and full
+* `%d`: month day number
+* `%H`: Hour in 24hr format
+* `%I`: Hour in 12hr format
+* `%j`: Day of the year (001-366)
+* `%m`: month number
+* `%M`: Minute
+* `%p`: AM/PM
+* `%P`: am/pm (lowercase)
+* `%S`: second in a minute
+* `%t`: tab character
+* `%u`: week day number (1-7)
+* `%%`: A literal `%` character.
+
+You can find a lot more of these character sequences described in details [here](http://man7.org/linux/man-pages/man3/strftime.3.html#DESCRIPTION).
+
+##Name String File
+A file which contains a list of name string (one per line). Empty lines will be ignored and line number won't be counted. Actual line number (which counts the empty lines too) is available through name string rule : `/la/`.
 
 
+##Search String
+A string that is used to search for files with matching filenames against the search string. By default it is a regex if `-ssF` option is not used. It is generally in the form `/regex/modifier` , where <u>regex</u> is the regex to search for and available modifiers are <u>i (case insensitive), f (file), d (directory), l (link), ! (inverse search)</u>. If no  modifier is used, the regex format can be reduced to `/regex/` or simply `regex`. 
 
-
-**Name String File  :** A file which contains a list of name string (one per line).
-                    Empty lines will be ignored and line number won't be counted.
-                    Actual line number (which counts the empty lines too) is
-                    available through name string rule : `/la/`.
-
-<div id="search-string"></div>
-**Search String     :** A string that is used to search for files with matching
-                    filenames against the search string. By default it is
-                    a regex if `-ssF` option is not used.It is generally in the form `/regex/modifier` , 
-                    where <u>regex</u> is the regex to search for and available modifier is <u>i</u> which implies  case
-                    insensitive  search. If no  modifier is used, the regex format can be
-                    reduced to `/regex/` or simply `regex`.
-                    
-Terminate search strings (`/regex/` format only) with `;` to provide multiple search strings, e.g `'/s1/i;/s2/;/s3/'`. This applies to fixed search strings as well.
+Terminate search strings (`/regex/` format only) with `;` to provide multiple search strings, e.g `'/s1/i;/s2/;/s3/'`. This applies to fixed search strings as well. 
 
 Also you can provide multiple search strings with repeated `-ss` and/or `-ssf` options and files with repeated `-ss/f` and/or `-ssf/f` options. These options can be mixed with each other too.
 
-                 
-**Index Field Length:** An integer value defining the field length of index.
-                    By default empty field will be filled with 0's. For example, if
-                    the value is `3`, then index will be `001`, `002`, `003`, etc..
-                    Different filler (other than 0) can be provided with the `-iff` option.
-                    
-**Replaced Name     :** The name can be modified at runtime using replace string.
-                    replace string will be parsed to create a new *Name String* rule: `/rn/`
-                    which can be used in *Name String*. If name string is not passed as argument,
-                    the new name of the file will be `/rn/`. *Replaced Name* is always 
-                    generated from the old filename.
+
+##Index Field Length
+An integer value defining the field length of index. By default empty field will be filled with 0's. For example, if the value is `3`, then index will be `001`, `002`, `003`, etc.. Different filler (other than 0) can be provided with the `-iff` option.
 
 
-<div id="replace-string"></div>
-**Replace String    :** *Replace String* is a regex of the form: 
-                    `/search_part/replace_part/modifier`
-                    where search_part is the regex to search for and
-                    replace_part is the string to replace with. Name String rules are
-                    avalilable in search_part and replace_part in Replace String.
-                    Regarding replace string, there are several special cases:
-                    
+##Replaced Name
+The name can be modified at runtime using replace string. Replace string will be parsed to create a new *Name String* rule: `/rn/` which can be used in *Name String*. If name string is not passed as argument, the new name of the file will be `/rn/`. *Replaced Name* is always generated from the old filename.
+
+
+##Replace String
+*Replace String* is of the form:  `/search_part/replace_part/modifier` where search\_part is the regex to search for and replace\_part is the string to replace with. Name String rules are available in search\_part and replace\_part in Replace String.
+
+There are several special cases for replace\_part:
+
 1. `&` will be taken as the entire match found by the regex (search_part).
-2. `\1`, `\2` etc.. is the captured groups. If you want to isolate a captured groups, wrap it around with `{}`. For example, if you want to put a digit (2) after captured group `\1`, you can't use it like `\12`. `\12` will mean `12th` captured group not `\1` appended with a digit (1). In this case isolate the captured group with `{}` i.e `\{1}`. 
-3. `\c` will convert the matched string to lowercase, and `\C` will convert it to uppercase. No other character is allowed in replace part if this is used. You can still concatenate different replace strings with `;`.
-4. `\p` is the prefix (i.e., the part of the target sequence that precedes the match)
-5. `\s` is the suffix (i.e., the part of the target sequence that follows the match).
-
-to insert a `&` literally, use `\&` and for `\` use `\\`.Two modifiers are available: g and i.
-g stands for global and replaces every instances of match found.
-i stands case insensitive search (default is case sensitive).*Replace String* is always performed on old file name.
-
-Terminate replace strings with `;` to provide multiple replace strings, e.g `'/s1/r1/gi;/s2/r2/i;/s3/r3/'`.
-
-You can provide multiple replace strings with repeated `-rs` option and multiple file with repeated `-rs/f` options. These options can be mixed with each other too.
-
-```
-Example: '/video/Episode /i//gi' will replace every instances
-of 'video' with 'Episode index' i.e you will get new rname as:.
-Episode 1..., Episode 2..., etc...
-```
-
-<div id="regex"></div>
-**Regex             :** Supported regexes are POSIX compliant <a href="http://pubs.opengroup.org/onlinepubs/9699919799/basedefs/V1_chap09.html#tag_09_03">basic</a> & <a href="http://pubs.opengroup.org/onlinepubs/9699919799/basedefs/V1_chap09.html#tag_09_04">extended</a> regex, grep, egrep and <a href="http://pubs.opengroup.org/onlinepubs/9699919799/utilities/awk.html#tag_20_06_13_04">awk</a> type regexes and the default <a href="http://www.cplusplus.com/reference/regex/ECMAScript/">ECMAScript Regex</a>. You can change the regex mode with `-re` or `--regex` option.
+2. `\1`, `\2` etc.. is the captured groups. If you want to isolate a captured groups, wrap it around with `{}`. For example, if you want to put a digit (2) after captured group `\1`, you can't use it like `\12`. `\12` will mean `12th` captured group not `\1` appended with a digit (1). In this case isolate the captured group with `{}` i.e `\{1}`.
+3.  `\c` will convert the matched string to lowercase, and `\C` will convert it to uppercase. No other character is allowed in replace part if this is used. You can still concatenate different replace strings with `;`.
+4. to insert a `&` literally, use `\&` and for `\` use `\\`.
+5. Modifiers are i (case insensitive), g (global), f (file), d (directory), l(link).
+6. *Replace String* is always performed on old file name.
+7. You can provide multiple replace strings with repeated `-rs` option and multiple file with repeated `-rs/f` options. These options can be mixed with each other too.
 
 <div id="keywords"></div>
-**Keywords          :**
+##Keywords at a glance
 
 * *uppercase* : means uppercase.
 * *showpoint* : show point regardless if it's an integer or floating point value.
@@ -281,8 +301,14 @@ Episode 1..., Episode 2..., etc...
 * *length* : sets length. Used like length=value
 * *filler* : sets filler. Used like filler=value 
 
-                    
-Only invalid characters for a file or directory name is the path delimiter and the null character (`\0`).
+##Modifiers at a glance
+
+* *i*: case insensitive match or replace.
+* *g*: global replace
+* *f*: perform search or replace if it's a file
+* *d*: perform search or replace if it's a directory
+* *l*: perform search or replace if it's a link
+* *!*: inverse search.
 
 <div id="examples"></div>
 ###Example:
@@ -299,6 +325,7 @@ rnm -ns/f filepath -ns /n//id/.ext
 rnm -ns/f filepath
 etc...
 ```
+**Only invalid characters for a file or directory name is the path delimiter and the null character (`\0`).**
 
 <div id="things-to-care"></div>
 #Things to care:
