@@ -11,7 +11,7 @@ before_install:
   - tar --lzip -vxf gmp-6.1.2.tar.lz --strip-components=1 -C gmpxx
   - rm -rf pcre2
   - git clone https://github.com/jpcre2/pcre2
-  - wget https://github.com/Amerge/icu/blob/master/icu4c-58_2-src.tgz?raw=true
+  - wget https://raw.githubusercontent.com/Amerge/icu/blob/master/icu4c-58_2-src.tgz
   - tar -vxf icu4c-58_2-src.tgz
   - mv -f icu/source/* icu
 script: 
