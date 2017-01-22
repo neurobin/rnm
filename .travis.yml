@@ -11,6 +11,12 @@ before_install:
   - wget https://gmplib.org/download/gmp/gmp-6.1.2.tar.lz
   - tar --lzip -xf gmp-6.1.2.tar.lz --strip-components=1 -C gmpxx
   - git clone --branch=release --depth=1 https://github.com/jpcre2/pcre2
+  - cd pcre2
+  - ./autogen.sh
+  - ./configure --enable-jit --with-parens-nest-limit=500 --disable-shared
+  - make
+  - sudo make install
+  - cd -
   - git clone --branch=release --depth=1 https://github.com/jpcre2/jpcre2
   - cd jpcre2
   - ./autogen.sh
