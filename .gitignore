@@ -1,5 +1,6 @@
 /icu
 /pcre2
+/jpcre2
 /gmpxx
 /build
 /autom4te.cache

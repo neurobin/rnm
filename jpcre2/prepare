@@ -1,4 +1,0 @@
-#!/bin/sh
-doxygen Doxyfile
-./crmd
-./autogen.sh
