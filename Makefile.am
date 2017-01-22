@@ -2,7 +2,10 @@ ACLOCAL_AMFLAGS = -I m4
 SUBDIRS = src pcre2 gmpxx icu
 EXTRA_DIST = autogen.sh \
  README.md \
- .travis.yml
+ .travis.yml \
+ .gitattributes \
+ .gitignore
+
 dist_man_MANS = rnm.1
 
 AM_CPPFLAGS = -Ipcre2 -Igmpxx -Iicu
