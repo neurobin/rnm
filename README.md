@@ -68,6 +68,7 @@ Hold tight until it finishes compiling and building **rnm**.
 ###Install from pre-built binary:
 
 ####From launchpad PPA:
+**(currently not available because this version is still in testing stage)**
 Aside from the above generalized method, you can also install it in Ubuntu from PPA (`ppa:neurobin/ppa`).
 
 ```sh
@@ -86,6 +87,7 @@ sudo apt-get install rnm
 ```
 
 ####For others:
+**(currently not available because this version is still in testing stage)**
 You can download a pre-built binary (64 and/or 32 bit) from the [release page](https://github.com/neurobin/rnm/releases) if available.
 
 <div id="un-install"></div>
