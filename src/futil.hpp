@@ -24,6 +24,12 @@
 #ifndef __FUTIL_HPP
 #define __FUTIL_HPP
  
+#include <unistd.h>
+#include <fcntl.h>
+#include <cstdio>
+#include <string>
+#include <cerrno>
+
 namespace futil{
     enum lock_t
         {

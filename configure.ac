@@ -1,9 +1,8 @@
 include([ax_cxx_compile_stdcxx.m4])
-AC_INIT([rnm], [3.3.2], [http://github.com/neurobin/rnm/issues])
-AC_CONFIG_AUX_DIR(config)
+AC_INIT([rnm], [4.0.0], [http://github.com/neurobin/rnm/issues])
+#AC_CONFIG_AUX_DIR([.])
 #prefix="/usr"
-AC_CONFIG_SRCDIR([src/main.cpp])
-
+#AC_CONFIG_SRCDIR([src/main.cpp])
 
 
 AM_INIT_AUTOMAKE
@@ -11,15 +10,20 @@ AM_INIT_AUTOMAKE
 # Checks for programs.
 AC_PROG_CXX
 
-CXXFLAGS=" -O2 "
+#CXXFLAGS=" -O2 "
 
 #check for c++11 support and add flags
 AX_CXX_COMPILE_STDCXX([11], [noext], [mandatory])
 
 # Checks for libraries.
 
+#AC_CONFIG_FILES([Makefile])
+AC_CONFIG_SUBDIRS([pcre2 gmpxx icu])
+
+
 # Checks for header files.
-AC_CHECK_HEADERS([fcntl.h unistd.h])
+AC_CHECK_HEADERS([fcntl.h unistd.h],[],
+ [])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_CHECK_HEADER_STDBOOL
@@ -64,7 +68,7 @@ AC_OUTPUT(Makefile src/Makefile)
 
 cat <<EOF
 
-configuration summary:
+rnm configuration summary:
 
     Install prefix .................... : ${prefix}
     C preprocessor .................... : ${CC}
