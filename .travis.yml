@@ -4,7 +4,17 @@ language: cpp
 before_install:
   - sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
   - sudo apt-get update -q
-  - sudo apt-get install g++-4.9 -y
-  - export CXX="g++-4.9"
-script: ./configure && make && make check
+  - sudo apt-get install g++-5 -y
+  - mkdir -p gmpxx
+  - wget https://gmplib.org/download/gmp/gmp-6.1.2.tar.lz
+  - tar -vxf gmp-6.1.2.tar.lz --strip-components=1 -C gmpxx
+  - rm -rf pcre2
+  - git clone https://github.com/jpcre2/pcre2
+  - wget https://github.com/Amerge/icu/blob/master/icu4c-58_2-src.tgz?raw=true
+  - tar -vxf icu4c-58_2-src.tgz
+  - mv -f icu/source/* icu
+script: 
+  - ./configure --enable-static --disable-shared --enable-cxx
+  - make
+  - make checkrnm
 

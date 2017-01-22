@@ -32,5 +32,11 @@ LDADD = \
 rnm_CXXFLAGS = \
   $(extra_opts) 
 
-
+.PHONY: checkrnm
+testdir = testdir
+checkrnm: rnm
+	mkdir -p $(testdir)
+	for f in `seq 1 1000`; do touch $(testdir)/$$f; done
+	rnm -y -ns '/fn/@ B16: /idr-b16/ L: /idr-l/ S: /idr-s/' -fo -dp -1 -s $(testdir)
+	rm -rf $(testdir)
 

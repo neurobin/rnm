@@ -400,6 +400,7 @@ LDADD = \
 rnm_CXXFLAGS = \
   $(extra_opts) 
 
+testdir = testdir
 all: all-recursive
 
 .SUFFIXES:
@@ -991,6 +992,13 @@ uninstall-man: uninstall-man1
 
 .PRECIOUS: Makefile
 
+
+.PHONY: checkrnm
+checkrnm: rnm
+	mkdir -p $(testdir)
+	for f in `seq 1 1000`; do touch $(testdir)/$$f; done
+	rnm -y -ns '/fn/@ B16: /idr-b16/ L: /idr-l/ S: /idr-s/' -fo -dp -1 -s $(testdir)
+	rm -rf $(testdir)
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
