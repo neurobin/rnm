@@ -63,14 +63,22 @@
 #include <algorithm>
 #include <locale>
 #include <exception>
-#include <unicode/unistr.h>//icu::UnicodeString
-#include <unicode/locid.h> //icu::Locale
 #include <cstdint> //Fixed width integral types: uint_fast64_t, uint_fast8_t
 #include <gmpxx.h> //mpf_class, mpz_class
 #include "strnatcmp.hpp"
 #include <jpcre2.hpp>
 #include "proto.hpp"
 #include "futil.hpp"
+
+//~ #define RNM_ENABLE_ICU
+
+#ifdef RNM_ENABLE_ICU
+#include <unicode/unistr.h>//icu::UnicodeString
+#include <unicode/locid.h> //icu::Locale
+#else
+#define toLower toLower0
+#define toUpper toUpper0
+#endif
 
 //#define RNM_RELEASE //uncomment it when going for production release
 

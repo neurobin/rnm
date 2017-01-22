@@ -1,5 +1,5 @@
 ACLOCAL_AMFLAGS = -I m4
-SUBDIRS = pcre2 gmpxx icu
+SUBDIRS = pcre2 gmpxx #icu
 EXTRA_DIST = autogen.sh \
  README.md \
  .travis.yml \
@@ -11,15 +11,15 @@ dist_man_MANS = rnm.1
 
 AM_CPPFLAGS = -I$(srcdir)/pcre2 -Ipcre2/src \
   -I$(srcdir)/jpcre2/src \
-  -I$(srcdir)/gmpxx -Igmpxx \
-  -I$(srcdir)/icu/common \
-  -I$(srcdir)/icu/i18n \
-  -I$(srcdir)/icu/io
+  -I$(srcdir)/gmpxx -Igmpxx
+#  -I$(srcdir)/icu/common \
+#  -I$(srcdir)/icu/i18n \
+#  -I$(srcdir)/icu/io
 
 rnm_CXXFLAGS = \
   -Lpcre2/.libs \
-  -Lgmpxx/.libs \
-  -Licu/lib
+  -Lgmpxx/.libs
+#  -Licu/lib
 #  -I$(srcdir)/icu/
 #  -I$(srcdir)/icu/
 #  -I$(srcdir)/icu/
@@ -43,12 +43,12 @@ LDADD = \
  -lpcre2-8 \
  -lgmpxx \
  -lgmp \
- -licuuc \
- -licuio \
- -licui18n \
- -licudata \
  -ldl \
  -lm
+# -licuuc \
+# -licuio \
+# -licui18n \
+# -licudata 
 
 rnm_CXXFLAGS += \
   $(extra_opts) 

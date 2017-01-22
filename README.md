@@ -1,7 +1,7 @@
 [![Build Status](https://travis-ci.org/neurobin/rnm.svg?branch=release)](https://travis-ci.org/neurobin/rnm)
 
 <div id="description"></div>
-Bulk Rename Utility written in `C++`. Files and directories can be passed as command line arguments to rename them in bulk according to some naming scheme (*Name String*). If any file or directory path is not passed as command line argument, it will wait for user to type the path i.e it will take the path from standard input `(>=version 3.0.1)`. It uses `C++` regex (<a href="http://www.cplusplus.com/reference/regex/ECMAScript/">ECMAScript (aka JavaScript) regex</a>) as the default regex to provide search (and replace) functionality, other regex modes are available through (`-re`) option. It provides an undo functionality too to move back an unwanted rename operation. You can also run a simulation instead of actual rename to view the potential outcome as program output on terminal with the `-sim` option.
+Bulk Rename Utility written in `C++`. Files and directories can be passed as command line arguments to rename them in bulk according to some naming scheme (*Name String*). If any file or directory path is not passed as command line argument, it will wait for user to type the path i.e it will take the path from standard input `(>=version 3.0.1)`. It uses PCRE2 (revised version of PCRE) regex to provide search (and replace) functionality. It provides an undo functionality too to move back an unwanted rename operation. You can also run a simulation instead of actual rename to view the potential outcome as program output on terminal with the `-sim` option.
 
 
 <div id="features"></div>
@@ -14,34 +14,60 @@ Bulk Rename Utility written in `C++`. Files and directories can be passed as com
 5. Names can be modified with certain predefined rules. For example, you can insert parent directory name or working directory name or index etc... in filename in arbitrary positions.
 6. Latin indexing of files. Index can also be converted to different bases (binary, hex, oct etc...).
 6. Names can be taken from a file, and these names can also be modified by applying *Name String* rules on them.
-7. Search functionality. It uses the <a href="http://www.cplusplus.com/reference/regex/ECMAScript/">ECMAScript (aka JavaScript) regex</a> by default. Regex mode can be changed (POSIX basic, extended, egrep, grep, awk, ECMAScript). Fixed string search is also possible.
+7. Search functionality. It uses PCRE2 regex. Fixed string search is also possible.
 8. Null terminated file support for file names (Null termination is a good way to store filenames in a file).
 9. Sort functionality. Available sorting methods are: Natural sort and general alphabetical sort.
 10. Multiple search criteria and replacement methods are possible.
 11. Search keywords and replacement regex can also be supplied form files (single or multiple).
 
-<div id="dependency"></div>
-#Dependency:
-* `libstdc++6 (>=4.9.2)`
+#New features:
 
-<div id="install"></div>
+1. Unlimited precission for numbers i.e you can perform base conversion, scientific conversion etc.. on an arbitrarily big number. This functionality is provided by GMP BigNum library (GNU Multi-precesion library).
+2. base conversion, scientific conversion, latin conversion can be performed selectively with regex replace.
+3. File information is available, e.g modification time, access time, status change time (time string can be formatted using format string e.g %d-%m-%Y), permission, owner id, group id, size, block, inode number, mode etc...
+4. Inverse search is possible.
+5. Each regex operation can be associated with either link, file or directory, for example, if a replace string is associated with only file, it will not work on directories or links.
+
+#Features that were dropped:
+
+* Multiple regex mode in favor of PCRE2 regex.
+* All the previous regex modes; from now only PCRE2 regex will be used.
+
+
 #Install:
 
-###Unix:
+###Install from source:
 
-Make sure `libstdc++6 (>=4.9.2)` and `GCC (g++>=4.9.2)` is available in your system.
+Make sure you have a C++ compiler equivalent to GCC-5.0 (g++-5.0) or later installed on your system.
 
-To install, simply do:
+####Download dependencies:
+To install dependencies run the `prepare.sh` file:
+
 ```sh
-./configure
-make
-sudo make install
+cd rnm # i.e go inside the rnm project directory
+sh prepare.sh
 ```
 
-If it seems too much of a work to compile the source, then download a binary branch ([bin-release](https://github.com/neurobin/rnm/tree/bin-release)) of this repository which contains 32 and 64 bit binary build and follow the instructions on its' *README.md* file.
+It will download three different projects:
 
-###Ubuntu:
+1. pcre2
+2. jpcre2
+3. gmplib
 
+####Install rnm:
+After you have all the dependencies at hand, you can simply do:
+
+```sh
+./configure --enable-static --disable-shared --enable-cxx --enable-jit
+#--enable-cxx is mandatory, --enable-jit will improve performance during patter matching
+make
+sudo make install-strip #binary size will be minimum comapared to `sudo make install`
+```
+Hold tight until it finishes compiling and building **rnm**.
+
+###Install from pre-built binary:
+
+####From launchpad PPA:
 Aside from the above generalized method, you can also install it in Ubuntu from PPA (`ppa:neurobin/ppa`).
 
 ```sh
@@ -50,7 +76,7 @@ sudo apt-get update
 sudo apt-get install rnm
 ```
 
-If you are in Ubuntu 14.04 or 12.04 (trusty or precise), you will need to add ubuntu-toolchain repository to make `libstdc++6 (>=4.9.2)` available:
+If you are in Ubuntu 14.04 or 12.04 (trusty or precise), you will need to add ubuntu-toolchain repository to make `libstdc++6 (>=5.0.0)` available:
 
 ```sh
 sudo add-apt-repository ppa:ubuntu-toolchain-r/test
@@ -58,12 +84,16 @@ sudo add-apt-repository -y ppa:neurobin/ppa
 sudo apt-get update
 sudo apt-get install rnm
 ```
+
+####For others:
+You can download a pre-built binary (64 and/or 32 bit) from the [release page](https://github.com/neurobin/rnm/releases) if available.
+
 <div id="un-install"></div>
 #Uninstall:
 
 1. For ubuntu uninstall from software manager.
-2. If you used a binary branch during installation, follow the instructions on it's *README.md* file.
-3. If you compiled from the source, do `./configure && make && sudo make uninstall`
+2. If you used a pre-built binary, just delete the binary and the man page.
+3. If you compiled from the source, do `./configure --enable-static --disable-shared --enable-cxx --enable-jit && make && sudo make uninstall`
 
 <div id="usage"></div>
 #Usage:

@@ -18,7 +18,10 @@ AX_CXX_COMPILE_STDCXX([11], [noext], [mandatory])
 # Checks for libraries.
 
 #AC_CONFIG_FILES([Makefile])
-AC_CONFIG_SUBDIRS([pcre2 jpcre2 gmpxx icu])
+AC_CONFIG_SUBDIRS([pcre2 jpcre2 gmpxx])
+
+#AC_CONFIG_SUBDIRS([icu])
+
 
 
 # Checks for header files.

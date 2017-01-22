@@ -6,18 +6,10 @@ before_install:
   - sudo apt-get update -q
   - sudo apt-get install g++-5 -y
   - CXX=g++-5
-  - sudo apt-get install lzip
-  - mkdir -p gmpxx
-  - wget https://gmplib.org/download/gmp/gmp-6.1.2.tar.lz
-  - tar --lzip -xf gmp-6.1.2.tar.lz --strip-components=1 -C gmpxx
-  - git clone --branch=release --depth=1 https://github.com/jpcre2/pcre2
-  - git clone --branch=release --depth=1 https://github.com/jpcre2/jpcre2
-  - wget https://raw.githubusercontent.com/Amerge/icu/master/icu4c-58_2-src.tgz
-  - tar -xf icu4c-58_2-src.tgz
-  - mv -f icu/source/* icu
+  - sh prepare.sh
 script: 
   - ./autogen.sh
-  - ./configure --enable-static --disable-shared --enable-cxx --enable-jit --with-parens-nest-limit=500
+  - ./configure --enable-static --disable-shared --enable-cxx --enable-jit
   - make
   - make checkrnm
 

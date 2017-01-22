@@ -44,6 +44,7 @@ String toString(Char a){
     else return String();
 }
 
+#ifdef RNM_ENABLE_ICU
 String toUpper(const String& s, const char* loc_s = 0){
     icu::Locale loc(loc_s);
     icu::UnicodeString us(s.c_str());
@@ -59,13 +60,12 @@ String toLower(const String& s, const char* loc_s = 0){
     String res;
     return us.toUTF8String(res);
 }
-
+#endif
 
 String toLower0(String s){
     for(size_t i=0;i<s.length();i++){s[i]=::tolower(s[i]);}
     return s;
 }
-
 
 String toUpper0(String s){
     for(size_t i=0;i<s.length();i++){s[i]=::toupper(s[i]);}

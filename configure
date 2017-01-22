@@ -742,7 +742,7 @@ CCC
 CC
 CFLAGS
 CPP'
-ac_subdirs_all='pcre2 jpcre2 gmpxx icu'
+ac_subdirs_all='pcre2 jpcre2 gmpxx'
 
 # Initialize some variables set by options.
 ac_init_help=
@@ -4245,7 +4245,10 @@ $as_echo "#define HAVE_CXX11 1" >>confdefs.h
 #AC_CONFIG_FILES([Makefile])
 
 
-subdirs="$subdirs pcre2 jpcre2 gmpxx icu"
+subdirs="$subdirs pcre2 jpcre2 gmpxx"
+
+
+#AC_CONFIG_SUBDIRS([icu])
 
 
 
