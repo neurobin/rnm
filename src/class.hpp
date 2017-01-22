@@ -255,8 +255,9 @@ struct File {
         init(); //initialize vars
         char abspath[FILENAME_MAX+1];
         if(follow_symlink){
-            realpath(file.c_str(),abspath);
-            path = String(abspath);
+            char* res = realpath(file.c_str(),abspath);
+            if(res) path = String(abspath);
+            else path = file;
         }
         else {
             path = String(normalizePath((char*)(CWD.c_str()),(const char*)(file.c_str()),abspath));

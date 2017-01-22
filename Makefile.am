@@ -1,5 +1,5 @@
 ACLOCAL_AMFLAGS = -I m4
-SUBDIRS = src pcre2 gmpxx icu
+SUBDIRS = pcre2 gmpxx icu
 EXTRA_DIST = autogen.sh \
  README.md \
  .travis.yml \
@@ -9,7 +9,24 @@ EXTRA_DIST = autogen.sh \
 
 dist_man_MANS = rnm.1
 
-AM_CPPFLAGS = -Ipcre2 -Igmpxx -Iicu
+AM_CPPFLAGS = -I$(srcdir)/pcre2 -Ipcre2/src \
+  -I$(srcdir)/jpcre2/src \
+  -I$(srcdir)/gmpxx -Igmpxx \
+  -I$(srcdir)/icu/common \
+  -I$(srcdir)/icu/i18n \
+  -I$(srcdir)/icu/io
+
+rnm_CXXFLAGS = \
+  -Lpcre2/.libs \
+  -Lgmpxx/.libs \
+  -Licu/lib
+#  -I$(srcdir)/icu/
+#  -I$(srcdir)/icu/
+#  -I$(srcdir)/icu/
+#  -I$(srcdir)/icu/
+#  -I$(srcdir)/icu/
+#  -I$(srcdir)/icu/
+#  -I$(srcdir)/icu/
 
 bin_PROGRAMS = rnm
 rnm_SOURCES = src/main.cpp src/func.hpp src/class.hpp src/regutils.hpp src/strutils.hpp src/inout.hpp src/futil.hpp src/strnatcmp.hpp src/proto.hpp src/global.hpp
@@ -23,17 +40,17 @@ rnm_SOURCES = src/main.cpp src/func.hpp src/class.hpp src/regutils.hpp src/strut
 extra_opts = -DU_STATIC_IMPLEMENTATION
 
 LDADD = \
- pcre2/.libs/libpcre2-8.a \
- gmpxx/.libs/libgmpxx.a \
- gmpxx/.libs/libgmp.a \
- icu/lib/libicuuc.a \
- icu/lib/libicuio.a \
- icu/lib/libicui18n.a \
- icu/lib/libicudata.a \
+ -lpcre2-8 \
+ -lgmpxx \
+ -lgmp \
+ -licuuc \
+ -licuio \
+ -licui18n \
+ -licudata \
  -ldl \
  -lm
 
-rnm_CXXFLAGS = \
+rnm_CXXFLAGS += \
   $(extra_opts) 
 
 .PHONY: checkrnm

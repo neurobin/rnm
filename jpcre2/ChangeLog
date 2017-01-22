@@ -1,0 +1,123 @@
+Change Log for JPCRE2
+--------------------
+
+Version 10.28.12 - 
+-----------------------------------------------
+
+* Add match evaluator (close feature request #9)
+* Improve getter functions
+
+
+Version 10.28.11 - Mon Dec  5 09:58:35 UTC 2016
+-----------------------------------------------
+
+* Fix bug: Copy constructor of Regex class was performing an additional compilation even
+		when the to-be-copied code was null, thus producing a wrong copy.
+
+
+Version 10.28.09 - Sat Nov 19 13:16:37 UTC 2016
+-----------------------------------------------
+
+* For loop optimization (Thanks to David Carlier for noticing them.)
+
+Version 10.28.08 - Fri Nov 18 00:49:26 UTC 2016
+-----------------------------------------------
+
+* Added `setMatchStartOffsetVector()`
+* Added `setMatchEndOffsetVector()`
+* Added `resetCharacterTables()`
+* Added a #define to privide JPCRE2 version
+* Added a typedef `jpcre2::VecOff`
+* Removed `getEndOffset()`
+* Removed `setLocale()`, `getLocale()` and `getLocaleTypeId()`
+* Fixed a bug on Regex copy constructor (deleted character tables were being tried to be used).
+
+
+Version 10.28.07 - Tue Nov 15 19:50:34 UTC 2016
+-----------------------------------------------
+
+* Fix `toString(int)` function for `C++98`
+* Added a struct ConvInt
+* Added a struct ConvUTF
+
+Version 10.28.06 - Mon Nov 14 19:09:19 UTC 2016
+-----------------------------------------------
+
+* Fix memory leaks tracked by valgrind
+* Fix some minor bugs
+* Removed `jpcre2::ERROR::JIT_COMPILE_FAILED`
+* Added `initMatchFrom()` and `initReplaceFrom()`
+* Added `setNewLine()` and `getNewLine()`
+* Fix `setLocale()`
+* Added `getLocaleTypeId()`
+* `PCRE2_SUBSTITUTE_OVERFLOW_LENGTH` can now be overridden.
+* Overloads to pass subject, pattern and replacement strings with pointer.
+* Added `getSubjectPointer()`, `getPatternPointer()` and `getReplaceWithPointer()`
+
+
+Version 10.28.05 - Fri Nov 11 22:53:19 UTC 2016
+-----------------------------------------------
+
+* Start offset for matching. [Thanks to Kamil93](https://github.com/Kamil93)
+* A function `RegexMatch::getEndOffset()` to get the offset where last match ended. [Thanks to Kamil93](https://github.com/Kamil93)
+* Shortcut match function of `Regex` class will act the same way as the original match function from `RegexMatch` class.
+* Some overloads of `RegexMatch::match()` to make it same as its' shortcut `Regex::match()`.
+* Some overloads of `RegexReplace::replace()` to make it same as its' shortcut `Regex::replace()`.
+* Public constructor for `RegexMatch` i.e `RegexMatch` object creation is allowed.
+* Public constructor for `RegexReplace` i.e `RegexReplace` object creation is allowed.
+* Getter and setter for associating a Regex object with a `RegexMatch` or `RegexReplace` object.
+
+
+Version 10.28.04 - Thu Nov 10 17:14:50 UTC 2016
+-----------------------------------------------
+
+* fix multiple definition error (issue #10).
+* improve error handling.
+* used const char[] instead of const std::string.
+* removed LOCALE_NONE and LOCALE_DEFAULT constants.
+
+
+Version 10.28.03 - Mon Oct 31 22:24:29 UTC 2016
+-----------------------------------------------
+
+* Remove convert16 and convert32 global variable.
+* Add convert16 and convert32 typedefs.
+
+
+Version 10.28.02 - Mon Oct 31 21:00:32 UTC 2016
+-----------------------------------------------
+
+1. Remove PCRE2_CODE_UNIT_WIDTH quirks.
+2. Provide portable coding approach.
+3. Converted to header only library.
+
+
+Version 10.27.03 - Tue Oct 25 19:12:07 UTC 2016
+-----------------------------------------------
+
+* Fix multi code unit wdith support
+* Add example for handling multi code unit width
+
+Version 10.27.02 - Sat Sep 24 23:50:57 UTC 2016
+-----------------------------------------------
+
+* Fix issue #6 and #7
+
+Version 10.27.01 - Fri Sep 23 09:01:10 UTC 2016
+-----------------------------------------------
+
+* New API with 8 bit, 16 bit and 32 bit support
+* Add templated struct `jpcre2::select8` to select 8 bit code unit width
+* Add templated struct `jpcre2::select16` to select 16 bit code unit width
+* Add templated struct `jpcre2::select32` to select 32 bit code unit width
+* When using a single code unit width, corresponding struct can be used with `jpcre2::select` (without the suffix)
+* Support `char` (`std::string`), `wchar_t` (`std::wstring`), `char16_t` (`std::u16string`), `char32_t` (`std::u32string`)
+* `reset()` and `resetErrors()` can be called from anywhere in the method chain.
+
+
+Version 10.26.02 - Sun Sep 11 15:37:00 UTC 2016
+-----------------------------------------------
+
+* `Regex::match()` and its overloads will call `getMatchObject()` instead of `initMatch()`
+* `Regex::replace()` and its overloads will call `getReplaceObject()` instead of `initReplace()` 
+

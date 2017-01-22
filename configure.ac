@@ -18,7 +18,7 @@ AX_CXX_COMPILE_STDCXX([11], [noext], [mandatory])
 # Checks for libraries.
 
 #AC_CONFIG_FILES([Makefile])
-AC_CONFIG_SUBDIRS([pcre2 gmpxx icu])
+AC_CONFIG_SUBDIRS([pcre2 jpcre2 gmpxx icu])
 
 
 # Checks for header files.
@@ -63,7 +63,7 @@ fi
 
 #sAM_CONDITIONAL(ENABLE_ARCH_32, test "x$enable_arch_32" = "xyes")
 
-AC_OUTPUT(Makefile src/Makefile)
+AC_OUTPUT(Makefile)
 
 
 cat <<EOF
