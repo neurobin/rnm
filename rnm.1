@@ -1,24 +1,14 @@
-.TH rnm 1 "Fri Feb 12 2016" Unix "Utility"
+.TH rnm 1 "Mon Jan 23 2017" Unix "Utility"
 .SH NAME
 rnm \- Bulk rename utility
 .SH SYNOPSIS
-.B rnm [-ns
-.I name-string
-.B ]
-.I file-path
-.B ...
+.B rnm [options] filepaths
 
-One of the options of 
-.B -ns
-or 
-.B -nsf
-or 
-.B -rs
-is mandatory. Options are **not** sequential, their position in the argument list have no significance. For example: 
+Options are **not** sequential, their position in the argument list holds no significance. For example: 
 .B rnm filepath -ns name
 is the same as 
 .B rnm -ns name filepath. 
-Though passing the directory/file path at the end of the argument list is considered to be safe and wise.
+Though passing the directory/file path at the end of the argument list is considered to be safe.
 
 Options are case insensitive, i.e 
 .B -ssF
@@ -26,33 +16,32 @@ and
 .B -ssf
 are the same.
 .SH DESCRIPTION
-Bulk Rename Utility written in C++. Files and directories can be passed as command line arguments to rename them in bulk according to some naming scheme (
+Bulk Rename Utility written in C++. Path to files and directories can be passed as command line arguments to rename them in bulk according to some naming scheme (
 .B Name String
-). If no file or directory path is passed as command line argument, it will wait for user to type the path i.e it will take the path from standard input (>=version 3.0.1). It uses ECMAScript regex (aka JavaScript) as the default regex to provide search (and replace) functionality, other regex modes ( POSIX compliant basic and extended regex) are available through (
-.B -re
-) option. It provides an undo functionality (
+). If no file or directory path is given, it will wait for user to type the path i.e it will take the path from standard input. It uses PCRE2 (a revised version of PCRE) regex to provide search (and replace) functionality. It provides an undo functionality (
 .B rnm -u
-)too to move back an unwanted rename operation. You can also run a simulation instead of actual rename to view the potential outcome as program output on terminal with the 
+) to move back an unwanted rename operation. You can also run a simulation instead of actual rename to view the potential outcome as program output on terminal with the 
 .BR -sim
 option.
 .SH OPTIONS
-.IP "-h, --help"
-Show help menu.
-.IP "--index,--start-index, -i,"
-.B -si
+.IP "--help"
+.B -h
+: Show help menu.
+.IP "--index,--start-index,"
+.B -i or -si
 .I value
 : Starting index.
 .IP "--end-index,"
 .B -ei 
 .I value
-: End index i.e index to stop renaming from. It is only for files inside a directory that is being recursively taken due to a depth value greater than 0, i.e it works on directory index. Note that directory index 
+: End index i.e index to stop renaming from. It is only for files inside a directory that is being recursively taken due to a depth value greater than 0. Note that directory index 
 .B /id/
-will renew in each directory i.e in each directory rename will be performed from start index to end index.
+will renew in each directory and in each directory rename will be performed from start index to end index.
 
 .IP "--increment-value,"
 .B -inc
 .I value
-: Increment value (floating point decimal). The amount, index will be incremented or decremented in each iteration. Decremented index is available through name string rule: 
+: Increment value. The amount, index will be incremented or decremented in each iteration. Decremented index is available through name string rule: 
 .B /-i/
 , 
 .B /-id/

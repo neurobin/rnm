@@ -24,8 +24,8 @@ Bulk Rename Utility written in `C++`. Files and directories can be passed as com
 
 #New features:
 
-1. Unlimited precission for numbers i.e you can perform base conversion, scientific conversion etc.. on an arbitrarily big number. This functionality is provided by GMP BigNum library (GNU Multi-precesion library).
-2. File information is available, e.g modification time, access time, status change time (time string can be formatted using format string e.g %d-%m-%Y), permission, owner id, group id, size, block, inode number, mode etc...
+1. Unlimited precision for numbers i.e you can perform base conversion, scientific conversion etc.. on an arbitrarily big number. This functionality is provided by GMP BigNum library (GNU Multi-precession library).
+2. File information is available, e.g modification time, access time, status change time (time string can be formatted using format string e.g `%d-%m-%Y`), permission, owner id, group id, size, block, inode number, mode etc...
 3. Inverse search is possible.
 4. Each regex operation can be associated with either link, file or directory, for example, if a replace string is associated with only file, it will not work on directories or links.
 
@@ -39,7 +39,7 @@ Bulk Rename Utility written in `C++`. Files and directories can be passed as com
 
 ###Install from source:
 
-Make sure you have a C++ compiler equivalent to GCC-5.0 (g++-5.0) or later installed on your system.
+Make sure you have a C++ compiler equivalent to GCC-5.0 (`g++-5`) or later installed on your system.
 
 ####Download dependencies:
 To install dependencies run the `prepare.sh` file:
@@ -52,7 +52,7 @@ sh prepare.sh
 It will download three different projects:
 
 1. [pcre2](http://pcre.org/)
-2. [jpcre2](https::/docs.neurobin.org/jpcre2)
+2. [jpcre2](https://docs.neurobin.org/jpcre2)
 3. [gmplib](https://gmplib.org/)
 
 ####Install rnm:
@@ -166,7 +166,7 @@ Index will be incremented even if  any file is skipped renaming in order to rese
 
 
 ##Reverse Index
-Decrementing index. These are constructed by inserting a `-` before the index indentifier e.g `/-i/`, `/-id/` etc..
+Decrementing index. These are constructed by inserting a `-` before the index identifier e.g `/-i/`, `/-id/` etc..
 
 
 ##Name String
@@ -235,7 +235,7 @@ Property | Details | Formatting operation
 
 <div id="time-format-string"></div>
 ####Time Format String
-This format string is used to specify an arbitrary date-time format. For example, `%d-%m%-Y` would produce something like `22-01-2017`. This format string is exactly the same as the format string taken by strftime(3) function. Some frequently used character sequences:
+This format string is used to specify an arbitrary date-time format. For example, `%d-%m%-Y` would produce something like `22-01-2017`. This format string is exactly the same as the format string taken by <u>strftime(3)</u> function. Some frequently used character sequences:
 
 * `%a, %A`: week day name short and full respectively
 * `%b, %B`: month name short and full
