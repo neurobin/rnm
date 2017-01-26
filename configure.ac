@@ -2,10 +2,12 @@ include([ax_cxx_compile_stdcxx.m4])
 AC_INIT([rnm], [4.0.0], [http://github.com/neurobin/rnm/issues])
 #AC_CONFIG_AUX_DIR([.])
 #prefix="/usr"
-#AC_CONFIG_SRCDIR([src/main.cpp])
+AC_CONFIG_SRCDIR([src/main.cpp])
 
 
-AM_INIT_AUTOMAKE
+#AM_INIT_AUTOMAKE
+
+AM_INIT_AUTOMAKE([subdir-objects])
 
 # Checks for programs.
 AC_PROG_CXX
@@ -19,7 +21,7 @@ AX_CXX_COMPILE_STDCXX([11], [noext], [mandatory])
 
 #AC_CONFIG_FILES([Makefile])
 AC_CONFIG_SUBDIRS([pcre2 jpcre2 gmpxx])
-
+AC_CONFIG_LINKS([rnm.1:rnm.1])
 #AC_CONFIG_SUBDIRS([icu])
 
 

@@ -41,13 +41,22 @@ jp::Regex multi_sre("\\s*/([^/]*?)/\\s*([^/;]*)(\\s*;\\s*|$)",0,jpcre2::JIT_COMP
 jp::Regex sanity_regex("[^\\\\[\\]]",0,jpcre2::JIT_COMPILE);
 jp::Regex repl_sanit_re(R"(\\(\d+|\{[^}]+\}))",0,jpcre2::JIT_COMPILE);
 jp::Regex repl_sanit_dol_re(R"(\\\$|\$(?!\d+|\{[^}]+\}))", 0, jpcre2::JIT_COMPILE);
-jp::Regex repl_sanit_and_re(R"((?<!\\)&)");
+jp::Regex repl_sanit_and_re(R"((?<!\\)&)", 0, jpcre2::JIT_COMPILE);
 jp::Regex multi_rre (R"(\s*/([^/]*?)/([^/]*?)/\s*([^/;]*)\s*(;\s*|$))",0,jpcre2::JIT_COMPILE);
-jp::Regex multi_re_info(R"(/info-([^/-]+)-?([^/]*)/)","ejS");
+
+//the following must use the path_delim or second_delim var
+jp::Regex multi_re_info1(path_delim+"info-([^"+path_delim+"-]+)-?([^"+path_delim+"]*)"+path_delim,0, jpcre2::JIT_COMPILE);
+jp::Regex multi_re_info2(second_delim+"info-([^"+second_delim+"-]+)-?([^"+second_delim+"]*)"+second_delim,0, jpcre2::JIT_COMPILE);
+jp::Regex multi_nre1("(?<total>"+path_delim+"(?<rule>-?\\w+)(-?|-(?<exn>[bsl])-?(?<exv>\\d+)?)?"+path_delim+")",0,jpcre2::JIT_COMPILE);
+jp::Regex multi_nre2("(?<total>"+second_delim+"(?<rule>-?\\w+)(-?|-(?<exn>[bsl])-?(?<exv>\\d+)?)?"+second_delim+")",0,jpcre2::JIT_COMPILE);
+jp::Regex multi_pdre1("(?<total>"+path_delim+"(?<rule>pd)-?(?<si>\\d+|[ew])?(-(?<ei>\\d+|[ew]))?-?(?<delim>[^"+
+                                                                path_delim+"]*)?"+path_delim+")",0,jpcre2::JIT_COMPILE);
+jp::Regex multi_pdre2("(?<total>"+second_delim+"(?<rule>pd)-?(?<si>\\d+|[ew])?(-(?<ei>\\d+|[ew]))?-?(?<delim>[^"+
+                                                                second_delim+"]*)?"+second_delim+")",0,jpcre2::JIT_COMPILE);
 
 
 size_t countMatchInRegex(const String& s,const String& re){
-    return jp::Regex(re)
+    return jp::Regex(re,0,jpcre2::JIT_COMPILE)
             .initMatch()
             .setJpcre2Option(jpcre2::FIND_ALL)
             .setSubject(s)

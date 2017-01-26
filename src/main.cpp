@@ -47,6 +47,7 @@ int main(int argc, char* argv[]) {
     signal(SIGILL, signalHandler);      //Illigal instruction
     signal(SIGSEGV, signalHandler);     //Invalid access of storage
     signal(SIGTERM, signalHandler);     //A termination request
+    std::ios::sync_with_stdio(false);
     try{
         ///The following must be the first line
         self_dir = getCurrentDir();
@@ -316,8 +317,6 @@ int main(int argc, char* argv[]) {
                   all_yes=true; 
                 } else if(opt=="-fl"||opt=="--follow-link"){
                   follow_symlink=true; 
-                } else if(opt=="-shop"||opt=="--show-options"){
-                  show_options=true; 
                 } else if(opt=="-f"||opt=="--force"){
                   force=true; 
                 } else if(opt=="-u"||opt=="--undo"){
@@ -341,7 +340,12 @@ int main(int argc, char* argv[]) {
         //file_vector=files;
         //////////////////////////////////////// Opt parse ends here/////////////////////////////////
 
-        if(undo){undoRename();showResult();Exit(0);}
+        if(undo){
+            START_TIME = timeNow();
+            undoRename();
+            showResult();
+            Exit(0);
+        }
 
         
         
@@ -400,7 +404,7 @@ int main(int argc, char* argv[]) {
         
         ///Sort file if sort is true
         if(sort){sortVector(files);}
-        
+        START_TIME = timeNow();
         startTask(files);
         
         showResult();

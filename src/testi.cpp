@@ -75,7 +75,7 @@ int main(){
    signal(SIGINT, signalHandler);  
 
    //~ while(1){
-      //~ std::cout << "Going to sleep...." << std::endl;
+      //~ std::cout << "Going to sleep...." << "\n";
       //~ sleep(1);
    //~ }
    

@@ -34,7 +34,7 @@
 #define __CLASS_HPP
 
 #include "global.hpp"
-#include "strutils.hpp"
+//~ #include "strutils.hpp"
 
 char * normalizePath(char* pwd, const char * src, char* res) {
 	Uint res_len;
@@ -335,122 +335,6 @@ struct File {
     }
 };
 
-
-
-bool isImmediateChild(const File& prevf,const File& newf){
-        if(prevf.path==dirname(newf.path))return true;
-        else return false; 
-}
-
-
-bool isChild(const File& parent, const File& child){
-  std::size_t found = child.path.find(parent.path+path_delim);
-  if (found!=String::npos && found==0) return true;
-  else return false;
-}
-
-
-bool isChildDir(const File& parent, File child){
-    if(child.isDir()) return isChild(parent,child);
-    else return isChild(parent, File(dirname(child.path)));
-}
-
-
-Int childDepth(const File& parent, File child){
-    String childstr=child.path;
-    if(isChildDir( parent, child)){
-        if(child.isDir()){
-            childstr=replaceString(child.path,parent.path+path_delim,String(""));
-        }
-        else{
-            childstr=replaceString(dirname(child.path),parent.path+path_delim,String(""));
-        }
-        //~ LOG("depth: ("<<parent.path<<"->"<<childstr<<")"<<split(childstr,'/').size())
-        return split(childstr,'/').size();
-    }
-    else return LOWEST_DEPTH;
-}
-
-
-
-bool compareNatV(const File& a, const File& b){
-    return compareNat(a.path, b.path);
-}
-
-bool compareNatG(const File& a, const File& b){
-    return (a.path<b.path);
-}
-
-    
-void sortVector(FileArray& files){
-    if(sort_type=="natural"){ std::sort(files.begin(), files.end(), compareNatV); }
-    else if(sort_type=="general"){std::sort(files.begin(), files.end(), compareNatG);}
-    else if(sort_type=="none"){}
-    else{std::sort(files.begin(), files.end(), compareNatV);}
-    
-    ///reverse the sort if reverse_sort is true
-    if(reverse_sort){std::reverse(files.begin(), files.end());}
-}
-
-
-FileArray getFilesFromDir(const String& file){
-    FileArray files;
-    DIR *dir;
-    struct dirent *ent;
-    if ((dir = opendir (file.c_str())) != NULL) {
-        while ((ent = readdir (dir)) != NULL) {
-            
-            String filename=file+path_delim+ent->d_name;
-            if(basename(filename)=="." || basename(filename)==".."){continue;}
-            files.push_back(File(filename));
-        }
-        closedir (dir);
-    } 
-    else {
-        printErrorLog((String(strerror(errno))+": "+file).c_str());
-    }
-    sortVector(files);
-    return files;
-}
-
-
-bool isInvalidFile(const File& f){
-    String file = f.path;
-    bool status=false;
-    
-    if(CWD==f.path && !force){
-        status = true;
-        printWarningLog("renaming working directory not permitted. If you insist, try applying force.");
-    }
-    
-    StringArray invf={HOME,
-        "/bin","/usr","/usr/bin","/tmp",
-        "/dev","/etc","/proc","/home",
-        "/boot","/root","/lib","/media","/opt",
-        "/srv","/sbin","/sys","/var","/include",
-        "/local","/libexec","/log","/mail","/spool",
-        "/mnt","/share","/unix"};
-    for(int i=0;i<(int)invf.size();i++){
-        if(file==invf[i]){
-            if(!force){
-                status=true;
-                printWarningLog("rename not permitted: "+file);
-            }
-        }
-    }
-    
-    //these are not permitted even with force
-    if(file==root_filesystem){status=true;printWarningLog("rename not permitted: "+file);}
-    if(file==self_path){status=true;printWarningLog("rename not permitted: "+file);}
-    if(file==RNM_FILE_LOG_L_TMP){status=true;printWarningLog("rename not permitted: "+file);}
-    if(file==RNM_FILE_LOG_R_TMP){status=true;printWarningLog("rename not permitted: "+file);}
-    if(file==LOG_DIR_PARENT){status=true;printWarningLog("rename not permitted: "+file);}
-    if(file==LOG_DIR){status=true;printWarningLog("rename not permitted: "+file);}
-    if(file==LOG_DIR_UNDO){status=true;printWarningLog("rename not permitted: "+file);}
-    
-    
-    return status;
-}
 
 
 #endif

@@ -69,6 +69,8 @@
 #include <jpcre2.hpp>
 #include "proto.hpp"
 #include "futil.hpp"
+#include <chrono>
+#include <ratio>
 
 //~ #define RNM_ENABLE_ICU
 
@@ -93,6 +95,16 @@ thread_local static std::ostringstream oss_buffer;
 
 
 
+typedef std::chrono::high_resolution_clock::time_point TimeVar;
+typedef long long Long;
+typedef double TimeType;
+//~ #define duration(a) std::chrono::duration_cast<std::chrono::nanoseconds>(a).count()
+#define duration(a) std::chrono::duration<TimeType, std::ratio<1,1>>(a).count()
+#define timeNow() std::chrono::high_resolution_clock::now()
+TimeVar START_TIME = timeNow(); //backup time
+TimeType TIME_COUNT = 0;
+
+
 Double KB = 1024;
 Double MB = KB*KB;
 Double GB = MB*KB;
@@ -107,7 +119,6 @@ bool file_only=false;
 bool exclude_directory=false;
 bool reverse_line=false;
 bool undo=false;
-bool show_options=false;
 bool simulation=false;
 bool line_upward=true;
 bool ign=false;
@@ -160,7 +171,7 @@ NameList nsflist;
 String blank_str="";
 String NEW_LINE="\n";
 String path_delim="/";
-String second_delim="%";
+String second_delim=":";
 String root_filesystem="/";
 String CPDN="";
 String CWDN="";
@@ -249,6 +260,8 @@ String rname;
 StringArray rs_search;
 StringArray rs_replace;
 StringArray rs_mod;
+
+String dtf = "%d-%m-%Y";
 
 
 RegexArray ss_search_re; ///search strings are static and do not depend on each filename, therefore they can be globalized

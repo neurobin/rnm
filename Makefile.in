@@ -99,12 +99,12 @@ am__CONFIG_DISTCLEAN_FILES = config.status config.cache config.log \
  configure.lineno config.status.lineno
 mkinstalldirs = $(install_sh) -d
 CONFIG_CLEAN_FILES =
-CONFIG_CLEAN_VPATH_FILES =
+CONFIG_CLEAN_VPATH_FILES = rnm.1
 am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(man1dir)"
 PROGRAMS = $(bin_PROGRAMS)
-am_rnm_OBJECTS = rnm-main.$(OBJEXT)
+am__dirstamp = $(am__leading_dot)dirstamp
+am_rnm_OBJECTS = src/rnm-main.$(OBJEXT)
 rnm_OBJECTS = $(am_rnm_OBJECTS)
-rnm_LDADD = $(LDADD)
 rnm_DEPENDENCIES =
 rnm_LINK = $(CXXLD) $(rnm_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) \
 	$(LDFLAGS) -o $@
@@ -227,9 +227,9 @@ ETAGS = etags
 CTAGS = ctags
 CSCOPE = cscope
 DIST_SUBDIRS = $(SUBDIRS)
-am__DIST_COMMON = $(dist_man_MANS) $(srcdir)/Makefile.in AUTHORS \
-	COPYING ChangeLog INSTALL NEWS README compile depcomp \
-	install-sh missing
+am__DIST_COMMON = $(dist_man_MANS) $(srcdir)/Makefile.in \
+	$(srcdir)/rnm.1 AUTHORS COPYING ChangeLog INSTALL NEWS README \
+	compile depcomp install-sh missing
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 distdir = $(PACKAGE)-$(VERSION)
 top_distdir = $(distdir)
@@ -369,7 +369,7 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 ACLOCAL_AMFLAGS = -I m4
-SUBDIRS = pcre2 gmpxx #icu
+SUBDIRS = pcre2 gmpxx
 EXTRA_DIST = autogen.sh \
  README.md \
  .travis.yml \
@@ -378,33 +378,20 @@ EXTRA_DIST = autogen.sh \
  m4/ax_cxx_compile_stdcxx.m4
 
 dist_man_MANS = rnm.1
+rnm_CXXFLAGS = $(extra_opts)
 AM_CPPFLAGS = -I$(srcdir)/pcre2 -Ipcre2/src \
   -I$(srcdir)/jpcre2/src \
   -I$(srcdir)/gmpxx -Igmpxx
 
-#  -I$(srcdir)/icu/common \
-#  -I$(srcdir)/icu/i18n \
-#  -I$(srcdir)/icu/io
-# -licuuc \
-# -licuio \
-# -licui18n \
-# -licudata 
-rnm_CXXFLAGS = -Lpcre2/.libs -Lgmpxx/.libs $(extra_opts)
 rnm_SOURCES = src/main.cpp src/func.hpp src/class.hpp src/regutils.hpp src/strutils.hpp src/inout.hpp src/futil.hpp src/strnatcmp.hpp src/proto.hpp src/global.hpp
-
-#if ENABLE_ARCH_32
-#rnm_CXXFLAGS = -m32 $(AM_CXXFLAGS)
-#endif
-
-#rnm_LDFLAGS = `icu/icu-config --cxx --cxxflags --cppflags --ldflags`
-extra_opts = -DU_STATIC_IMPLEMENTATION
-LDADD = \
- -lpcre2-8 \
- -lgmpxx \
- -lgmp \
+rnm_MANS = rnm.1
+rnm_LDADD = \
+ -Lpcre2/.libs -lpcre2-8 \
+ -Lgmpxx/.libs -lgmpxx -lgmp \
  -ldl \
  -lm
 
+extra_opts = -DU_STATIC_IMPLEMENTATION
 testdir = testdir
 all: all-recursive
 
@@ -485,6 +472,14 @@ uninstall-binPROGRAMS:
 
 clean-binPROGRAMS:
 	-test -z "$(bin_PROGRAMS)" || rm -f $(bin_PROGRAMS)
+src/$(am__dirstamp):
+	@$(MKDIR_P) src
+	@: > src/$(am__dirstamp)
+src/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) src/$(DEPDIR)
+	@: > src/$(DEPDIR)/$(am__dirstamp)
+src/rnm-main.$(OBJEXT): src/$(am__dirstamp) \
+	src/$(DEPDIR)/$(am__dirstamp)
 
 rnm$(EXEEXT): $(rnm_OBJECTS) $(rnm_DEPENDENCIES) $(EXTRA_rnm_DEPENDENCIES) 
 	@rm -f rnm$(EXEEXT)
@@ -492,39 +487,42 @@ rnm$(EXEEXT): $(rnm_OBJECTS) $(rnm_DEPENDENCIES) $(EXTRA_rnm_DEPENDENCIES)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
+	-rm -f src/*.$(OBJEXT)
 
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rnm-main.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/rnm-main.Po@am__quote@
 
 .cpp.o:
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\
+@am__fastdepCXX_TRUE@	$(CXXCOMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ $< &&\
+@am__fastdepCXX_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Po
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXXCOMPILE) -c -o $@ $<
 
 .cpp.obj:
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ `$(CYGPATH_W) '$<'`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.obj$$||'`;\
+@am__fastdepCXX_TRUE@	$(CXXCOMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ `$(CYGPATH_W) '$<'` &&\
+@am__fastdepCXX_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Po
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXXCOMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
 
-rnm-main.o: src/main.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(rnm_CXXFLAGS) $(CXXFLAGS) -MT rnm-main.o -MD -MP -MF $(DEPDIR)/rnm-main.Tpo -c -o rnm-main.o `test -f 'src/main.cpp' || echo '$(srcdir)/'`src/main.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/rnm-main.Tpo $(DEPDIR)/rnm-main.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/main.cpp' object='rnm-main.o' libtool=no @AMDEPBACKSLASH@
+src/rnm-main.o: src/main.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(rnm_CXXFLAGS) $(CXXFLAGS) -MT src/rnm-main.o -MD -MP -MF src/$(DEPDIR)/rnm-main.Tpo -c -o src/rnm-main.o `test -f 'src/main.cpp' || echo '$(srcdir)/'`src/main.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/rnm-main.Tpo src/$(DEPDIR)/rnm-main.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/main.cpp' object='src/rnm-main.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(rnm_CXXFLAGS) $(CXXFLAGS) -c -o rnm-main.o `test -f 'src/main.cpp' || echo '$(srcdir)/'`src/main.cpp
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(rnm_CXXFLAGS) $(CXXFLAGS) -c -o src/rnm-main.o `test -f 'src/main.cpp' || echo '$(srcdir)/'`src/main.cpp
 
-rnm-main.obj: src/main.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(rnm_CXXFLAGS) $(CXXFLAGS) -MT rnm-main.obj -MD -MP -MF $(DEPDIR)/rnm-main.Tpo -c -o rnm-main.obj `if test -f 'src/main.cpp'; then $(CYGPATH_W) 'src/main.cpp'; else $(CYGPATH_W) '$(srcdir)/src/main.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/rnm-main.Tpo $(DEPDIR)/rnm-main.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/main.cpp' object='rnm-main.obj' libtool=no @AMDEPBACKSLASH@
+src/rnm-main.obj: src/main.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(rnm_CXXFLAGS) $(CXXFLAGS) -MT src/rnm-main.obj -MD -MP -MF src/$(DEPDIR)/rnm-main.Tpo -c -o src/rnm-main.obj `if test -f 'src/main.cpp'; then $(CYGPATH_W) 'src/main.cpp'; else $(CYGPATH_W) '$(srcdir)/src/main.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/rnm-main.Tpo src/$(DEPDIR)/rnm-main.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/main.cpp' object='src/rnm-main.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(rnm_CXXFLAGS) $(CXXFLAGS) -c -o rnm-main.obj `if test -f 'src/main.cpp'; then $(CYGPATH_W) 'src/main.cpp'; else $(CYGPATH_W) '$(srcdir)/src/main.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(rnm_CXXFLAGS) $(CXXFLAGS) -c -o src/rnm-main.obj `if test -f 'src/main.cpp'; then $(CYGPATH_W) 'src/main.cpp'; else $(CYGPATH_W) '$(srcdir)/src/main.cpp'; fi`
 install-man1: $(dist_man_MANS)
 	@$(NORMAL_INSTALL)
 	@list1=''; \
@@ -874,7 +872,6 @@ installdirs-am:
 	for dir in "$(DESTDIR)$(bindir)" "$(DESTDIR)$(man1dir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
 	done
-install: install-recursive
 install-exec: install-exec-recursive
 install-data: install-data-recursive
 uninstall: uninstall-recursive
@@ -883,16 +880,6 @@ install-am: all-am
 	@$(MAKE) $(AM_MAKEFLAGS) install-exec-am install-data-am
 
 installcheck: installcheck-recursive
-install-strip:
-	if test -z '$(STRIP)'; then \
-	  $(MAKE) $(AM_MAKEFLAGS) INSTALL_PROGRAM="$(INSTALL_STRIP_PROGRAM)" \
-	    install_sh_PROGRAM="$(INSTALL_STRIP_PROGRAM)" INSTALL_STRIP_FLAG=-s \
-	      install; \
-	else \
-	  $(MAKE) $(AM_MAKEFLAGS) INSTALL_PROGRAM="$(INSTALL_STRIP_PROGRAM)" \
-	    install_sh_PROGRAM="$(INSTALL_STRIP_PROGRAM)" INSTALL_STRIP_FLAG=-s \
-	    "INSTALL_PROGRAM_ENV=STRIPPROG='$(STRIP)'" install; \
-	fi
 mostlyclean-generic:
 
 clean-generic:
@@ -900,6 +887,8 @@ clean-generic:
 distclean-generic:
 	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
 	-test . = "$(srcdir)" || test -z "$(CONFIG_CLEAN_VPATH_FILES)" || rm -f $(CONFIG_CLEAN_VPATH_FILES)
+	-rm -f src/$(DEPDIR)/$(am__dirstamp)
+	-rm -f src/$(am__dirstamp)
 
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
@@ -910,10 +899,10 @@ clean-am: clean-binPROGRAMS clean-generic mostlyclean-am
 
 distclean: distclean-recursive
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
-	-rm -rf ./$(DEPDIR)
+	-rm -rf src/$(DEPDIR)
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
-	distclean-tags
+	distclean-local distclean-tags
 
 dvi: dvi-recursive
 
@@ -958,7 +947,7 @@ installcheck-am:
 maintainer-clean: maintainer-clean-recursive
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
 	-rm -rf $(top_srcdir)/autom4te.cache
-	-rm -rf ./$(DEPDIR)
+	-rm -rf src/$(DEPDIR)
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 
@@ -985,18 +974,19 @@ uninstall-man: uninstall-man1
 	clean-cscope clean-generic cscope cscopelist-am ctags ctags-am \
 	dist dist-all dist-bzip2 dist-gzip dist-hook dist-lzip \
 	dist-shar dist-tarZ dist-xz dist-zip distcheck distclean \
-	distclean-compile distclean-generic distclean-tags \
-	distcleancheck distdir distuninstallcheck dvi dvi-am html \
-	html-am info info-am install install-am install-binPROGRAMS \
-	install-data install-data-am install-dvi install-dvi-am \
-	install-exec install-exec-am install-html install-html-am \
-	install-info install-info-am install-man install-man1 \
-	install-pdf install-pdf-am install-ps install-ps-am \
-	install-strip installcheck installcheck-am installdirs \
-	installdirs-am maintainer-clean maintainer-clean-generic \
-	mostlyclean mostlyclean-compile mostlyclean-generic pdf pdf-am \
-	ps ps-am tags tags-am uninstall uninstall-am \
-	uninstall-binPROGRAMS uninstall-man uninstall-man1
+	distclean-compile distclean-generic distclean-local \
+	distclean-tags distcleancheck distdir distuninstallcheck dvi \
+	dvi-am html html-am info info-am install install-am \
+	install-binPROGRAMS install-data install-data-am install-dvi \
+	install-dvi-am install-exec install-exec-am install-html \
+	install-html-am install-info install-info-am install-man \
+	install-man1 install-pdf install-pdf-am install-ps \
+	install-ps-am install-strip installcheck installcheck-am \
+	installdirs installdirs-am maintainer-clean \
+	maintainer-clean-generic mostlyclean mostlyclean-compile \
+	mostlyclean-generic pdf pdf-am ps ps-am tags tags-am uninstall \
+	uninstall-am uninstall-binPROGRAMS uninstall-man \
+	uninstall-man1
 
 .PRECIOUS: Makefile
 
@@ -1004,12 +994,24 @@ uninstall-man: uninstall-man1
 dist-hook:
 	rm -rf jpcre2 pcre2 gmpxx
 
-.PHONY: checkrnm
-checkrnm: rnm
+check: test
+
+test: rnm
 	mkdir -p $(testdir)
-	for f in `seq 1 1000`; do touch $(testdir)/$$f; done
-	./rnm -y -ns '/fn/@ B16: /idr-b16/ L: /idr-l/ S: /idr-s/' -fo -dp -1 -s $(testdir)
+	for f in `seq 1 4000`; do touch $(testdir)/$$f; done
+	./rnm -y -rs '//fn///fn/@ B16: /idr-b16/ L: /idr-l/ S: /idr-s/ mtime:/info-mtime//' -fo -dp -1 -s $(testdir)
 	rm -rf $(testdir)
+
+install: install-strip
+install-strip: nonrecursive
+
+nonrecursive:
+	$(INSTALL_PROGRAM) -s -m 755 $(bin_PROGRAMS)  $(bindir)
+	$(INSTALL_PROGRAM) -m 644 $(rnm_MANS) $(mandir)/man1
+
+distclean-local:
+	rm -rf pcre2 gmpxx jpcre2
+	rm -rf .deps
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

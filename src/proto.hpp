@@ -61,8 +61,10 @@ void Exit(int, bool cleanfs=true);
 void unsafeExit(int, bool cleanfs=true);
 void errorExit(const String& s, bool cleanfs=true);
 
-void printWarningLog(String str);
-void printErrorLog(String str);
+void printErrorLog0(String str, const String& fn, size_t line);
+#define printErrorLog(a) printErrorLog0(a, __FILE__, __LINE__)
+void printWarningLog0(String str, const String& fn, size_t line);
+#define printWarningLog(a) printWarningLog0(a, __FILE__, __LINE__)
 void printOutLog(const String& str);
 
 

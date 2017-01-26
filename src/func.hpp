@@ -199,6 +199,7 @@ void parseSearchString(String ss, size_t index){
         if(!fixed_ss[index]){
             re.setPattern(ss)
               .resetErrors()
+              .setJpcre2Option(jpcre2::JIT_COMPILE)
               .compile();
             if(!re){
                 printErrorLog("Invalid search string regex: "+ss+ ". "+re.getErrorMessage());
@@ -225,6 +226,7 @@ void parseSearchString(String ss, size_t index){
                 if(!fixed_ss[index]){
                     re.setModifier(mod)
                       .setPattern(search)
+                      .setJpcre2Option(jpcre2::JIT_COMPILE)
                       .resetErrors()
                       .compile();
                     if(!re){
@@ -261,22 +263,22 @@ String processSize(const String& subj, const String& repl, const Double& size, c
 
 ///Info Name String Rule.
 ///This name string rule provides various information about a file: modification time, size, permission etc.
-///The general format of this rule is: `/info-propertyname-additional part/`
-///This name string rule starts with `/info-` and ends with `/`
-///The second part of the string is the property name (access time, modification time, size etc..). Property names are case insensitive
+///The general format of this rule is: `/info-propertyname-format/`.
+///This name string rule starts with `/info-` and ends with `/`.
+///The second part of the string is the property name (access time, modification time, size etc..). Property names are case insensitive.
 ///The third part of the string is optional and used for pre-formatting the property in a desirable way.
-///Property Name | Details | Additional part
-///------------- | ------- | ---------
-///mtime | Last file modification time (local time) | [Time format](http://man7.org/linux/man-pages/man3/strftime.3.html#DESCRIPTION) (e.g: %d-%m-%Y)
-///atime | Last file access time (local time) | [Time format](http://man7.org/linux/man-pages/man3/strftime.3.html#DESCRIPTION) (e.g: %d-%m-%Y)
-///ctime | Last status change time (local time) | [Time format](http://man7.org/linux/man-pages/man3/strftime.3.html#DESCRIPTION) (e.g: %d-%m-%Y)
-///mtime,GMT | Last file modification time (GMT) | [Time format](http://man7.org/linux/man-pages/man3/strftime.3.html#DESCRIPTION) (e.g: %d-%m-%Y)
-///atime,GMT | Last file access time (GMT) | [Time format](http://man7.org/linux/man-pages/man3/strftime.3.html#DESCRIPTION) (e.g: %d-%m-%Y)
-///ctime,GMT | Last status change time (GMT) | [Time format](http://man7.org/linux/man-pages/man3/strftime.3.html#DESCRIPTION) (e.g: %d-%m-%Y)
-///size | Size of the file | Divide by unit (a positive number, e.g: 1024)
-///blksize | Block size of filesystem I/O | Divide by unit (a positive number, e.g: 1024)
+///Property Name | Details | Format | Default format
+///------------- | ------- | --------------- | --------
+///mtime | Last file modification time (local time) | [Time format](http://man7.org/linux/man-pages/man3/strftime.3.html#DESCRIPTION) | %d-%m-%Y
+///atime | Last file access time (local time) | [Time format](http://man7.org/linux/man-pages/man3/strftime.3.html#DESCRIPTION) | %d-%m-%Y
+///ctime | Last status change time (local time) | [Time format](http://man7.org/linux/man-pages/man3/strftime.3.html#DESCRIPTION) | %d-%m-%Y
+///mtime,GMT | Last file modification time (GMT) | [Time format](http://man7.org/linux/man-pages/man3/strftime.3.html#DESCRIPTION) | %d-%m-%Y
+///atime,GMT | Last file access time (GMT) | [Time format](http://man7.org/linux/man-pages/man3/strftime.3.html#DESCRIPTION) | %d-%m-%Y
+///ctime,GMT | Last status change time (GMT) | [Time format](http://man7.org/linux/man-pages/man3/strftime.3.html#DESCRIPTION) | %d-%m-%Y
+///size | Size of the file | Divide by unit (a positive number, e.g: 1024) | Dynamically selected according to size
+///blksize | Block size of filesystem I/O | Divide by unit (a positive number, e.g: 1024) | Dynamically selected according to size
 ///blocks | Number of 512B blocks | N/A
-///perm | Permission of the file | 'oct' for octal permission, 'ls' for human readable permission scheme like the 'ls' command on Linux
+///perm | Permission of the file | 'oct' for octal permission, 'ls' for human readable permission scheme like the 'ls' command on Linux | oct
 ///uid | User ID of the owner | N/A
 ///gid | Group ID of the owner | N/A
 ///dev | Devic ID of the device containing the file | N/A
@@ -286,7 +288,13 @@ String processSize(const String& subj, const String& repl, const Double& size, c
 String processInfoNameStringRule(const String& ns, const File& file,const String& delim, const String& delim2,char sanitize){
     String res = ns;
     jp::VecNum v;
-    multi_re_info.initMatch().setNumberedSubstringVector(&v).setFindAll().match(ns);
+    if(delim == path_delim)
+        multi_re_info1.initMatch().setNumberedSubstringVector(&v).setFindAll().setSubject(ns).match();
+    else if(delim == second_delim)
+        multi_re_info2.initMatch().setNumberedSubstringVector(&v).setFindAll().setSubject(ns).match();
+    else
+        errorExit("Delimiter mismatch during info name stirng parse, please file a bug report, run with -v option to see bug report url");
+        
     String tot, prop, op;
     for(size_t i=0;i<v.size();++i){
         //~ std::cout<<"0: "<<v[i][0]<<"\t1: "<<v[i][1]<<"\t2: "<<v[i][2]<<"\n";
@@ -300,17 +308,17 @@ String processInfoNameStringRule(const String& ns, const File& file,const String
         }
         
         if("mtime" == prop){
-            res = replaceString(res, tot, sanitizeStringForRegex(formatTime(file.mtime, op), sanitize));
+            res = replaceString(res, tot, sanitizeStringForRegex(formatTime(file.mtime, op.empty()?dtf:op), sanitize));
         } else if("mtime,gmt" == prop){
-            res = replaceString(res, tot, sanitizeStringForRegex(formatTime(file.mtime, op, 'g'), sanitize));
+            res = replaceString(res, tot, sanitizeStringForRegex(formatTime(file.mtime, op.empty()?dtf:op, 'g'), sanitize));
         } else if("atime" == toLower0(prop)){
-            res = replaceString(res, tot, sanitizeStringForRegex(formatTime(file.atime, op), sanitize));
+            res = replaceString(res, tot, sanitizeStringForRegex(formatTime(file.atime, op.empty()?dtf:op), sanitize));
         } else if("atime,gmt" == prop){
-            res = replaceString(res, tot, sanitizeStringForRegex(formatTime(file.atime, op, 'g'), sanitize));
+            res = replaceString(res, tot, sanitizeStringForRegex(formatTime(file.atime, op.empty()?dtf:op, 'g'), sanitize));
         } else if("ctime" == prop){
-            res = replaceString(res, tot, sanitizeStringForRegex(formatTime(file.ctime, op), sanitize));
+            res = replaceString(res, tot, sanitizeStringForRegex(formatTime(file.ctime, op.empty()?dtf:op), sanitize));
         } else if("ctime,gmt" == prop){
-            res = replaceString(res, tot, sanitizeStringForRegex(formatTime(file.ctime, op, 'g'), sanitize));
+            res = replaceString(res, tot, sanitizeStringForRegex(formatTime(file.ctime, op.empty()?dtf:op, 'g'), sanitize));
         } else if("size" == prop){
             res = processSize(res, tot, file.size, op, "Unit of size", sanitize);
         } else if("blksize" == prop){
@@ -393,10 +401,14 @@ String processExtendedNameString_d(const String& ns,std::map<String,Double>& ns_
     ///_d stands for double
     String name=ns;
     int base=NUM_BASE_DEFAULT;
-    jp::Regex multi_nre ("(?<total>"+delim+"(?<rule>-?\\w+)(-?|-(?<exn>[bsl])-?(?<exv>\\d+)?)?"+delim+")",0,jpcre2::JIT_COMPILE);
-    jp::RegexMatch m(&multi_nre);
     jp::VecNas vn;
-    m.setSubject(name).setJpcre2Option(jpcre2::FIND_ALL).setNamedSubstringVector(&vn).match();
+    if(delim == path_delim)
+        multi_nre1.initMatch().setSubject(name).setJpcre2Option(jpcre2::FIND_ALL).setNamedSubstringVector(&vn).match();
+    else if(delim == second_delim)
+        multi_nre2.initMatch().setSubject(name).setJpcre2Option(jpcre2::FIND_ALL).setNamedSubstringVector(&vn).match();
+    else
+        errorExit("Delimiter mismatch during extended name string parse, please file a bug report, run with -v option to see bug report url");
+        
     for(size_t i=0;i<vn.size();++i){
         String total = vn[i]["total"],rule = vn[i]["rule"], exn = vn[i]["exn"], exv = vn[i]["exv"];
         if(!existsInMap(ns_rules, vn[i]["rule"])) {
@@ -442,16 +454,19 @@ String processExtendedPdNameStringRule(const String& ns, const File& file, const
     String pd_max_s = pd_max.get_str();
     ///Reverse the order of pd_names so that the right most directory name comes in 0th index
     std::reverse(pd_names.begin(),pd_names.end());
-    jp::Regex multi_pdre("(?<total>"+p_delim+"(?<rule>pd)-?(?<si>\\d+|[ew])?(-(?<ei>\\d+|[ew]))?-?(?<delim>[^"+
-                                                                p_delim+"]*)?"+p_delim+")",0,jpcre2::JIT_COMPILE);
-    jp::RegexMatch m(&multi_pdre);
     jp::VecNas vn;
-    m.setSubject(name).setJpcre2Option(jpcre2::FIND_ALL).setNamedSubstringVector(&vn).match();
+    if(p_delim == path_delim)
+        multi_pdre1.initMatch().setSubject(name).setJpcre2Option(jpcre2::FIND_ALL).setNamedSubstringVector(&vn).match();
+    else if(p_delim == second_delim)
+        multi_pdre2.initMatch().setSubject(name).setJpcre2Option(jpcre2::FIND_ALL).setNamedSubstringVector(&vn).match();
+    else
+        errorExit("Delimiter mismatch during /pd/ name string parse, please file a bug report, run with -v option to see bug report url");
+        
     for(size_t i=0;i<vn.size();++i){
         String pd_name_c;
         String total = vn[i]["total"],rule = vn[i]["rule"], si = vn[i]["si"], ei = vn[i]["ei"], delim=vn[i]["delim"];
         //~ std::cout<<"\ntotal: "<<total<<"\trule: "<<rule<<"\tsi: "<<si<<"\tei: "<<ei<<"\tdelim: "+delim+NEW_LINE;
-        if(delim2!=""){///This tells us to convert the delim based rules to delim2 based rules, no further processing
+        if(!delim2.empty()){///This tells us to convert the delim based rules to delim2 based rules, no further processing
             name=replaceString(name,total,replaceStringAll(total,p_delim,delim2));
             continue;
         }
@@ -465,13 +480,13 @@ String processExtendedPdNameStringRule(const String& ns, const File& file, const
             ei = ltrim(ei,"0");
             if(ei.empty()) ei="0"; //this should only be done if ei was not empty
         }
-        jp::Regex re("^"+sanitizeStringForRegex(CWD,'s')+"(/[\\s\\S]*|$)");
+        jp::Regex re("^"+sanitizeStringForRegex(CWD,'s')+"(/[\\s\\S]*|$)", 0, jpcre2::JIT_COMPILE);
         Int cd_max=split(CWD,path_delim[0]).size()-1;
         if(cd_max<0)cd_max=0;
         if(si=="e"){si=pd_max_s;}
         if(ei=="e"){ei=pd_max_s;}
         if(si == "w" || ei == "w"){
-            if(re.match(file.path)){
+            if(re.match(file.path)){//temp match
                 Int x = pd_max-cd_max;
                 String s = x.get_str();
                 if(si=="w"){si=s;}
@@ -551,7 +566,7 @@ String parseNameString(const String& ns,const File& file,DirectoryIndex &di, con
     if(!ns.empty()){
         for(auto const& ent : ns_rules_s){
             ///ent.first is the key, ent.second is the value    
-            if(delim2 != ""){
+            if(!delim2.empty()){
                 name = replaceStringAll(name,delim+ent.first+delim,delim2+ent.first+delim2);
                 continue;
             }
@@ -669,7 +684,7 @@ String changeCaseAccordingToSS(String s,const String& search,const String& repla
         return s;
     }
     
-    jp::Regex re (search, modifier);
+    jp::Regex re(search, modifier+"S");
     jp::RegexReplace rr(&re);
     rr.setSubject(&s)
       .setModifier(modifier);
@@ -698,7 +713,7 @@ void processReplaceString(StringArray &rs,const File& file,DirectoryIndex &di){
         }
         ///Add other specialized replace rules here.
         else {
-            jp::Regex re(rs_search[i], rs_mod[i]);
+            jp::Regex re(rs_search[i], rs_mod[i]+"S");
             jp::RegexReplace rr(&re);
             rname=rr.setSubject(rname).setModifier(rs_mod[i]).setReplaceWith(rs_replace[i]).replace();
         }
@@ -721,48 +736,28 @@ String parseTrueFalse(bool a){
     else return "false";
 }
 
-void printOpts(){
-    
-    std::cout<< "\n\nInfo about this session:\n\
-    Executable: "+self_path+"\n\
-    Name String: " +name_string+"\n\
-    Name String File: " +name_string_file+"\n\
-    Fixed Search String: " +parseTrueFalse(ss_fixed[0])+"\n\
-    Replace String (first): " +replace_string[0]+"\n\
-    Replace String search part (first): "+rs_search[0]+"\n\
-    Replace String replace part (first): "+rs_replace[0]+"\n\
-    Replace String modifier part (first): "+rs_mod[0]+"\n\
-    Regex Locale: "+parseTrueFalse(re_locale)+"\n\
-    Depth: "<<depth<<"\n\
-    Input Field Length: "<<index_field_length<<"\n\
-    Undo: "+parseTrueFalse(undo)+"\n\
-    Start Index: "<<start_index<<"\n\
-    End Index: "<<end_index<<"\n\
-    Start Line: "<<start_line<<"\n\
-    End Line: "<<end_line<<"\n\
-    Reverse Line: "+parseTrueFalse(reverse_line)+"\n\
-    Quiet: "+parseTrueFalse(quiet)+"\n\
-    File Only: "+parseTrueFalse(file_only)+"\n\
-    Directory Only: "+parseTrueFalse(directory_only)+"\n\
-    Exclude Directory: "+parseTrueFalse(exclude_directory)+"\n\
-    Count Directory (force): "+parseTrueFalse(count_directory)+"\n\
-    Count File (force): "+parseTrueFalse(count_file)+"\n\
-    Increment Value: "<<inc<<"\n\
-    Line Increment Value: "<<linc<<"\n\
-    Apply force: "+parseTrueFalse(force)+"\n\
-";
-    printIndexFlags();
-    std::cout<< "Simulation: "+parseTrueFalse(simulation)+"\n\n";
-    
-    }
 
 
 void showResult(){
-    if(!quiet){
-        printOutLog(rnc.get_str()+" file/s renamed");
-        if(simulation) std::cout<< " (simulation)"+NEW_LINE;
-    }
-    if(show_options) printOpts();
+    TIME_COUNT += duration(timeNow() - START_TIME);
+    TimeType t, d, h, m, s, sf, b;
+    t = TIME_COUNT;
+    sf = std::modf(t,&b);
+    t = b;
+    d = t/(24*60*60);
+    t = std::fmod(t,24*60*60);
+    h = t/(60*60);
+    t = std::fmod(t,60*60);
+    m = t/60;
+    s = std::fmod(t,60);
+    s += sf;
+    std::string msg = rnc.get_str() + " file" + (rnc>1?"s":"") + " renamed in";
+    if(d>=1) msg += " " + toStringWithFloatingPointDigit(d, '0') + " day" + (std::floor(d)>1?"s":"");
+    if(h>=1) msg += " " + toStringWithFloatingPointDigit(h, '0') + " hour" + (std::floor(h)>1?"s":"");
+    if(m>=1) msg += " " + toStringWithFloatingPointDigit(m, '0') + " minute" + (std::floor(m)>1?"s":"");
+    msg += " " + toStringWithFloatingPointDigit(s, '4') + " second" + (s>1?"s":"");
+    printOutLog(msg);
+    if(!quiet && simulation) std::cout<< " (simulation)"+NEW_LINE;
     
 }
 
@@ -818,7 +813,11 @@ File doRename(const File& file,DirectoryIndex &di){
         int confirm;
         
         if(!all_yes){
-            if(!single_mode){confirm=selectInput();}
+            if(!single_mode){
+                TIME_COUNT += duration(timeNow() - START_TIME);
+                confirm=selectInput();
+                START_TIME = timeNow();
+            }
             else{confirm=1;}
             
             switch(confirm){
