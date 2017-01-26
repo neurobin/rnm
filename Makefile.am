@@ -25,9 +25,7 @@ rnm_MANS = rnm.1
 
 rnm_LDADD = \
  -Lpcre2/.libs -lpcre2-8 \
- -Lgmpxx/.libs -lgmpxx -lgmp \
- -ldl \
- -lm
+ -Lgmpxx/.libs -lgmpxx -lgmp
 
 extra_opts = -DU_STATIC_IMPLEMENTATION
 
@@ -41,7 +39,7 @@ check: test
 test: rnm
 	mkdir -p $(testdir)
 	for f in `seq 1 4000`; do touch $(testdir)/$$f; done
-	./rnm -y -rs '//fn///fn/@ B16: /idr-b16/ L: /idr-l/ S: /idr-s/ mtime:/info-mtime//' -fo -dp -1 -s $(testdir)
+	./rnm -y -rs '//fn///fn/@ B16: /idr-b16/ L: /idr-l/ S: /idr-s/ mtime:/info-mtime-%d-%m-%Y %H:%I %p//' -fo -dp -1 -s $(testdir)
 	rm -rf $(testdir)
 
 install: install-strip

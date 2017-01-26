@@ -109,7 +109,7 @@ rnm directory/file/path -rs "/search regex/replace string/gi" [other_options]
 rnm directory/file/path -ns/f namestring/file/path
 ```
 
-One of the options of `-ns` or `-ns/f` or `-rs` is mandatory. Options are **not** sequential, their position in the argument list holds no significance. For example, `rnm filepath -ns name` is the same as `rnm -ns name filepath`. Though passing the *directory/file* path at the end of the argument list is considered to be safe.
+Options are **not** sequential, their position in the argument list holds no significance. For example, `rnm filepath -ns name` is the same as `rnm -ns name filepath`. Though passing the *directory/file* path at the end of the argument list is considered to be safe.
 
 Options are case insensitive, i.e `-ssF` and `-ssf` are the same.
 

@@ -11,5 +11,5 @@ script:
   - ./autogen.sh
   - ./configure --enable-static --disable-shared --enable-cxx --enable-jit
   - make
-  - make checkrnm
+  - make test
 

@@ -66,6 +66,7 @@
 #include <cstdint> //Fixed width integral types: uint_fast64_t, uint_fast8_t
 #include <gmpxx.h> //mpf_class, mpz_class
 #include "strnatcmp.hpp"
+#define JPCRE2_DISABLE_CHAR1632
 #include <jpcre2.hpp>
 #include "proto.hpp"
 #include "futil.hpp"
@@ -171,7 +172,7 @@ NameList nsflist;
 String blank_str="";
 String NEW_LINE="\n";
 String path_delim="/";
-String second_delim=":";
+String second_delim("\x1f"); //unit separator character dec:31 oc \037 hex: \x1f
 String root_filesystem="/";
 String CPDN="";
 String CWDN="";

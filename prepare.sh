@@ -1,17 +1,10 @@
 #!/bin/sh
 
-modam='
-## Inserted by rnm preparation script
-install: install-*
-##
-'
-
 # Get pcre2
 if [ ! -d pcre2 ]; then
 	wget -c https://github.com/jpcre2/pcre2/archive/release.tar.gz -O pcre2.tar.gz
 	mkdir -p pcre2
 	tar -xf pcre2.tar.gz -C pcre2 --strip-components=1 && rm pcre2.tar.gz
-	find pcre2 -type f -name '*.am' -exec echo 
 fi
 
 # Get jpcre2
