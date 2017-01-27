@@ -37,9 +37,9 @@
 class File;
 
 /////typedefs
-typedef uint_fast64_t Uint;
-typedef uint_fast8_t Ush;
-typedef int_fast16_t Short;
+typedef uint32_t Uint;
+typedef uint8_t Ush;
+typedef int16_t Short;
 typedef mpf_class Double;
 typedef mpz_class Int;
 typedef char Char;
@@ -57,9 +57,13 @@ typedef std::vector<bool> BoolArray;
 typedef std::vector<File> FileArray;
 
 //function prototypes
+void showResult();
 void Exit(int, bool cleanfs=true);
 void unsafeExit(int, bool cleanfs=true);
-void errorExit(const String& s, bool cleanfs=true);
+void errorExit0(const String& s, const String& fn, size_t line, bool cleanfs=true);
+#define errorExitExtra(a, b) errorExit0(a, __FILE__, __LINE__, b)
+#define errorExit(a) errorExit0(a, __FILE__, __LINE__)
+
 
 void printErrorLog0(String str, const String& fn, size_t line);
 #define printErrorLog(a) printErrorLog0(a, __FILE__, __LINE__)

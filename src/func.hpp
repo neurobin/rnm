@@ -177,19 +177,19 @@ void parseIndexFlags(const String& s){
 }
 
 
-void printIndexFlags(){
-    std::cout<< "Width: "<<index_field_length<<NEW_LINE;
-    std::cout<< "Filler: "<<IFF<<NEW_LINE;
-    std::cout<< "Precision: "<<IFP.get_str()<<NEW_LINE;
+//~ void printIndexFlags(){
+    //~ std::cout<< "Width: "<<index_field_length<<NEW_LINE;
+    //~ std::cout<< "Filler: "<<IFF<<NEW_LINE;
+    //~ std::cout<< "Precision: "<<IFP.get_str()<<NEW_LINE;
     //~ std::cout<< "Adjust field: "+index_flag_adjust_s+NEW_LINE;
     //~ std::cout<< "Other flags: ";
     //~ for(int i=0;i<(int)index_flag_ind_s.size();i++){
         //~ std::cout<< index_flag_ind_s[i];
         //~ if(i<(int)index_flag_ind_s.size()-1){std::cout<< ", ";}
         //~ }
-    std::cout<< NEW_LINE;
+    //~ std::cout<< NEW_LINE;
     
-    }
+    //~ }
 
 void parseSearchString(String ss, size_t index){
     if(!stringContains(ss,path_delim)){
@@ -737,32 +737,6 @@ String parseTrueFalse(bool a){
 }
 
 
-
-void showResult(){
-    TIME_COUNT += duration(timeNow() - START_TIME);
-    TimeType t, d, h, m, s, sf, b;
-    t = TIME_COUNT;
-    sf = std::modf(t,&b);
-    t = b;
-    d = t/(24*60*60);
-    t = std::fmod(t,24*60*60);
-    h = t/(60*60);
-    t = std::fmod(t,60*60);
-    m = t/60;
-    s = std::fmod(t,60);
-    s += sf;
-    std::string msg = rnc.get_str() + " file" + (rnc>1?"s":"") + " renamed in";
-    if(d>=1) msg += " " + toStringWithFloatingPointDigit(d, '0') + " day" + (std::floor(d)>1?"s":"");
-    if(h>=1) msg += " " + toStringWithFloatingPointDigit(h, '0') + " hour" + (std::floor(h)>1?"s":"");
-    if(m>=1) msg += " " + toStringWithFloatingPointDigit(m, '0') + " minute" + (std::floor(m)>1?"s":"");
-    msg += " " + toStringWithFloatingPointDigit(s, '4') + " second" + (s>1?"s":"");
-    printOutLog(msg);
-    if(!quiet && simulation) std::cout<< " (simulation)"+NEW_LINE;
-    
-}
-
-
-
 File doRename(const File& file,DirectoryIndex &di){
     bool not_skipped=true;
     File file_to_return = file;
@@ -774,8 +748,6 @@ File doRename(const File& file,DirectoryIndex &di){
             return file_to_return;
         }
     }
-    
-    
     String oldn=basename(file.path);
     String dir=dirname(file.path);
     String name;
@@ -783,35 +755,28 @@ File doRename(const File& file,DirectoryIndex &di){
     
     if(!name_string.empty()){
         name=parseNameString(name_string,file,di,path_delim, "",0);
-        
-        
     } else if(!name_string_file.empty()){
-        
-        if(!nsflist[current_line.get_ui()].empty()){
-            current_abs_line=abslc_list[current_line.get_ui()];
-            name=parseNameString(nsflist[current_line.get_ui()],file,di,path_delim, "",0);
-            
-            
-            if(!reverse_line){current_line+=linc;}
-            else{current_line-=linc;}
-        
+        if(current_line_pos<nsflist.size()){
+            current_abs_line=abslc_list[current_line_pos];
+            current_line = lc_list[current_line_pos];
+            name=parseNameString(nsflist[current_line_pos],file,di,path_delim, "",0);
+            current_line_pos++;
+        } else {
+            //file is out of names
+            printWarningLog("Name string file ran out of names");
+            Exit(0);
         }
-    }
-    else if(replace_string.size()!=0){name=rname;}
-        
+    } else if(replace_string.size()!=0){name=rname;}
     else {printErrorLog("One of the options: -ns or -nsf or -rs is mandatory");Exit(1);}
-    
     
     ///sanitize name by removing invalid name string rules and path delimiter
     name=removeInvalidNameStringRules(name);
     name=stripPathDelimiter(name);
     
-    
     if(!name.empty()){
         if(!quiet){std::cout<< NEW_LINE+file.path+"    ---->    "+dir+path_delim+name+NEW_LINE;}
         ///do rename
         int confirm;
-        
         if(!all_yes){
             if(!single_mode){
                 TIME_COUNT += duration(timeNow() - START_TIME);
@@ -819,7 +784,6 @@ File doRename(const File& file,DirectoryIndex &di){
                 START_TIME = timeNow();
             }
             else{confirm=1;}
-            
             switch(confirm){
                 case 1:
                       not_skipped=Rename(file.path,dir+path_delim+name,di);
@@ -832,45 +796,36 @@ File doRename(const File& file,DirectoryIndex &di){
                       break;
                 case 4:
                       all_yes=false;
-                      showResult();
                       Exit(0);
                 default:
                        all_yes=false;
                        break;
             }
-            
         }
         else{
             ///do rename finally
             not_skipped=Rename(file.path,dir+path_delim+name,di);
-            
         }
-        
     }
     else{
         printWarningLog("Name can not be empty, skipped. ("+file.path+")");not_skipped=false;
     }
     
 
-  if(!name_string_file.empty()){
-    if(current_line<=0){showResult();Exit(1);}
-      
-    if(line_upward && end_line!=0){
-        if(current_line>end_line){printOutLog("End line reached.");showResult();Exit(1);}
-    }
-    else if(end_line==0){
-        if(current_index_rd>=nsflist.size()){printWarningLog("Name string file ran out of names.");showResult();Exit(1);}
-        
-        }
-    else{
-        if(current_line<end_line){printOutLog("End line reached");
-            showResult();
-            Exit(1);
-        }
-    }
-  }
+    //~ if(!name_string_file.empty()){
+        //~ if(current_line<=0){Exit(0);}
+        //~ if(line_upward && end_line!=0){
+            //~ if(current_line>end_line){printOutLog("End line reached.");Exit(0);}
+        //~ } else if(end_line==0){
+            //~ if(current_index_rd>=nsflist.size()){printWarningLog("Name string file ran out of names.");Exit(0);}
+        //~ } else{
+            //~ if(current_line<end_line){
+                //~ printOutLog("End line reached");
+                //~ Exit(0);
+            //~ }
+        //~ }
+    //~ }
     if(not_skipped) file_to_return=File(dir+path_delim+name);
-    
     return file_to_return;
 }
 
@@ -897,27 +852,16 @@ void startInDepthRenamingTaskOnDirectory(const String& dir,String base_dir=base_
         CPDN=getParentDirectoryName(file);
     
         if(files[i].isDir()){
-            
-            if(file_only){
-                
+            if(file_only||link_only){
                 if(childDepth(base_dir,file)<=depth){
-                    
                     startInDepthRenamingTaskOnDirectory(file);
-                }
-                else{
-                
-                }
+                } else{}
+                //not else if
                 if(count_directory){incrementReservedIndexes(di);}
-                
-            }
-            
-            else if(exclude_directory){
+            } else if(exclude_directory){
                 if(count_directory){incrementReservedIndexes(di);}
                 continue;
-            }
-            
-            else{
-                
+            } else{
                 files[i]=doRename(file,di);
                 incrementReservedIndexes(di);
                 file = files[i].path;
@@ -925,23 +869,33 @@ void startInDepthRenamingTaskOnDirectory(const String& dir,String base_dir=base_
                 parent=dirname(file);
                 CPDN=getParentDirectoryName(file);
                 if(childDepth(base_dir,file)<=depth){
-                    
                     startInDepthRenamingTaskOnDirectory(file);
                 }
             }
-            
         }
         else if(files[i].isFile()){
-            
-            if(!directory_only){
+            if(exclude_file){
+                if(count_file) incrementReservedIndexes(di);
+                continue;
+            }else if(!directory_only&&!link_only){
                 files[i]=doRename(file,di);
                 incrementReservedIndexes(di);
+            } else if(count_file){
+                incrementReservedIndexes(di);
             }
-            else if(count_file){incrementReservedIndexes(di);}
-        }
-        else {
+        } else if(files[i].isLink()){
+            if(exclude_link){
+                if(count_link) incrementReservedIndexes(di);
+                continue;
+            } else if(!directory_only && !file_only){
+                files[i]=doRename(file,di);
+                incrementReservedIndexes(di);
+            } else if(count_link) {
+                incrementReservedIndexes(di);
+            }
+        } else {
             incrementReservedIndexes(di);
-            printWarningLog("Not a valid file or directory");
+            printWarningLog("Not a valid file or directory "+files[i].path);
             continue;
         }
     }
@@ -965,28 +919,16 @@ void startTask(FileArray& files){
 
         if(files[i].isDir()){
             base_dir=dirname(file);
-        
-            if(file_only){
-
-                if(childDepth(base_dir,file)<=depth){
-
-                    startInDepthRenamingTaskOnDirectory(file);
-                }
-                else{
-                
-                
-                }
-                if(count_directory){incrementReservedIndexes(di);}
-                
-            }
-            
-            else if(exclude_directory){
+            if(exclude_directory){
                 if(count_directory){incrementReservedIndexes(di);}
                 continue;
-            }
-            
-            else{
-                
+            } else if(file_only||link_only){
+                if(childDepth(base_dir,file)<=depth){
+                    startInDepthRenamingTaskOnDirectory(file);
+                } else{}
+                //not else if
+                if(count_directory){incrementReservedIndexes(di);}
+            } else{
                 files[i]=doRename(file,di);
                 incrementReservedIndexes(di);
                 file = files[i].path;
@@ -995,25 +937,32 @@ void startTask(FileArray& files){
                 CPDN=getParentDirectoryName(file);
                 base_dir=dirname(file);
                 if(childDepth(base_dir,file)<=depth){
-                    
                     startInDepthRenamingTaskOnDirectory(file);
                 }
             }
-            
-            
-        }
-        else if(files[i].isFile()){
-            
-            if(!directory_only){
+        } else if(files[i].isFile()){
+            if(exclude_file){
+                if(count_file) incrementReservedIndexes(di);
+                continue;
+            } else if(!directory_only&&!link_only){
                 files[i]=doRename(file,di);
                 incrementReservedIndexes(di);
+            } else if(count_file){
+                incrementReservedIndexes(di);
             }
-            else if(count_file){incrementReservedIndexes(di);}
-     
-        }
-        else {
+        } else if(files[i].isLink()){
+            if(exclude_link){
+                if(count_link) incrementReservedIndexes(di);
+                continue;
+            } else if(!directory_only && !file_only){
+                files[i]=doRename(file,di);
+                incrementReservedIndexes(di);
+            } else if(count_link) {
+                incrementReservedIndexes(di);
+            }
+        } else {
             incrementReservedIndexes(di);
-            printWarningLog("Not a valid file or directory");
+            printWarningLog("Not a valid file or directory: "+ files[i].path);
             continue;
         }
         
@@ -1021,11 +970,11 @@ void startTask(FileArray& files){
 }
 
 
-void detectLineUpwardOrDownward(){
-    if(start_line<=end_line || end_line==0){line_upward=true;}
-    else{line_upward=false;reverse_line=true;}
-    if(reverse_line){current_line=(start_line>end_line)?start_line:end_line;}
-}
+//~ void detectLineUpwardOrDownward(){
+    //~ if(start_line<=end_line || end_line==0){line_upward=true;}
+    //~ else{line_upward=false;reverse_line=true;}
+    //~ if(reverse_line){current_line=(start_line>end_line)?start_line:end_line;}
+//~ }
 
 
 #endif

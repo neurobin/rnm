@@ -375,7 +375,9 @@ EXTRA_DIST = autogen.sh \
  .travis.yml \
  .gitattributes \
  .gitignore \
- m4/ax_cxx_compile_stdcxx.m4
+ m4/ax_cxx_compile_stdcxx.m4 \
+ rnm.md \
+ rnm.html
 
 dist_man_MANS = rnm.1
 rnm_CXXFLAGS = $(extra_opts)

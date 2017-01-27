@@ -5,7 +5,9 @@ EXTRA_DIST = autogen.sh \
  .travis.yml \
  .gitattributes \
  .gitignore \
- m4/ax_cxx_compile_stdcxx.m4
+ m4/ax_cxx_compile_stdcxx.m4 \
+ rnm.md \
+ rnm.html
 
 dist-hook:
 	rm -rf jpcre2 pcre2 gmpxx

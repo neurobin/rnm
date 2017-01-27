@@ -117,7 +117,10 @@ bool force=false;
 bool all_yes=false;
 bool directory_only=false;
 bool file_only=false;
+bool link_only=false;
 bool exclude_directory=false;
+bool exclude_file=false;
+bool exclude_link=false;
 bool reverse_line=false;
 bool undo=false;
 bool simulation=false;
@@ -128,6 +131,7 @@ bool single_mode=false;
 bool re_locale=false;
 bool count_directory=false;
 bool count_file=false;
+bool count_link=false;
 bool sort=false;
 bool follow_symlink=false;
 bool number_latin=false;
@@ -155,6 +159,7 @@ Double DIRECTORY_REVERSE_INDEX=-1;
 Int linc=1;
 Int start_line=1;
 Int current_line=start_line;
+Uint current_line_pos = 0;
 Int current_abs_line=start_line;
 Int end_line=0;
 Int directory_count=0;
@@ -162,11 +167,12 @@ Int depth=0;
 Int LOWEST_DEPTH=0;
 Int index_field_length=1;
 Int rnc=0; //rename count
-IntVec abslc_list;
 
 
 //////// nsf related
-NameList nsflist;
+StringArray nsflist;
+IntVec abslc_list;
+IntVec lc_list;
 
 /////Strings
 String blank_str="";
@@ -302,123 +308,63 @@ String help_message="\n\
 \n\
 Usage: "+project_name+" Directory/File/Path [options]\n\
 \n\
-One of the options of [-ns] or [-nsf] or [-rs] is mandatory.\n\
-Options are **not** sequential, their position in the argument list\n\
-have no significance. For example, `rnm filepath -ns name` is the same\n\
-as `rnm -ns name filepath`. Though passing the directory/file path at the end\n\
-of the argument list is considered to be safe and wise.\n\
+Options are case insensitive.\n\
 \n\
-Options are case insensitive, i.e `-ssF` and `-ssf` are the same.\n\
+Options:\n\
 \n\
-options:\n\
-\n\
--h             : Show help menu.\n\
-\n\
--i,-si   value : Starting index.\n\
-\n\
--ei    value   : End index i.e index to stop renaming from. It works on directory index.\n\
-                 \n\
--inc   value   : Increment value (floating point decimal). The amount, index will be\n\
-                 incremented or decremented in each iteration. Decremented index is\n\
-                 available through name string rule: `"+path_delim+"-i"+path_delim+"`, `"+path_delim+"-id"+path_delim+"` etc..\n\
-                 \n\
--linc  value   : The amount line count will be incremented or decremented in each iteration.\n\
-                 This is always a positive integer.\n\
-                 \n\
--if    value   : This sets Index flags. This is a "+path_delim+" separated list of flags\n\
-                 that will be used to render the index within it's text field.\n\
-\n\
--ifl   value   : Index field length. Non occupied field will be\n\
-                 filled with index field fillers (set with -iff). iff is set to the\n\
-                 character 0 by default.\n\
-                 This can also be set with the -if option.\n\
-\n\
--iff   value   : Not occupied field in index will be filled with a character\n\
-                 which is set by this option.\n\
-                 This can also be set with the -if option.\n\
-                 \n\
--ifp   value   : Index is a floating point decimal value. This sets the precision\n\
-                 i.e the number of digits that would be taken after the decimal point.\n\
-                 This can also be set with the -if option.\n\
-                 \n\
--ns    value   : Name string.\n\
-     \n\
--ns/f  value   : Name string file. File containing name string (one per line).\n\
-\n\
--ns/fn value   : Name String file. This takes a null terminated *Name String* file, i.e\n\
-                 filenames are terminated by null character (\\0) instead of new line (\\n).\n\
-                 \n\
--l, -sl value  : Start Line number in name string file.\n\
-\n\
--lv, -slv value: Same as -l or -sl, except line number will be decremented in each\n\
-                 iteration.\n\
-\n\
--el    value   : End line number. Line number to stop renaming from.\n\
-\n\
--elv   value   : Same as -el, except line number will be decremented in each iteration.\n\
-\n\
--ss    value   : Search string\n\
-                 String that will be used to search for files with matching names.\n\
-                 This is generally regex (ECMAScript regex) if not pass with -ssf.\n\
-                 \n\
--ss/f  value   : Search string file. Contains search strings per line.\n\
-     \n\
--ssf   value   : Fixed search string (not treated as regex).\n\
-\n\
--ssf/f value   : Fixed search string file. Contains fixed search string (per line).\n\
-\n\
--rs    value   : Replace string. A string in the form /search_string/replace_string/modifier \n\
-\n\
--rs/f  value   : Replace string file. Contains replace string (per line).\n\
-\n\
--re    value   : regex mode. Available regex modes are basic, extended, grep, awk, egrep, ecmascript.\n\
-                 ECMAScript regex is the default mode.\n\
-\n\
--rel           : If this is passed as argument, regex will follow Locale. that is regex like\n\
-                [a-z] will have their meaning according to the system locale.\n\
-                \n\
--dp    value   : Depth of folder. -1(any negative number) means unlimited depth i.e all files and subdirectories\n\
-                 will be included. Other values may be 0 1 2 3 etc...\n\
-                 Default depth is 0, i.e directory contents will be ignored.\n\
-       \n\
--fo            : File only mode. Only files are renamed (not directory).\n\
-                 Goes to subdirectory/s if depth (`-dp`) is set to `1` or greater.\n\
-                 Default depth is set to 0.\n\
-                 \n\
--do            : Apply rename on directory only.\n\
-\n\
--ed            : Apply rename on files only, exclude any and all directories and their\n\
-                 contents. equivalent to: '-fo -dp 0'\n\
-\n\
--cd            : Count directory in reserved index, regardless of other options.\n\
-\n\
--cf            : Count file in reserved index, regardless of other options.\n\
-\n\
--s             : Sort files. Default is natural sort. -s/g for general sort.\n\
-\n\
+-ns       value: Name string.\n\
+-ns/f     path : Name string file.\n\
+-ns/fn    path : Null terminated Name String file.\n\
+-l, -sl   value: Start Line number.\n\
+-lv, -slv value: Start Line number (reverse logic).\n\
+-el       value: End line number\n\
+-elv      value: End line number (reverse logic).\n\
+-linc     value: Line increment value.\n\
+-ss       value: Search string\n\
+-ss/f     path : Search string file.\n\
+-ssf      value: Fixed search string.\n\
+-ssf/f    path : Fixed search string file.\n\
+-rs       value: Replace string.\n\
+-rs/f     path : Replace string file.\n\
+-i,-si    value: Starting index.\n\
+-ei       value: End index.\n\
+-inc      value: Increment value.\n\
+-if       value: Index flags.\n\
+-ifl      value: Index field length.\n\
+-iff      value: Index field filler.\n\
+-ifp      value: Index field precision\n\
+-dp       value: Depth of directory.\n\
+-fo            : File only mode.\n\
+-do            : Directory only mode.\n\
+-lo            : Link only mode.\n\
+-ed            : Exclude any and all directories\n\
+-ef            : Exclude any and all files\n\
+-el            : Exclude any and all links\n\
+-fl            : Follow symlink.\n\
+-nfl           : No-follow symlink.\n\
+-cd            : Count directory in reserved index\n\
+                 regardless of other options.\n\
+-cf            : Count file in reserved index\n\
+                 regardless of other options.\n\
+-cl            : Count link in reserved index\n\
+                 regardless of other options.\n\
+-s             : Sort files (natural sort).\n\
+                 -s/n    : Natural sort\n\
+                 -s/g    : General sort\n\
+                 -s/none : No sort\n\
 -y             : Confirm Yes to all.\n\
-\n\
--fl            : follow symlink.\n\
-\n\
 -u             : Undo renaming.\n\
-\n\
--v             : Version info.\n\
-\n\
 -q             : Quiet operation.\n\
+-f             : Apply force.\n\
+--             : End of option.\n\
+                 Everything after this will be\n\
+                 taken as file paths.\n\
+-h             : Show help menu.\n\
+-v             : Version info.\n\
+-sim           : Run simulation.\n\
 \n\
--f             : Apply force. Enables renaming some non permitted files/directories\n\
-                 except / (The root filesystem directory) and rnm itself.\n\
-\n\
---             : Everything after this will be taken as file paths.\n\
-\n\
--shop          : This shows an info about the various options passed as arguments\n\
-                 and how they are being treated behind the scene.\n\
-                 \n\
--sim           : This runs a simulation of rename instead of actual rename operation,\n\
-                 and prints all kinds of available outputs.\n\
-                 \n\
-Only invalid characters for a file or directory name is the path delimiter and the null character (\\0).\n\
 See more details on the manual (man rnm).\n\
+\n\
 ";
 
 

@@ -247,8 +247,8 @@ struct File {
         size = 0;
         blksize = 0;
         blocks = 0;
-        isfile = false;
-        isdir = false;
+        //~ isfile = false;
+        //~ isdir = false;
         }
     
     File(const String& file) {
@@ -268,11 +268,10 @@ struct File {
             type = 0;
         } else{
             //file exists
-            if(S_ISREG(finfo.st_mode)) { type = 'f'; isfile = true; }
-            else
-            if(S_ISDIR(finfo.st_mode)) { type = 'd'; isdir = true;}
-            //this can point to dir or file (must not use else)
-            if(S_ISLNK(finfo.st_mode)) { type = 'l'; } 
+            if(S_ISREG(finfo.st_mode)) { type = 'f'; }
+            else if(S_ISDIR(finfo.st_mode)) { type = 'd'; }
+            else if(S_ISLNK(finfo.st_mode)) { type = 'l'; }
+            //no else needed
             
             atime = finfo.st_atime;
             mtime = finfo.st_mtime;
@@ -306,11 +305,11 @@ struct File {
     }
     
     bool isFile() const {
-        return (isfile && type != 0);
+        return (type == 'f');
     }
     
     bool isDir() const{
-        return (isdir && type != 0);
+        return (type == 'd');
     }
     
     bool isLink() const{

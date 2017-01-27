@@ -40,7 +40,7 @@
 
 
 void signalHandler( int signum ) { 
-    Exit(1);
+    Exit(2);
 }
 
 void unsafeExitSignalHandler(int signum){
@@ -54,8 +54,8 @@ struct Except: virtual public std::exception{
     virtual ~Except() throw () {}
 };
 
-template<typename T>
-void print(const T& s){ std::cout<<NEW_LINE<<s<<NEW_LINE;}
+//~ template<typename T>
+//~ void print(const T& s){ std::cout<<NEW_LINE<<s<<NEW_LINE;}
 
 
 void getLine(String& s){
@@ -92,7 +92,7 @@ String prepareLogDir(){
 String openLockFile(futil::lock_op ltype = futil::lock_op::ImmediateLock, bool cleanfs_on_exit = false){
     RNM_LOCK_FILE_F.open(RNM_LOCK_FILE, "w+b"); //futil automatically closes a file if opened already
     if(!RNM_LOCK_FILE_F.setLock(ltype)){
-        errorExit("Couldn't get lock. Another rnm process is running on current directory. Let it finish first. Abort.", cleanfs_on_exit);
+        errorExitExtra("Couldn't get lock. Another rnm process is running on current directory. Let it finish first. Abort.", cleanfs_on_exit);
     }
     return strerror(errno);
 }
@@ -175,8 +175,8 @@ void printOutLog(const String& str){
 }
 
 
-void errorExit(const String& s, bool cleanfs){
-    printErrorLog(s);
+void errorExit0(const String& s, const String& fn, size_t line, bool cleanfs){
+    printErrorLog0(s, fn, line);
     Exit(1, cleanfs);
 }
 
@@ -313,13 +313,17 @@ StringArray getLineFromFileAndReturnVector(const String& filename){
 }
 
 
-NameList getNameListFromFile(const String& filename, Uint si, Uint ei,
-                                int mod=1, bool reverse = reverse_line){
-    NameList list;
+void getNameListFromFile(StringArray& list, const String& filename, Uint si, Uint ei, int mod=1){
+    bool reverse = false;
     String line;
-    Uint lc=0,abslc=0;
+    Uint lc=0, abslc=0;
     Uint start=si,end=ei;
-    if(ei!=0 && si>ei ){start=ei;end=si; reverse ^= reverse;}
+    Int local_linc = 0;
+    if((ei!=0 && si>ei) || si == 0 ){
+        start=ei;
+        end=si; 
+        reverse = true;
+    }
     char delim='\n';
     if(mod==0){delim='\0';}
     FileStream file;
@@ -327,23 +331,29 @@ NameList getNameListFromFile(const String& filename, Uint si, Uint ei,
     else {file.open(filename,std::ios::binary | std::ios::in);}
     if(!file.good()){printErrorLog("Couldn't open file: "+filename);Exit(1);}
     while(std::getline(file,line,delim) && (lc<end || end == 0)){
-        abslc++;
         if(mod==1){
             if ( line.size() && line[line.size()-1] == '\r' ) {
                line = line.substr( 0, line.size() - 1 );
             }
         }
+        abslc++;
         if(line.empty()) continue;
+        local_linc++;
         lc++;
-        if(lc>=start && (lc <= end || end == 0) ){
-            list.push_back(line);abslc_list.push_back(abslc);
+        if(lc==start ||( lc>start && (lc <= end || end == 0) && local_linc >= linc) ){
+            local_linc = 0;
+            list.push_back(line);
+            lc_list.push_back(lc);
+            abslc_list.push_back(abslc);
         }
     }
     file.close();
-    if(reverse) std::reverse(list.begin(), list.end());
-    return list;
+    if(reverse) {
+        std::reverse(list.begin(), list.end());
+        std::reverse(lc_list.begin(), lc_list.end());
+        std::reverse(abslc_list.begin(), abslc_list.end());
+    }
 }
-
 
 
 void cleanup(bool cleanfs){
@@ -361,6 +371,7 @@ void unsafeExit(int a, bool cleanfs){
 }
 
 void Exit(int a, bool cleanfs){
+    showResult();
     cleanup(cleanfs);
     throw Except(a);
 }
@@ -497,6 +508,31 @@ bool isInvalidFile(const File& f){
     
     
     return status;
+}
+
+
+
+void showResult(){
+    TIME_COUNT += duration(timeNow() - START_TIME);
+    TimeType t, d, h, m, s, sf, b;
+    t = TIME_COUNT;
+    sf = std::modf(t,&b);
+    t = b;
+    d = t/(24*60*60);
+    t = std::fmod(t,24*60*60);
+    h = t/(60*60);
+    t = std::fmod(t,60*60);
+    m = t/60;
+    s = std::fmod(t,60);
+    s += sf;
+    std::string msg = rnc.get_str() + " file" + (rnc>1?"s":"") + " renamed in";
+    if(d>=1) msg += " " + toStringWithFloatingPointDigit(d, '0') + " day" + (std::floor(d)>1?"s":"");
+    if(h>=1) msg += " " + toStringWithFloatingPointDigit(h, '0') + " hour" + (std::floor(h)>1?"s":"");
+    if(m>=1) msg += " " + toStringWithFloatingPointDigit(m, '0') + " minute" + (std::floor(m)>1?"s":"");
+    msg += " " + toStringWithFloatingPointDigit(s, '4') + " second" + (s>1?"s":"");
+    printOutLog(msg);
+    if(!quiet && simulation) std::cout<< " (simulation)"+NEW_LINE;
+    
 }
 
 

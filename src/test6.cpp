@@ -16,47 +16,19 @@
    //~ Exit(1);
 //~ }
 
+
+
+
 int main(){
-    //~ try{
-    //~ signal(SIGINT, signalHandler);  
-    //~ std::cout<< futil::io_t::W;
+    NameList names;
+    linc=4;
+    names = getNameListFromFile("list",1 ,0,1);
     
-    //~ futil::FileStream file, file1;
+    for(size_t i=0;i<names.size();++i){
+        std::cout<<names[i]<<"\n";
+    }
     
-    //~ file.open("/home/jahid/Git/Github/neurobin/rnm/src/test.txt", "w+b");
-    
-    //~ if(file) std::cout<<"good\n";
-    
-    //~ if(file.setLock()){
-        //~ std::cout<<"Locked\n";
-    //~ } else {
-        //~ std::cout<<"Couldn't lock";
-    //~ }
-    
-    //~ while (1) {
-        //~ if(file.setLock()){
-            //~ std::cout<<"locked\n";
-            //~ file<<"locked\n";
-            //~ file.flush();
-            //~ sleep(5);
-        //~ } else {
-            //~ std::cout<<"waiting\n";
-            //~ sleep(2);
-        //~ }
-    //~ }
-    //~ file1.open("/home/jahid/Git/Github/neurobin/rnm/src/test.txt", futil::io_t::W);
-    //~ std::cout<<strerror(file1.getStatus());
-    
-    //~ if(file1.setLock()){
-        //~ std::cout<<"Locked\n";
-    //~ } else {
-        //~ std::cout<<"Couldn't lock";
-    //~ }
-    //~ } catch (const Except& e){
-        //~ return e.status;
-    //~ }
-    
-    //~ return 0;
+    return 0;
 }
 
 
