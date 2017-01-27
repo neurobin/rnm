@@ -144,22 +144,44 @@ Options are case insensitive, i.e *-ssF* and *-ssf* are the same.
 : Count link in reserved index, regardless of other options. Reserves indexes for links even if it is directory only or file only mode.
 
 -s
-: Sort files in natural order (Human perceivable order). This option can be modified to use other sorting methods. For example: *-s/g* or *--sort/g* will sort the file in general (alphabetical) order. Other options are *-s/n* (Natural sort), *-s/none* (No sort).
+:
+    Sort files in natural order (Human perceivable order). This option can be modified to use other sorting methods. For example: *-s/g* or *--sort/g* will sort the file in general (alphabetical) order. Sorting methods available:
+    
+        -s    : defaul sort (natural sort)
+        -s/g  : general sort
+        -s/n  : natural sort
+        -s/mt : sort according to file modification time
+        -s/at : sort according to file accesst time
+        -s/ct : sort according to file status change time
+        -s/sz : sort according to file size
+        -s/d  : prioritize directory when sorting
+        -s/f  : prioritize file when sorting
+        -s/l  : prioritize link when sorting
+        -s/r  : reverse the order sorted by above methods.
 
 -y
-: Confirm Yes to all.
+: Confirm Yes to all and suppress printing output for each file.
+
+-u
+: Undo renaming. Undo depends on working directory. If an **rnm** command is run from ~/somedir, to undo it one must run **rnm** from the same directory again or provide the path with *-up* option.
+
+-up
+: Undo renaming from a given path. After every successful rename (or undo), the undo path is set to the working directory where **rnm** was run from.
+
+-ups
+: Show available undo paths.
 
 -q
 : Quiet operation (speedy operation).
+
+-qq
+: Suppress even error messages.
 
  -f
 : Force rename. Enables renaming some restricted files except */*.
 
 \--
 : If this option is passed, anything and everything after it will be taken as file path. Put all options before passing this option.
-
--u
-: Undo renaming. Undo depends on working directory. If an **rnm** command is ran from ~/somedir, to undo it one must run **rnm** from the same directory again.
 
 -h
 : Show help menu.
@@ -214,13 +236,24 @@ Opt name | Full name
 -cf | --count-file
 -cl | --count-link
 -s | --sort
--s/g | --sort/g
--s/n | --sort/n
+-s/g | --sort/general
+-s/n | --sort/natural
 -s/none | --sort/none
+-s/mt | --sort/mtime
+-s/at | --sort/atime
+-s/ct | --sort/ctime
+-s/d | --sort/directory
+-s/f | --sort/file
+-s/l | --sort/link
+-s/sz | --sort/size
+-s/r | --sort/reverse
 -y | --yes
--q | --quiet
--f | --force
 -u | --undo
+-up | --undo-path
+-ups | --undo-path-show
+-q | --quiet
+-qq | --quiet-quiet
+-f | --force
 -h | --help
 -v | --version
 -sim | --simulation

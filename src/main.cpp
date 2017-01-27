@@ -110,6 +110,9 @@ int main(int argc, char* argv[]) {
                   Exit(0);
                 } else if(opt=="-q"||opt=="--quiet"){
                   quiet=true;
+                } else if(opt=="-qq"||opt=="--quiet-quiet"){
+                  quiet=true;
+                  double_quiet=true;
                 } else if(opt=="-fo"||opt=="--file-only"){
                   file_only=true;
                 } else if(opt=="-do"||opt=="--directory-only"){
@@ -296,15 +299,38 @@ int main(int argc, char* argv[]) {
                 } else if(opt=="-s"||opt=="--sort"){
                   sort=true;
                   sort_type="default"; 
-                } else if(opt=="-s/g"||opt=="--sort/g"){
+                } else if(opt=="-s/g"||opt=="--sort/general"){
                   sort=true;
                   sort_type="general";
-                } else if(opt=="-s/n"||opt=="--sort/n"){
+                } else if(opt=="-s/n"||opt=="--sort/natural"){
                   sort=true;
                   sort_type="natural";
                 } else if(opt=="-s/none"||opt=="--sort/none"){
                   sort=true;
                   sort_type="none";
+                } else if(opt=="-s/mt"||opt=="--sort/mtime"){
+                  sort=true;
+                  sort_type="mtime";
+                } else if(opt=="-s/at"||opt=="--sort/atime"){
+                  sort=true;
+                  sort_type="atime";
+                } else if(opt=="-s/ct"||opt=="--sort/ctime"){
+                  sort=true;
+                  sort_type="ctime";
+                } else if(opt=="-s/sz"||opt=="--sort/size"){
+                  sort=true;
+                  sort_type="size";
+                } else if(opt=="-s/d"||opt=="--sort/directory"){
+                  sort=true;
+                  sort_type2="directory";
+                } else if(opt=="-s/f"||opt=="--sort/file"){
+                  sort=true;
+                  sort_type2="file";
+                } else if(opt=="-s/l"||opt=="--sort/link"){
+                  sort=true;
+                  sort_type2="link";
+                } else if(opt=="-s/r"||opt=="--sort/reverse"){
+                    reverse_sort=true;
                 } else if(opt=="-y"||opt=="--yes"){
                   all_yes=true;
                   ALL_YES=true;
@@ -316,6 +342,13 @@ int main(int argc, char* argv[]) {
                   force=true; 
                 } else if(opt=="-u"||opt=="--undo"){
                   undo=true; 
+                } else if(opt=="-up"||opt=="--undo-path"){
+                  undo=true; 
+                  checkArgAvailability(args,i+1);
+                  undo_path = args[i+1];
+                } else if(opt=="-ups"||opt=="--undo-path-show"){
+                  undo=true;
+                  undo_path_show=true;
                 } else if(opt=="-sim"||opt=="--simulation"){
                   simulation=true; 
                 } else if(opt=="--"){

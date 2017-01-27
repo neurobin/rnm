@@ -445,7 +445,8 @@ void validateModifier(const String& mod, const String& valid_mods, const String&
 }
 
 String getPathSignature(const String& path){
-    return replaceStringAll(path, "/",".");
+    //~ return replaceStringAll(path, "/","\x1f");
+    return std::to_string(std::hash<String>{}(path));
 }
 
 

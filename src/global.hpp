@@ -113,6 +113,7 @@ Double TB = GB*KB;
 
 /////Bolleans
 bool quiet=false;
+bool double_quiet=false;
 bool force=false;
 bool all_yes=false;
 bool ALL_YES=false;
@@ -124,6 +125,7 @@ bool exclude_file=false;
 bool exclude_link=false;
 bool reverse_line=false;
 bool undo=false;
+bool undo_path_show=false;
 bool simulation=false;
 bool line_upward=true;
 bool ign=false;
@@ -176,6 +178,7 @@ StringArray nsflist;
 UintVec lc_list;
 
 /////Strings
+String undo_path;
 String blank_str="";
 String NEW_LINE="\n";
 String path_delim="/";
@@ -283,6 +286,7 @@ String RR_MOD_ALL = "gifdl";
 
 
 String sort_type="natural";
+String sort_type2;
 
 
 /// Project Info
@@ -368,6 +372,9 @@ See more details on the manual (man rnm).\n\
 \n\
 ";
 
+
+//for internal use
+bool tmp_file_reopened=false;
 
 
 #endif

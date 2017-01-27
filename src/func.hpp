@@ -85,30 +85,91 @@ bool Rename(const String& oldn,const String& newn,DirectoryIndex &di){
     return success;
 }
 
+void showUndoPaths(){
+    std::cout<<"            AVAILABLE UNDO PATHS           \n";
+    std::cout<<"                Time | Path                \n";
+    std::cout<<"-------------------- | --------------------\n";
+    FileArray files;
+    getFilesFromDir(files, LOG_DIR_UNDO);
+    std::sort(files.begin(),files.end(),[](const File& a, const File& b){return a.mtime>b.mtime;} );
+    FileStream f;
+    for(size_t i=0;i<files.size();++i){
+        size_t pos=0;
+        if((pos = (files[i].path).find(RNM_FILE_LOG_L_BKP))!= String::npos && pos==0 && (files[i].path).find(RNM_FILE_LOG_L_TMP_BKP) != 0 ){
+            String fl;
+            f.open(files[i].path, std::ios::in);
+            if(f.good()) std::getline(f, fl, '\0');
+            f.close();
+            std::cout<<" "<<formatTime(files[i].mtime, "%d-%m-%Y %I:%M %p")<<" | "<<fl<<"\n\n";
+        }
+    }
+}
+
 
 bool undoRename(){
-    FileStream file_l,file_r;
-    String l,r;
-    StringArray left,right;
-    DirectoryIndex di;
-    file_l.open(RNM_FILE_LOG_L,std::ios::binary | std::ios::in);
-    file_r.open(RNM_FILE_LOG_R,std::ios::binary | std::ios::in);
-    if(file_l.good() && file_r.good()){
-        while(std::getline(file_l,l,'\0') && std::getline(file_r,r,'\0')){
-            left.push_back(l);right.push_back(r);
+    if(!undo_path_show){
+        FileStream file_l,file_r;
+        String l,r;
+        StringArray left,right;
+        DirectoryIndex di;
+        String rnmf_l, rnmf_r;
+        if(!undo_path.empty()){
+            String signature = getPathSignature(undo_path);
+            rnmf_l = RNM_FILE_LOG_L_BKP + signature;
+            rnmf_r = RNM_FILE_LOG_R_BKP + signature;
+        } else {
+            rnmf_l = RNM_FILE_LOG_L;
+            rnmf_r = RNM_FILE_LOG_R;
         }
-        file_l.close();file_r.close();
-        std::reverse(left.begin(), left.end());
-        std::reverse(right.begin(), right.end());
-        for(size_t i=0;i<left.size();++i){
-            ///do rename and log into rfl
-            if(!quiet&&!ALL_YES){std::cout<< NEW_LINE+right[i]+"    ---->    "+left[i]+NEW_LINE;}
-            Rename(right[i],left[i],di);
+        file_l.open(rnmf_l,std::ios::binary | std::ios::in);
+        file_r.open(rnmf_r,std::ios::binary | std::ios::in);
+        if(file_l.good() && file_r.good()){
+            while(std::getline(file_l,l,'\0') && std::getline(file_r,r,'\0')){
+                left.push_back(l);right.push_back(r);
+            }
+            file_l.close();file_r.close();
+            std::reverse(left.begin(), left.end());
+            std::reverse(right.begin(), right.end());
+            size_t n = left.size();
+            n = n>0?n-1:n;  //last line should not be taken, it's for storing signature path. (actually it was the first line).
+            for(size_t i=0;i<n;++i){
+                ///do rename and log into rfl
+                if(!quiet&&!ALL_YES){std::cout<< NEW_LINE+right[i]+"    ---->    "+left[i]+NEW_LINE;}
+                ///do rename
+                int confirm;
+                if(!all_yes){
+                    TIME_COUNT += duration(timeNow() - START_TIME);
+                    confirm=selectInput();
+                    START_TIME = timeNow();
+                    switch(confirm){
+                        case 1:
+                              Rename(right[i],left[i],di);
+                              break;
+                        case 2:
+                              all_yes=true;
+                              Rename(right[i],left[i],di);
+                              break;
+                        case 3:
+                              break;
+                        case 4:
+                              all_yes=false;
+                              Exit(0);
+                        default:
+                               all_yes=false;
+                               break;
+                    }
+                } else {
+                    Rename(right[i],left[i],di);
+                }
+            }
+            return true;
+        } else {
+            printErrorLog("Undo failed. Required log files not found for undo path: "+ undo_path + "\nRun 'rnm -ups' to see available undo paths");
+            return false;
         }
-        return true;
     } else {
-        printErrorLog("Undo failed. Required log files not found");
-        return false;
+        showUndoPaths();
+        return true;
     }
 }
 

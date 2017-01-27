@@ -122,6 +122,12 @@ void openLogFiles(){
 }
 
 void closeTmpFiles(){
+    if(!tmp_file_reopened){
+        RNM_FILE_LOG_L_TMP_F.seekp(std::ios::beg);
+        RNM_FILE_LOG_L_TMP_F<<CWD<<'\0';
+        RNM_FILE_LOG_R_TMP_F.seekp(std::ios::beg);
+        RNM_FILE_LOG_R_TMP_F<<CWD<<'\0';
+    }
     RNM_FILE_LOG_L_TMP_F.close();
     RNM_FILE_LOG_R_TMP_F.close();
 }
@@ -151,7 +157,7 @@ void cleanFiles(){
 
 void printErrorLog0(String str, const String& fn, size_t line){
     str="E: "+str+" (@rnm/"+fn+"/"+std::to_string(line)+")";
-    std::cerr<<str+NEW_LINE;
+    if(!double_quiet) std::cerr<<str+NEW_LINE;
     time_t now = time(0);
     char* dt = ctime(&now);
     ERROR_LOG_F<<str+"\t\t\t\t@"+dt;
@@ -431,6 +437,7 @@ void recreateTmpFiles(const String& signature){
     }
     //open tmp files for append
     openTmpFilesForAppend();
+    tmp_file_reopened = true;
 }
 
 
@@ -483,10 +490,20 @@ bool compareNatG(const File& a, const File& b){
 
     
 void sortVector(FileArray& files){
-    if(sort_type=="natural"){ std::sort(files.begin(), files.end(), compareNatV); }
-    else if(sort_type=="general"){std::sort(files.begin(), files.end(), compareNatG);}
-    else if(sort_type=="none"){}
+    if(sort_type=="natural") std::sort(files.begin(), files.end(), compareNatV); 
+    else if(sort_type=="general")std::sort(files.begin(), files.end(), compareNatG);
+    else if(sort_type=="none");
+    else if(sort_type == "mtime") std::sort(files.begin(), files.end(), [](const File& a, const File& b){return a.mtime>b.mtime;});
+    else if(sort_type == "atime") std::sort(files.begin(), files.end(), [](const File& a, const File& b){return a.atime>b.atime;});
+    else if(sort_type == "ctime") std::sort(files.begin(), files.end(), [](const File& a, const File& b){return a.ctime>b.ctime;});
+    else if(sort_type == "size")  std::sort(files.begin(), files.end(), [](const File& a, const File& b){return a.size >b.size; });
     else{std::sort(files.begin(), files.end(), compareNatV);}
+    
+    if(!sort_type2.empty()){
+        if(sort_type2 == "directory") std::stable_sort(files.begin(), files.end(), [](const File& a, const File& b){return a.isDir() >b.isDir(); });
+        else if(sort_type2 == "file") std::stable_sort(files.begin(), files.end(), [](const File& a, const File& b){return a.isFile()>b.isFile();});
+        else if(sort_type2 == "link") std::stable_sort(files.begin(), files.end(), [](const File& a, const File& b){return a.isLink()>b.isLink();});
+    }
     
     ///reverse the sort if reverse_sort is true
     if(reverse_sort){std::reverse(files.begin(), files.end());}
@@ -554,6 +571,7 @@ bool isInvalidFile(const File& f){
 
 
 void showResult(){
+    if(undo_path_show) return;
     TIME_COUNT += duration(timeNow() - START_TIME);
     TimeType t, d, h, m, s, sf, b;
     t = TIME_COUNT;

@@ -17,6 +17,28 @@
    //~ Exit(1);
 //~ }
 
+std::string encryptDecrypt(std::string s) {
+    char key[] = " \n\r\f\v\t/"; //Any chars will work
+    std::string out = s;
+    for (size_t i = 0; i < s.size(); i++)
+        out[i] = s[i] ^ key[i % (sizeof(key) / sizeof(char))];
+    return out;
+}
+
+std::string rhash(std::string s){
+    for(size_t i=0;i<s.size();++i){
+        s[i] = s[i] * 387420489 % 4000000000;
+    }
+    return s;
+}
+
+std::string un_hash(std::string s){
+    for(size_t i=0;i<s.size();++i){
+        s[i] = s[i] * 3513180409 % 4000000000;
+    }
+    return s;
+}
+
 int main(){
     //~ NameList names;
     //~ linc=4;
@@ -31,15 +53,20 @@ int main(){
     
     //~ std::string decrypted = encryptDecrypt(encrypted);
     //~ std::cout << "Decrypted:" << decrypted << "\n";
-    std::string s1 = "fjdskl fjklsdjfl;kjads;lfjl;dkjfl;asjdfl;kjdslkfj sdfl;gkjlsdkgj";
+    std::string s1 = "I am a stri/ng\n of multiline///\n\r";
     std::string s2 = "ds";
     std::string s3 = "fjlsdj flje l;fkjdsl fj";
     
-    std::cout<<"en: "<<encryptDecrypt( s1)<<"\n\n";
-    std::cout<<"de: "<<encryptDecrypt( encryptDecrypt( s1))<<"\n\n";
+    std::cout<<"en: "<<std::hash<String>{}(s1)<<"\n\n";
+    std::cout<<"en: "<<std::hash<String>{}(s1)<<"\n\n";
+    //~ std::cout<<"de: "<<un_hash( rhash( s1))<<"\n\n";
     
-    sleep(1);
-    main();
+    //~ sleep(1);
+    
+    //~ for(size_t i=0;i<512;++i) std::cout<<char(i^='/');
+    
+    
+    //~ main();
     
     return 0;
 }
