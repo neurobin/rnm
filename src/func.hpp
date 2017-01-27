@@ -883,7 +883,7 @@ void startInDepthRenamingTaskOnDirectory(const String& dir,String base_dir=base_
     DirectoryIndex di;
     
     for(size_t i=0;i<files.size();i++){
-        if(abs(di.directory_index)>abs(end_index) && end_index != 0){continue;}
+        if(di.directory_index>end_index && !infinite_end_index){continue;}
         String file=files[i].path;
 
         if(childDepth(base_dir,file)>depth){continue;}

@@ -154,7 +154,8 @@ int main(int argc, char* argv[]) {
                 } else if(opt=="-ei"||opt=="--end-index"){
                   checkArgAvailability(args,i+1);
                   end_index=getNumberOrExit("End Index",args[i+1]);
-                  skipcount=true; 
+                  skipcount=true;
+                  infinite_end_index=false;
                   ei_obj.count++;
                   if(ei_obj.count>1){printWarningLog("End index overwritten");}
                 } else if(opt=="-if"||opt=="--index-flags"){
@@ -411,8 +412,8 @@ int main(int argc, char* argv[]) {
         
         
         if(!name_string_file.empty()){
-            if(!name_string.empty() || !replace_string.empty()){
-                errorExit("-ns or -rs or equivalent option can not given with -ns/f or -ns/fn");
+            if(!name_string.empty()){
+                errorExit("-ns or equivalent options can not be given with -ns/f or -ns/fn");
             }
             if(!quiet){std::cout<< "Reading name string file..."+NEW_LINE;}
             if(!nsf_n){

@@ -143,6 +143,7 @@ bool uppercase=false;
 bool showbase=false;
 bool showpoint=false;
 bool showpos=false;
+bool infinite_end_index=true;
 
 
 /////Doubles

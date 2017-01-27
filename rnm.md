@@ -9,7 +9,19 @@ rnm - Bulk rename utility
 **rnm** [*options*] *file/paths*
 
 # DESCRIPTION
-Renames files/directories in bulk. Naming scheme (*Name String*) can be applied or regex replace can be performed to modify names dynamically. It uses PCRE2 (revised version of PCRE) regex to provide search (and replace) functionality. It provides an undo functionality too to move back unwanted rename operations. You can also run a simulation instead of actual rename to view the potential outcome as program output on terminal with the *-sim* option.
+Renames files/directories in bulk. Naming scheme (*Name String*) can be applied or regex replace can be performed to modify names dynamically. It uses PCRE2 (revised version of PCRE) regex to provide search (and replace) functionality.
+
+It provides versatile options to modify names, delete/replace part of it, indexing, case conversion, insert text, insert various file information like modification time, access time, permission etc.., insert parent directory names and many more.
+
+File search functionality is provided with PCRE2 regex. Fixed string search is also possible.
+
+Operations (rename, changing names, search) are selective of file type (directory, file, link).
+
+Files can be sorted by name, modification time, access time, size, file type (directory, file, link) etc..
+
+It provides an undo functionality to move back unwanted rename operations. Different **rnm** operations on different directory remember their own undo history.
+
+Simulations can be run instead of actual rename to view the potential outcome as program output on terminal with the *-sim* option.
 
 
 #USAGE
@@ -30,58 +42,62 @@ rnm -ns name filepath
 But the behavior of *-fl* (*--follow-link*) and *-nfl* (*no-follow-link*) option depends on their position. For example:
 
 ```bash
-rnm -ns '/fn/ /id/' link1 -fl link2 -nfl link3 link4 -fl  link5 link6
+rnm -ns '/fn/ /id/' link1 -fl link2 \
+    -nfl link3 link4 -fl  link5 link6
 ```
 will rename the symbolic links as:
 
-1. *link1* will itself be renamed i.e this symbolic link won't be followed
-2. *link2* will be followed and its target will be renamed
-3. *link3* and *link4* won't be followed
-4. *link5* and *link6* will be followed
+1. *link1* will itself be renamed, it won't be followed
+2. *link2* will be followed and its target will be renamed because *--follow-link* flag was **set** before it.
+3. *link3* and *link4* won't be followed because *--follow-link* flag was **unset** by *-nfl* before these links.
+4. *link5* and *link6* will be followed because *--follow-link* flag was **set** again before these links.
 
 Options are case insensitive, i.e *-ssF* and *-ssf* are the same.
 
 
 # OPTIONS
 
--ns *string*
+-ns *name-string*
 : Name string. This is generally the new name for the file. Any part in this name string wrapped around with the path delimiter (/) is parsed as a name string rule and the new name is formed accordingly. See <a href="#name-string-rule">NAME STRING RULE</a> for details.
 
 -ns/f *file-path*
-: Name string file. File containing name strings per line. If this option is passed, any other name string or replace string can not be given. Name strings will directly be extracted from the file and each of these name strings will be applied to each file (one for one). All name string rules are available with the name strings defined in this file, with an additional rule */l/* for accessing line number.
+: Name string file. File containing name strings per line. If this option is passed, any other name string option can not be given (replace strings are allowed). Name strings will directly be extracted from the file and each of these name strings will be applied to each file (one for one). All name string rules are available with the name strings defined in this file, with an additional rule */l/* for accessing line number. To access the result from replace strings, use the name string rule */rn/* in the name string rules defined in the name string file.
 
 -ns/fn *file-path*
 : Name String file. This takes a null terminated Name String file, i.e a file where filenames/name strings are terminated by null character (*\\0*) instead of new line (*\\n*).
 
 -sl *positive-integer*
-: Start Line number in name string file. If it's greater than the end line number, then end line number is taken as the start line and start line is taken as the end line and the resultant lines are reversed. If start line is 0, it is changed to the highest line number possible in the file. Empty lines are always ignored.
+: Start Line number in name string file. If start line is 0, it is changed to the highest line number possible in the file. For example, if you want to go from last line to first line, you can pass start line as 0 and end line as 1. Empty lines are always ignored but line numbers are counted. Start line can be greater than end line, for example, start line 25 and end line 12 would mean: go from line 25 to 12. Default start line is 1.
 
 -l *positive-integer*
 : Same as *-sl*
 
 -el *positive-integer*
-: End line number in name string file to stop renaming from. If it's smaller than the start line number, then start line number is taken as the end line and end line is taken as the start line and the resultant lines are reversed. If end line is 0, it is changed to the highest line number possible in the file. If both line numbers are set to 0, then the whole file will be taken in reverse order (bottom to top). Empty lines are always ignored.
+: End line number in name string file to stop renaming from. If end line is 0, it is changed to the highest line number possible in the file. For example, if you want to go from first line to last line in the file, pass start line as 1 and end line as 0. Empty lines are always ignored but line numbers are counted. End line can be smaller than start line. Default end line is the highest line number in the file.
 
 -linc *positive-integer*
-: The amount line count will be incremented in each iteration.
+: The amount line count will be incremented in each iteration for name string file.
 
 -ss *search-regex*
-: Search string. String that will be used to search for files with matching names. This is generally a regex  if not passed with *-ssf* option. See <a href="#search-string">SEARCH STRING</a> for details.
+: Search string. String that will be used to search for files with matching names. This is generally a regex  if not passed with *-ssf* option. See <a href="#search-string">SEARCH STRING</a> for details. This option can be given multiple times to add search strings.
 
 -ss/f *file-path*
-: Search string file. A file containing search string per line. 
+: Search string file. A file containing search string per line. This option can be given multiple times to add search strings.
 
 -ssf *search-term*
-: Fixed search string (not treated as regex). See <a href="#search-string">SEARCH STRING</a> for details.
+: Fixed search string (not treated as regex). See <a href="#search-string">SEARCH STRING</a> for details. This option can be given multiple times to add search strings.
 
 -ssf/f *file-path*
-: Search string file. Contains fixed search string per line.
+: Search string file. Contains fixed search string per line. This option can be given multiple times to add search strings.
 
 -rs *replace-string*
-: A string in the form */search_regex/replace_part/modifier*. See <a href="#replace-string">REPLACE STRING</a> for details.
+: A string in the form:
+
+        /regex/replace/modifier
+ It performs regex replace on old filename to construct new name. It uses PCRE2 regex. After performing all the regex replace operations, the resultant string is stored in the name string rule */rn/*. It can be used inside a name string or if name string is not given, this will by default become the new name for the current file. See <a href="#replace-string">REPLACE STRING</a> for details. This option can be given multiple times to add replace strings.
 
 -rs/f *file-path*
-: Replace string file. A file containing replace string per line.
+: Replace string file. A file containing replace string per line. This option can be given multiple times to add replace strings.
 
 -si *number*
 : Start index.
@@ -90,22 +106,30 @@ Options are case insensitive, i.e *-ssF* and *-ssf* are the same.
 : Same as *-si*
 
 -ei *number*
-: End index. Remaining files will be skipped when either incrementing or decrementing index reaches end index inside a directory. It is only for files inside a directory that is being recursively taken due to a depth value greater than 0, or negative i.e it works on directory index only. Note that directory index */id/* will renew in each directory i.e in each directory rename will be performed from start index to end index. A value of *0* for end index will mean unlimited index. As index goes both ways around (increment and decrements) at the same time, rename will be skipped as soon as one kind of index (incrementing or decrementing) hits the limit. For example, if you set the end index to 4, it will end when either incrementing or decrementing index reaches 4 or -4. End index is always taken as positive number, but negative number is acceptable though internally it will be treated with its absolute value.
+: End index. It works on directory index only. When rename is occurring inside a directory for a depth value greater than 0 or negative, directory index is limited to this end index. When incrementing directory index hits this limit, all remaining files/directories/links inside that directory are skipped. All directories and their subdirectories will be subject to this limiting value.
 
 -inc *number*
 : Increment value (floating point decimal). The amount, index will be incremented or decremented in each iteration. Decremented index is available through name string rule */-i/*, */-id/* etc..
 
 -if *INDEX-FLAGS*
-: This sets Index flags. This is a '/' separated list of flags that will be used to render the index within it's text field. The general format is *'/keyword1/keyword2/...'*. Valued flags are set with *keyword=value* format. Ex: *'/uppercase/filler=\*/'*. See <a href="#index-flags">INDEX FLAGS</a> for details.
+: This sets Index flags. This is a '/' separated list of flags that will be used to render the index within it's text field. The general format is:
+```bash
+    '/flag1/flag2/flag3=value/...'
+```
+ Valued flags are set with *flag=value* format. Ex: 
+```bash
+    '/uppercase/filler=*/'
+```
+ See <a href="#index-flags">INDEX FLAGS</a> for details.
 
 -ifl *positive-integer*
 : Index field length. Non occupied field will be filled with index field fillers (set with *-iff*). *iff* is set to the character *0* by default.
 
 -iff *character*
-: Not occupied field in index will be filled with a character which is set by this option.
+: Non-occupied field in index will be filled with a character set by this option.
 
 -ifp *positive-integer*
-: Index is a floating point decimal value. This sets the precision.
+: Index is a floating point decimal (by default) value. This sets the precision.
 
 -dp *integer*
 : Depth of folder. -1(any negative number) means unlimited depth i.e all files and subdirectories will be included. Other values may be 0 1 2 3 etc... Default depth is *0*, i.e directory contents will be ignored.
@@ -120,13 +144,13 @@ Options are case insensitive, i.e *-ssF* and *-ssf* are the same.
 : Link only mode. Goes to subdirectories if depth is greater than 0 or negative.
 
 -xd
-: Exclude directory. Exclude any and all directories and their contents. The depth value *-dp* will have no effect if this option is given. This is by default equivalent to file+link only mode if not overridden by other options.
+: Exclude directory. Exclude any and all directories and their contents. The depth value *-dp* will have no effect if this option is given. This is by default equivalent to file+link only mode if not overridden by other options. (You can read this option as cross-d which probably makes more sense)
 
 -xf
-: Exclude file. Depth value *-dp* is respected and goes to subdirectories if depth is greater than 0 or negative. This is by default equivalent to directory+link only mode if not overridden by other options.
+: Exclude file. Depth value *-dp* is respected and goes to subdirectories if depth is greater than 0 or negative. This is by default equivalent to directory+link only mode if not overridden by other options. (You can read this option as cross-f which probably makes more sense)
 
 -xl
-: Exclude link. Depth value *-dp* is respected and goes to subdirectories if depth is greater than 0 or negative. This is by default equivalent to directory+file only mode if not overridden by other options.
+: Exclude link. Depth value *-dp* is respected and goes to subdirectories if depth is greater than 0 or negative. This is by default equivalent to directory+file only mode if not overridden by other options. (You can read this option as cross-l which probably makes more sense)
 
 -fl
 : Set follow link flag. After passing this option, any file that is a link will be followed to their original target. If there are multiple links associated, only the end target (the original) will be renamed. This option must be passed before the file path that needs to be followed. Passing it after the file path will have no effect on the previous files.
@@ -144,29 +168,29 @@ Options are case insensitive, i.e *-ssF* and *-ssf* are the same.
 : Count link in reserved index, regardless of other options. Reserves indexes for links even if it is directory only or file only mode.
 
 -s
-:
-    Sort files in natural order (Human perceivable order). This option can be modified to use other sorting methods. For example: *-s/g* or *--sort/g* will sort the file in general (alphabetical) order. Sorting methods available:
-    
-        -s    : defaul sort (natural sort)
-        -s/g  : general sort
-        -s/n  : natural sort
-        -s/mt : sort according to file modification time
-        -s/at : sort according to file accesst time
-        -s/ct : sort according to file status change time
-        -s/sz : sort according to file size
-        -s/d  : prioritize directory when sorting
-        -s/f  : prioritize file when sorting
-        -s/l  : prioritize link when sorting
-        -s/r  : reverse the order sorted by above methods.
+: Sort files in natural order (Human perceivable order). This option can be modified to use other sorting methods. For example: *-s/g* or *--sort/general* will sort the file in general (alphabetic) order. Available sorting methods:
+```bash
+-s    : default sort (natural sort)
+-s/g  : general sort
+-s/n  : natural sort
+-s/mt : sort according to file modification time (recent first)
+-s/at : sort according to file access time (recent first)
+-s/ct : sort according to file status change time (recent first)
+-s/sz : sort according to file size (larger first)
+-s/d  : prioritize directory when sorting
+-s/f  : prioritize file when sorting
+-s/l  : prioritize link when sorting
+-s/r  : reverse the order sorted by above methods.
+```
 
 -y
 : Confirm Yes to all and suppress printing output for each file.
 
 -u
-: Undo renaming. Undo depends on working directory. If an **rnm** command is run from ~/somedir, to undo it one must run **rnm** from the same directory again or provide the path with *-up* option.
+: Undo rename. Undo depends on working directory. If an **rnm** command is run from ~/somedir, to undo this operation one must run **rnm** from the same directory again or provide the path with *-up* option.
 
 -up
-: Undo renaming from a given path. After every successful rename (or undo), the undo path is set to the working directory where **rnm** was run from.
+: Undo rename from a given path. After every successful rename (or undo), the undo path is set to the working directory where **rnm** is run from.
 
 -ups
 : Show available undo paths.
@@ -181,7 +205,7 @@ Options are case insensitive, i.e *-ssF* and *-ssf* are the same.
 : Force rename. Enables renaming some restricted files except */*.
 
 \--
-: If this option is passed, anything and everything after it will be taken as file path. Put all options before passing this option.
+: If this option is passed, anything and everything after it will be taken as file path. Put all options before it.
 
 -h
 : Show help menu.
@@ -204,10 +228,7 @@ Opt name | Full name
 -ns/fn | --name-string-file-null-terminated
 -l | --line
 -sl | --start-line
--lv | --line-reverse
--slv | --start-line-reverse
 -el | --end-line
--elv | --end-line-reverse
 -linc | --line-increment
 -ss | --search-string
 -ss/f | --search-string-file
@@ -274,7 +295,7 @@ A string, that is parsed to create names for new files. It can be fixed name whi
 
 
 ##NAME STRING RULE
-A name string rule starts and ends with a */* character, These special forms are parsed and expanded to their meaning. For example */i/* would expand to file index.
+A name string rule starts and ends with a */* character, These special forms are parsed and expanded to their special meaning. For example */i/* would expand to file index.
 
 ###INDEX RULES
 
@@ -292,7 +313,7 @@ In general, *-i* in the above name string rules will mean inverse index conformi
 1. */dc/* : Directory count
 2. */l/* : Line number from *Name String File*.
 
-Base conversion, scientific conversion and latin conversions are applicable on these counters. See <a href="#extended-index-rules">EXTENDED INDEX RULES</a>.
+Base conversion, scientific conversion and Latin conversions are applicable on these counters. See <a href="#extended-index-rules">EXTENDED INDEX RULES</a>.
 
 #### EXTENDED INDEX RULES
 
@@ -335,9 +356,9 @@ rnm -ns '/fn/ /id-l/' ./*
 ```
 
 ### FILENAME
-1. */fn/* : Full name of the files. If used with *-ns/f* option, full name will be taken from the *Name String File*.
-2. */n/* : Name without extension. If used with *-ns/f* option, name will be taken from the *Name String File*.
-3. */e/* : File extension. If used with *-ns/f* option, name will be taken from the *Name String File*.
+1. */fn/* : Full name of the file.
+2. */n/*  : File name without extension.
+3. */e/*  : File extension.
 2. */rn/* : Replaced Name, generated by replace strings.
 3. */pd/* : Parent directory  name of the current file or directory. 
 4. */wd/* : Current working directory name.
@@ -472,7 +493,7 @@ A file which contains a list of name string (one per line). Empty lines will be 
 
 Each name string taken from this file is applied to each file, thus if there's 100 name strings in this file, their will be 100 rename only. All these name strings are parsed the same way as regular name strings given with *-ns* option with an additional rule */l/* (line number).
 
-A null terminated name string file is that one, where name strings (i.e filenames) are terminated with null character instead of newline (*\\n*). These are generally binary files and can be created with other tools.
+A null terminated name string file is that one where name strings (i.e filenames) are terminated with null character instead of newline (*\\n*). These are generally binary files and can be generated with other tools.
 
 
 ##SEARCH STRING
@@ -501,21 +522,21 @@ rnm -ns '/fn/ /i/' -ssf '.video' ./*
 
 
 ##INDEX FIELD LENGTH
-An integer value defining the field length of index. By default empty field will be filled with 0's. For example, if the value is *3*, then index will be *001*, *002*, *003*, etc.. Different filler (other than 0) can be provided with the *-iff* option.
+An integer value defining the field length of index. By default empty field will be filled with 0's. For example, if the value is *3*, then indexes will be *001*, *002*, *003*, etc.. Different filler (other than 0) can be provided with *-iff* option.
 
 ##REPLACED NAME
 The name can be modified at runtime using replace string. Replace string will be parsed to create a new *Name String* rule: */rn/* which can be used in *Name String*. If name string is not passed as argument, the new name of the file will be */rn/*. *Replaced Name* is always generated from the old filename (even when name string file is given).
 
 
 ##REPLACE STRING
-*Replace String* is of the form:  
+*Replace String* is of the form: 
 
 ```bash
 /regex/replace/modifier
 ```
 where *regex* is the regex to search for and *replace* is the string to replace with. *Name String* rules are available in *regex* and *replace* part in Replace String.
 
-There are several special cases for *replace* part:
+Special character sequences for *replace* part:
 
 1. *&* will be taken as the entire match found by the *regex*.
 2. *\\1*, *\\2* etc.. are the captured groups. If you want to isolate a captured group, wrap it around with *{}*. For example, if you want to put a digit (2) after captured group *\\1*, you can't use it like *\\12*. *\\12* will mean *12th* captured group not *\\1* appended with a digit (1). In this case isolate the captured group with *{}* i.e *\\{1}2*.
@@ -523,8 +544,16 @@ There are several special cases for *replace* part:
 4.  *\\c* will convert the matched string to lowercase, and *\\C* will convert it to uppercase. No other character is allowed in replace part if this is used. You can still concatenate different replace strings with *;* (semicolon).
 5. to insert a *&* literally, use *\\&* and for *\\* use *\\\\*.
 6. Modifiers are *i* (case insensitive), *g* (global), *f* (file), *d* (directory), *l* (link).
-7. *Replace String* is always performed on old file name (even when name string file is given).
-8. You can provide multiple replace strings with repeated *-rs* option and multiple file with repeated *-rs/f* options. These options can be mixed with each other too.
+
+*Replace String* is always performed on old file name (even when name string file is given).
+
+You can provide multiple replace strings with repeated *-rs* option and multiple file with repeated *-rs/f* options. These options can be mixed with each other too.
+
+Multiple replace strings can also be given by terminating each individual replace strings with *;* (semicolon):
+
+```bash
+rnm -rs '/.*_/\C/gi;/-/ /g;/#/@/g' ./*
+```
 
 **Examples:**
 
@@ -550,9 +579,9 @@ rnm -rs '/@/-/gf;/#/@/gd;'
 * *right* : adjust right.
 * *left* : adjust left.
 * *internal* : adjust internal.
-* *precision* : set precision. Used like precision=value
-* *length* : sets length. Used like length=value
-* *filler* : sets filler. Used like filler=value 
+* *precision* : set precision. Used as `precision=value`
+* *length* : sets length. Used as `length=value`
+* *filler* : sets filler. Used as `filler=value` 
 
 ##MODIFIERS
 
@@ -587,7 +616,7 @@ rnm -ns/f filepath
 #THINGS TO CARE
 
 1. All options should always be separated by space. For Example: *-vy* won't mean two option *-v* and *-y*, rather it will mean a single option *-vy*.
-2. Any argument with *-* at beginning will be treated as an option and produce error if invalid.
+2. Any dangling argument with *-* at beginning will be treated as an option and produce error if invalid.
 3. If filename/path argument may include *-* at the beginning, use *--* to make all the arguments after this option as paths/names (not options).
 6. If you run `rnm . -ns something` or `rnm ./ -ns something`, your current directory will be renamed (be careful).
 6. This is a dangerous tool like `rm`, so use with care. If you make a mistake and do some unwanted rename, run `rnm -u` to undo (before running any more **rnm** command).
@@ -599,7 +628,7 @@ rnm -ns/f filepath
 
 **Maximum length of file name :** FILENAME_MAX
 
-**Default  latin fallback :** 55555. After this value latin conversion will fall back to decimal. You can override this with *-if* option by setting */latin-fallback=6666/* (or some other value). Big latin number may produce much larger name which in turn may give you error due to limit on length of file names.
+**Default  latin fallback :** 55555. After this value Latin conversion will fall back to decimal. You can override this with *-if* option by setting */latin-fallback=6666/* (or some other value). Big Latin number may produce much larger name which in turn may give you error due to limit on length of file names.
 
 #LOG DIR
 ~/.cache/neurobin/rnm

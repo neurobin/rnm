@@ -16,11 +16,28 @@ Naming scheme (\f[I]Name String\f[]) can be applied or regex replace can
 be performed to modify names dynamically.
 It uses PCRE2 (revised version of PCRE) regex to provide search (and
 replace) functionality.
-It provides an undo functionality too to move back unwanted rename
+.PP
+It provides versatile options to modify names, delete/replace part of
+it, indexing, case conversion, insert text, insert various file
+information like modification time, access time, permission etc..,
+insert parent directory names and many more.
+.PP
+File search functionality is provided with PCRE2 regex.
+Fixed string search is also possible.
+.PP
+Operations (rename, changing names, search) are selective of file type
+(directory, file, link).
+.PP
+Files can be sorted by name, modification time, access time, size, file
+type (directory, file, link) etc..
+.PP
+It provides an undo functionality to move back unwanted rename
 operations.
-You can also run a simulation instead of actual rename to view the
-potential outcome as program output on terminal with the \f[I]\-sim\f[]
-option.
+Different \f[B]rnm\f[] operations on different directory remember their
+own undo history.
+.PP
+Simulations can be run instead of actual rename to view the potential
+outcome as program output on terminal with the \f[I]\-sim\f[] option.
 .SH USAGE
 .IP
 .nf
@@ -49,26 +66,31 @@ For example:
 .IP
 .nf
 \f[C]
-rnm\ \-ns\ \[aq]/fn/\ /id/\[aq]\ link1\ \-fl\ link2\ \-nfl\ link3\ link4\ \-fl\ \ link5\ link6
+rnm\ \-ns\ \[aq]/fn/\ /id/\[aq]\ link1\ \-fl\ link2\ \\
+\ \ \ \ \-nfl\ link3\ link4\ \-fl\ \ link5\ link6
 \f[]
 .fi
 .PP
 will rename the symbolic links as:
 .IP "1." 3
-\f[I]link1\f[] will itself be renamed i.e this symbolic link won\[aq]t
-be followed
+\f[I]link1\f[] will itself be renamed, it won\[aq]t be followed
 .IP "2." 3
-\f[I]link2\f[] will be followed and its target will be renamed
+\f[I]link2\f[] will be followed and its target will be renamed because
+\f[I]\-\-follow\-link\f[] flag was \f[B]set\f[] before it.
 .IP "3." 3
-\f[I]link3\f[] and \f[I]link4\f[] won\[aq]t be followed
+\f[I]link3\f[] and \f[I]link4\f[] won\[aq]t be followed because
+\f[I]\-\-follow\-link\f[] flag was \f[B]unset\f[] by \f[I]\-nfl\f[]
+before these links.
 .IP "4." 3
-\f[I]link5\f[] and \f[I]link6\f[] will be followed
+\f[I]link5\f[] and \f[I]link6\f[] will be followed because
+\f[I]\-\-follow\-link\f[] flag was \f[B]set\f[] again before these
+links.
 .PP
 Options are case insensitive, i.e \f[I]\-ssF\f[] and \f[I]\-ssf\f[] are
 the same.
 .SH OPTIONS
 .TP
-.B \-ns \f[I]string\f[]
+.B \-ns \f[I]name\-string\f[]
 Name string.
 This is generally the new name for the file.
 Any part in this name string wrapped around with the path delimiter (/)
@@ -79,24 +101,37 @@ See NAME STRING RULE for details.
 .TP
 .B \-ns/f \f[I]file\-path\f[]
 Name string file.
-File containing name string (one per line).
+File containing name strings per line.
+If this option is passed, any other name string option can not be given
+(replace strings are allowed).
+Name strings will directly be extracted from the file and each of these
+name strings will be applied to each file (one for one).
+All name string rules are available with the name strings defined in
+this file, with an additional rule \f[I]/l/\f[] for accessing line
+number.
+To access the result from replace strings, use the name string rule
+\f[I]/rn/\f[] in the name string rules defined in the name string file.
 .RS
 .RE
 .TP
 .B \-ns/fn \f[I]file\-path\f[]
 Name String file.
-This takes a null terminated \f[I]Name String\f[] file, i.e a file where
-filenames are terminated by null character (\f[I]\\0\f[]) instead of new
-line (\f[I]\\n\f[]).
+This takes a null terminated Name String file, i.e a file where
+filenames/name strings are terminated by null character (\f[I]\\0\f[])
+instead of new line (\f[I]\\n\f[]).
 .RS
 .RE
 .TP
 .B \-sl \f[I]positive\-integer\f[]
 Start Line number in name string file.
-If it\[aq]s smaller than the end line number, the line number is
-incremented in each iteration and if it\[aq]s greater than end line
-number, line number will be decremented in each iteration untill it
-reaches end line number
+If start line is 0, it is changed to the highest line number possible in
+the file.
+For example, if you want to go from last line to first line, you can
+pass start line as 0 and end line as 1.
+Empty lines are always ignored but line numbers are counted.
+Start line can be greater than end line, for example, start line 25 and
+end line 12 would mean: go from line 25 to 12.
+Default start line is 1.
 .RS
 .RE
 .TP
@@ -105,31 +140,21 @@ Same as \f[I]\-sl\f[]
 .RS
 .RE
 .TP
-.B \-slv \f[I]positive\-integer\f[]
-Same as \f[I]\-l\f[] or \f[I]\-sl\f[], except it reverses their meaning.
-.RS
-.RE
-.TP
-.B \-lv \f[I]positive\-integer\f[]
-Same as \f[I]\-slv\f[]
-.RS
-.RE
-.TP
 .B \-el \f[I]positive\-integer\f[]
-End line number.
-Line number to stop renaming from.
-.RS
-.RE
-.TP
-.B \-elv \f[I]positive\-integer\f[]
-Same as \f[I]\-el\f[], except it reverses their meaning.
+End line number in name string file to stop renaming from.
+If end line is 0, it is changed to the highest line number possible in
+the file.
+For example, if you want to go from first line to last line in the file,
+pass start line as 1 and end line as 0.
+Empty lines are always ignored but line numbers are counted.
+End line can be smaller than start line.
+Default end line is the highest line number in the file.
 .RS
 .RE
 .TP
 .B \-linc \f[I]positive\-integer\f[]
-The amount line count will be incremented or decremented in each
-iteration.
-This is always a positive integer.
+The amount line count will be incremented in each iteration for name
+string file.
 .RS
 .RE
 .TP
@@ -138,36 +163,55 @@ Search string.
 String that will be used to search for files with matching names.
 This is generally a regex if not passed with \f[I]\-ssf\f[] option.
 See SEARCH STRING for details.
+This option can be given multiple times to add search strings.
 .RS
 .RE
 .TP
 .B \-ss/f \f[I]file\-path\f[]
 Search string file.
 A file containing search string per line.
+This option can be given multiple times to add search strings.
 .RS
 .RE
 .TP
 .B \-ssf \f[I]search\-term\f[]
 Fixed search string (not treated as regex).
 See SEARCH STRING for details.
+This option can be given multiple times to add search strings.
 .RS
 .RE
 .TP
 .B \-ssf/f \f[I]file\-path\f[]
 Search string file.
 Contains fixed search string per line.
+This option can be given multiple times to add search strings.
 .RS
 .RE
 .TP
 .B \-rs \f[I]replace\-string\f[]
-A string in the form \f[I]/search_regex/replace_part/modifier\f[].
-See REPLACE STRING for details.
+A string in the form:
 .RS
+.IP
+.nf
+\f[C]
+/regex/replace/modifier
+\f[]
+.fi
+.PP
+It performs regex replace on old filename to construct new name.
+It uses PCRE2 regex.
+After performing all the regex replace operations, the resultant string
+is stored in the name string rule \f[I]/rn/\f[].
+It can be used inside a name string or if name string is not given, this
+will by default become the new name for the current file.
+See REPLACE STRING for details.
+This option can be given multiple times to add replace strings.
 .RE
 .TP
 .B \-rs/f \f[I]file\-path\f[]
 Replace string file.
 A file containing replace string per line.
+This option can be given multiple times to add replace strings.
 .RS
 .RE
 .TP
@@ -182,12 +226,14 @@ Same as \f[I]\-si\f[]
 .RE
 .TP
 .B \-ei \f[I]number\f[]
-End index i.e index to stop renaming from.
-It is only for files inside a directory that is being recursively taken
-due to a depth value greater than 0, i.e it works on directory index.
-Note that directory index \f[I]/id/\f[] will renew in each directory i.e
-in each directory rename will be performed from start index to end
-index.
+End index.
+It works on directory index only.
+When rename is occurring inside a directory for a depth value greater
+than 0 or negative, directory index is limited to this end index.
+When incrementing directory index hits this limit, all remaining
+files/directories/links inside that directory are skipped.
+All directories and their subdirectories will be subject to this
+limiting value.
 .RS
 .RE
 .TP
@@ -203,11 +249,24 @@ Decremented index is available through name string rule \f[I]/\-i/\f[],
 This sets Index flags.
 This is a \[aq]/\[aq] separated list of flags that will be used to
 render the index within it\[aq]s text field.
-The general format is \f[I]\[aq]/keyword1/keyword2/...\[aq]\f[].
-Valued flags are set with \f[I]keyword=value\f[] format.
-Ex: \f[I]\[aq]/uppercase/filler=*/\[aq]\f[].
-See INDEX FLAGS for details.
+The general format is:
 .RS
+.IP
+.nf
+\f[C]
+\[aq]/flag1/flag2/flag3=value/...\[aq]
+\f[]
+.fi
+.PP
+Valued flags are set with \f[I]flag=value\f[] format.
+Ex:
+.IP
+.nf
+\f[C]
+\[aq]/uppercase/filler=*/\[aq]
+\f[]
+.fi
+See INDEX FLAGS for details.
 .RE
 .TP
 .B \-ifl \f[I]positive\-integer\f[]
@@ -219,13 +278,13 @@ Non occupied field will be filled with index field fillers (set with
 .RE
 .TP
 .B \-iff \f[I]character\f[]
-Not occupied field in index will be filled with a character which is set
-by this option.
+Non\-occupied field in index will be filled with a character set by this
+option.
 .RS
 .RE
 .TP
 .B \-ifp \f[I]positive\-integer\f[]
-Index is a floating point decimal value.
+Index is a floating point decimal (by default) value.
 This sets the precision.
 .RS
 .RE
@@ -259,31 +318,34 @@ Goes to subdirectories if depth is greater than 0 or negative.
 .RS
 .RE
 .TP
-.B \-ed
+.B \-xd
 Exclude directory.
 Exclude any and all directories and their contents.
 The depth value \f[I]\-dp\f[] will have no effect if this option is
 given.
 This is by default equivalent to file+link only mode if not overridden
 by other options.
+(You can read this option as cross\-d which probably makes more sense)
 .RS
 .RE
 .TP
-.B \-ef
+.B \-xf
 Exclude file.
 Depth value \f[I]\-dp\f[] is respected and goes to subdirectories if
 depth is greater than 0 or negative.
 This is by default equivalent to directory+link only mode if not
 overridden by other options.
+(You can read this option as cross\-f which probably makes more sense)
 .RS
 .RE
 .TP
-.B \-el
+.B \-xl
 Exclude link.
 Depth value \f[I]\-dp\f[] is respected and goes to subdirectories if
 depth is greater than 0 or negative.
 This is by default equivalent to directory+file only mode if not
 overridden by other options.
+(You can read this option as cross\-l which probably makes more sense)
 .RS
 .RE
 .TP
@@ -332,20 +394,61 @@ mode.
 .B \-s
 Sort files in natural order (Human perceivable order).
 This option can be modified to use other sorting methods.
-For example: \f[I]\-s/g\f[] or \f[I]\-\-sort/g\f[] will sort the file in
-general (alphabetical) order.
-Other options are \f[I]\-s/n\f[] (Natural sort), \f[I]\-s/none\f[] (No
-sort).
+For example: \f[I]\-s/g\f[] or \f[I]\-\-sort/general\f[] will sort the
+file in general (alphabetical) order.
+Available sorting methods:
 .RS
+.IP
+.nf
+\f[C]
+\-s\ \ \ \ :\ default\ sort\ (natural\ sort)
+\-s/g\ \ :\ general\ sort
+\-s/n\ \ :\ natural\ sort
+\-s/mt\ :\ sort\ according\ to\ file\ modification\ time\ (recent\ first)
+\-s/at\ :\ sort\ according\ to\ file\ access\ time\ (recent\ first)
+\-s/ct\ :\ sort\ according\ to\ file\ status\ change\ time\ (recent\ first)
+\-s/sz\ :\ sort\ according\ to\ file\ size\ (larger\ first)
+\-s/d\ \ :\ prioritize\ directory\ when\ sorting
+\-s/f\ \ :\ prioritize\ file\ when\ sorting
+\-s/l\ \ :\ prioritize\ link\ when\ sorting
+\-s/r\ \ :\ reverse\ the\ order\ sorted\ by\ above\ methods.
+\f[]
+.fi
 .RE
 .TP
 .B \-y
-Confirm Yes to all.
+Confirm Yes to all and suppress printing output for each file.
+.RS
+.RE
+.TP
+.B \-u
+Undo rename.
+Undo depends on working directory.
+If an \f[B]rnm\f[] command is run from ~/somedir, to undo this operation
+one must run \f[B]rnm\f[] from the same directory again or provide the
+path with \f[I]\-up\f[] option.
+.RS
+.RE
+.TP
+.B \-up
+Undo rename from a given path.
+After every successful rename (or undo), the undo path is set to the
+working directory where \f[B]rnm\f[] is run from.
+.RS
+.RE
+.TP
+.B \-ups
+Show available undo paths.
 .RS
 .RE
 .TP
 .B \-q
-Quiet operation (this increases the speed).
+Quiet operation (speedy operation).
+.RS
+.RE
+.TP
+.B \-qq
+Suppress even error messages.
 .RS
 .RE
 .TP
@@ -358,15 +461,7 @@ Enables renaming some restricted files except \f[I]/\f[].
 .B \-\-
 If this option is passed, anything and everything after it will be taken
 as file path.
-Put all options before passing this option.
-.RS
-.RE
-.TP
-.B \-u
-Undo renaming.
-Undo depends on working directory.
-If an \f[B]rnm\f[] command is ran from ~/somedir, to undo it one must
-run \f[B]rnm\f[] from the same directory again.
+Put all options before it.
 .RS
 .RE
 .TP
@@ -429,24 +524,9 @@ T}@T{
 \-\-start\-line
 T}
 T{
-\-lv
-T}@T{
-\-\-line\-reverse
-T}
-T{
-\-slv
-T}@T{
-\-\-start\-line\-reverse
-T}
-T{
 \-el
 T}@T{
 \-\-end\-line
-T}
-T{
-\-elv
-T}@T{
-\-\-end\-line\-reverse
 T}
 T{
 \-linc
@@ -544,17 +624,17 @@ T}@T{
 \-\-link\-only
 T}
 T{
-\-ed
+\-xd
 T}@T{
 \-\-exclude\-directory
 T}
 T{
-\-ef
+\-xf
 T}@T{
 \-\-exclude\-file
 T}
 T{
-\-el
+\-xl
 T}@T{
 \-\-exclude\-link
 T}
@@ -591,12 +671,12 @@ T}
 T{
 \-s/g
 T}@T{
-\-\-sort/g
+\-\-sort/general
 T}
 T{
 \-s/n
 T}@T{
-\-\-sort/n
+\-\-sort/natural
 T}
 T{
 \-s/none
@@ -604,9 +684,64 @@ T}@T{
 \-\-sort/none
 T}
 T{
+\-s/mt
+T}@T{
+\-\-sort/mtime
+T}
+T{
+\-s/at
+T}@T{
+\-\-sort/atime
+T}
+T{
+\-s/ct
+T}@T{
+\-\-sort/ctime
+T}
+T{
+\-s/d
+T}@T{
+\-\-sort/directory
+T}
+T{
+\-s/f
+T}@T{
+\-\-sort/file
+T}
+T{
+\-s/l
+T}@T{
+\-\-sort/link
+T}
+T{
+\-s/sz
+T}@T{
+\-\-sort/size
+T}
+T{
+\-s/r
+T}@T{
+\-\-sort/reverse
+T}
+T{
 \-y
 T}@T{
 \-\-yes
+T}
+T{
+\-u
+T}@T{
+\-\-undo
+T}
+T{
+\-up
+T}@T{
+\-\-undo\-path
+T}
+T{
+\-ups
+T}@T{
+\-\-undo\-path\-show
 T}
 T{
 \-q
@@ -614,14 +749,14 @@ T}@T{
 \-\-quiet
 T}
 T{
+\-qq
+T}@T{
+\-\-quiet\-quiet
+T}
+T{
 \-f
 T}@T{
 \-\-force
-T}
-T{
-\-u
-T}@T{
-\-\-undo
 T}
 T{
 \-h
@@ -664,7 +799,7 @@ Name sting is parsed by some rules (Name String Rule).
 .SS NAME STRING RULE
 .PP
 A name string rule starts and ends with a \f[I]/\f[] character, These
-special forms are parsed and expanded to their meaning.
+special forms are parsed and expanded to their special meaning.
 For example \f[I]/i/\f[] would expand to file index.
 .SS INDEX RULES
 .IP "1." 3
@@ -687,10 +822,8 @@ inverse index conforming to their meaning.
 \f[I]/dc/\f[] : Directory count
 .IP "2." 3
 \f[I]/l/\f[] : Line number from \f[I]Name String File\f[].
-.IP "3." 3
-\f[I]/la/\f[] : Actual line number from \f[I]Name String File\f[].
 .PP
-Base conversion, scientific conversion and latin conversions are
+Base conversion, scientific conversion and Latin conversions are
 applicable on these counters.
 See EXTENDED INDEX RULES.
 .SS EXTENDED INDEX RULES
@@ -745,17 +878,11 @@ rnm\ \-ns\ \[aq]/fn/\ /id\-l/\[aq]\ ./*
 .fi
 .SS FILENAME
 .IP "1." 3
-\f[I]/fn/\f[] : Full name of the files.
-If used with \f[I]\-ns/f\f[] option, full name will be taken from the
-\f[I]Name String File\f[].
+\f[I]/fn/\f[] : Full name of the file.
 .IP "2." 3
-\f[I]/n/\f[] : Name without extension.
-If used with \f[I]\-ns/f\f[] option, name will be taken from the
-\f[I]Name String File\f[].
+\f[I]/n/\f[] : File name without extension.
 .IP "3." 3
 \f[I]/e/\f[] : File extension.
-If used with \f[I]\-ns/f\f[] option, name will be taken from the
-\f[I]Name String File\f[].
 .IP "4." 3
 \f[I]/rn/\f[] : Replaced Name, generated by replace strings.
 .IP "5." 3
@@ -984,9 +1111,19 @@ rnm\ \-ns\ \[aq]/fn/\ uid:\ /info\-uid/\[aq]\ ./*
 .SS NAME STRING FILE
 .PP
 A file which contains a list of name string (one per line).
-Empty lines will be ignored and line number won\[aq]t be counted.
-Actual line number (which counts the empty lines too) is available
-through the name string rule : \f[I]/la/\f[].
+Empty lines will be ignored but line number will be counted.
+.PP
+Each name string taken from this file is applied to each file, thus if
+there\[aq]s 100 name strings in this file, their will be 100 rename
+only.
+All these name strings are parsed the same way as regular name strings
+given with \f[I]\-ns\f[] option with an additional rule \f[I]/l/\f[]
+(line number).
+.PP
+A null terminated name string file is that one where name strings (i.e
+filenames) are terminated with null character instead of newline
+(\f[I]\\n\f[]).
+These are generally binary files and can be generated with other tools.
 .SS SEARCH STRING
 .PP
 A string that is used to search for files with matching filenames
@@ -1033,9 +1170,9 @@ rnm\ \-ns\ \[aq]/fn/\ /i/\[aq]\ \-ssf\ \[aq].video\[aq]\ ./*
 .PP
 An integer value defining the field length of index.
 By default empty field will be filled with 0\[aq]s.
-For example, if the value is \f[I]3\f[], then index will be
+For example, if the value is \f[I]3\f[], then indexes will be
 \f[I]001\f[], \f[I]002\f[], \f[I]003\f[], etc..
-Different filler (other than 0) can be provided with the \f[I]\-iff\f[]
+Different filler (other than 0) can be provided with \f[I]\-iff\f[]
 option.
 .SS REPLACED NAME
 .PP
@@ -1061,7 +1198,7 @@ the string to replace with.
 \f[I]Name String\f[] rules are available in \f[I]regex\f[] and
 \f[I]replace\f[] part in Replace String.
 .PP
-There are several special cases for \f[I]replace\f[] part:
+Special character sequences for \f[I]replace\f[] part:
 .IP "1." 3
 \f[I]&\f[] will be taken as the entire match found by the
 \f[I]regex\f[].
@@ -1090,13 +1227,22 @@ use \f[I]\\\\\f[].
 .IP "6." 3
 Modifiers are \f[I]i\f[] (case insensitive), \f[I]g\f[] (global),
 \f[I]f\f[] (file), \f[I]d\f[] (directory), \f[I]l\f[] (link).
-.IP "7." 3
+.PP
 \f[I]Replace String\f[] is always performed on old file name (even when
 name string file is given).
-.IP "8." 3
+.PP
 You can provide multiple replace strings with repeated \f[I]\-rs\f[]
 option and multiple file with repeated \f[I]\-rs/f\f[] options.
 These options can be mixed with each other too.
+.PP
+Multiple replace strings can also be given by terminating each
+individual replace strings with \f[I];\f[] (semicolon):
+.IP
+.nf
+\f[C]
+rnm\ \-rs\ \[aq]/.*_/\\C/gi;/\-/\ /g;/#/\@/g\[aq]\ ./*
+\f[]
+.fi
 .PP
 \f[B]Examples:\f[]
 .IP
@@ -1132,13 +1278,13 @@ floating point value.
 \f[I]internal\f[] : adjust internal.
 .IP \[bu] 2
 \f[I]precision\f[] : set precision.
-Used like precision=value
+Used as \f[C]precision=value\f[]
 .IP \[bu] 2
 \f[I]length\f[] : sets length.
-Used like length=value
+Used as \f[C]length=value\f[]
 .IP \[bu] 2
 \f[I]filler\f[] : sets filler.
-Used like filler=value
+Used as \f[C]filler=value\f[]
 .SS MODIFIERS
 .IP "1." 3
 \f[I]i\f[]: case insensitive match or replace.
@@ -1182,8 +1328,8 @@ All options should always be separated by space.
 For Example: \f[I]\-vy\f[] won\[aq]t mean two option \f[I]\-v\f[] and
 \f[I]\-y\f[], rather it will mean a single option \f[I]\-vy\f[].
 .IP "2." 3
-Any argument with \f[I]\-\f[] at beginning will be treated as an option
-and produce error if invalid.
+Any dangling argument with \f[I]\-\f[] at beginning will be treated as
+an option and produce error if invalid.
 .IP "3." 3
 If filename/path argument may include \f[I]\-\f[] at the beginning, use
 \f[I]\-\-\f[] to make all the arguments after this option as paths/names
@@ -1217,10 +1363,10 @@ file names contain \f[I]\-\f[] at the beginning, a safer approach is
 \f[B]Maximum length of file name :\f[] FILENAME_MAX
 .PP
 \f[B]Default latin fallback :\f[] 55555.
-After this value latin conversion will fall back to decimal.
+After this value Latin conversion will fall back to decimal.
 You can override this with \f[I]\-if\f[] option by setting
 \f[I]/latin\-fallback=6666/\f[] (or some other value).
-Big latin number may produce much larger name which in turn may give you
+Big Latin number may produce much larger name which in turn may give you
 error due to limit on length of file names.
 .SH LOG DIR
 .PP
@@ -1230,6 +1376,8 @@ error due to limit on length of file names.
 0 On success
 .PP
 1 On failure
+.PP
+2 On interrupt
 .SH BUG REPORT
 .PP
 <https://github.com/neurobin/rnm/issues>
