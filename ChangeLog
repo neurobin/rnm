@@ -1,3 +1,14 @@
+###`4.0.0`: <span class="light-quote"></span><span class
+
+1. Unlimited precision for indexes.
+2. Access to file information (closes issue #9)
+3. New modifiers f, d, l, ! (closes issue #10)
+4. Remove `-ed` and bring meaningful options `-xd`, `-xf` and `-xl`.
+5. New sorting methods based on file information, mtime, atime, ctime, size and file type.
+6. New name string rule `/info-prop-op/` to access file information.
+7. Remove multi-mode regex and all regex modes in favor of PCRE2 regex.
+
+
 ###`3.3.2`: <span class="light-quote">Fri Feb 12 14:56:09 UTC 2016</span>
 
 1. Added an extra term 'w' for extended /pd/ name string rule which points to the working directory level.

@@ -3,9 +3,9 @@
 **The current version is an alpha release, beta testers are welcome.**
 
 <div id="description"></div>
-Renames files/directories in bulk. Naming scheme (*Name String*) can be applied or regex replace can be performed to modify names dynamically. It uses PCRE2 (revised version of PCRE) regex to provide search (and replace) functionality.
+Renames files/directories in bulk. Naming scheme (*Name String*) can be applied or regex replace can be performed to modify file names on the fly. It uses PCRE2 (revised version of PCRE) regex to provide search (and replace) functionality.
 
-It provides versatile options to modify names, delete/replace part of it, indexing, case conversion, insert text, insert various file information like modification time, access time, permission etc.., insert parent directory names and many more.
+It provides versatile options to modify names, delete/replace part of it, indexing, case conversion, insert text, insert various file information like modification time, access time, permission etc.., insert parent directory names, working directory name etc.. and many more.
 
 File search functionality is provided with PCRE2 regex. Fixed string search is also possible.
 
@@ -13,26 +13,10 @@ Operations (rename, changing names, search) are selective of file type (director
 
 Files can be sorted by name, modification time, access time, size, file type (directory, file, link) etc..
 
-It provides an undo functionality to move back unwanted rename operations. Different **rnm** operations on different directory remember their own undo history.
+It provides an undo functionality to move back unwanted rename operations. Different **rnm** operation on different directory remembers their own undo history.
 
 Simulations can be run instead of actual rename to view the potential outcome as program output on terminal with the *-sim* option.
 
-
-<div id="features"></div>
-#Features:
-
-1. Renames files or directories in bulk.
-2. Undo functionality (`rnm -u`).
-3. Names can be modified by performing regex replace. It enables generating new names by deleting/appending/modifying part of the old filename. It also enables easy conversion from lowercase to uppercase and vice-versa.
-4. Lowercase-Uppercase conversion is selective i.e you can apply case conversion in part of the name at a targeted position.
-5. Names can be modified with certain predefined rules. For example, you can insert parent directory name or working directory name or index etc... in filename in arbitrary positions.
-6. Latin indexing of files. Index can also be converted to different bases (binary, hex, oct etc...).
-6. Names can be taken from a file, and these names can also be modified by applying *Name String* rules on them.
-7. Search functionality. It uses PCRE2 regex. Fixed string search is also possible.
-8. Null terminated file support for file names (Null termination is a good way to store filenames in a file).
-9. Sort functionality. Available sorting methods are: Natural sort and general alphabetical sort.
-10. Multiple search criteria and replacement methods are possible.
-11. Search keywords and replacement regex can also be supplied form files (single or multiple).
 
 #New features:
 
@@ -40,18 +24,24 @@ Simulations can be run instead of actual rename to view the potential outcome as
 2. File information is available, e.g modification time, access time, status change time (time string can be formatted using format string e.g `%d-%m-%Y`), permission, owner id, group id, size, block, inode number, mode etc...
 3. Inverse search is possible.
 4. Each regex operation can be associated with either link, file or directory, for example, if a replace string is associated with only file, it will not work on directories or links.
+5. New sorting methods: 
+  1. Sort according to file modification time.
+  2. Sort according to file access time.
+  3. Sort according to file status change time.
+  4. Sort according to file size.
+  5. Prioritize directory when sorting.
+  6. Prioritize file when sorting.
+  7. Prioritize link when sorting.
 
 #Features that were dropped:
 
 * Multiple regex mode in favor of PCRE2 regex.
-* All the previous regex modes; from now only PCRE2 regex will be used.
-
 
 #Install:
 
 ###Install from source:
 
-Make sure you have a C++ compiler equivalent to GCC-5.0 (`g++-5`) or later installed on your system.
+Make sure you have a C++ compiler equivalent to GCC-4.8 (`g++-4.8`) or later installed on your system.
 
 ####Download dependencies:
 To install dependencies run the `prepare.sh` file:
@@ -72,9 +62,9 @@ After you have all the dependencies at hand, you can simply do:
 
 ```sh
 ./configure --enable-static --disable-shared --enable-cxx --enable-jit
-#--enable-cxx is mandatory, --enable-jit will improve performance during patter matching
+#--enable-cxx is mandatory, --enable-jit will improve performance (a lot) during pattern matching
 make
-sudo make install-strip #binary size will be minimum comapared to `sudo make install`
+sudo make install
 ```
 Hold tight until it finishes compiling and building **rnm**.
 
@@ -91,7 +81,7 @@ sudo apt-get update
 sudo apt-get install rnm
 ```
 
-If you are in Ubuntu 14.04 or 12.04 (trusty or precise), you will need to add ubuntu-toolchain repository to make `libstdc++6 (>=5.0.0)` available:
+If you are in Ubuntu 14.04 or 12.04 (trusty or precise), you will need to add ubuntu-toolchain repository to make `libstdc++6 (>=4.8.5)` available:
 
 ```sh
 sudo add-apt-repository ppa:ubuntu-toolchain-r/test
@@ -121,6 +111,9 @@ You can download a pre-built binary (64 and/or 32 bit) from the [release page](h
 5. `-s`: Sort files.
 6. `-fo`: File only mode.
 7. `-do`: Directory only mode.
+8. `-lo`: Link only mode.
+
+For a complete list of options and to get a glimpse of what **rnm** is capable of, get a peek at the doc (`rnm.md` or `rnm.html`) or man page (`man rnm`).
 
 <div id="usage"></div>
 #Usage:
