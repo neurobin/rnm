@@ -37,7 +37,7 @@
 class File;
 
 /////typedefs
-typedef uint32_t Uint;
+typedef uint64_t Uint;
 typedef uint8_t Ush;
 typedef int16_t Short;
 typedef mpf_class Double;
@@ -49,6 +49,7 @@ typedef std::vector<IOFormatFlag> IOFormatFlagArray;
 typedef std::vector<String> StringArray;
 typedef std::vector<String> NameList;
 typedef std::vector<Int> IntVec;
+typedef std::vector<Uint> UintVec;
 typedef std::vector<Uint> UintVec;
 typedef std::fstream FileStream;
 typedef jpcre2::select<char> jp;

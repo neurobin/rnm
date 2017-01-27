@@ -75,41 +75,41 @@ String getCurrentDir(void){
 }
 
 
-String prepareLogDir(){
+void prepareLogDir(){
     mkdir(LOG_DIR_PARENT.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
     mkdir(LOG_DIR.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
     mkdir(LOG_DIR_UNDO.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
     FileStream file;
     file.open(RNM_FILE_LOG_L_TMP.c_str(),std::ios::out);
-    if(!file.good()){std::cerr<<strerror(errno);}
+    if(!file.good()){std::cerr<<strerror(errno)<<": "<<RNM_FILE_LOG_L_TMP;}
     file.close();
     file.open(RNM_FILE_LOG_R_TMP.c_str(),std::ios::out);
-    if(!file.good()){std::cerr<<strerror(errno);}
+    if(!file.good()){std::cerr<<strerror(errno)<<": "<<RNM_FILE_LOG_R_TMP;}
     file.close();
-    return String(strerror(errno));
+    //~ return String(strerror(errno));
 }
 
-String openLockFile(futil::lock_op ltype = futil::lock_op::ImmediateLock, bool cleanfs_on_exit = false){
+void openLockFile(futil::lock_op ltype = futil::lock_op::ImmediateLock, bool cleanfs_on_exit = false){
     RNM_LOCK_FILE_F.open(RNM_LOCK_FILE, "w+b"); //futil automatically closes a file if opened already
     if(!RNM_LOCK_FILE_F.setLock(ltype)){
         errorExitExtra("Couldn't get lock. Another rnm process is running on current directory. Let it finish first. Abort.", cleanfs_on_exit);
     }
-    return strerror(errno);
+    //~ return strerror(errno);
 }
 
-String openTmpFiles(){
+void openTmpFiles(){
     RNM_FILE_LOG_L_TMP_F.open(RNM_FILE_LOG_L_TMP.c_str(), std::ios::binary | std::ios::out);
     RNM_FILE_LOG_R_TMP_F.open(RNM_FILE_LOG_R_TMP.c_str(), std::ios::binary | std::ios::out);
-    return strerror(errno);
+    //~ return strerror(errno);
 }
 
-String openTmpFilesForAppend(){
+void openTmpFilesForAppend(){
     RNM_FILE_LOG_L_TMP_F.open(RNM_FILE_LOG_L_TMP.c_str(), std::ios::binary | std::ios::app);
     RNM_FILE_LOG_R_TMP_F.open(RNM_FILE_LOG_R_TMP.c_str(), std::ios::binary | std::ios::app);
-    return strerror(errno);
+    //~ return strerror(errno);
 }
 
-String openLogFiles(){
+void openLogFiles(){
     if(File(ERROR_LOG).size > 10 * MB)
         ERROR_LOG_F.open(ERROR_LOG.c_str(), std::ios::out);
     else
@@ -118,7 +118,7 @@ String openLogFiles(){
         OUT_LOG_F.open(OUT_LOG.c_str(), std::ios::out);
     else
         OUT_LOG_F.open(OUT_LOG.c_str(), std::ios::app | std::ios::out);
-    return strerror(errno);
+    //~ return strerror(errno);
 }
 
 void closeTmpFiles(){
@@ -191,13 +191,13 @@ String copyFile(const String& src, const String& dest){
 }
 
 
-String copyFile2(const String& src,const String& dst){
+void copyFile2(const String& src,const String& dst){
     std::ifstream source(src, std::ios::binary);
     std::ofstream dest(dst, std::ios::binary);
     dest << source.rdbuf();
     source.close();
     dest.close();
-    return strerror(errno);
+    //~ return strerror(errno);
 }
 
 
@@ -209,10 +209,10 @@ void finalizeRFL(){
 }
 
 
-String appendToRFLTMP(const String& str1,const String& str2){
+void appendToRFLTMP(const String& str1,const String& str2){
     RNM_FILE_LOG_L_TMP_F<<str1<<'\0';
     RNM_FILE_LOG_R_TMP_F<<str2<<'\0';
-    return strerror(errno);
+    //~ return strerror(errno);
 
 }
 
@@ -312,48 +312,88 @@ StringArray getLineFromFileAndReturnVector(const String& filename){
     return list;
 }
 
-
-void getNameListFromFile(StringArray& list, const String& filename, Uint si, Uint ei, int mod=1){
-    bool reverse = false;
+void getNameListFromFile(StringArray& nlist, const String& filename, Uint si, Uint ei, int mod=1){
     String line;
-    Uint lc=0, abslc=0;
+    StringArray list;
     Uint start=si,end=ei;
-    Int local_linc = 0;
-    if((ei!=0 && si>ei) || si == 0 ){
-        start=ei;
-        end=si; 
-        reverse = true;
-    }
+    Uint local_linc = linc.get_ui();
     char delim='\n';
     if(mod==0){delim='\0';}
     FileStream file;
     if(mod==1){file.open(filename,std::ios::in);}
     else {file.open(filename,std::ios::binary | std::ios::in);}
     if(!file.good()){printErrorLog("Couldn't open file: "+filename);Exit(1);}
-    while(std::getline(file,line,delim) && (lc<end || end == 0)){
+    while(std::getline(file,line,delim)){
         if(mod==1){
             if ( line.size() && line[line.size()-1] == '\r' ) {
                line = line.substr( 0, line.size() - 1 );
             }
         }
-        abslc++;
-        if(line.empty()) continue;
-        local_linc++;
-        lc++;
-        if(lc==start ||( lc>start && (lc <= end || end == 0) && local_linc >= linc) ){
-            local_linc = 0;
-            list.push_back(line);
-            lc_list.push_back(lc);
-            abslc_list.push_back(abslc);
-        }
+        list.push_back(line);
     }
     file.close();
-    if(reverse) {
-        std::reverse(list.begin(), list.end());
-        std::reverse(lc_list.begin(), lc_list.end());
-        std::reverse(abslc_list.begin(), abslc_list.end());
+    Uint n = list.size();
+    if(si==0) start = n>0?n-1:n;
+    else start = si - 1;
+    if(ei==0) end = n>0?n-1:n;
+    else end = ei - 1;
+    if(start<=end){
+        for(Uint i = start; i<n && i <= end ; i = i + local_linc){
+            if(list[i].empty()) continue;
+            nlist.push_back(list[i]);
+            lc_list.push_back(i);
+        }
+    } else {
+        for(Uint i = start; i<n && i >= end ; i = i - local_linc){
+            if(list[i].empty()) continue;
+            nlist.push_back(list[i]);
+            lc_list.push_back(i);
+        }
     }
+    
 }
+
+//~ void getNameListFromFile(StringArray& list, const String& filename, Uint si, Uint ei, int mod=1){
+    //~ bool reverse = false;
+    //~ String line;
+    //~ Uint lc=0, abslc=0;
+    //~ Uint start=si,end=ei;
+    //~ Int local_linc = 0;
+    //~ if((ei!=0 && si>ei) || si == 0 ){
+        //~ start=ei;
+        //~ end=si; 
+        //~ reverse = true;
+    //~ }
+    //~ char delim='\n';
+    //~ if(mod==0){delim='\0';}
+    //~ FileStream file;
+    //~ if(mod==1){file.open(filename,std::ios::in);}
+    //~ else {file.open(filename,std::ios::binary | std::ios::in);}
+    //~ if(!file.good()){printErrorLog("Couldn't open file: "+filename);Exit(1);}
+    //~ while(std::getline(file,line,delim) && (lc<end || end == 0)){
+        //~ if(mod==1){
+            //~ if ( line.size() && line[line.size()-1] == '\r' ) {
+               //~ line = line.substr( 0, line.size() - 1 );
+            //~ }
+        //~ }
+        //~ abslc++;
+        //~ if(line.empty()) continue;
+        //~ local_linc++;
+        //~ lc++;
+        //~ if(lc==start ||( lc>start && (lc <= end || end == 0) && local_linc >= linc) ){
+            //~ local_linc = 0;
+            //~ list.push_back(line);
+            //~ lc_list.push_back(lc);
+            //~ abslc_list.push_back(abslc);
+        //~ }
+    //~ }
+    //~ file.close();
+    //~ if(reverse) {
+        //~ std::reverse(list.begin(), list.end());
+        //~ std::reverse(lc_list.begin(), lc_list.end());
+        //~ std::reverse(abslc_list.begin(), abslc_list.end());
+    //~ }
+//~ }
 
 
 void cleanup(bool cleanfs){
@@ -415,18 +455,20 @@ bool isChildDir(const File& parent, File child){
 
 
 Int childDepth(const File& parent, File child){
-    String childstr=child.path;
-    if(isChildDir( parent, child)){
-        if(child.isDir()){
-            childstr=replaceString(child.path,parent.path+path_delim,String(""));
-        }
-        else{
-            childstr=replaceString(dirname(child.path),parent.path+path_delim,String(""));
-        }
-        //~ LOG("depth: ("<<parent.path<<"->"<<childstr<<")"<<split(childstr,'/').size())
-        return split(childstr,'/').size();
-    }
-    else return LOWEST_DEPTH;
+    //~ String childstr=child.path;
+    //~ if(isChildDir( parent, child)){
+        //~ if(child.isDir()){
+            //~ childstr=replaceString(child.path,parent.path+path_delim,String(""));
+        //~ }
+        //~ else{
+            //~ childstr=replaceString(dirname(child.path),parent.path+path_delim,String(""));
+        //~ }
+        // LOG("depth: ("<<parent.path<<"->"<<childstr<<")"<<split(childstr,'/').size())
+        //~ return split(childstr,'/').size();
+    //~ }
+    if(isChild(parent, child)){
+        return split(child.path,'/').size() - split(parent.path, '/').size();
+    } else return LOWEST_DEPTH;
 }
 
 
@@ -451,8 +493,7 @@ void sortVector(FileArray& files){
 }
 
 
-FileArray getFilesFromDir(const String& file){
-    FileArray files;
+void getFilesFromDir(FileArray& files, const String& file){
     DIR *dir;
     struct dirent *ent;
     if ((dir = opendir (file.c_str())) != NULL) {
@@ -468,7 +509,7 @@ FileArray getFilesFromDir(const String& file){
         printErrorLog((String(strerror(errno))+": "+file).c_str());
     }
     sortVector(files);
-    return files;
+    //~ return files;
 }
 
 

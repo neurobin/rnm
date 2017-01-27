@@ -48,7 +48,7 @@ Options are case insensitive, i.e *-ssF* and *-ssf* are the same.
 : Name string. This is generally the new name for the file. Any part in this name string wrapped around with the path delimiter (/) is parsed as a name string rule and the new name is formed accordingly. See <a href="#name-string-rule">NAME STRING RULE</a> for details.
 
 -ns/f *file-path*
-: Name string file. File containing name strings per line. If this option is passed, any other name string or replace string can not be given. Name strings will directly be extracted from the file and each of these name strings will be applied to each file (one for one). All name string rules are available with the name strings defined in this file, with two additional rules : */la/* and */l/* (actual line number and line number respectively).
+: Name string file. File containing name strings per line. If this option is passed, any other name string or replace string can not be given. Name strings will directly be extracted from the file and each of these name strings will be applied to each file (one for one). All name string rules are available with the name strings defined in this file, with an additional rule */l/* for accessing line number.
 
 -ns/fn *file-path*
 : Name String file. This takes a null terminated Name String file, i.e a file where filenames/name strings are terminated by null character (*\\0*) instead of new line (*\\n*).
@@ -90,7 +90,7 @@ Options are case insensitive, i.e *-ssF* and *-ssf* are the same.
 : Same as *-si*
 
 -ei *number*
-: End index i.e index to stop renaming from. It is only for files inside a directory that is being recursively taken due to a depth value greater than 0, i.e it works on directory index. Note that directory index */id/* will renew in each directory i.e in each directory rename will be performed from start index to end index.
+: End index. Remaining files will be skipped when either incrementing or decrementing index reaches end index inside a directory. It is only for files inside a directory that is being recursively taken due to a depth value greater than 0, or negative i.e it works on directory index only. Note that directory index */id/* will renew in each directory i.e in each directory rename will be performed from start index to end index. A value of *0* for end index will mean unlimited index. As index goes both ways around (increment and decrements) at the same time, rename will be skipped as soon as one kind of index (incrementing or decrementing) hits the limit. For example, if you set the end index to 4, it will end when either incrementing or decrementing index reaches 4 or -4. End index is always taken as positive number, but negative number is acceptable though internally it will be treated with its absolute value.
 
 -inc *number*
 : Increment value (floating point decimal). The amount, index will be incremented or decremented in each iteration. Decremented index is available through name string rule */-i/*, */-id/* etc..
@@ -150,7 +150,7 @@ Options are case insensitive, i.e *-ssF* and *-ssf* are the same.
 : Confirm Yes to all.
 
 -q
-: Quiet operation (this increases the speed).
+: Quiet operation (speedy operation).
 
  -f
 : Force rename. Enables renaming some restricted files except */*.
@@ -258,7 +258,6 @@ In general, *-i* in the above name string rules will mean inverse index conformi
 
 1. */dc/* : Directory count
 2. */l/* : Line number from *Name String File*.
-3. */la/* : Actual line number from *Name String File*.
 
 Base conversion, scientific conversion and latin conversions are applicable on these counters. See <a href="#extended-index-rules">EXTENDED INDEX RULES</a>.
 
@@ -436,9 +435,9 @@ rnm -ns '/fn/ uid: /info-uid/' ./*
 ```
 
 ##NAME STRING FILE
-A file which contains a list of name string (one per line). Empty lines will be ignored and line number won't be counted. Actual line number (which counts the empty lines too) is available through the name string rule : */la/*.
+A file which contains a list of name string (one per line). Empty lines will be ignored but line number will be counted.
 
-Each name string taken from this file is applied to each file, thus if there's 100 name strings in this file, their will be 100 rename only. All these name strings are parsed the same way as regular name strings given with *-ns* option with two additional rules: */l/* (line number), */la/* (actual line number).
+Each name string taken from this file is applied to each file, thus if there's 100 name strings in this file, their will be 100 rename only. All these name strings are parsed the same way as regular name strings given with *-ns* option with an additional rule */l/* (line number).
 
 A null terminated name string file is that one, where name strings (i.e filenames) are terminated with null character instead of newline (*\\n*). These are generally binary files and can be created with other tools.
 
@@ -577,6 +576,8 @@ rnm -ns/f filepath
 0  On success
 
 1 On failure
+
+2 On interrupt
 
 #BUG REPORT
 

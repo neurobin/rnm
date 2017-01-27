@@ -71,7 +71,7 @@ bool Rename(const String& oldn,const String& newn,DirectoryIndex &di){
                 rnc++;
                 success=true;
             }
-            else {printErrorLog(strerror(errno));}
+            else {printErrorLog(strerror(errno)+String(": ")+oldn);}
         }
         else {
             
@@ -102,7 +102,7 @@ bool undoRename(){
         std::reverse(right.begin(), right.end());
         for(size_t i=0;i<left.size();++i){
             ///do rename and log into rfl
-            if(!quiet){std::cout<< NEW_LINE+right[i]+"    ---->    "+left[i]+NEW_LINE;}
+            if(!quiet&&!ALL_YES){std::cout<< NEW_LINE+right[i]+"    ---->    "+left[i]+NEW_LINE;}
             Rename(right[i],left[i],di);
         }
         return true;
@@ -553,8 +553,7 @@ String parseNameString(const String& ns,const File& file,DirectoryIndex &di, con
     ns_rules["-idr"]=di.directory_reverse_index_rd;
     ns_rules["dc"]=directory_count;
     if(name_string_file!=""){
-        ns_rules["l"]=Double(current_line.get_ui());
-        ns_rules["la"]=Double(current_abs_line.get_ui());
+        ns_rules["l"]=Double(current_line);
     }
     std::map<String,String>ns_rules_s;
     ns_rules_s["fn"]=fname;
@@ -757,7 +756,6 @@ File doRename(const File& file,DirectoryIndex &di){
         name=parseNameString(name_string,file,di,path_delim, "",0);
     } else if(!name_string_file.empty()){
         if(current_line_pos<nsflist.size()){
-            current_abs_line=abslc_list[current_line_pos];
             current_line = lc_list[current_line_pos];
             name=parseNameString(nsflist[current_line_pos],file,di,path_delim, "",0);
             current_line_pos++;
@@ -774,7 +772,7 @@ File doRename(const File& file,DirectoryIndex &di){
     name=stripPathDelimiter(name);
     
     if(!name.empty()){
-        if(!quiet){std::cout<< NEW_LINE+file.path+"    ---->    "+dir+path_delim+name+NEW_LINE;}
+        if(!quiet&&!ALL_YES){std::cout<< NEW_LINE+file.path+"    ---->    "+dir+path_delim+name+NEW_LINE;}
         ///do rename
         int confirm;
         if(!all_yes){
@@ -810,21 +808,6 @@ File doRename(const File& file,DirectoryIndex &di){
     else{
         printWarningLog("Name can not be empty, skipped. ("+file.path+")");not_skipped=false;
     }
-    
-
-    //~ if(!name_string_file.empty()){
-        //~ if(current_line<=0){Exit(0);}
-        //~ if(line_upward && end_line!=0){
-            //~ if(current_line>end_line){printOutLog("End line reached.");Exit(0);}
-        //~ } else if(end_line==0){
-            //~ if(current_index_rd>=nsflist.size()){printWarningLog("Name string file ran out of names.");Exit(0);}
-        //~ } else{
-            //~ if(current_line<end_line){
-                //~ printOutLog("End line reached");
-                //~ Exit(0);
-            //~ }
-        //~ }
-    //~ }
     if(not_skipped) file_to_return=File(dir+path_delim+name);
     return file_to_return;
 }
@@ -834,13 +817,12 @@ File doRename(const File& file,DirectoryIndex &di){
 
 void startInDepthRenamingTaskOnDirectory(const String& dir,String base_dir=base_dir){
     FileArray files;
-    files=getFilesFromDir(dir);
-    
+    getFilesFromDir(files,dir);
     directory_count++;
     DirectoryIndex di;
     
     for(size_t i=0;i<files.size();i++){
-        if(abs(di.directory_index)>abs(end_index)){continue;}
+        if(abs(di.directory_index)>abs(end_index) && end_index != 0){continue;}
         String file=files[i].path;
 
         if(childDepth(base_dir,file)>depth){continue;}
@@ -852,18 +834,14 @@ void startInDepthRenamingTaskOnDirectory(const String& dir,String base_dir=base_
         CPDN=getParentDirectoryName(file);
     
         if(files[i].isDir()){
-            if(file_only||link_only){
-                if(childDepth(base_dir,file)<=depth){
-                    startInDepthRenamingTaskOnDirectory(file);
-                } else{}
-                //not else if
-                if(count_directory){incrementReservedIndexes(di);}
-            } else if(exclude_directory){
+            if(exclude_directory){
                 if(count_directory){incrementReservedIndexes(di);}
                 continue;
             } else{
-                files[i]=doRename(file,di);
-                incrementReservedIndexes(di);
+                if(!file_only&&!link_only){
+                    files[i]=doRename(file,di);
+                    incrementReservedIndexes(di);
+                } else if(count_directory) incrementReservedIndexes(di);
                 file = files[i].path;
                 src_name=basename(file);
                 parent=dirname(file);
@@ -922,20 +900,16 @@ void startTask(FileArray& files){
             if(exclude_directory){
                 if(count_directory){incrementReservedIndexes(di);}
                 continue;
-            } else if(file_only||link_only){
-                if(childDepth(base_dir,file)<=depth){
-                    startInDepthRenamingTaskOnDirectory(file);
-                } else{}
-                //not else if
-                if(count_directory){incrementReservedIndexes(di);}
-            } else{
-                files[i]=doRename(file,di);
-                incrementReservedIndexes(di);
+            } else {
+                if(!file_only&&!link_only){
+                    files[i]=doRename(file,di);
+                    incrementReservedIndexes(di);
+                } else if(count_directory) incrementReservedIndexes(di);
                 file = files[i].path;
                 src_name=basename(file);
                 parent=dirname(file);
                 CPDN=getParentDirectoryName(file);
-                base_dir=dirname(file);
+                base_dir = file;
                 if(childDepth(base_dir,file)<=depth){
                     startInDepthRenamingTaskOnDirectory(file);
                 }
@@ -968,13 +942,6 @@ void startTask(FileArray& files){
         
     }
 }
-
-
-//~ void detectLineUpwardOrDownward(){
-    //~ if(start_line<=end_line || end_line==0){line_upward=true;}
-    //~ else{line_upward=false;reverse_line=true;}
-    //~ if(reverse_line){current_line=(start_line>end_line)?start_line:end_line;}
-//~ }
 
 
 #endif

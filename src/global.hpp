@@ -115,6 +115,7 @@ Double TB = GB*KB;
 bool quiet=false;
 bool force=false;
 bool all_yes=false;
+bool ALL_YES=false;
 bool directory_only=false;
 bool file_only=false;
 bool link_only=false;
@@ -149,7 +150,7 @@ Double current_index_rd=1;
 Double reverse_start_index=-1;
 Double reverse_index=reverse_start_index;
 Double reverse_index_rd=reverse_start_index;
-Double end_index = std::numeric_limits<std::size_t>::max();
+Double end_index = 0;
 Double inc=1;
 Double DIRECTORY_INDEX=1;
 Double DIRECTORY_REVERSE_INDEX=-1;
@@ -158,10 +159,10 @@ Double DIRECTORY_REVERSE_INDEX=-1;
 //~ Int INT_MAX = std::numeric_limits<std::size_t>::max();
 Int linc=1;
 Int start_line=1;
-Int current_line=start_line;
-Uint current_line_pos = 0;
-Int current_abs_line=start_line;
 Int end_line=0;
+Uint current_line=1;
+Uint current_line_pos = 0;
+//~ Int current_abs_line=start_line;
 Int directory_count=0;
 Int depth=0;
 Int LOWEST_DEPTH=0;
@@ -171,8 +172,8 @@ Int rnc=0; //rename count
 
 //////// nsf related
 StringArray nsflist;
-IntVec abslc_list;
-IntVec lc_list;
+//~ UintVec abslc_list;
+UintVec lc_list;
 
 /////Strings
 String blank_str="";

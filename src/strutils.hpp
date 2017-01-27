@@ -128,15 +128,15 @@ String replaceString(String str,const String& replace,const String& with){
 }
 
 
-String replaceStringAll(String str, const String& replace, const String& with) {
-   if(replace!=""){
-   std::size_t pos = str.find(replace);
-    while ((pos = str.find(replace, pos)) != String::npos) {
-         str=str.replace(pos, replace.length(), with);
-         pos += with.length();
+String replaceStringAll(String str, const String& old, const String& new_s) {
+    if(!old.empty()){
+        size_t pos = str.find(old);
+        while ((pos = str.find(old, pos)) != String::npos) {
+             str=str.replace(pos, old.length(), new_s);
+             pos += new_s.length();
+        }
     }
-}
-return str;
+    return str;
 }
 
 String encodeWithDelim(const String& s, const String& delim){

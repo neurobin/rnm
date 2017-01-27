@@ -201,7 +201,6 @@ int main(int argc, char* argv[]) {
                 } else if(opt=="-l"||opt=="-sl"||opt=="--line"||opt=="--start-line"){
                   checkArgAvailability(args,i+1); 
                   start_line=getPositiveIntOrExit("Start Line",args[i+1]);
-                  //~ current_line=start_line;
                   skipcount=true; 
                   sl_obj.count++;
                   if(sl_obj.count>1){printWarningLog("Start line overwritten");}
@@ -307,7 +306,8 @@ int main(int argc, char* argv[]) {
                   sort=true;
                   sort_type="none";
                 } else if(opt=="-y"||opt=="--yes"){
-                  all_yes=true; 
+                  all_yes=true;
+                  ALL_YES=true;
                 } else if(opt=="-fl"||opt=="--follow-link"){
                   follow_symlink=true; 
                 } else if(opt=="-nfl"||opt=="--no-follow-link"){
