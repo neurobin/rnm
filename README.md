@@ -3,7 +3,19 @@
 **The current version is an alpha release, beta testers are welcome.**
 
 <div id="description"></div>
-Bulk Rename Utility written in `C++`. Files and directories can be passed as command line arguments to rename them in bulk according to some naming scheme (*Name String*). If any file or directory path is not passed as command line argument, it will wait for user to type the path i.e it will take the path from standard input `(>=version 3.0.1)`. It uses PCRE2 (revised version of PCRE) regex to provide search (and replace) functionality. It provides an undo functionality too to move back an unwanted rename operation. You can also run a simulation instead of actual rename to view the potential outcome as program output on terminal with the `-sim` option.
+Renames files/directories in bulk. Naming scheme (*Name String*) can be applied or regex replace can be performed to modify names dynamically. It uses PCRE2 (revised version of PCRE) regex to provide search (and replace) functionality.
+
+It provides versatile options to modify names, delete/replace part of it, indexing, case conversion, insert text, insert various file information like modification time, access time, permission etc.., insert parent directory names and many more.
+
+File search functionality is provided with PCRE2 regex. Fixed string search is also possible.
+
+Operations (rename, changing names, search) are selective of file type (directory, file, link).
+
+Files can be sorted by name, modification time, access time, size, file type (directory, file, link) etc..
+
+It provides an undo functionality to move back unwanted rename operations. Different **rnm** operations on different directory remember their own undo history.
+
+Simulations can be run instead of actual rename to view the potential outcome as program output on terminal with the *-sim* option.
 
 
 <div id="features"></div>
