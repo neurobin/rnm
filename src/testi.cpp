@@ -17,10 +17,8 @@ void signalHandler( int signum ) {
 }
 
 int main(){
-    try{self_dir = getCurrentDir();
-    self_path=self_dir+String(path_delim)+executable_name;
-    CWD=String(self_dir);
-    CWDN=basename(self_dir);
+    try{CWD = getCurrentDir();
+    CWDN=basename(CWD);
     prepareLogDir();
     //~ std::cout<<"current dir:"<<getCurrentDir()+NEW_LINE;
     File file1("/media/jahid/StorageP3/Games3/NARUTO SHIPPUDEN Ultimate Ninja STORM 4-CODEX/codex-naruto.sh[i[p][]puden&\\$\\.ultimate.ninja.storm.4.iso");

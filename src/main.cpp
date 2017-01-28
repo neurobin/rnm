@@ -50,10 +50,8 @@ int main(int argc, char* argv[]) {
     std::ios::sync_with_stdio(false);
     try{
         ///The following must be the first line
-        self_dir = getCurrentDir();
-        self_path=self_dir+path_delim+executable_name;
-        CWD=self_dir;
-        CWDN=basename(self_dir);
+        CWD = getCurrentDir();
+        CWDN=basename(CWD);
         //change names of rnm file log files to reflect the current directory
         String signature = getPathSignature(CWD);
         RNM_LOCK_FILE += signature;
@@ -341,6 +339,9 @@ int main(int argc, char* argv[]) {
                   follow_symlink=false; 
                 } else if(opt=="-f"||opt=="--force"){
                   force=true; 
+                } else if(opt=="-ff"||opt=="--force-force"){
+                  super_force=true;
+                  force=true;
                 } else if(opt=="-u"||opt=="--undo"){
                   undo=true; 
                 } else if(opt=="-up"||opt=="--undo-path"){

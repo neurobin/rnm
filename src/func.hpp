@@ -171,15 +171,6 @@ bool undoRename(){
 }
 
 
-//~ template<class T>
-//~ String toString(const T& x) {
-    //~ oss_buffer.str("");
-    //~ oss_buffer.clear();
-    //~ oss_buffer << x;
-    //~ return oss_buffer.str();
-//~ }
-
-
 void updateIndexFlagsFromFlagMaps(){
     IFP=index_int_flag["precision"];
     index_field_length=index_int_flag["length"];
@@ -233,21 +224,6 @@ void parseIndexFlags(const String& s){
         if(er){printErrorLog("Invalid index flag: "+tokens[i]);Exit(1);}
     }
 }
-
-
-//~ void printIndexFlags(){
-    //~ std::cout<< "Width: "<<index_field_length<<NEW_LINE;
-    //~ std::cout<< "Filler: "<<IFF<<NEW_LINE;
-    //~ std::cout<< "Precision: "<<IFP.get_str()<<NEW_LINE;
-    //~ std::cout<< "Adjust field: "+index_flag_adjust_s+NEW_LINE;
-    //~ std::cout<< "Other flags: ";
-    //~ for(int i=0;i<(int)index_flag_ind_s.size();i++){
-        //~ std::cout<< index_flag_ind_s[i];
-        //~ if(i<(int)index_flag_ind_s.size()-1){std::cout<< ", ";}
-        //~ }
-    //~ std::cout<< NEW_LINE;
-    
-    //~ }
 
 void parseSearchString(String ss, size_t index){
     if(!stringContains(ss,path_delim)){
@@ -788,10 +764,10 @@ void incrementReservedIndexes(DirectoryIndex &di){
 }
 
 
-String parseTrueFalse(bool a){
-    if(a)return "true";
-    else return "false";
-}
+//~ String parseTrueFalse(bool a){
+    //~ if(a)return "true";
+    //~ else return "false";
+//~ }
 
 
 File doRename(const File& file,DirectoryIndex &di){

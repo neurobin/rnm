@@ -115,6 +115,7 @@ Double TB = GB*KB;
 bool quiet=false;
 bool double_quiet=false;
 bool force=false;
+bool super_force=false;
 bool all_yes=false;
 bool ALL_YES=false;
 bool directory_only=false;
@@ -213,15 +214,6 @@ String RNM_FILE_LOG_R_BKP = RNM_FILE_LOG_R;
 FileStream RNM_FILE_LOG_R_F;
 String RNM_FILE_LOG_R_S;
 
-//~ String RNM_FILE_LOG_L_TMP = RNM_FILE_LOG_L+".tmp";
-//~ String RNM_FILE_LOG_L_TMP_BKP = RNM_FILE_LOG_L_TMP;
-//~ FileStream RNM_FILE_LOG_L_TMP_F;
-
-//~ String RNM_FILE_LOG_R_TMP = RNM_FILE_LOG_R+".tmp";
-//~ String RNM_FILE_LOG_R_TMP_BKP = RNM_FILE_LOG_R_TMP;
-//~ FileStream RNM_FILE_LOG_R_TMP_F;
-
-String NSF_LIST_FILE=LOG_DIR+"/nsf.list";
 
 /////Name string related
 String PD_DELIM=" ";
@@ -260,9 +252,7 @@ IOFormatFlag INDEX_FLAGS = (IOFormatFlag)0;
 
 
 //StringArray file_vector;
-String self_dir;
 String base_dir;
-String self_path;
 StringArray search_string;
 String search_string_file;
 StringArray replace_string;
@@ -312,7 +302,7 @@ Bug Report:     "+bug_report_url+"\n\
 
 
 String help_message="\n\
-************** "+project_name+" "+version+" *******************\n\
+************** "+project_name+" "+version+" **************\n\
 \n\
 Usage: "+project_name+" Directory/File/Path [options]\n\
 \n\
@@ -324,9 +314,7 @@ Options:\n\
 -ns/f     path : Name string file.\n\
 -ns/fn    path : Null terminated Name String file.\n\
 -l, -sl   value: Start Line number.\n\
--lv, -slv value: Start Line number (reverse logic).\n\
 -el       value: End line number\n\
--elv      value: End line number (reverse logic).\n\
 -linc     value: Line increment value.\n\
 -ss       value: Search string\n\
 -ss/f     path : Search string file.\n\
@@ -345,9 +333,9 @@ Options:\n\
 -fo            : File only mode.\n\
 -do            : Directory only mode.\n\
 -lo            : Link only mode.\n\
--ed            : Exclude any and all directories\n\
--ef            : Exclude any and all files\n\
--el            : Exclude any and all links\n\
+-xd            : Exclude any and all directories\n\
+-xf            : Exclude any and all files\n\
+-xl            : Exclude any and all links\n\
 -fl            : Follow symlink.\n\
 -nfl           : No-follow symlink.\n\
 -cd            : Count directory in reserved index\n\
@@ -356,14 +344,28 @@ Options:\n\
                  regardless of other options.\n\
 -cl            : Count link in reserved index\n\
                  regardless of other options.\n\
--s             : Sort files (natural sort).\n\
+-s             : Sort files (default natural sort).\n\
                  -s/n    : Natural sort\n\
                  -s/g    : General sort\n\
+                 -s/mt   : Sort according to mtime\n\
+                 -s/at   : Sort according to atime\n\
+                 -s/ct   : Sort according to ctime\n\
+                 -s/sz   : Sort according to size\n\
+                 -s/d    : Prioritize directory\n\
+                 -s/f    : Prioritize file\n\
+                 -s/l    : Prioritize link\n\
                  -s/none : No sort\n\
--y             : Confirm Yes to all.\n\
+-y             : Confirm Yes to all\n\
+                 and suppress output\n\
+                 for each file.\n\
 -u             : Undo renaming.\n\
+-up            : Undo from a undo path\n\
+-ups           : Show available undo paths\n\
 -q             : Quiet operation.\n\
+-qq            : Suprress even errors\n\
 -f             : Apply force.\n\
+-ff            : Super force.\n\
+                 Bypass all restrictions.\n\
 --             : End of option.\n\
                  Everything after this will be\n\
                  taken as file paths.\n\
@@ -374,10 +376,6 @@ Options:\n\
 See more details on the manual (man rnm).\n\
 \n\
 ";
-
-
-//for internal use
-bool tmp_file_recreated=false;
 
 
 #endif

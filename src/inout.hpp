@@ -79,14 +79,6 @@ void prepareLogDir(){
     mkdir(LOG_DIR_PARENT.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
     mkdir(LOG_DIR.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
     mkdir(LOG_DIR_UNDO.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
-    //~ FileStream file;
-    //~ file.open(RNM_FILE_LOG_L_TMP.c_str(),std::ios::out | std::ios::binary);
-    //~ if(!file.good()){std::cerr<<strerror(errno)<<": "<<RNM_FILE_LOG_L_TMP;}
-    //~ file.close();
-    //~ file.open(RNM_FILE_LOG_R_TMP.c_str(),std::ios::out | std::ios::binary);
-    //~ if(!file.good()){std::cerr<<strerror(errno)<<": "<<RNM_FILE_LOG_R_TMP;}
-    //~ file.close();
-    //~ return String(strerror(errno));
 }
 
 void openLockFile(futil::lock_op ltype = futil::lock_op::ImmediateLock, bool cleanfs_on_exit = false){
@@ -96,18 +88,6 @@ void openLockFile(futil::lock_op ltype = futil::lock_op::ImmediateLock, bool cle
     }
     //~ return strerror(errno);
 }
-
-//~ void openTmpFiles(){
-    //~ RNM_FILE_LOG_L_TMP_F.open(RNM_FILE_LOG_L_TMP.c_str(), std::ios::binary | std::ios::out);
-    //~ RNM_FILE_LOG_R_TMP_F.open(RNM_FILE_LOG_R_TMP.c_str(), std::ios::binary | std::ios::out);
-    //~ ////~ return strerror(errno);
-//~ }
-
-//~ void openTmpFilesForAppend(){
-    //~ RNM_FILE_LOG_L_TMP_F.open(RNM_FILE_LOG_L_TMP.c_str(), std::ios::binary | std::ios::app);
-    //~ RNM_FILE_LOG_R_TMP_F.open(RNM_FILE_LOG_R_TMP.c_str(), std::ios::binary | std::ios::app);
-    //~ ////~ return strerror(errno);
-//~ }
 
 void openLogFiles(){
     if(File(ERROR_LOG).size > 10 * MB)
@@ -121,21 +101,6 @@ void openLogFiles(){
     //~ return strerror(errno);
 }
 
-//~ void closeTmpFiles(){
-    //~ RNM_FILE_LOG_L_TMP_F.flush();
-    //~ RNM_FILE_LOG_R_TMP_F.flush();
-    //~ if(!tmp_file_recreated){
-        //~ RNM_FILE_LOG_L_TMP_F.seekp(std::ios::beg);
-        //~ RNM_FILE_LOG_L_TMP_F<<CWD<<'\0';
-        //~ RNM_FILE_LOG_L_TMP_F.seekp(std::ios::end);
-        
-        //~ RNM_FILE_LOG_R_TMP_F.seekp(std::ios::beg);
-        //~ RNM_FILE_LOG_R_TMP_F<<CWD<<'\0';
-        //~ RNM_FILE_LOG_R_TMP_F.seekp(std::ios::end);
-    //~ }
-    //~ RNM_FILE_LOG_L_TMP_F.close();
-    //~ RNM_FILE_LOG_R_TMP_F.close();
-//~ }
 
 void closeLockFile(){
     RNM_LOCK_FILE_F.close();
@@ -150,13 +115,8 @@ void removeLockFile(){
     std::remove(RNM_LOCK_FILE.c_str());
 }
 
-//~ void removeTempFiles(){
-    //~ std::remove(RNM_FILE_LOG_L_TMP.c_str());
-    //~ std::remove(RNM_FILE_LOG_R_TMP.c_str());
-//~ }
 
 void cleanFiles(){
-    //~ removeTempFiles();
     removeLockFile();
 }
 
@@ -192,24 +152,24 @@ void errorExit0(const String& s, const String& fn, size_t line, bool cleanfs){
 }
 
 
-String copyFile(const String& src, const String& dest){
-    int outfd = open(dest.c_str(),O_RDWR);
-    int infd = open(src.c_str(),O_RDWR);          
-    struct stat stat_buf ;
-    fstat(infd,&stat_buf);
-    Uint size = sendfile(outfd,infd,0,stat_buf.st_size);
-    return std::to_string(size);
-}
+//~ String copyFile(const String& src, const String& dest){
+    //~ int outfd = open(dest.c_str(),O_RDWR);
+    //~ int infd = open(src.c_str(),O_RDWR);          
+    //~ struct stat stat_buf ;
+    //~ fstat(infd,&stat_buf);
+    //~ Uint size = sendfile(outfd,infd,0,stat_buf.st_size);
+    //~ return std::to_string(size);
+//~ }
 
 
-void copyFile2(const String& src,const String& dst){
-    std::ifstream source(src, std::ios::binary);
-    std::ofstream dest(dst, std::ios::binary);
-    dest << source.rdbuf();
-    source.close();
-    dest.close();
-    //~ return strerror(errno);
-}
+//~ void copyFile2(const String& src,const String& dst){
+    //~ std::ifstream source(src, std::ios::binary);
+    //~ std::ofstream dest(dst, std::ios::binary);
+    //~ dest << source.rdbuf();
+    //~ source.close();
+    //~ dest.close();
+    //~ ////~ return strerror(errno);
+//~ }
 
 
 void finalizeRFL(){
@@ -381,7 +341,6 @@ void getNameListFromFile(StringArray& nlist, const String& filename, Uint si, Ui
 
 void cleanup(bool cleanfs){
     closeLogFiles();
-    //~ closeTmpFiles();
     closeLockFile();
     finalizeRFL();
     if(cleanfs) cleanFiles();
@@ -398,25 +357,6 @@ void Exit(int a, bool cleanfs){
     cleanup(cleanfs);
     throw Except(a);
 }
-
-
-//~ void recreateTmpFiles(const String& signature){
-    //~ closeTmpFiles();
-    //~ //recreate tmp files
-    //~ String tmp_log_l = RNM_FILE_LOG_L_TMP;
-    //~ String tmp_log_r = RNM_FILE_LOG_R_TMP;
-    //~ RNM_FILE_LOG_L_TMP = RNM_FILE_LOG_L_TMP_BKP + signature;
-    //~ RNM_FILE_LOG_R_TMP = RNM_FILE_LOG_R_TMP_BKP + signature;
-    //~ if(rename(tmp_log_l.c_str(), RNM_FILE_LOG_L_TMP.c_str()) == 0 && rename(tmp_log_r.c_str(), RNM_FILE_LOG_R_TMP.c_str()) == 0){
-        //~ //success
-    //~ } else {
-        //~ printWarningLog("Problem creating log files. undo may not work for this rnm operation.");
-    //~ }
-    //~ //open tmp files for append
-    //~ openTmpFilesForAppend();
-    //~ tmp_file_recreated = true;
-//~ }
-
 
 
 bool isImmediateChild(const File& prevf,const File& newf){
@@ -439,17 +379,6 @@ bool isChildDir(const File& parent, File child){
 
 
 Int childDepth(const File& parent, File child){
-    //~ String childstr=child.path;
-    //~ if(isChildDir( parent, child)){
-        //~ if(child.isDir()){
-            //~ childstr=replaceString(child.path,parent.path+path_delim,String(""));
-        //~ }
-        //~ else{
-            //~ childstr=replaceString(dirname(child.path),parent.path+path_delim,String(""));
-        //~ }
-        // LOG("depth: ("<<parent.path<<"->"<<childstr<<")"<<split(childstr,'/').size())
-        //~ return split(childstr,'/').size();
-    //~ }
     if(isChild(parent, child)){
         return split(child.path,'/').size() - split(parent.path, '/').size();
     } else return LOWEST_DEPTH;
@@ -533,13 +462,12 @@ bool isInvalidFile(const File& f){
     }
     
     //these are not permitted even with force
-    if(file==root_filesystem){status=true;printWarningLog("rename not permitted: "+file);}
-    if(file==self_path){status=true;printWarningLog("rename not permitted: "+file);}
-    //~ if(file==RNM_FILE_LOG_L_TMP){status=true;printWarningLog("rename not permitted: "+file);}
-    //~ if(file==RNM_FILE_LOG_R_TMP){status=true;printWarningLog("rename not permitted: "+file);}
-    if(file==LOG_DIR_PARENT){status=true;printWarningLog("rename not permitted: "+file);}
-    if(file==LOG_DIR){status=true;printWarningLog("rename not permitted: "+file);}
-    if(file==LOG_DIR_UNDO){status=true;printWarningLog("rename not permitted: "+file);}
+    if(!super_force){
+        if(file==root_filesystem){status=true;printWarningLog("rename not permitted: "+file);}
+        if(file==LOG_DIR_PARENT){status=true;printWarningLog("rename not permitted: "+file);}
+        if(file==LOG_DIR){status=true;printWarningLog("rename not permitted: "+file);}
+        if(file==LOG_DIR_UNDO){status=true;printWarningLog("rename not permitted: "+file);}
+    }
     
     
     return status;

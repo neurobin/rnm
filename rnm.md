@@ -201,8 +201,11 @@ Options are case insensitive, i.e *-ssF* and *-ssf* are the same.
 -qq
 : Suppress even error messages.
 
- -f
+-f
 : Force rename. Enables renaming some restricted files except */*.
+
+-ff
+: Double force. Bypass all restrictions.
 
 \--
 : If this option is passed, anything and everything after it will be taken as file path. Put all options before it.
@@ -275,6 +278,7 @@ Opt name | Full name
 -q | --quiet
 -qq | --quiet-quiet
 -f | --force
+-ff | --force-force
 -h | --help
 -v | --version
 -sim | --simulation
