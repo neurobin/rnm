@@ -70,6 +70,8 @@ Hold tight until it finishes compiling and building **rnm**.
 
 ####From launchpad PPA:
 
+(**Current version is not available yet**)
+
 Aside from the above generalized method, you can also install it in Ubuntu from PPA (`ppa:neurobin/ppa`).
 
 ```sh
