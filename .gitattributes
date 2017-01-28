@@ -3,6 +3,7 @@
 # https://git-scm.com/docs/gitattributes
 *.cpp diff=cpp
 configure diff=nodiff
+*.in diff=nodiff
 
 # omit from git archive
 .gitattributes export-ignore
@@ -10,6 +11,8 @@ configure diff=nodiff
 .travis.yml export-ignore
 
 # for linguist; let github identify our project as C++
+install-sh linguist-vendored
+compile linguist-vendored
 /config/* linguist-vendored
 /m4/* linguist-vendored
 *.md linguist-documentation
@@ -18,6 +21,13 @@ configure diff=nodiff
 *.css linguist-vendored
 *.js linguist-vendored
 *.xml linguist-vendored
-*.in linguist-vendored diff=nodiff
-*.m4 linguist-vendored diff=nodiff
+*.in linguist-vendored
+*.am linguist-vendored
+*.ac linguist-vendored
+*.m4 linguist-vendored
 *.scan linguist-vendored
+*.1 linguist-documentation
+depcomp linguist-vendored
+configure linguist-vendored
+missing linguist-vendored
+*.sh
