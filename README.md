@@ -113,7 +113,7 @@ You can download a pre-built binary (64 and/or 32 bit) from the [release page](h
 7. `-do`: Directory only mode.
 8. `-lo`: Link only mode.
 
-For a complete list of options and to get a glimpse of what **rnm** is capable of, get a peek at the doc (`rnm.md` or `rnm.html`) or man page (`man rnm`).
+For a complete list of options and to get a glimpse of what **rnm** is capable of, get a peek at the doc (`rnm.md` or [rnm.html](https://docs.neurobin.org/man/man1/rnm.html)) or man page (`man rnm`).
 
 <div id="usage"></div>
 #Usage:
@@ -215,11 +215,17 @@ Before | After
 file.mp3 | file 004.mp3
 song.mp3 | song 008.mp3
 
-> There are lots of magics you can do with index, like converting to binary, octal, hexadecimal etc.., converting to scientific or latin number, use index flags to manipulate their format etc.. Refer to the doc (rnm.md or rnm.html) or man page (`man rnm`) for complete details.
+> There are lots of magics you can do with index, like converting to binary, octal, hexadecimal etc.., converting to scientific or latin number, use index flags to manipulate their format etc.. Refer to the doc (rnm.md or [rnm.html](https://docs.neurobin.org/man/man1/rnm.html)) or man page (`man rnm`) for complete details.
 
 ## Change/Modify/remove part of a file name
 
-**rnm uses PCRE2 regex**
+**rnm uses PCRE2 regex** to provide regex replace on old filename. The general format for regex replace:
+
+```bash
+'/regex/replace/modifier'
+```
+
+where `regex` is the regex to match in the file name, replace is the string to replace the match with and modifiers are : g (global) i (case insensitive), d (directory), f (file), l (link).
 
 **swap parts:**
 
@@ -233,6 +239,7 @@ test_file.mp3 | file_test.mp3
 test_song.mp3 | song_test.mp3
 
 > `-rs` takes a replace string of the form `/regex/replace/modifier`
+> `\1` is captured group one, `\2` is captured group 2.
 
 **Replace all _ (underscore) to space:**
 
@@ -256,7 +263,7 @@ Before | After
 test_file_123.mp3 | test file 123.MP3
 test_song_456.mp3 | test song 456.MP3
 
-> `\C` (capital C) in replace part converts the selected part to uppercase
+> `\C` (capital C) in replace part converts the matched part to uppercase
 
 **Change all before `_` to (lowercase) and all after `.` to (uppercase):**
 
@@ -285,7 +292,7 @@ rnm -rs '/$/.link/l' ./*
 > rnm comes with the power of PCRE2 regex and thus you can perform almost all kinds of file name modifications using regex replace. Name string rules ( `/fn/`, `/i/` etc..) are applicable inside regex or replace part.
 > If you have lots of regex replace to perform, you can put them into a file and give the file path with `-rs/f` option. This option can be given multiple times to add multiple files. `-rs` option can also be given multiple times to add multiple replace string. Also replace string can be terminated with `;` to add another replace string after it.
 
-> See the doc (rnm.md or rnm.html) or man page for complete details regarding regex replace.
+> See the doc (rnm.md or [rnm.html](https://docs.neurobin.org/man/man1/rnm.html)) or man page for complete details regarding regex replace.
 
 ## Search for files and rename:
 
@@ -306,9 +313,10 @@ file3.mp4 | file3.mp4
 **Rename all symbolic links to .link:**
 
 ```bash
-rnm -ns '/fn/.link' -ss '/.*/l'
+rnm -ns '/fn/.link' -ss '//l'
 ```
 
+> `//l` and empty search string matches anything in file name.
 > the *l* modifier tells it to match link, other modifiers *f* and *d* are available for files and directories respectively.
 
 
@@ -347,16 +355,26 @@ file2.mp3 | file2.mp3
 file3.mp4 | file3.mp4.dummy
 
 
-> If you have lots of search strings, you can put them into files and add those files with `-ss/f` option. This option can be given multiple time to add multiple files. `-ss` option can also be given multiple times to add multiple search string. See the docs (rnm.md or rnm.html) or man page for more ways and details.
+> If you have lots of search strings, you can put them into files and add those files with `-ss/f` option. This option can be given multiple time to add multiple files. `-ss` option can also be given multiple times to add multiple search string. See the docs (rnm.md or [rnm.html](https://docs.neurobin.org/man/man1/rnm.html)) or man page for more ways and details.
 
 ## Sort and rename:
 
-Two sorting mechanisms are available:
+There are several sorting mechanisms available:
 
-1. General sort: Alphabetic sort
-2. Natural sort: Human perceivable sort.
+1. `-s`    : default sort (natural sort)
+2. `-s/g`  : general sort
+3. `-s/n`  : natural sort
+4. `-s/mt` : sort according to file modification time (recent first)
+5. `-s/at` : sort according to file access time (recent first)
+6. `-s/ct` : sort according to file status change time (recent first)
+7. `-s/sz` : sort according to file size (larger first)
+8. `-s/d`  : prioritize directory when sorting
+9. `-s/f`  : prioritize file when sorting
+10. `-s/l` : prioritize link when sorting
+11. `-s/r` : reverse the order sorted by above methods.
 
-The default sort which comes with the option `-s` is natural sort (`-s/n`), other options are `-s/g` and `-s/none`
+
+The default sort which comes with the option `-s` is natural sort (`-s/n`).
 
 ```bash
 rnm -ns '/fn/ /id/' -s ./*
@@ -389,9 +407,10 @@ dir1 | dir1 drwxrwxr-x
 
 > `perm` is another property for info name string rule, `op=ls` is for permission resembling to `ls` command, `oct` is for octal permission.
 
-> There are lots of properties available for file info which makes all kinds of file information available. See the docs (rnm.md or rnm.html) or man page for details.
+> There are lots of properties available for file info which makes all kinds of file information available. See the docs (rnm.md or [rnm.html](https://docs.neurobin.org/man/man1/rnm.html)) or man page for details.
 
 
+[rnm user manual](https://docs.neurobin.org/man/man1/rnm.html)
 
 
 

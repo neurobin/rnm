@@ -394,7 +394,7 @@ This name string rule provides basic information about a file, directory or link
 ```bash
 /info-prop-op/
 ```
-where *info-* is the identifier for this rule, *prop* is the property name and *op* is an optional entry which is used for additional formatting.
+where *info-* is the identifier for this rule, *prop* is the property name and *op* is an optional entry which is used for additional formatting. Property names (**prop**) are case insensitive.
 
 **File time:**
 
