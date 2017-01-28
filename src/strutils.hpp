@@ -240,16 +240,18 @@ String fixPrec(const Double& x, String s, const Int& prec, size_t ind){
 }
 
 String fixIFL(const String& s, const Int& ifl, const String& iff, IOFormatFlag flags){
-    if(ifl <= s.length()) return s;
+    //~ if(ifl <= s.length()) return s;
     oss_buffer.str("");
     oss_buffer.clear();
     oss_buffer.width(ifl.get_ui());
     oss_buffer.setf(flags);
     oss_buffer.fill(iff[0]);
     if(s[0] == '-') {
+        if(ifl <= s.length()-1) return s;
         oss_buffer<<s.substr(1,String::npos);
         return "-"+oss_buffer.str(); 
     } else {
+        if(ifl <= s.length()) return s;
         oss_buffer<<s;
         return oss_buffer.str();
     }
@@ -258,7 +260,7 @@ String fixIFL(const String& s, const Int& ifl, const String& iff, IOFormatFlag f
 String convertBase( const Double& x, Ush base, const Int& ifl,
                     Int prec, const String& iff,
                     IOFormatFlag flags = (IOFormatFlag)0){
-    if(base < 2 || base > 36) base = 10;
+    if(base < 2 || base > 36) errorExit("Base must be in the range 2-36, given: "+std::to_string(base));
     String s;
     mp_exp_t exp;
     s = x.get_str(exp, (int)base, 0);

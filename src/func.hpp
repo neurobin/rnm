@@ -51,9 +51,6 @@ bool Rename(const String& oldn,const String& newn,DirectoryIndex &di){
                     //undo depends on current directory, but the current directory itself has been renamed
                     String signature = getPathSignature(newn);
                     
-                    //recreate tmp files
-                    recreateTmpFiles(signature);
-                    
                     //recreate lock files
                     RNM_LOCK_FILE = RNM_LOCK_FILE_BKP + signature;
                     openLockFile(futil::lock_op::ImmediateLock, true); //closing is done automatically
@@ -95,7 +92,7 @@ void showUndoPaths(){
     FileStream f;
     for(size_t i=0;i<files.size();++i){
         size_t pos=0;
-        if((pos = (files[i].path).find(RNM_FILE_LOG_L_BKP))!= String::npos && pos==0 && (files[i].path).find(RNM_FILE_LOG_L_TMP_BKP) != 0 ){
+        if((pos = (files[i].path).find(RNM_FILE_LOG_L_BKP))!= String::npos && pos==0){
             String fl;
             f.open(files[i].path, std::ios::in);
             if(f.good()) std::getline(f, fl, '\0');

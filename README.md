@@ -407,6 +407,7 @@ dir1 | dir1 drwxrwxr-x
 
 
 [rnm user manual](https://docs.neurobin.org/man/man1/rnm.html)
+[Other examples](https://neurobin.org/docs/unix/rnm/bulk-rename-in-linux/)
 
 
 

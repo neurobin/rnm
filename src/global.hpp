@@ -206,18 +206,20 @@ futil::FileStream RNM_LOCK_FILE_F;
 String RNM_FILE_LOG_L=LOG_DIR_UNDO+"/rfl.l";
 String RNM_FILE_LOG_L_BKP = RNM_FILE_LOG_L;
 FileStream RNM_FILE_LOG_L_F;
+String RNM_FILE_LOG_L_S;
 
 String RNM_FILE_LOG_R = LOG_DIR_UNDO+"/rfl.r";
 String RNM_FILE_LOG_R_BKP = RNM_FILE_LOG_R;
 FileStream RNM_FILE_LOG_R_F;
+String RNM_FILE_LOG_R_S;
 
-String RNM_FILE_LOG_L_TMP = RNM_FILE_LOG_L+".tmp";
-String RNM_FILE_LOG_L_TMP_BKP = RNM_FILE_LOG_L_TMP;
-FileStream RNM_FILE_LOG_L_TMP_F;
+//~ String RNM_FILE_LOG_L_TMP = RNM_FILE_LOG_L+".tmp";
+//~ String RNM_FILE_LOG_L_TMP_BKP = RNM_FILE_LOG_L_TMP;
+//~ FileStream RNM_FILE_LOG_L_TMP_F;
 
-String RNM_FILE_LOG_R_TMP = RNM_FILE_LOG_R+".tmp";
-String RNM_FILE_LOG_R_TMP_BKP = RNM_FILE_LOG_R_TMP;
-FileStream RNM_FILE_LOG_R_TMP_F;
+//~ String RNM_FILE_LOG_R_TMP = RNM_FILE_LOG_R+".tmp";
+//~ String RNM_FILE_LOG_R_TMP_BKP = RNM_FILE_LOG_R_TMP;
+//~ FileStream RNM_FILE_LOG_R_TMP_F;
 
 String NSF_LIST_FILE=LOG_DIR+"/nsf.list";
 
@@ -375,7 +377,7 @@ See more details on the manual (man rnm).\n\
 
 
 //for internal use
-bool tmp_file_reopened=false;
+bool tmp_file_recreated=false;
 
 
 #endif

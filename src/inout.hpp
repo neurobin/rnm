@@ -79,13 +79,13 @@ void prepareLogDir(){
     mkdir(LOG_DIR_PARENT.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
     mkdir(LOG_DIR.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
     mkdir(LOG_DIR_UNDO.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
-    FileStream file;
-    file.open(RNM_FILE_LOG_L_TMP.c_str(),std::ios::out);
-    if(!file.good()){std::cerr<<strerror(errno)<<": "<<RNM_FILE_LOG_L_TMP;}
-    file.close();
-    file.open(RNM_FILE_LOG_R_TMP.c_str(),std::ios::out);
-    if(!file.good()){std::cerr<<strerror(errno)<<": "<<RNM_FILE_LOG_R_TMP;}
-    file.close();
+    //~ FileStream file;
+    //~ file.open(RNM_FILE_LOG_L_TMP.c_str(),std::ios::out | std::ios::binary);
+    //~ if(!file.good()){std::cerr<<strerror(errno)<<": "<<RNM_FILE_LOG_L_TMP;}
+    //~ file.close();
+    //~ file.open(RNM_FILE_LOG_R_TMP.c_str(),std::ios::out | std::ios::binary);
+    //~ if(!file.good()){std::cerr<<strerror(errno)<<": "<<RNM_FILE_LOG_R_TMP;}
+    //~ file.close();
     //~ return String(strerror(errno));
 }
 
@@ -97,17 +97,17 @@ void openLockFile(futil::lock_op ltype = futil::lock_op::ImmediateLock, bool cle
     //~ return strerror(errno);
 }
 
-void openTmpFiles(){
-    RNM_FILE_LOG_L_TMP_F.open(RNM_FILE_LOG_L_TMP.c_str(), std::ios::binary | std::ios::out);
-    RNM_FILE_LOG_R_TMP_F.open(RNM_FILE_LOG_R_TMP.c_str(), std::ios::binary | std::ios::out);
-    //~ return strerror(errno);
-}
+//~ void openTmpFiles(){
+    //~ RNM_FILE_LOG_L_TMP_F.open(RNM_FILE_LOG_L_TMP.c_str(), std::ios::binary | std::ios::out);
+    //~ RNM_FILE_LOG_R_TMP_F.open(RNM_FILE_LOG_R_TMP.c_str(), std::ios::binary | std::ios::out);
+    //~ ////~ return strerror(errno);
+//~ }
 
-void openTmpFilesForAppend(){
-    RNM_FILE_LOG_L_TMP_F.open(RNM_FILE_LOG_L_TMP.c_str(), std::ios::binary | std::ios::app);
-    RNM_FILE_LOG_R_TMP_F.open(RNM_FILE_LOG_R_TMP.c_str(), std::ios::binary | std::ios::app);
-    //~ return strerror(errno);
-}
+//~ void openTmpFilesForAppend(){
+    //~ RNM_FILE_LOG_L_TMP_F.open(RNM_FILE_LOG_L_TMP.c_str(), std::ios::binary | std::ios::app);
+    //~ RNM_FILE_LOG_R_TMP_F.open(RNM_FILE_LOG_R_TMP.c_str(), std::ios::binary | std::ios::app);
+    //~ ////~ return strerror(errno);
+//~ }
 
 void openLogFiles(){
     if(File(ERROR_LOG).size > 10 * MB)
@@ -121,16 +121,21 @@ void openLogFiles(){
     //~ return strerror(errno);
 }
 
-void closeTmpFiles(){
-    if(!tmp_file_reopened){
-        RNM_FILE_LOG_L_TMP_F.seekp(std::ios::beg);
-        RNM_FILE_LOG_L_TMP_F<<CWD<<'\0';
-        RNM_FILE_LOG_R_TMP_F.seekp(std::ios::beg);
-        RNM_FILE_LOG_R_TMP_F<<CWD<<'\0';
-    }
-    RNM_FILE_LOG_L_TMP_F.close();
-    RNM_FILE_LOG_R_TMP_F.close();
-}
+//~ void closeTmpFiles(){
+    //~ RNM_FILE_LOG_L_TMP_F.flush();
+    //~ RNM_FILE_LOG_R_TMP_F.flush();
+    //~ if(!tmp_file_recreated){
+        //~ RNM_FILE_LOG_L_TMP_F.seekp(std::ios::beg);
+        //~ RNM_FILE_LOG_L_TMP_F<<CWD<<'\0';
+        //~ RNM_FILE_LOG_L_TMP_F.seekp(std::ios::end);
+        
+        //~ RNM_FILE_LOG_R_TMP_F.seekp(std::ios::beg);
+        //~ RNM_FILE_LOG_R_TMP_F<<CWD<<'\0';
+        //~ RNM_FILE_LOG_R_TMP_F.seekp(std::ios::end);
+    //~ }
+    //~ RNM_FILE_LOG_L_TMP_F.close();
+    //~ RNM_FILE_LOG_R_TMP_F.close();
+//~ }
 
 void closeLockFile(){
     RNM_LOCK_FILE_F.close();
@@ -145,13 +150,13 @@ void removeLockFile(){
     std::remove(RNM_LOCK_FILE.c_str());
 }
 
-void removeTempFiles(){
-    std::remove(RNM_FILE_LOG_L_TMP.c_str());
-    std::remove(RNM_FILE_LOG_R_TMP.c_str());
-}
+//~ void removeTempFiles(){
+    //~ std::remove(RNM_FILE_LOG_L_TMP.c_str());
+    //~ std::remove(RNM_FILE_LOG_R_TMP.c_str());
+//~ }
 
 void cleanFiles(){
-    removeTempFiles();
+    //~ removeTempFiles();
     removeLockFile();
 }
 
@@ -209,16 +214,30 @@ void copyFile2(const String& src,const String& dst){
 
 void finalizeRFL(){
     if(rnc > 0 && !simulation){//do this only if files were actually renamed
-        copyFile2(RNM_FILE_LOG_L_TMP,RNM_FILE_LOG_L);
-        copyFile2(RNM_FILE_LOG_R_TMP,RNM_FILE_LOG_R);
+        //~ copyFile2(RNM_FILE_LOG_L_TMP,RNM_FILE_LOG_L);
+        //~ copyFile2(RNM_FILE_LOG_R_TMP,RNM_FILE_LOG_R);
+        RNM_FILE_LOG_L_F.open(RNM_FILE_LOG_L, std::ios::binary | std::ios::out);
+        RNM_FILE_LOG_L_F<<CWD<<'\0';
+        RNM_FILE_LOG_L_F<<RNM_FILE_LOG_L_S;
+        
+        RNM_FILE_LOG_R_F.open(RNM_FILE_LOG_R, std::ios::binary | std::ios::out);
+        RNM_FILE_LOG_R_F<<CWD<<'\0';
+        RNM_FILE_LOG_R_F<<RNM_FILE_LOG_R_S;
+        
+        RNM_FILE_LOG_L_F.close();
+        RNM_FILE_LOG_R_F.close();
     }
 }
 
 
 void appendToRFLTMP(const String& str1,const String& str2){
-    RNM_FILE_LOG_L_TMP_F<<str1<<'\0';
-    RNM_FILE_LOG_R_TMP_F<<str2<<'\0';
+    //~ RNM_FILE_LOG_L_TMP_F<<str1<<'\0';
+    //~ RNM_FILE_LOG_R_TMP_F<<str2<<'\0';
     //~ return strerror(errno);
+    RNM_FILE_LOG_L_S += str1;
+    RNM_FILE_LOG_L_S.push_back('\0');
+    RNM_FILE_LOG_R_S += str2;
+    RNM_FILE_LOG_R_S.push_back('\0');
 
 }
 
@@ -359,52 +378,10 @@ void getNameListFromFile(StringArray& nlist, const String& filename, Uint si, Ui
     
 }
 
-//~ void getNameListFromFile(StringArray& list, const String& filename, Uint si, Uint ei, int mod=1){
-    //~ bool reverse = false;
-    //~ String line;
-    //~ Uint lc=0, abslc=0;
-    //~ Uint start=si,end=ei;
-    //~ Int local_linc = 0;
-    //~ if((ei!=0 && si>ei) || si == 0 ){
-        //~ start=ei;
-        //~ end=si; 
-        //~ reverse = true;
-    //~ }
-    //~ char delim='\n';
-    //~ if(mod==0){delim='\0';}
-    //~ FileStream file;
-    //~ if(mod==1){file.open(filename,std::ios::in);}
-    //~ else {file.open(filename,std::ios::binary | std::ios::in);}
-    //~ if(!file.good()){printErrorLog("Couldn't open file: "+filename);Exit(1);}
-    //~ while(std::getline(file,line,delim) && (lc<end || end == 0)){
-        //~ if(mod==1){
-            //~ if ( line.size() && line[line.size()-1] == '\r' ) {
-               //~ line = line.substr( 0, line.size() - 1 );
-            //~ }
-        //~ }
-        //~ abslc++;
-        //~ if(line.empty()) continue;
-        //~ local_linc++;
-        //~ lc++;
-        //~ if(lc==start ||( lc>start && (lc <= end || end == 0) && local_linc >= linc) ){
-            //~ local_linc = 0;
-            //~ list.push_back(line);
-            //~ lc_list.push_back(lc);
-            //~ abslc_list.push_back(abslc);
-        //~ }
-    //~ }
-    //~ file.close();
-    //~ if(reverse) {
-        //~ std::reverse(list.begin(), list.end());
-        //~ std::reverse(lc_list.begin(), lc_list.end());
-        //~ std::reverse(abslc_list.begin(), abslc_list.end());
-    //~ }
-//~ }
-
 
 void cleanup(bool cleanfs){
     closeLogFiles();
-    closeTmpFiles();
+    //~ closeTmpFiles();
     closeLockFile();
     finalizeRFL();
     if(cleanfs) cleanFiles();
@@ -423,22 +400,22 @@ void Exit(int a, bool cleanfs){
 }
 
 
-void recreateTmpFiles(const String& signature){
-    closeTmpFiles();
-    //recreate tmp files
-    String tmp_log_l = RNM_FILE_LOG_L_TMP;
-    String tmp_log_r = RNM_FILE_LOG_R_TMP;
-    RNM_FILE_LOG_L_TMP = RNM_FILE_LOG_L_TMP_BKP + signature;
-    RNM_FILE_LOG_R_TMP = RNM_FILE_LOG_R_TMP_BKP + signature;
-    if(rename(tmp_log_l.c_str(), RNM_FILE_LOG_L_TMP.c_str()) == 0 && rename(tmp_log_r.c_str(), RNM_FILE_LOG_R_TMP.c_str()) == 0){
-        //success
-    } else {
-        printWarningLog("Problem creating log files. undo may not work for this rnm operation.");
-    }
-    //open tmp files for append
-    openTmpFilesForAppend();
-    tmp_file_reopened = true;
-}
+//~ void recreateTmpFiles(const String& signature){
+    //~ closeTmpFiles();
+    //~ //recreate tmp files
+    //~ String tmp_log_l = RNM_FILE_LOG_L_TMP;
+    //~ String tmp_log_r = RNM_FILE_LOG_R_TMP;
+    //~ RNM_FILE_LOG_L_TMP = RNM_FILE_LOG_L_TMP_BKP + signature;
+    //~ RNM_FILE_LOG_R_TMP = RNM_FILE_LOG_R_TMP_BKP + signature;
+    //~ if(rename(tmp_log_l.c_str(), RNM_FILE_LOG_L_TMP.c_str()) == 0 && rename(tmp_log_r.c_str(), RNM_FILE_LOG_R_TMP.c_str()) == 0){
+        //~ //success
+    //~ } else {
+        //~ printWarningLog("Problem creating log files. undo may not work for this rnm operation.");
+    //~ }
+    //~ //open tmp files for append
+    //~ openTmpFilesForAppend();
+    //~ tmp_file_recreated = true;
+//~ }
 
 
 
@@ -558,8 +535,8 @@ bool isInvalidFile(const File& f){
     //these are not permitted even with force
     if(file==root_filesystem){status=true;printWarningLog("rename not permitted: "+file);}
     if(file==self_path){status=true;printWarningLog("rename not permitted: "+file);}
-    if(file==RNM_FILE_LOG_L_TMP){status=true;printWarningLog("rename not permitted: "+file);}
-    if(file==RNM_FILE_LOG_R_TMP){status=true;printWarningLog("rename not permitted: "+file);}
+    //~ if(file==RNM_FILE_LOG_L_TMP){status=true;printWarningLog("rename not permitted: "+file);}
+    //~ if(file==RNM_FILE_LOG_R_TMP){status=true;printWarningLog("rename not permitted: "+file);}
     if(file==LOG_DIR_PARENT){status=true;printWarningLog("rename not permitted: "+file);}
     if(file==LOG_DIR){status=true;printWarningLog("rename not permitted: "+file);}
     if(file==LOG_DIR_UNDO){status=true;printWarningLog("rename not permitted: "+file);}
