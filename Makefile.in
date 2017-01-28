@@ -377,7 +377,8 @@ EXTRA_DIST = autogen.sh \
  .gitignore \
  m4/ax_cxx_compile_stdcxx.m4 \
  rnm.md \
- rnm.html
+ rnm.html \
+ prepare.sh
 
 dist_man_MANS = rnm.1
 rnm_CXXFLAGS = $(extra_opts)
@@ -874,7 +875,6 @@ installdirs-am:
 	done
 install-exec: install-exec-recursive
 install-data: install-data-recursive
-uninstall: uninstall-recursive
 
 install-am: all-am
 	@$(MAKE) $(AM_MAKEFLAGS) install-exec-am install-data-am
@@ -1004,10 +1004,19 @@ test: rnm
 
 install: install-strip
 install-strip: nonrecursive
-
 nonrecursive:
-	$(INSTALL_PROGRAM) -s -m 755 $(bin_PROGRAMS)  $(bindir)
-	$(INSTALL_PROGRAM) -m 644 $(rnm_MANS) $(mandir)/man1
+	$(INSTALL_PROGRAM) -d $(DESTDIR)$(bindir) $(DESTDIR)$(mandir)/man1
+	$(INSTALL_PROGRAM) -s -m 755 $(bin_PROGRAMS) $(DESTDIR)$(bindir)
+	$(INSTALL_PROGRAM) -m 644 $(rnm_MANS) $(DESTDIR)$(mandir)/man1
+
+uninstall: nonrecursive-uninstall
+nonrecursive-uninstall: $(bin_PROGRAMS) $(rnm_MANS)
+	for prog in $(bin_PROGRAMS); do \
+	rm $(DESTDIR)$(bindir)/$$prog || true; \
+	done
+	for man in $(rnm_MANS); do \
+	rm $(DESTDIR)$(mandir)/man1/$$man || true; \
+	done
 
 distclean-local:
 	rm -rf pcre2 gmpxx jpcre2

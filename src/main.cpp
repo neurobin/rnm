@@ -57,8 +57,6 @@ int main(int argc, char* argv[]) {
         RNM_LOCK_FILE += signature;
         RNM_FILE_LOG_L += signature;
         RNM_FILE_LOG_R += signature;
-        //~ RNM_FILE_LOG_L_TMP += signature;
-        //~ RNM_FILE_LOG_R_TMP += signature;
         
         //prepare logs
         prepareLogDir();
