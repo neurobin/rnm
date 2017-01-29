@@ -161,7 +161,7 @@ bool undoRename(){
             }
             return true;
         } else {
-            printErrorLog("Undo failed. Required log files not found for undo path: "+ undo_path + "\nRun 'rnm -ups' to see available undo paths");
+            printErrorLog("Undo failed. Required log files not found for undo path: "+ (undo_path.empty()?CWD:undo_path) + "\nRun 'rnm -ups' to see available undo paths");
             return false;
         }
     } else {

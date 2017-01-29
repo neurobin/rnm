@@ -187,7 +187,7 @@ Options are case insensitive, i.e *-ssF* and *-ssf* are the same.
 : Confirm Yes to all and suppress printing output for each file.
 
 -u
-: Undo rename. Undo depends on working directory. If an **rnm** command is run from ~/somedir, to undo this operation one must run **rnm** from the same directory again or provide the path with *-up* option.
+: Undo rename. Undo depends on working directory. If an **rnm** command is run from ~/somedir, to undo this operation one must run **rnm** from the same directory again or provide the path with *-up* option. Undo is a very aggressive operation, it bypasses all security check.
 
 -up
 : Undo rename from a given path. After every successful rename (or undo), the undo path is set to the working directory where **rnm** is run from.

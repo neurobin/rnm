@@ -349,13 +349,19 @@ int main(int argc, char* argv[]) {
                   force=true;
                 } else if(opt=="-u"||opt=="--undo"){
                   undo=true; 
+                  force=true;
+                  super_force=true;
                 } else if(opt=="-up"||opt=="--undo-path"){
                   undo=true; 
+                  force=true;
+                  super_force=true;
                   checkArgAvailability(args,i+1);
                   undo_path = args[i+1];
                 } else if(opt=="-ups"||opt=="--undo-path-show"){
                   undo=true;
                   undo_path_show=true;
+                  force=true;
+                  super_force=true;
                 } else if(opt=="-sim"||opt=="--simulation"){
                   simulation=true; 
                 } else if(opt=="--"){

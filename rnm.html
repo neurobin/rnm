@@ -207,7 +207,7 @@ See <a href="#index-flags">INDEX FLAGS</a> for details.
 <dd>Confirm Yes to all and suppress printing output for each file.
 </dd>
 <dt>-u</dt>
-<dd>Undo rename. Undo depends on working directory. If an <strong>rnm</strong> command is run from ~/somedir, to undo this operation one must run <strong>rnm</strong> from the same directory again or provide the path with <em>-up</em> option.
+<dd>Undo rename. Undo depends on working directory. If an <strong>rnm</strong> command is run from ~/somedir, to undo this operation one must run <strong>rnm</strong> from the same directory again or provide the path with <em>-up</em> option. Undo is a very aggressive operation, it bypasses all security check.
 </dd>
 <dt>-up</dt>
 <dd>Undo rename from a given path. After every successful rename (or undo), the undo path is set to the working directory where <strong>rnm</strong> is run from.
