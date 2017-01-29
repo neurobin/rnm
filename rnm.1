@@ -1385,11 +1385,41 @@ error due to limit on length of file names.
 ~/.cache/neurobin/rnm
 .SH EXIT STATUS
 .PP
-0 On success
-.PP
-1 On failure
-.PP
-2 On interrupt
+.TS
+tab(@);
+l l.
+T{
+Status
+T}@T{
+Details
+T}
+_
+T{
+0
+T}@T{
+Success
+T}
+T{
+1
+T}@T{
+Failure
+T}
+T{
+2
+T}@T{
+Interrupt
+T}
+T{
+3
+T}@T{
+Unsafe termination
+T}
+T{
+4
+T}@T{
+Unknown termination
+T}
+.TE
 .SH BUG REPORT
 .PP
 <https://github.com/neurobin/rnm/issues>

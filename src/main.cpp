@@ -446,7 +446,7 @@ int main(int argc, char* argv[]) {
         return e.status;
     } catch( ... ) {
         // ensure destuctors of auto objects are called
-        return 3;
+        return 4;
     }
    return 0;
 }

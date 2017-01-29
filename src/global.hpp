@@ -318,68 +318,68 @@ Options are case insensitive.\n\
 \n\
 Options:\n\
 \n\
--ns       value: Name string.\n\
--ns/f     path : Name string file.\n\
--ns/fn    path : Null terminated Name String file.\n\
--l, -sl   value: Start Line number.\n\
--el       value: End line number\n\
--linc     value: Line increment value.\n\
--ss       value: Search string\n\
--ss/f     path : Search string file.\n\
--ssf      value: Fixed search string.\n\
--ssf/f    path : Fixed search string file.\n\
--rs       value: Replace string.\n\
--rs/f     path : Replace string file.\n\
--i,-si    value: Starting index.\n\
--ei       value: End index.\n\
--inc      value: Increment value.\n\
--if       value: Index flags.\n\
--ifl      value: Index field length.\n\
--iff      value: Index field filler.\n\
--ifp      value: Index field precision\n\
--dp       value: Depth of directory.\n\
--fo            : File only mode.\n\
--do            : Directory only mode.\n\
--lo            : Link only mode.\n\
--xd            : Exclude any and all directories\n\
--xf            : Exclude any and all files\n\
--xl            : Exclude any and all links\n\
--fl            : Follow symlink.\n\
--nfl           : No-follow symlink.\n\
--cd            : Count directory in reserved index\n\
-                 regardless of other options.\n\
--cf            : Count file in reserved index\n\
-                 regardless of other options.\n\
--cl            : Count link in reserved index\n\
-                 regardless of other options.\n\
--s             : Sort files (default natural sort).\n\
-                 -s/n    : Natural sort\n\
-                 -s/g    : General sort\n\
-                 -s/mt   : Sort according to mtime\n\
-                 -s/at   : Sort according to atime\n\
-                 -s/ct   : Sort according to ctime\n\
-                 -s/sz   : Sort according to size\n\
-                 -s/d    : Prioritize directory\n\
-                 -s/f    : Prioritize file\n\
-                 -s/l    : Prioritize link\n\
-                 -s/none : No sort\n\
--y             : Confirm Yes to all\n\
-                 and suppress output\n\
-                 for each file.\n\
--u             : Undo renaming.\n\
--up            : Undo from a undo path\n\
--ups           : Show available undo paths\n\
--q             : Quiet operation.\n\
--qq            : Suprress even errors\n\
--f             : Apply force.\n\
--ff            : Super force.\n\
-                 Bypass all restrictions.\n\
---             : End of option.\n\
-                 Everything after this will be\n\
-                 taken as file paths.\n\
--h             : Show help menu.\n\
--v             : Version info.\n\
--sim           : Run simulation.\n\
+  -ns       value: Name string.\n\
+  -ns/f     path : Name string file.\n\
+  -ns/fn    path : Null terminated Name String file.\n\
+  -l, -sl   value: Start Line number.\n\
+  -el       value: End line number\n\
+  -linc     value: Line increment value.\n\
+  -ss       value: Search string\n\
+  -ss/f     path : Search string file.\n\
+  -ssf      value: Fixed search string.\n\
+  -ssf/f    path : Fixed search string file.\n\
+  -rs       value: Replace string.\n\
+  -rs/f     path : Replace string file.\n\
+  -i,-si    value: Starting index.\n\
+  -ei       value: End index.\n\
+  -inc      value: Increment value.\n\
+  -if       value: Index flags.\n\
+  -ifl      value: Index field length.\n\
+  -iff      value: Index field filler.\n\
+  -ifp      value: Index field precision\n\
+  -dp       value: Depth of directory.\n\
+  -fo            : File only mode.\n\
+  -do            : Directory only mode.\n\
+  -lo            : Link only mode.\n\
+  -xd            : Exclude any and all directories\n\
+  -xf            : Exclude any and all files\n\
+  -xl            : Exclude any and all links\n\
+  -fl            : Follow symlink.\n\
+  -nfl           : No-follow symlink.\n\
+  -cd            : Count directory in reserved index\n\
+                   regardless of other options.\n\
+  -cf            : Count file in reserved index\n\
+                   regardless of other options.\n\
+  -cl            : Count link in reserved index\n\
+                   regardless of other options.\n\
+  -s             : Sort files (default natural sort).\n\
+                   -s/n    : Natural sort\n\
+                   -s/g    : General sort\n\
+                   -s/mt   : Sort according to mtime\n\
+                   -s/at   : Sort according to atime\n\
+                   -s/ct   : Sort according to ctime\n\
+                   -s/sz   : Sort according to size\n\
+                   -s/d    : Prioritize directory\n\
+                   -s/f    : Prioritize file\n\
+                   -s/l    : Prioritize link\n\
+                   -s/none : No sort\n\
+  -y             : Confirm Yes to all\n\
+                   and suppress output\n\
+                   for each file.\n\
+  -u             : Undo renaming.\n\
+  -up            : Undo from a undo path\n\
+  -ups           : Show available undo paths\n\
+  -q             : Quiet operation.\n\
+  -qq            : Suprress even errors\n\
+  -f             : Apply force.\n\
+  -ff            : Super force.\n\
+                   Bypass all restrictions.\n\
+  --             : End of option.\n\
+                   Everything after this will be\n\
+                   taken as file paths.\n\
+  -h             : Show help menu.\n\
+  -v             : Version info.\n\
+  -sim           : Run simulation.\n\
 \n\
 See more details on the manual (man rnm).\n\
 \n\

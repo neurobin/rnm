@@ -48,7 +48,7 @@ void signalHandler( int signum ) {
 void unsafeExitSignalHandler(int signum){
     signal(signum, SIG_DFL);
     printErrorLog("Interrupted by signal: "+std::to_string(signum));
-    unsafeExit(2);
+    unsafeExit(3);
 }
 
 struct Except: virtual public std::exception{

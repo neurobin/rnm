@@ -639,11 +639,13 @@ rnm -ns/f filepath
 
 #EXIT STATUS
 
-0  On success
-
-1 On failure
-
-2 On interrupt
+Status | Details
+------ | -------
+0 | Success
+1 | Failure
+2 | Interrupt
+3 | Unsafe termination
+4 | Unknown termination
 
 #BUG REPORT
 
