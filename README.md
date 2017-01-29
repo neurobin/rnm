@@ -59,18 +59,17 @@ It will download three different projects:
 After you have all the dependencies at hand, you can simply do:
 
 ```sh
+autoreconf -f -i #run this one if your automake version is less than 1.15
 ./configure --enable-static --disable-shared --enable-cxx --enable-jit
 #--enable-cxx is mandatory, --enable-jit will improve performance (a lot) during pattern matching
 make
+#Hold tight until it finishes compiling and building **rnm**.
 sudo make install
 ```
-Hold tight until it finishes compiling and building **rnm**.
 
 ###Install from pre-built binary:
 
 ####From launchpad PPA:
-
-(**Current version is not available yet**)
 
 Aside from the above generalized method, you can also install it in Ubuntu from PPA (`ppa:neurobin/ppa`).
 
@@ -80,10 +79,10 @@ sudo apt-get update
 sudo apt-get install rnm
 ```
 
-If you are in Ubuntu 14.04 or 12.04 (trusty or precise), you will need to add ubuntu-toolchain repository to make `libstdc++6 (>=4.8.5)` available:
+If you are in a pre-xenial release (precise, trusty etc..), you will need to add ubuntu-toolchain repository to make `libstdc++6 (>=5.4.0)` available:
 
 ```sh
-sudo add-apt-repository ppa:ubuntu-toolchain-r/test
+sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
 sudo add-apt-repository -y ppa:neurobin/ppa
 sudo apt-get update
 sudo apt-get install rnm
