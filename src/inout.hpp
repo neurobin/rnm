@@ -39,12 +39,16 @@
 #include "strutils.hpp"
 
 
-void signalHandler( int signum ) { 
+void signalHandler( int signum ) {
+    signal(signum, SIG_DFL);
+    printErrorLog("Interrupted by signal: "+std::to_string(signum));
     Exit(2);
 }
 
 void unsafeExitSignalHandler(int signum){
-    unsafeExit(1);
+    signal(signum, SIG_DFL);
+    printErrorLog("Interrupted by signal: "+std::to_string(signum));
+    unsafeExit(2);
 }
 
 struct Except: virtual public std::exception{

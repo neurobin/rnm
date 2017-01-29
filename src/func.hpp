@@ -88,7 +88,7 @@ void showUndoPaths(){
     std::cout<<"-------------------- | --------------------\n";
     FileArray files;
     getFilesFromDir(files, LOG_DIR_UNDO);
-    std::sort(files.begin(),files.end(),[](const File& a, const File& b){return a.mtime>b.mtime;} );
+    std::sort(files.begin(),files.end(),[](const File& a, const File& b){return a.mtime<b.mtime;} );
     FileStream f;
     for(size_t i=0;i<files.size();++i){
         size_t pos=0;
@@ -322,12 +322,15 @@ String processSize(const String& subj, const String& repl, const Double& size, c
 String processInfoNameStringRule(const String& ns, const File& file,const String& delim, const String& delim2,char sanitize){
     String res = ns;
     jp::VecNum v;
+    jp::RegexMatch m;
+    m.setNumberedSubstringVector(&v).setFindAll().setSubject(ns);
     if(delim == path_delim)
-        multi_re_info1.initMatch().setNumberedSubstringVector(&v).setFindAll().setSubject(ns).match();
+        m.setRegexObject(&multi_re_info1);
     else if(delim == second_delim)
-        multi_re_info2.initMatch().setNumberedSubstringVector(&v).setFindAll().setSubject(ns).match();
+        m.setRegexObject(&multi_re_info2);
     else
         errorExit("Delimiter mismatch during info name stirng parse, please file a bug report, run with -v option to see bug report url");
+    m.match();
         
     String tot, prop, op;
     for(size_t i=0;i<v.size();++i){
@@ -434,12 +437,14 @@ String processExtendedNameString_d(const String& ns,std::map<String,Double>& ns_
                                    const String& delim, const String& delim2,char sanitize, bool ignore_err = false){
     ///_d stands for double
     String name=ns;
-    int base=NUM_BASE_DEFAULT;
+    Int base=NUM_BASE_DEFAULT;
     jp::VecNas vn;
+    jp::RegexMatch m;
+    m.setSubject(name).setFindAll().setNamedSubstringVector(&vn);
     if(delim == path_delim)
-        multi_nre1.initMatch().setSubject(name).setJpcre2Option(jpcre2::FIND_ALL).setNamedSubstringVector(&vn).match();
+        m.setRegexObject(&multi_nre1).match();
     else if(delim == second_delim)
-        multi_nre2.initMatch().setSubject(name).setJpcre2Option(jpcre2::FIND_ALL).setNamedSubstringVector(&vn).match();
+        m.setRegexObject(&multi_nre2).match();
     else
         errorExit("Delimiter mismatch during extended name string parse, please file a bug report, run with -v option to see bug report url");
         
@@ -456,20 +461,21 @@ String processExtendedNameString_d(const String& ns,std::map<String,Double>& ns_
             continue;
         }
         if(exn=="b"){///Base conversion
-            base=std::stoi(exv);
-            String tmp = toString(ns_rules[rule],base, ifl,IFP,IFF,INDEX_FLAGS);
+            base=getPositiveIntOrExit("Base ",exv);
+            if(base < 2 || base > 36) errorExit("Base must be in the range 2-36, given: "+base.get_str());
+            String tmp = toString(ns_rules[rule],base.get_ui(), ifl,IFP,IFF,INDEX_FLAGS);
             tmp=sanitizeStringForRegex(tmp,sanitize);
             name=replaceString(name,total,tmp);
         } else if(exn=="s"){///scientific conversion
-            String tmp = toString(ns_rules[rule],base, ifl,IFP,IFF,std::ios::scientific|INDEX_FLAGS);
+            String tmp = toString(ns_rules[rule],base.get_ui(), ifl,IFP,IFF,std::ios::scientific|INDEX_FLAGS);
             tmp=sanitizeStringForRegex(tmp,sanitize);
             name=replaceString(name,total,tmp);
         } else if(exn=="l"){///Latin conversion
-            String tmp = toString(ns_rules[rule],base, ifl,IFP,IFF,INDEX_FLAGS,true);
+            String tmp = toString(ns_rules[rule],base.get_ui(), ifl,IFP,IFF,INDEX_FLAGS,true);
             tmp=sanitizeStringForRegex(tmp,sanitize);
             name=replaceString(name,total,tmp);
         } else if(exn.empty()){
-            String tmp = toString(ns_rules[rule],base, ifl,IFP,IFF,INDEX_FLAGS);
+            String tmp = toString(ns_rules[rule],base.get_ui(), ifl,IFP,IFF,INDEX_FLAGS);
             tmp=sanitizeStringForRegex(tmp,sanitize);
             name=replaceString(name,total,tmp);
         }
@@ -489,10 +495,12 @@ String processExtendedPdNameStringRule(const String& ns, const File& file, const
     ///Reverse the order of pd_names so that the right most directory name comes in 0th index
     std::reverse(pd_names.begin(),pd_names.end());
     jp::VecNas vn;
+    jp::RegexMatch m;
+    m.setSubject(name).setFindAll().setNamedSubstringVector(&vn);
     if(p_delim == path_delim)
-        multi_pdre1.initMatch().setSubject(name).setJpcre2Option(jpcre2::FIND_ALL).setNamedSubstringVector(&vn).match();
+        m.setRegexObject(&multi_pdre1).match();
     else if(p_delim == second_delim)
-        multi_pdre2.initMatch().setSubject(name).setJpcre2Option(jpcre2::FIND_ALL).setNamedSubstringVector(&vn).match();
+        m.setRegexObject(&multi_pdre2).match();
     else
         errorExit("Delimiter mismatch during /pd/ name string parse, please file a bug report, run with -v option to see bug report url");
         
@@ -859,7 +867,7 @@ void startInDepthRenamingTaskOnDirectory(const String& dir,String base_dir=base_
         if(di.directory_index>end_index && !infinite_end_index){continue;}
         String file=files[i].path;
 
-        if(childDepth(base_dir,file)>depth){continue;}
+        if(childDepth(base_dir,file)>depth && depth >=0){continue;}
         String parent="";
         String src_name="";
         if(!files[i]){printWarningLog("No such file or directory: "+file);continue;}
@@ -880,7 +888,7 @@ void startInDepthRenamingTaskOnDirectory(const String& dir,String base_dir=base_
                 src_name=basename(file);
                 parent=dirname(file);
                 CPDN=getParentDirectoryName(file);
-                if(childDepth(base_dir,file)<=depth){
+                if(childDepth(base_dir,file)<=depth || depth<0){
                     startInDepthRenamingTaskOnDirectory(file);
                 }
             }
@@ -944,7 +952,7 @@ void startTask(FileArray& files){
                 parent=dirname(file);
                 CPDN=getParentDirectoryName(file);
                 base_dir = file;
-                if(childDepth(base_dir,file)<=depth){
+                if(childDepth(base_dir,file)<=depth || depth<0){
                     startInDepthRenamingTaskOnDirectory(file);
                 }
             }

@@ -85,7 +85,7 @@ namespace futil{
         void open(const std::string& s, const std::string& modes){
             close();
             f = ::fopen(s.c_str(), modes.c_str());
-            fd = ::fileno(f);
+            if(f) fd = ::fileno(f);
             status = errno;
         }
         
@@ -135,6 +135,7 @@ namespace futil{
             unLock();
             if(f) ::fclose(f);
             f = 0;
+            fd = 0;
         }
         bool write(const char* s){
             return (fputs(s, f) >= 0);

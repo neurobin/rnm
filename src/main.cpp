@@ -49,6 +49,7 @@ int main(int argc, char* argv[]) {
     signal(SIGTERM, signalHandler);     //A termination request
     std::ios::sync_with_stdio(false);
     try{
+        initRegVars();
         ///The following must be the first line
         CWD = getCurrentDir();
         CWDN=basename(CWD);
@@ -57,6 +58,8 @@ int main(int argc, char* argv[]) {
         RNM_LOCK_FILE += signature;
         RNM_FILE_LOG_L += signature;
         RNM_FILE_LOG_R += signature;
+        //~ RNM_FILE_LOG_L_TMP += signature;
+        //~ RNM_FILE_LOG_R_TMP += signature;
         
         //prepare logs
         prepareLogDir();
@@ -100,10 +103,14 @@ int main(int argc, char* argv[]) {
             if(!noopt){
                 if(opt=="-h"||opt=="--help"){
                   std::cout<< help_message;
-                  Exit(0);
+                  //~ Exit(0);
+                  cleanup(true);
+                  return 0;
                 } else if(opt=="-v"||opt=="--version"){
                   std::cout<< version_info;
-                  Exit(0);
+                  //~ Exit(0);
+                  cleanup(true);
+                  return 0;
                 } else if(opt=="-q"||opt=="--quiet"){
                   quiet=true;
                 } else if(opt=="-qq"||opt=="--quiet-quiet"){
@@ -283,7 +290,7 @@ int main(int argc, char* argv[]) {
                 } else if(opt=="-dp"||opt=="--depth"){
                   checkArgAvailability(args,i+1); 
                   depth=getIntOrExit("Depth",args[i+1]);
-                  if(depth<0){depth=std::numeric_limits<size_t>::max();}
+                  //~ if(depth<0){depth=std::numeric_limits<size_t>::max();}
                   skipcount=true; 
                   dp_obj.count++;
                   if(dp_obj.count>1){printWarningLog("Directory depth overwritten");}
@@ -393,7 +400,7 @@ int main(int argc, char* argv[]) {
             files.push_back(filename_from_stdin);
             //printErrorLog("No file or directory specified");Exit(1);
         }
-        if(files.size()==1){if(!file_only || depth<=0){single_mode=true;}}
+        if(files.size()==1){if(files[0].isFile() || files[0].isLink() || depth==0){single_mode=true;}}
         if(simulation){quiet=false;}
         
         
@@ -437,6 +444,9 @@ int main(int argc, char* argv[]) {
     } catch (const Except& e){
         //result is shown by exit
         return e.status;
+    } catch( ... ) {
+        // ensure destuctors of auto objects are called
+        return 3;
     }
    return 0;
 }

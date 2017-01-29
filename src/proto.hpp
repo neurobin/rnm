@@ -37,7 +37,7 @@
 class File;
 
 /////typedefs
-typedef uint64_t Uint;
+typedef size_t Uint;
 typedef uint8_t Ush;
 typedef int16_t Short;
 typedef mpf_class Double;

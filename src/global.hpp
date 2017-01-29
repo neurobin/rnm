@@ -189,8 +189,16 @@ String root_filesystem="/";
 String CPDN="";
 String CWDN="";
 String CWD="";
+
+
 ////getting Linux Home and defining some paths
-String getUnixHome(){const char *homedir;if ((homedir = getenv("HOME")) == NULL) {homedir = getpwuid(getuid())->pw_dir;}return String(homedir);}
+String getUnixHome(){
+    char *homedir;
+    if ((homedir = getenv("HOME")) == NULL) {
+        homedir = getpwuid(getuid())->pw_dir;
+    }
+    return String(homedir);
+}
 String HOME=getUnixHome();
 String LOG_DIR_PARENT=HOME+"/.cache/neurobin";
 String LOG_DIR=LOG_DIR_PARENT+"/rnm";
@@ -304,7 +312,7 @@ Bug Report:     "+bug_report_url+"\n\
 String help_message="\n\
 ************** "+project_name+" "+version+" **************\n\
 \n\
-Usage: "+project_name+" Directory/File/Path [options]\n\
+Usage: "+project_name+" directory/file/path [options]\n\
 \n\
 Options are case insensitive.\n\
 \n\

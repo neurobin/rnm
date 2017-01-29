@@ -36,7 +36,7 @@
 #include "global.hpp"
 //~ #include "strutils.hpp"
 
-char * normalizePath(char* pwd, const char * src, char* res) {
+char * normalizePath(const char* pwd, const char * src, char* res) {
 	Uint res_len;
 	Uint src_len = strlen(src);
 
@@ -215,8 +215,8 @@ class Options{
 
 struct File {
     private:
-    bool isfile;
-    bool isdir;
+    //~ bool isfile;
+    //~ bool isdir;
     
     public:
     char type;      //'f': file, 'd': directory, 'l': link, 0 (NULL): non-existent
@@ -260,7 +260,8 @@ struct File {
             else path = file;
         }
         else {
-            path = String(normalizePath((char*)(CWD.c_str()),(const char*)(file.c_str()),abspath));
+            //~ char* pwd = new char[CWD.size()+1];
+            path = String(normalizePath(CWD.c_str(),file.c_str(),abspath));
         }
         struct stat finfo;
         if((follow_symlink?stat(path.c_str(), &finfo ):lstat(path.c_str(), &finfo )) != 0 ) {

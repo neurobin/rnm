@@ -452,11 +452,10 @@ String getPathSignature(const String& path){
 }
 
 
-
 std::string toStringWithFloatingPointDigit(double x, char f){
     char c[] = {'%','.',f,'f','\0'};
     size_t length = snprintf(0, 0, c, x) + 1;
-    char* s = new char[length];
+    char* s = new char[length]();
     snprintf(s, length, c, x);
     std::string res = std::string(s);
     delete[] s;
