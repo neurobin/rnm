@@ -1,0 +1,16 @@
+/icu
+/pcre2
+/jpcre2
+/gmpxx
+/build
+*.tar.gz
+/autom4te.cache
+*.scan
+/img
+/doc
+*.bak
+/.project
+/.settings
+*.png
+*.jpg
+*.log
