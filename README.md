@@ -399,7 +399,7 @@ rnm -ns '/fn/ /info-perm-ls/' ./*
 ```
 Before | After
 ------ | -----
-dir1 | dir1 drwxrwxr-x
+dir1 | dir1 drwx--x--x
 
 
 > `perm` is another property for info name string rule, `op=ls` is for permission resembling to `ls` command, `oct` is for octal permission.
