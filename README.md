@@ -52,7 +52,7 @@ sh prepare.sh
 It will download three different projects:
 
 1. [pcre2](http://pcre.org/)
-2. [jpcre2](https://docs.neurobin.org/jpcre2)
+2. [jpcre2](https://github.com/jpcre2/jpcre2)
 3. [gmplib](https://gmplib.org/)
 
 ####Install rnm:
