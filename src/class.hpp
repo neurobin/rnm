@@ -154,7 +154,6 @@ struct DirectoryIndex{
     Double directory_index,directory_index_rd,directory_reverse_index,directory_reverse_index_rd;
     Int IFL;
     
-    
     DirectoryIndex(){
         init();
         directory_index=DIRECTORY_INDEX;

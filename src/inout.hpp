@@ -125,7 +125,7 @@ void cleanFiles(){
 }
 
 void printErrorLog0(String str, const String& fn, size_t line){
-    str="E: "+str+" (@rnm/"+fn+"/"+std::to_string(line)+")";
+    str="E: "+str+" (@rnm:"+fn+":"+std::to_string(line)+")";
     if(!double_quiet) std::cerr<<str+NEW_LINE;
     time_t now = time(0);
     char* dt = ctime(&now);
@@ -134,7 +134,7 @@ void printErrorLog0(String str, const String& fn, size_t line){
 
 
 void printWarningLog0(String str, const String& fn, size_t line){
-    str="W: "+str+" (@rnm/"+fn+"/"+std::to_string(line)+")";
+    str="W: "+str+" (@rnm:"+fn+":"+std::to_string(line)+")";
     if(!quiet){std::cerr<<str+NEW_LINE;}
     time_t now = time(0);
     char* dt = ctime(&now);

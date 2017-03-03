@@ -124,7 +124,6 @@ String replaceString(String str,const String& replace,const String& with){
     if (pos!=String::npos){
     return str.replace (pos,replace.length(),with);}
     else return str;
-    
 }
 
 

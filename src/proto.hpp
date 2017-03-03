@@ -62,14 +62,14 @@ void showResult();
 void Exit(int, bool cleanfs=true);
 void unsafeExit(int, bool cleanfs=true);
 void errorExit0(const String& s, const String& fn, size_t line, bool cleanfs=true);
-#define errorExitExtra(a, b) errorExit0(a, __FILE__, __LINE__, b)
-#define errorExit(a) errorExit0(a, __FILE__, __LINE__)
+#define errorExitExtra(a, b) errorExit0(a, basename(__FILE__), __LINE__, b)
+#define errorExit(a) errorExit0(a, basename(__FILE__), __LINE__)
 
 
 void printErrorLog0(String str, const String& fn, size_t line);
-#define printErrorLog(a) printErrorLog0(a, __FILE__, __LINE__)
+#define printErrorLog(a) printErrorLog0(a, basename(__FILE__), __LINE__)
 void printWarningLog0(String str, const String& fn, size_t line);
-#define printWarningLog(a) printWarningLog0(a, __FILE__, __LINE__)
+#define printWarningLog(a) printWarningLog0(a, basename(__FILE__), __LINE__)
 void printOutLog(const String& str);
 
 

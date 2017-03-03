@@ -357,11 +357,18 @@ int main(int argc, char* argv[]) {
                   super_force=true;
                   checkArgAvailability(args,i+1);
                   undo_path = args[i+1];
+                  skipcount=true;
                 } else if(opt=="-ups"||opt=="--undo-path-show"){
                   undo=true;
                   undo_path_show=true;
                   force=true;
                   super_force=true;
+                } else if(opt=="-duh"||opt=="--delete-undo-history"){
+                  checkArgAvailability(args,i+1);
+                  dupt = getIntOrExit("Undo history time", args[i+1]);
+                  deleteUndoPathsFrom(dupt);
+                  skipcount=true;
+                  return 0;
                 } else if(opt=="-sim"||opt=="--simulation"){
                   simulation=true; 
                 } else if(opt=="--"){

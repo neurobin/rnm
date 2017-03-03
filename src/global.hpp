@@ -172,6 +172,7 @@ Int depth=0;
 Int LOWEST_DEPTH=0;
 Int index_field_length=1;
 Int rnc=0; //rename count
+Int dupt = 0; //delete undo path which are older than dupt seconds ago
 
 
 //////// nsf related
@@ -297,16 +298,16 @@ String executable_name="rnm";
 String version="4.0.1";
 String author_name="Md Jahidul Hamid";
 String author_email="jahidulhamid@yahoo.com";
-String bug_report_url="http://github.com/neurobin/"+project_name+"/issues";
+String bug_report_url="https://github.com/neurobin/"+project_name+"/issues";
 
 
 
-String version_info="\n\
-Rename Utility "+project_name+"\n\
-Version:        "+version+"\n\
-Author:         "+author_name+"\n\
-Author Email:   "+author_email+"\n\
-Bug Report:     "+bug_report_url+"\n\
+String version_info="\
+Name         : "+project_name+" (Bulk rename utility)\n\
+Version      : "+version+"\n\
+Author       : "+author_name+"\n\
+Author Email : "+author_email+"\n\
+Bug Report   : "+bug_report_url+"\n\
 ";
 
 

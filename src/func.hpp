@@ -100,6 +100,16 @@ void showUndoPaths(){
     }
 }
 
+void deleteUndoPathsFrom(Int sec){
+    FileArray files;
+    getFilesFromDir(files, LOG_DIR_UNDO);
+    for(size_t i=0;i<files.size();++i){
+        if(Int(time(0)-files[i].mtime) > sec){
+            std::remove(files[i].path.c_str());
+        }
+    }
+}
+
 
 bool undoRename(){
     if(!undo_path_show){
@@ -791,7 +801,6 @@ File doRename(const File& file,DirectoryIndex &di){
     String oldn=basename(file.path);
     String dir=dirname(file.path);
     String name;
-    if(replace_string.size()!=0){processReplaceString(replace_string,file,di);}
     
     //process name string file and calculate ns_name
     if(!name_string_file.empty()){
@@ -805,6 +814,8 @@ File doRename(const File& file,DirectoryIndex &di){
             Exit(0);
         }
     }
+    
+    if(replace_string.size()!=0){processReplaceString(replace_string,file,di);}
     
     if(!name_string.empty()){ //ns is the first priority
         name=parseNameString(name_string,file,di,path_delim, "",0);
