@@ -1,4 +1,10 @@
-###`4.0.0`: <span class="light-quote">Sat Jan 28 00:41:48 UTC 2017</span><span class
+###`4.0.1`: <span class="light-quote">Fri Mar  3 16:14:21 UTC 2017</span>
+
+1. Add `-duh` option to delete undo history.
+2. Add `/nsf/` name string rule to access name string from file.
+3. Allow `-ns`, `-rs` and equivalent options with `-ns/f` and `-ns/fn`.
+
+###`4.0.0`: <span class="light-quote">Sat Jan 28 00:41:48 UTC 2017</span>
 
 1. Unlimited precision for indexes.
 2. Access to file information (closes issue #9)
