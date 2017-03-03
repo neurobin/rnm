@@ -23,9 +23,7 @@
  * Global conventions:
  * 
  * * Always use absolute paths (mind the undo option uses full path).
- * * IFP can't be 0 by default. Make it -1 (disabled).
  * * Try to skip files with warning (not error).
- * * Exit with exit status 1 in case of error.
  * 
  * ********************************************************************/
  
@@ -340,6 +338,8 @@ Options:\n\
   -iff      value: Index field filler.\n\
   -ifp      value: Index field precision\n\
   -dp       value: Depth of directory.\n\
+  -duh      value: Delete undo history older\n\
+                   than given seconds.\n\
   -fo            : File only mode.\n\
   -do            : Directory only mode.\n\
   -lo            : Link only mode.\n\

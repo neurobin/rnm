@@ -1,6 +1,6 @@
 % rnm(1) rnm user manual
 % Md Jahidul Hamid <https://github.com/neurobin>
-% January 26, 2017
+% March 03, 2017
 
 # NAME
 rnm - Bulk rename utility
@@ -43,16 +43,16 @@ rnm -ns/f namestring/file/path file/path
 -ns/fn *file-path*
 : Name String file. This takes a null terminated Name String file, i.e a file where filenames/name strings are terminated by null character (*\\0*) instead of new line (*\\n*).
 
--sl *positive-integer*
+-sl *start-line*
 : Start Line number in name string file. If start line is 0, it is changed to the highest line number possible in the file. For example, if you want to go from last line to first line, you can pass start line as 0 and end line as 1. Empty lines are always ignored but line numbers are counted. Start line can be greater than end line, for example, start line 25 and end line 12 would mean: go from line 25 to 12. Default start line is 1.
 
--l *positive-integer*
+-l *start-line*
 : Same as *-sl*
 
--el *positive-integer*
+-el *end-line*
 : End line number in name string file to stop renaming from. If end line is 0, it is changed to the highest line number possible in the file. For example, if you want to go from first line to last line in the file, pass start line as 1 and end line as 0. Empty lines are always ignored but line numbers are counted. End line can be smaller than start line. Default end line is the highest line number in the file.
 
--linc *positive-integer*
+-linc *line-increment*
 : The amount line count will be incremented in each iteration for name string file.
 
 -ss *search-regex*
@@ -61,7 +61,7 @@ rnm -ns/f namestring/file/path file/path
 -ss/f *file-path*
 : Search string file. A file containing search string per line. This option can be given multiple times to add search strings.
 
--ssf *search-term*
+-ssf *fixed-search-term*
 : Fixed search string (not treated as regex). See <a href="#search-string">SEARCH STRING</a> for details. This option can be given multiple times to add search strings.
 
 -ssf/f *file-path*
@@ -76,16 +76,16 @@ rnm -ns/f namestring/file/path file/path
 -rs/f *file-path*
 : Replace string file. A file containing replace string per line. This option can be given multiple times to add replace strings.
 
--si *number*
+-si *start-index*
 : Start index.
 
--i *number*, 
+-i *start-index*, 
 : Same as *-si*
 
--ei *number*
+-ei *end-index*
 : End index. It works on directory index only. When rename is occurring inside a directory for a depth value greater than 0 or negative, directory index is limited to this end index. When incrementing directory index hits this limit, all remaining files/directories/links inside that directory are skipped. All directories and their subdirectories will be subject to this limiting value.
 
--inc *number*
+-inc *increment*
 : Increment value (floating point decimal). The amount, index will be incremented or decremented in each iteration. Decremented index is available through name string rule */-i/*, */-id/* etc..
 
 -if *INDEX-FLAGS*
@@ -99,17 +99,20 @@ rnm -ns/f namestring/file/path file/path
 ```
  See <a href="#index-flags">INDEX FLAGS</a> for details.
 
--ifl *positive-integer*
+-ifl *index-field-length*
 : Index field length. Non occupied field will be filled with index field fillers (set with *-iff*). *iff* is set to the character *0* by default.
 
--iff *character*
+-iff *index-field-filler*
 : Non-occupied field in index will be filled with a character set by this option.
 
--ifp *positive-integer*
+-ifp *index-field-precision*
 : Index is a floating point decimal (by default) value. This sets the precision.
 
--dp *integer*
+-dp *depth*
 : Depth of folder. -1(any negative number) means unlimited depth i.e all files and subdirectories will be included. Other values may be 0 1 2 3 etc... Default depth is *0*, i.e directory contents will be ignored.
+
+-duh *seconds*
+: Delete undo history older than the given seconds.
 
 -fo
 : File only mode. Only files are renamed (no directory or link). Goes to subdirectory/s if depth (*-dp*) is greater than 0 or negative.
@@ -197,7 +200,7 @@ rnm -ns/f namestring/file/path file/path
 -sim
 : This runs a simulation of rename instead of actual rename operation.
 
-#OPTION PROPERTIES
+#PROPERTIES OF OPTIONS
 
 **Options are not sequential** (except `-h`, `-v`, `-fl`, `-nfl` `-u`, `-up`, `-ups`, `-duh`).
 
@@ -223,13 +226,13 @@ will rename the symbolic links as:
 3. *link3* and *link4* won't be followed because *--follow-link* flag was **unset** by *-nfl* before these links.
 4. *link5* and *link6* will be followed because *--follow-link* flag was **set** again before these links.
 
-**Priority of undo related options:** `-ups`>`-up`>`-u`.
+**Priority of undo related options:** `-ups` > `-up` > `-u`.
 
 **Options are case insensitive**, i.e *-ssF* and *-ssf* are the same.
 
 #FULLY SPECIFIED NAMES FOR OPTIONS
 
-All of the shorthand option names have equivalent full names. The use of either of them is same, i.e all option or sub-option should be separated with space. The general rule --someopt=value won't apply, instead **rnm** uses the syntax **--someopts value**. The following table shows the full names corresponding to the shorthand names:
+All of the shorthand option names have equivalent full names. The use of either of them is the same, i.e all option or sub-option should be separated with space. The rule --someopt=value won't apply, instead **rnm** uses the syntax **--someopts value**. The following table shows the full names corresponding to the shorthand names:
 
 Opt name | Full name
 -------- | ---------
@@ -255,6 +258,7 @@ Opt name | Full name
 -ifl | --index-field-length
 -iff | --index-field-filler
 -dp | --depth
+-duh | --delete-undo-history
 -fo | --file-only
 -do | --directory-only
 -lo | --link-only
@@ -373,6 +377,7 @@ rnm -ns '/fn/ /id-l/' ./*
 2. */rn/* : Replaced Name, generated by replace strings.
 3. */pd/* : Parent directory  name of the current file or directory. 
 4. */wd/* : Current working directory name.
+5. */nsf/*: Name (or name string) from name string file.
 
 #### EXTENDED PD RULES
 Its general format is
@@ -503,6 +508,8 @@ rnm -ns '/fn/ uid: /info-uid/' ./*
 A file which contains a list of name string (one per line). Empty lines will be ignored but line number will be counted.
 
 Each name string taken from this file is applied to each file, thus if there's 100 name strings in this file, their will be 100 rename only. All these name strings are parsed the same way as regular name strings given with *-ns* option with an additional rule */l/* (line number).
+
+The generated/extracted name/namestring becomes available through the name string rule */nsf/*. If an explicit *-ns* (or *-rs* and its equivalents) option is not given on the command line, '/nsf/' is taken as the name string i.e the new name will be the string expanded by */nsf/*.
 
 A null terminated name string file is that one where name strings (i.e filenames) are terminated with null character instead of newline (*\\n*). These are generally binary files and can be generated with other tools.
 

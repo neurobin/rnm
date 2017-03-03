@@ -19,20 +19,24 @@ Simulations can be run instead of actual rename to view the potential outcome as
 
 1. Rename files/directories/links en masse with dynamically constructed names.
 2. Undo rename.
-3. Inserting file information (mtime, atime, ctime, permission etc..) in arbitrary formats.
-4. Indexing and formatting the indexes in different ways.
-5. Latin, scientific and base conversion for indexes and counters.
-6. Inserting different level of parent directory names.
-7. Access to current directory name, file name with and without extension.
-8. Regex replace to delete/swap/replace part of the file name.
-9. A regex replace operation can be performed on file only, directory only, link only or any combination of them.
-10. Uppercase/Lowercase conversion on file name (can be done by selecting a part).
-11. Search string to search for files with matching regex/string.
-12. Search string can be specified for only file, directory, link or any combination of them.
-13. Inverse search.
-14. Sorting files and indexing.
-15. Sorting files according to size, modification time, access time etc..
-16. Prioritize file, directory or link during sort.
+3. Names (or name strings) can be taken from a file.
+4. Inserting file information (mtime, atime, ctime, permission etc..) in arbitrary formats.
+5. Indexing and formatting the indexes in different ways.
+6. Latin, scientific and base conversion for indexes and counters.
+7. Inserting different level of parent directory names.
+8. Access to current directory name, file name with and without extension.
+9. Regex replace to delete/swap/replace part of the file name.
+10. A regex replace operation can be performed on file only, directory only, link only or any combination of them.
+11. Uppercase/Lowercase conversion on file name (can be done by selecting a part).
+12. Replace strings can be taken from files.
+13. Search string to search for files with matching regex/string.
+14. Search string can be specified for only file, directory, link or any combination of them.
+15. Inverse search.
+16. Search strings can be taken from files.
+17. Sorting files and indexing.
+18. Sorting files according to size, modification time, access time etc..
+19. Prioritize file, directory or link during sort.
+20. Running simulation.
 
 #New features:
 
@@ -56,7 +60,32 @@ Simulations can be run instead of actual rename to view the potential outcome as
 
 #Install:
 
-###Install from source:
+##Install from pre-built binary:
+
+###From launchpad PPA:
+
+You can install it in Ubuntu from neurobin PPA (`ppa:neurobin/ppa`).
+
+```sh
+sudo add-apt-repository -y ppa:neurobin/ppa
+sudo apt-get update
+sudo apt-get install rnm
+```
+
+If you are in a pre-xenial release (precise, trusty etc..), you will need to add ubuntu-toolchain repository to make `libstdc++6 (>=5.4.0)` available:
+
+```sh
+sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
+sudo add-apt-repository -y ppa:neurobin/ppa
+sudo apt-get update
+sudo apt-get install rnm
+```
+
+###For others:
+
+You can download a pre-built binary (64 and/or 32 bit) from the [release page](https://github.com/neurobin/rnm/releases) if available.
+
+##Install from source:
 
 Make sure you have a C++ compiler equivalent to GCC-4.8 (`g++-4.8`) or later installed on your system.
 
@@ -86,31 +115,6 @@ make
 sudo make install
 ```
 
-###Install from pre-built binary:
-
-####From launchpad PPA:
-
-Aside from the above generalized method, you can also install it in Ubuntu from PPA (`ppa:neurobin/ppa`).
-
-```sh
-sudo add-apt-repository -y ppa:neurobin/ppa
-sudo apt-get update
-sudo apt-get install rnm
-```
-
-If you are in a pre-xenial release (precise, trusty etc..), you will need to add ubuntu-toolchain repository to make `libstdc++6 (>=5.4.0)` available:
-
-```sh
-sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
-sudo add-apt-repository -y ppa:neurobin/ppa
-sudo apt-get update
-sudo apt-get install rnm
-```
-
-####For others:
-
-You can download a pre-built binary (64 and/or 32 bit) from the [release page](https://github.com/neurobin/rnm/releases) if available.
-
 <div id="un-install"></div>
 #Uninstall:
 
@@ -131,6 +135,7 @@ You can download a pre-built binary (64 and/or 32 bit) from the [release page](h
 9. `-u`: Undo the last rename operation in the current directory.
 10. `-up`: Undo rename from a arbitrary undo path.
 11. `-ups`: Show available undo paths.
+12. `-duh`: Delete undo history older than a given seconds.
 
 For a complete list of options and to get a glimpse of what **rnm** is capable of, get a peek at the doc (`rnm.md` or [rnm.html](https://docs.neurobin.org/man/man1/rnm.html)) or man page (`man rnm`).
 
