@@ -309,7 +309,7 @@ int main(int argc, char* argv[]) {
                 } else if(opt=="-s/n"||opt=="--sort/natural"){
                   sort=true;
                   sort_type="natural";
-                } else if(opt=="-s/none"||opt=="--sort/none"){
+                } else if(opt=="-s/no"||opt=="--sort/none"||opt=="-s/none"){
                   sort=true;
                   sort_type="none";
                 } else if(opt=="-s/mt"||opt=="--sort/mtime"){
@@ -424,9 +424,9 @@ int main(int argc, char* argv[]) {
         
         
         if(!name_string_file.empty()){
-            if(!name_string.empty()){
-                errorExit("-ns or equivalent options can not be given with -ns/f or -ns/fn");
-            }
+            //~ if(!name_string.empty()){
+                //~ errorExit("-ns or equivalent options can not be given with -ns/f or -ns/fn");
+            //~ }
             if(!quiet){std::cout<< "Reading name string file..."+NEW_LINE;}
             if(!nsf_n){
                 getNameListFromFile(nsflist,name_string_file,start_line.get_ui(),end_line.get_ui());

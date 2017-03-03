@@ -15,6 +15,24 @@ It provides an undo functionality to move back unwanted rename operations. Diffe
 
 Simulations can be run instead of actual rename to view the potential outcome as program output on terminal with the *-sim* option.
 
+#Features at a glance:
+
+1. Rename files/directories/links en masse with dynamically constructed names.
+2. Undo rename.
+3. Inserting file information (mtime, atime, ctime, permission etc..) in arbitrary formats.
+4. Indexing and formatting the indexes in different ways.
+5. Latin, scientific and base conversion for indexes and counters.
+6. Inserting different level of parent directory names.
+7. Access to current directory name, file name with and without extension.
+8. Regex replace to delete/swap/replace part of the file name.
+9. A regex replace operation can be performed on file only, directory only, link only or any combination of them.
+10. Uppercase/Lowercase conversion on file name (can be done by selecting a part).
+11. Search string to search for files with matching regex/string.
+12. Search string can be specified for only file, directory, link or any combination of them.
+13. Inverse search.
+14. Sorting files and indexing.
+15. Sorting files according to size, modification time, access time etc..
+16. Prioritize file, directory or link during sort.
 
 #New features:
 
@@ -23,13 +41,14 @@ Simulations can be run instead of actual rename to view the potential outcome as
 3. Inverse search is possible.
 4. Each regex operation can be associated with either link, file or directory, for example, if a replace string is associated with only file, it will not work on directories or links.
 5. New sorting methods: 
-  1. Sort according to file modification time.
-  2. Sort according to file access time.
-  3. Sort according to file status change time.
-  4. Sort according to file size.
+  1. Sort according to file modification time (recent first).
+  2. Sort according to file access time (recent first).
+  3. Sort according to file status change time (recent first).
+  4. Sort according to file size (larger first).
   5. Prioritize directory when sorting.
   6. Prioritize file when sorting.
   7. Prioritize link when sorting.
+  8. Reverse sort (can be used to reverse the order of a previous sort).
 
 #Features that were dropped:
 
@@ -109,6 +128,9 @@ You can download a pre-built binary (64 and/or 32 bit) from the [release page](h
 6. `-fo`: File only mode.
 7. `-do`: Directory only mode.
 8. `-lo`: Link only mode.
+9. `-u`: Undo the last rename operation in the current directory.
+10. `-up`: Undo rename from a arbitrary undo path.
+11. `-ups`: Show available undo paths.
 
 For a complete list of options and to get a glimpse of what **rnm** is capable of, get a peek at the doc (`rnm.md` or [rnm.html](https://docs.neurobin.org/man/man1/rnm.html)) or man page (`man rnm`).
 

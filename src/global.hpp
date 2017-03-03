@@ -225,6 +225,7 @@ String RNM_FILE_LOG_R_S;
 
 /////Name string related
 String PD_DELIM=" ";
+String ns_name;
 
 
 //////// Index flag related
@@ -293,8 +294,8 @@ String sort_type2;
 /// Project Info
 String project_name="rnm";
 String executable_name="rnm";
-String version="4.0.0";
-String author_name="Jahidul Hamid";
+String version="4.0.1";
+String author_name="Md Jahidul Hamid";
 String author_email="jahidulhamid@yahoo.com";
 String bug_report_url="http://github.com/neurobin/"+project_name+"/issues";
 
@@ -312,7 +313,7 @@ Bug Report:     "+bug_report_url+"\n\
 String help_message="\n\
 ************** "+project_name+" "+version+" **************\n\
 \n\
-Usage: "+project_name+" directory/file/path [options]\n\
+Usage: "+project_name+" [options] directory/file/path\n\
 \n\
 Options are case insensitive.\n\
 \n\
@@ -362,7 +363,7 @@ Options:\n\
                    -s/d    : Prioritize directory\n\
                    -s/f    : Prioritize file\n\
                    -s/l    : Prioritize link\n\
-                   -s/none : No sort\n\
+                   -s/no   : No sort\n\
   -y             : Confirm Yes to all\n\
                    and suppress output\n\
                    for each file.\n\

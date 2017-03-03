@@ -69,14 +69,12 @@ bool Rename(const String& oldn,const String& newn,DirectoryIndex &di){
                 success=true;
             }
             else {printErrorLog(strerror(errno)+String(": ")+oldn);}
-        }
-        else {
-            
-                current_index+=inc;
-                reverse_index-=inc;
-                di.directory_index+=inc;
-                di.directory_reverse_index-=inc;
-                rnc++;
+        } else {
+            current_index+=inc;
+            reverse_index-=inc;
+            di.directory_index+=inc;
+            di.directory_reverse_index-=inc;
+            rnc++;
         }
     }
     return success;
@@ -602,6 +600,7 @@ String parseNameString(const String& ns,const File& file,DirectoryIndex &di, con
     ns_rules_s["n"]=fnamewe;
     ns_rules_s["e"]=ext;
     ns_rules_s["rn"]=rname;
+    ns_rules_s["nsf"]=ns_name;
     //ns_rules_s["pd"]=CPDN;           ///This will be handled with extended function
     ns_rules_s["wd"]=CWDN;
     if(!ns.empty()){
@@ -794,27 +793,36 @@ File doRename(const File& file,DirectoryIndex &di){
     String name;
     if(replace_string.size()!=0){processReplaceString(replace_string,file,di);}
     
-    if(!name_string.empty()){
-        name=parseNameString(name_string,file,di,path_delim, "",0);
-    } else if(!name_string_file.empty()){
+    //process name string file and calculate ns_name
+    if(!name_string_file.empty()){
         if(current_line_pos<nsflist.size()){
             current_line = lc_list[current_line_pos];
-            name=parseNameString(nsflist[current_line_pos],file,di,path_delim, "",0);
+            ns_name=parseNameString(nsflist[current_line_pos],file,di,path_delim, "",0);
             current_line_pos++;
         } else {
             //file is out of names
             printWarningLog("Name string file ran out of names");
             Exit(0);
         }
-    } else if(replace_string.size()!=0){name=rname;}
-    else {printErrorLog("One of the options: -ns or -nsf or -rs is mandatory");Exit(1);}
+    }
+    
+    if(!name_string.empty()){ //ns is the first priority
+        name=parseNameString(name_string,file,di,path_delim, "",0);
+    } else if(replace_string.size()!=0){ //rs is prioritized over ns/f
+        name = rname;
+    } else if(!name_string_file.empty()){
+        name = ns_name;
+    } else {
+        printErrorLog("One of the options: -ns or -nsf or -rs is mandatory");
+        Exit(1);
+    }
     
     ///sanitize name by removing invalid name string rules and path delimiter
     name=removeInvalidNameStringRules(name);
     name=stripPathDelimiter(name);
     
     if(!name.empty()){
-        if(!quiet&&!ALL_YES){std::cout<< NEW_LINE+file.path+"    ---->    "+dir+path_delim+name+NEW_LINE;}
+        if(!quiet&&!ALL_YES){std::cout<< NEW_LINE+file.path+"    ---->    [...]"+path_delim+name+NEW_LINE;}
         ///do rename
         int confirm;
         if(!all_yes){
