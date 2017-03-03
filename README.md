@@ -83,7 +83,7 @@ sudo apt-get install rnm
 
 ###For others:
 
-You can download a pre-built binary (64 and/or 32 bit) from the [release page](https://github.com/neurobin/rnm/releases) if available.
+You can download a pre-built binary (64 and/or 32 bit) from the [release page](https://github.com/neurobin/rnm/releases) if available. These pre-built binaries depend on `libstdc++6 >= 4.8.5` if not specified otherwise.
 
 ##Install from source:
 
@@ -133,7 +133,7 @@ sudo make install
 7. `-do`: Directory only mode.
 8. `-lo`: Link only mode.
 9. `-u`: Undo the last rename operation in the current directory.
-10. `-up`: Undo rename from a arbitrary undo path.
+10. `-up`: Undo rename from an arbitrary undo path.
 11. `-ups`: Show available undo paths.
 12. `-duh`: Delete undo history older than a given seconds.
 
