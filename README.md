@@ -481,7 +481,7 @@ This is what the above command does:
 2. Replace all dot with hyphen for directories (`/\./-/gd`).
 3. Give all symbolic links a .link extension (`/$/.link/l`).
 
-## Search for files matching pattern1 in their name, directories matching pattern2 and links matching pattern3 and append modification time in their name:
+## Search for files matching pattern1 in their name, directories matching pattern2 and links matching pattern3 and append modification time with the filename:
 
 ```bash
 rnm -ns '/fn/ /info-mtime-%d-%m-%Y %H:%I %p/' -ss '/pattern1/f' -ss '/pattern2/d' -ss '/pattern3/l' ./*
