@@ -434,7 +434,61 @@ dir1 | dir1 drwx--x--x
 > There are lots of properties available for file info which makes all kinds of file information available. See the docs (rnm.md or [rnm.html](https://docs.neurobin.org/man/man1/rnm.html)) or man page for details.
 
 
+# Miscellaneous examples
+
+## Add/insert parent directory names to filename:
+
+```bash
+rnm -ns '/pd0/-/fn/' dir1/*.png
+```
+Before | After
+------ | -----
+dir1/abc.png | dir1/dir1-abc.png
+
+> `/pd0/` is the immediate parent directory
+
+```bash
+rnm -ns '/pd1-0--/-/fn/' dir1/dir0/*.png
+```
+Before | After
+------ | -----
+dir1//dir0/abc.png | dir1/dir0/dir1-dir0-abc.png
+
+> `/pd1-0--/` adds the directory names from `/pd1/` to `/pd0/` with a delimiter in-between. `/pd0-1- /` would become `dir0 dir1`. The general format is: `/pd<from>-<to>-<delimiter>/`
+
+## Index files by sorting them according to modification time:
+
+```bash
+rnm -ns '/fn/ /ir/' -s/mt ./*
+```
+> The above will append index to the filenames by sorting the files according to modification time (recent first). `/idr/` is reserved-index (index is reserved for skipped files), `-s/mt` sorts according to mtime.
+
+## Index files by sorting them according to size:
+
+```bash
+rnm -ns '/fn/ /ir/' -s/sz ./*
+```
+> The above will append index to the filenames by sorting the files according to size (larger first).
+
+## Treat files, directories, links differently in a single command to rename files:
+
+```bash
+rnm -rs '/_/-/gf' -rs '/\./-/gd' -rs '/$/.link/l' ./*
+```
+This is what the above command does:
+
+1. Replace all underscores with hyphen for directories.
+2. Replace all dot with hyphen for regular files.
+3. Give all symbolic links a .link extension.
+
+## Search for files matching pattern1 in their name, directories pattern2 and links pattern3 and append modification time in their name:
+
+```bash
+rnm -ns '/fn/ /info-mtime-%d-%m-%Y %H:%I %p/' -ss '/pattern1/f' -ss '/pattern2/d' -ss '/pattern3/l' ./*
+```
+
 [rnm user manual](https://docs.neurobin.org/man/man1/rnm.html)
+
 [Other examples](https://neurobin.org/docs/unix/rnm/bulk-rename-in-linux/)
 
 
