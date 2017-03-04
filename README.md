@@ -452,16 +452,16 @@ rnm -ns '/pd1-0--/-/fn/' dir1/dir0/*.png
 ```
 Before | After
 ------ | -----
-dir1//dir0/abc.png | dir1/dir0/dir1-dir0-abc.png
+dir1/dir0/abc.png | dir1/dir0/dir1-dir0-abc.png
 
-> `/pd1-0--/` adds the directory names from `/pd1/` to `/pd0/` with a delimiter in-between. `/pd0-1- /` would become `dir0 dir1`. The general format is: `/pd<from>-<to>-<delimiter>/`
+> `/pd1-0--/` adds the directory names from `/pd1/` to `/pd0/` with a delimiter in-between. `/pd0-1- /` would become `dir0 dir1` (here space is the delimiter). The general format is: `/pd<from>-<to>-<delimiter>/`
 
 ## Index files by sorting them according to modification time:
 
 ```bash
 rnm -ns '/fn/ /ir/' -s/mt ./*
 ```
-> The above will append index to the filenames by sorting the files according to modification time (recent first). `/idr/` is reserved-index (index is reserved for skipped files), `-s/mt` sorts according to mtime.
+> The above will append index to the filenames by sorting the files according to modification time (recent first). `/ir/` is reserved-index (index is reserved for skipped files), `-s/mt` sorts according to mtime.
 
 ## Index files by sorting them according to size:
 
@@ -477,9 +477,9 @@ rnm -rs '/_/-/gf' -rs '/\./-/gd' -rs '/$/.link/l' ./*
 ```
 This is what the above command does:
 
-1. Replace all underscores with hyphen for directories.
-2. Replace all dot with hyphen for regular files.
-3. Give all symbolic links a .link extension.
+1. Replace all underscores with hyphen for regular files (`/_/-/gf`).
+2. Replace all dot with hyphen for directories (`/\./-/gd`).
+3. Give all symbolic links a .link extension (`/$/.link/l`).
 
 ## Search for files matching pattern1 in their name, directories pattern2 and links pattern3 and append modification time in their name:
 
