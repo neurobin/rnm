@@ -1,6 +1,6 @@
 % rnm(1) rnm user manual
 % Md Jahidul Hamid <https://github.com/neurobin>
-% March 03, 2017
+% March 04, 2017
 
 # NAME
 rnm - Bulk rename utility
@@ -211,9 +211,16 @@ rnm filepath -ns name
 rnm -ns name filepath
 ```
 
+**Giving the same option multiple times is sequential.** If an option is capable of overloading, it adds the given values sequentially, on the other hand, if the option can not be overloaded, it is overwritten. For example:
+
+```bash
+rnm -rs '/_/-/g' -rs '/-/./g' ./*
+```
+In above, the first replace string is applied first replacing all underscores to hyphen, then the second one replaces all hyphens to dot. The final result is: All underscores and hyphens is replaced with dot. The behavior is the same if they are glued together with semicolon as a delimiter (`-rs '/_/-/g;/-/./g'`)
+
 **Options -h, -v and -duh are treated as First come, first served** and possess the highest priority.
 
-**The behavior of -fl** (*--follow-link*) and *-nfl* (*no-follow-link*) option depends on their position. For example:
+**The behavior of -fl** (*--follow-link*) and **-nfl** (*no-follow-link*) option depends on their position. For example:
 
 ```bash
 rnm -ns '/fn/ /id/' link1 -fl link2 \
@@ -383,7 +390,9 @@ rnm -ns '/fn/ /id-l/' ./*
 Its general format is
 
 ```bash
-/pd<digits>-<digits>-delimiter/
+/pd<digits>-<digits>-<delimiter>/
+         or
+/pd<from>-<to>-<delimiter>/
 ```
 
 It specifies a bidirectional range of parent directories.
@@ -509,7 +518,7 @@ A file which contains a list of name string (one per line). Empty lines will be 
 
 Each name string taken from this file is applied to each file, thus if there's 100 name strings in this file, their will be 100 rename only. All these name strings are parsed the same way as regular name strings given with *-ns* option with an additional rule */l/* (line number).
 
-The generated/extracted name/namestring becomes available through the name string rule */nsf/*. If an explicit *-ns* (or *-rs* and its equivalents) option is not given on the command line, '/nsf/' is taken as the name string i.e the new name will be the string expanded by */nsf/*.
+The generated/extracted name/namestring becomes available through the name string rule */nsf/*. If an explicit *-ns* (or *-rs* and its equivalents) option is not given on the command line, '/nsf/' is taken as the name string by default i.e the new name will be the string expanded by */nsf/*.
 
 A null terminated name string file is that one where name strings (i.e filenames) are terminated with null character instead of newline (*\\n*). These are generally binary files and can be generated with other tools.
 

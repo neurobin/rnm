@@ -436,7 +436,7 @@ dir1 | dir1 drwx--x--x
 
 # Miscellaneous examples
 
-## Add/insert parent directory names to filename:
+## Add/Insert parent directory names to filename:
 
 ```bash
 rnm -ns '/pd0/-/fn/' dir1/*.png

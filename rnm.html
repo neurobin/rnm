@@ -5,7 +5,7 @@
   <meta http-equiv="Content-Style-Type" content="text/css" />
   <meta name="generator" content="pandoc" />
   <meta name="author" content="Md Jahidul Hamid https://github.com/neurobin" />
-  <meta name="date" content="2017-03-03" />
+  <meta name="date" content="2017-03-04" />
   <title>rnm(1) rnm user manual</title>
   <style type="text/css">code{white-space: pre;}</style>
   <style type="text/css">
@@ -50,7 +50,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <div id="header">
 <h1 class="title">rnm(1) rnm user manual</h1>
 <h2 class="author">Md Jahidul Hamid <a href="https://github.com/neurobin" class="uri">https://github.com/neurobin</a></h2>
-<h3 class="date">March 03, 2017</h3>
+<h3 class="date">March 04, 2017</h3>
 </div>
 <h1 id="name">NAME</h1>
 <p>rnm - Bulk rename utility</p>
@@ -235,8 +235,11 @@ See <a href="#index-flags">INDEX FLAGS</a> for details.
 <p>For example, the two commands below are the same:</p>
 <div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">rnm</span> filepath -ns name
 <span class="kw">rnm</span> -ns name filepath</code></pre></div>
+<p><strong>Giving the same option multiple times is sequential.</strong> If an option is capable of overloading, it adds the given values sequentially, on the other hand, if the option can not be overloaded, it is overwritten. For example:</p>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">rnm</span> -rs <span class="st">&#39;/_/-/g&#39;</span> -rs <span class="st">&#39;/-/./g&#39;</span> ./*</code></pre></div>
+<p>In above, the first replace string is applied first replacing all underscores to hyphen, then the second one replaces all hyphens to dot. The final result is: All underscores and hyphens is replaced with dot. The behavior is the same if they are glued together with semicolon as a delimiter (<code>-rs '/_/-/g;/-/./g'</code>)</p>
 <p><strong>Options -h, -v and -duh are treated as First come, first served</strong> and possess the highest priority.</p>
-<p><strong>The behavior of -fl</strong> (<em>--follow-link</em>) and <em>-nfl</em> (<em>no-follow-link</em>) option depends on their position. For example:</p>
+<p><strong>The behavior of -fl</strong> (<em>--follow-link</em>) and <strong>-nfl</strong> (<em>no-follow-link</em>) option depends on their position. For example:</p>
 <div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">rnm</span> -ns <span class="st">&#39;/fn/ /id/&#39;</span> link1 -fl link2 \
     -nfl link3 link4 -fl  link5 link6</code></pre></div>
 <p>will rename the symbolic links as:</p>
@@ -547,7 +550,9 @@ See <a href="#index-flags">INDEX FLAGS</a> for details.
 </ol>
 <h4 id="extended-pd-rules">EXTENDED PD RULES</h4>
 <p>Its general format is</p>
-<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash">/<span class="kw">pd&lt;</span>digits<span class="kw">&gt;</span>-<span class="kw">&lt;</span>digits<span class="kw">&gt;</span>-delimiter/</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash">/<span class="kw">pd&lt;</span>digits<span class="kw">&gt;</span>-<span class="kw">&lt;</span>digits<span class="kw">&gt;</span>-<span class="kw">&lt;</span>delimiter<span class="kw">&gt;</span>/
+         <span class="kw">or</span>
+/<span class="kw">pd&lt;</span>from<span class="kw">&gt;</span>-<span class="kw">&lt;</span>to<span class="kw">&gt;</span>-<span class="kw">&lt;</span>delimiter<span class="kw">&gt;</span>/</code></pre></div>
 <p>It specifies a bidirectional range of parent directories.</p>
 <ol style="list-style-type: decimal">
 <li><em>/pd0/</em> is the immediate parent directory name, <em>pd1</em> is the directory before <em>pd0</em> and so forth.</li>
@@ -654,7 +659,7 @@ See <a href="#index-flags">INDEX FLAGS</a> for details.
 <h2 id="name-string-file">NAME STRING FILE</h2>
 <p>A file which contains a list of name string (one per line). Empty lines will be ignored but line number will be counted.</p>
 <p>Each name string taken from this file is applied to each file, thus if there's 100 name strings in this file, their will be 100 rename only. All these name strings are parsed the same way as regular name strings given with <em>-ns</em> option with an additional rule <em>/l/</em> (line number).</p>
-<p>The generated/extracted name/namestring becomes available through the name string rule <em>/nsf/</em>. If an explicit <em>-ns</em> (or <em>-rs</em> and its equivalents) option is not given on the command line, '/nsf/' is taken as the name string i.e the new name will be the string expanded by <em>/nsf/</em>.</p>
+<p>The generated/extracted name/namestring becomes available through the name string rule <em>/nsf/</em>. If an explicit <em>-ns</em> (or <em>-rs</em> and its equivalents) option is not given on the command line, '/nsf/' is taken as the name string by default i.e the new name will be the string expanded by <em>/nsf/</em>.</p>
 <p>A null terminated name string file is that one where name strings (i.e filenames) are terminated with null character instead of newline (<em>\n</em>). These are generally binary files and can be generated with other tools.</p>
 <h2 id="search-string">SEARCH STRING</h2>
 <p>A string that is used to search for files with matching filenames against the search string. By default it is a regex if <em>-ssf</em> option is not used. It is generally in the form</p>
