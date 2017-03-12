@@ -170,6 +170,7 @@ Int depth=0;
 Int LOWEST_DEPTH=0;
 Int index_field_length=1;
 Int rnc=0; //rename count
+//~ Int DUPT = "2592000"; //seconds in a month
 Int dupt = 0; //delete undo path which are older than dupt seconds ago
 
 
@@ -293,7 +294,7 @@ String sort_type2;
 /// Project Info
 String project_name="rnm";
 String executable_name="rnm";
-String version="4.0.1";
+String version="4.0.2";
 String author_name="Md Jahidul Hamid";
 String author_email="jahidulhamid@yahoo.com";
 String bug_report_url="https://github.com/neurobin/"+project_name+"/issues";
@@ -340,6 +341,8 @@ Options:\n\
   -dp       value: Depth of directory.\n\
   -duh      value: Delete undo history older\n\
                    than given seconds.\n\
+  -duhd     value: Delete undo history older\n\
+                   than given days.\n\
   -fo            : File only mode.\n\
   -do            : Directory only mode.\n\
   -lo            : Link only mode.\n\
@@ -364,14 +367,14 @@ Options:\n\
                    -s/d    : Prioritize directory\n\
                    -s/f    : Prioritize file\n\
                    -s/l    : Prioritize link\n\
+                   -s/r    : Reverse the sort\n\
                    -s/no   : No sort\n\
-  -y             : Confirm Yes to all\n\
-                   and suppress output\n\
-                   for each file.\n\
+  -y             : Confirm Yes to all and\n\
+                   suppress output for every file.\n\
   -u             : Undo renaming.\n\
   -up            : Undo from a undo path\n\
   -ups           : Show available undo paths\n\
-  -q             : Quiet operation.\n\
+  -q             : Quiet operation (includes -y).\n\
   -qq            : Suprress even errors\n\
   -f             : Apply force.\n\
   -ff            : Super force.\n\

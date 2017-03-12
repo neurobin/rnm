@@ -72,7 +72,7 @@ sudo apt-get update
 sudo apt-get install rnm
 ```
 
-If you are in a pre-xenial release (precise, trusty etc..), you will need to add ubuntu-toolchain repository to make `libstdc++6 (>=5.4.0)` available:
+If you are in precise (12.04), you will need to add ubuntu-toolchain repository to make `libstdc++6 (>=4.8.4)` available:
 
 ```sh
 sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
@@ -83,7 +83,7 @@ sudo apt-get install rnm
 
 ###For others:
 
-You can download a pre-built binary (64 and/or 32 bit) from the [release page](https://github.com/neurobin/rnm/releases) if available. These pre-built binaries depend on `libstdc++6 >= 4.8.5` if not specified otherwise.
+You can download a pre-built binary (64 bit, 32 bit, ppc64el) from the [release page](https://github.com/neurobin/rnm/releases) if available. These pre-built binaries depend on `libstdc++6 >= 4.8.4` if not specified otherwise.
 
 ##Install from source:
 

@@ -1,6 +1,6 @@
 % rnm(1) rnm user manual
 % Md Jahidul Hamid <https://github.com/neurobin>
-% March 04, 2017
+% March 12, 2017
 
 # NAME
 rnm - Bulk rename utility
@@ -114,6 +114,9 @@ rnm -ns/f namestring/file/path file/path
 -duh *seconds*
 : Delete undo history older than the given seconds.
 
+-duhd *days*
+: Delete undo history older than the given days.
+
 -fo
 : File only mode. Only files are renamed (no directory or link). Goes to subdirectory/s if depth (*-dp*) is greater than 0 or negative.
 
@@ -165,7 +168,7 @@ rnm -ns/f namestring/file/path file/path
 ```
 
 -y
-: Confirm Yes to all and suppress printing output for each file.
+: Confirm Yes to all and suppress output for every file.
 
 -u
 : Undo rename. Undo depends on working directory. If an **rnm** command is run from ~/somedir, to undo this operation one must run **rnm** from the same directory again or provide the path with *-up* option. Undo is a very aggressive operation, it bypasses all security check.
@@ -177,7 +180,7 @@ rnm -ns/f namestring/file/path file/path
 : Show available undo paths.
 
 -q
-: Quiet operation (speedy operation).
+: Quiet operation (speedy operation, includes `-y`).
 
 -qq
 : Suppress even error messages.
@@ -202,7 +205,7 @@ rnm -ns/f namestring/file/path file/path
 
 #PROPERTIES OF OPTIONS
 
-**Options are not sequential** (except `-h`, `-v`, `-fl`, `-nfl` `-u`, `-up`, `-ups`, `-duh`).
+**Options are not sequential** (except `-h`, `-v`, `-fl`, `-nfl` `-u`, `-up`, `-ups`, `-duh`, `-duhd`).
 
 For example, the two commands below are the same:
 
@@ -211,14 +214,14 @@ rnm filepath -ns name
 rnm -ns name filepath
 ```
 
-**Giving the same option multiple times is sequential.** If an option is capable of overloading, it adds the given values sequentially, on the other hand, if the option can not be overloaded, it is overwritten. For example:
+**Giving the same type of option multiple times is sequential.** If an option is capable of overloading, it adds the given values sequentially, on the other hand, if the option can not be overloaded, it is overwritten. For example:
 
 ```bash
 rnm -rs '/_/-/g' -rs '/-/./g' ./*
 ```
 In above, the first replace string is applied first replacing all underscores to hyphen, then the second one replaces all hyphens to dot. The final result is: All underscores and hyphens is replaced with dot. The behavior is the same if they are glued together with semicolon as a delimiter (`-rs '/_/-/g;/-/./g'`)
 
-**Options -h, -v and -duh are treated as First come, first served** and possess the highest priority.
+**Options -h, -v, -duh and -duhd are treated as First come, first served** and possess the highest priority.
 
 **The behavior of -fl** (*--follow-link*) and **-nfl** (*no-follow-link*) option depends on their position. For example:
 
@@ -266,6 +269,7 @@ Opt name | Full name
 -iff | --index-field-filler
 -dp | --depth
 -duh | --delete-undo-history
+-duhd | --delete-undo-history-day
 -fo | --file-only
 -do | --directory-only
 -lo | --link-only

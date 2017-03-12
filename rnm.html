@@ -5,7 +5,7 @@
   <meta http-equiv="Content-Style-Type" content="text/css" />
   <meta name="generator" content="pandoc" />
   <meta name="author" content="Md Jahidul Hamid https://github.com/neurobin" />
-  <meta name="date" content="2017-03-04" />
+  <meta name="date" content="2017-03-12" />
   <title>rnm(1) rnm user manual</title>
   <style type="text/css">code{white-space: pre;}</style>
   <style type="text/css">
@@ -50,7 +50,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <div id="header">
 <h1 class="title">rnm(1) rnm user manual</h1>
 <h2 class="author">Md Jahidul Hamid <a href="https://github.com/neurobin" class="uri">https://github.com/neurobin</a></h2>
-<h3 class="date">March 04, 2017</h3>
+<h3 class="date">March 12, 2017</h3>
 </div>
 <h1 id="name">NAME</h1>
 <p>rnm - Bulk rename utility</p>
@@ -145,6 +145,9 @@ See <a href="#index-flags">INDEX FLAGS</a> for details.
 <dt>-duh <em>seconds</em></dt>
 <dd>Delete undo history older than the given seconds.
 </dd>
+<dt>-duhd <em>days</em></dt>
+<dd>Delete undo history older than the given days.
+</dd>
 <dt>-fo</dt>
 <dd>File only mode. Only files are renamed (no directory or link). Goes to subdirectory/s if depth (<em>-dp</em>) is greater than 0 or negative.
 </dd>
@@ -194,7 +197,7 @@ See <a href="#index-flags">INDEX FLAGS</a> for details.
 <span class="kw">-s/no</span> : No sort</code></pre></div>
 </dd>
 <dt>-y</dt>
-<dd>Confirm Yes to all and suppress printing output for each file.
+<dd>Confirm Yes to all and suppress output for every file.
 </dd>
 <dt>-u</dt>
 <dd>Undo rename. Undo depends on working directory. If an <strong>rnm</strong> command is run from ~/somedir, to undo this operation one must run <strong>rnm</strong> from the same directory again or provide the path with <em>-up</em> option. Undo is a very aggressive operation, it bypasses all security check.
@@ -206,7 +209,7 @@ See <a href="#index-flags">INDEX FLAGS</a> for details.
 <dd>Show available undo paths.
 </dd>
 <dt>-q</dt>
-<dd>Quiet operation (speedy operation).
+<dd>Quiet operation (speedy operation, includes <code>-y</code>).
 </dd>
 <dt>-qq</dt>
 <dd>Suppress even error messages.
@@ -231,14 +234,14 @@ See <a href="#index-flags">INDEX FLAGS</a> for details.
 </dd>
 </dl>
 <h1 id="properties-of-options">PROPERTIES OF OPTIONS</h1>
-<p><strong>Options are not sequential</strong> (except <code>-h</code>, <code>-v</code>, <code>-fl</code>, <code>-nfl</code> <code>-u</code>, <code>-up</code>, <code>-ups</code>, <code>-duh</code>).</p>
+<p><strong>Options are not sequential</strong> (except <code>-h</code>, <code>-v</code>, <code>-fl</code>, <code>-nfl</code> <code>-u</code>, <code>-up</code>, <code>-ups</code>, <code>-duh</code>, <code>-duhd</code>).</p>
 <p>For example, the two commands below are the same:</p>
 <div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">rnm</span> filepath -ns name
 <span class="kw">rnm</span> -ns name filepath</code></pre></div>
-<p><strong>Giving the same option multiple times is sequential.</strong> If an option is capable of overloading, it adds the given values sequentially, on the other hand, if the option can not be overloaded, it is overwritten. For example:</p>
+<p><strong>Giving the same type of option multiple times is sequential.</strong> If an option is capable of overloading, it adds the given values sequentially, on the other hand, if the option can not be overloaded, it is overwritten. For example:</p>
 <div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">rnm</span> -rs <span class="st">&#39;/_/-/g&#39;</span> -rs <span class="st">&#39;/-/./g&#39;</span> ./*</code></pre></div>
 <p>In above, the first replace string is applied first replacing all underscores to hyphen, then the second one replaces all hyphens to dot. The final result is: All underscores and hyphens is replaced with dot. The behavior is the same if they are glued together with semicolon as a delimiter (<code>-rs '/_/-/g;/-/./g'</code>)</p>
-<p><strong>Options -h, -v and -duh are treated as First come, first served</strong> and possess the highest priority.</p>
+<p><strong>Options -h, -v, -duh and -duhd are treated as First come, first served</strong> and possess the highest priority.</p>
 <p><strong>The behavior of -fl</strong> (<em>--follow-link</em>) and <strong>-nfl</strong> (<em>no-follow-link</em>) option depends on their position. For example:</p>
 <div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">rnm</span> -ns <span class="st">&#39;/fn/ /id/&#39;</span> link1 -fl link2 \
     -nfl link3 link4 -fl  link5 link6</code></pre></div>
@@ -354,138 +357,142 @@ See <a href="#index-flags">INDEX FLAGS</a> for details.
 <td align="left">--delete-undo-history</td>
 </tr>
 <tr class="even">
+<td align="left">-duhd</td>
+<td align="left">--delete-undo-history-day</td>
+</tr>
+<tr class="odd">
 <td align="left">-fo</td>
 <td align="left">--file-only</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">-do</td>
 <td align="left">--directory-only</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">-lo</td>
 <td align="left">--link-only</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">-xd</td>
 <td align="left">--exclude-directory</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">-xf</td>
 <td align="left">--exclude-file</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">-xl</td>
 <td align="left">--exclude-link</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">-fl</td>
 <td align="left">--follow-link</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">-nfl</td>
 <td align="left">--no-follow-link</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">-cd</td>
 <td align="left">--count-directory</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">-cf</td>
 <td align="left">--count-file</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">-cl</td>
 <td align="left">--count-link</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">-s</td>
 <td align="left">--sort</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">-s/g</td>
 <td align="left">--sort/general</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">-s/n</td>
 <td align="left">--sort/natural</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">-s/no</td>
 <td align="left">--sort/none</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">-s/mt</td>
 <td align="left">--sort/mtime</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">-s/at</td>
 <td align="left">--sort/atime</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">-s/ct</td>
 <td align="left">--sort/ctime</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">-s/d</td>
 <td align="left">--sort/directory</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">-s/f</td>
 <td align="left">--sort/file</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">-s/l</td>
 <td align="left">--sort/link</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">-s/sz</td>
 <td align="left">--sort/size</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">-s/r</td>
 <td align="left">--sort/reverse</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">-y</td>
 <td align="left">--yes</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">-u</td>
 <td align="left">--undo</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">-up</td>
 <td align="left">--undo-path</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">-ups</td>
 <td align="left">--undo-path-show</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">-q</td>
 <td align="left">--quiet</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">-qq</td>
 <td align="left">--quiet-quiet</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">-f</td>
 <td align="left">--force</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">-ff</td>
 <td align="left">--force-force</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">-h</td>
 <td align="left">--help</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">-v</td>
 <td align="left">--version</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">-sim</td>
 <td align="left">--simulation</td>
 </tr>

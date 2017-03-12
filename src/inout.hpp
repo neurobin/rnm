@@ -143,7 +143,7 @@ void printWarningLog0(String str, const String& fn, size_t line){
 
     
 void printOutLog(const String& str){
-    if(!quiet)std::cout<<NEW_LINE+str+NEW_LINE;
+    if(!quiet) std::cout<<NEW_LINE+str+NEW_LINE;
     time_t now = time(0);
     char* dt = ctime(&now);
     OUT_LOG_F<<str+"\t\t        @"+dt;

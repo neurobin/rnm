@@ -112,8 +112,12 @@ int main(int argc, char* argv[]) {
                   cleanup(true);
                   return 0;
                 } else if(opt=="-q"||opt=="--quiet"){
+                  all_yes=true;
+                  ALL_YES=true;
                   quiet=true;
                 } else if(opt=="-qq"||opt=="--quiet-quiet"){
+                  all_yes=true;
+                  ALL_YES=true;
                   quiet=true;
                   double_quiet=true;
                 } else if(opt=="-fo"||opt=="--file-only"){
@@ -366,6 +370,13 @@ int main(int argc, char* argv[]) {
                 } else if(opt=="-duh"||opt=="--delete-undo-history"){
                   checkArgAvailability(args,i+1);
                   dupt = getIntOrExit("Undo history time", args[i+1]);
+                  deleteUndoPathsFrom(dupt);
+                  skipcount=true;
+                  return 0;
+                } else if(opt=="-duhd"||opt=="--delete-undo-history-day"){
+                  checkArgAvailability(args,i+1);
+                  dupt = getIntOrExit("Undo history day", args[i+1]);
+                  dupt = dupt * Int("86400"); //1 day equals 86400 seconds
                   deleteUndoPathsFrom(dupt);
                   skipcount=true;
                   return 0;
