@@ -135,7 +135,8 @@ sudo make install
 9. `-u`: Undo the last rename operation in the current directory.
 10. `-up`: Undo rename from an arbitrary undo path.
 11. `-ups`: Show available undo paths.
-12. `-duh`: Delete undo history older than a given seconds.
+12. `-duh`: Delete undo history older than the given seconds.
+13. `-duhd`: Delete undo history older than the given days.
 
 For a complete list of options and to get a glimpse of what **rnm** is capable of, get a peek at the doc (`rnm.md` or [rnm.html](https://docs.neurobin.org/man/man1/rnm.html)) or man page (`man rnm`).
 

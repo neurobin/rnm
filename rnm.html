@@ -5,7 +5,7 @@
   <meta http-equiv="Content-Style-Type" content="text/css" />
   <meta name="generator" content="pandoc" />
   <meta name="author" content="Md Jahidul Hamid https://github.com/neurobin" />
-  <meta name="date" content="2017-03-12" />
+  <meta name="date" content="2017-03-13" />
   <title>rnm(1) rnm user manual</title>
   <style type="text/css">code{white-space: pre;}</style>
   <style type="text/css">
@@ -50,7 +50,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <div id="header">
 <h1 class="title">rnm(1) rnm user manual</h1>
 <h2 class="author">Md Jahidul Hamid <a href="https://github.com/neurobin" class="uri">https://github.com/neurobin</a></h2>
-<h3 class="date">March 12, 2017</h3>
+<h3 class="date">March 13, 2017</h3>
 </div>
 <h1 id="name">NAME</h1>
 <p>rnm - Bulk rename utility</p>
@@ -565,7 +565,7 @@ See <a href="#index-flags">INDEX FLAGS</a> for details.
 <li><em>/pd0/</em> is the immediate parent directory name, <em>pd1</em> is the directory before <em>pd0</em> and so forth.</li>
 <li><em>/pd0-2-+/</em> will expand by concatenating pd0 to pd2 and with the <em>delimiter</em> in-between (e.g <em>dir0+dir1+dir2</em>).</li>
 <li><em>/pd2-0-+/</em> will do the same as above but in reverse order (<em>dir2+dir1+dir0</em>).</li>
-<li>In place of <em>&lt;digits&gt;</em> you can supply <em>e</em> which generally means the 'end' i.e the deepest level available.</li>
+<li>In place of <em>&lt;digits&gt;</em> you can supply <em>e</em> which generally means the 'end' i.e the farthest level available from the immediate parent.</li>
 <li>In place of <em>&lt;digits&gt;</em> you can also supply <em>w</em> which means the level of working directory.</li>
 <li>Any unavailable level of directory will be ignored and be replaced with empty string.</li>
 </ol>

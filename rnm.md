@@ -1,6 +1,6 @@
 % rnm(1) rnm user manual
 % Md Jahidul Hamid <https://github.com/neurobin>
-% March 12, 2017
+% March 13, 2017
 
 # NAME
 rnm - Bulk rename utility
@@ -404,7 +404,7 @@ It specifies a bidirectional range of parent directories.
 1. */pd0/* is the immediate parent directory name, *pd1* is the directory before *pd0* and so forth.
 2. */pd0-2-+/* will expand by concatenating pd0 to pd2 and with the *delimiter* in-between (e.g *dir0+dir1+dir2*).
 3. */pd2-0-+/* will do the same as above but in reverse order (*dir2+dir1+dir0*).
-4. In place of *\<digits\>* you can supply *e* which generally means the 'end' i.e the deepest level available.
+4. In place of *\<digits\>* you can supply *e* which generally means the 'end' i.e the farthest level available from the immediate parent.
 5. In place of *\<digits\>* you can also supply *w* which means the level of working directory.
 6. Any unavailable level of directory will be ignored and be replaced with empty string.
 
