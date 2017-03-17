@@ -125,19 +125,20 @@ sudo make install
 
 # Basic options
 
-1. `-ns`: Name string, simply new name for files. String wrapped with `/` are treated as special rules and expanded to their special meaning.
-2. `-rs`: Replace string. Performs regex replace to construct new name.
-3. `-ss`: Searches files with matching regex.
-4. `-ssf`: Searches files with matching fixed string.
-5. `-s`: Sort files.
-6. `-fo`: File only mode.
-7. `-do`: Directory only mode.
-8. `-lo`: Link only mode.
-9. `-u`: Undo the last rename operation in the current directory.
-10. `-up`: Undo rename from an arbitrary undo path.
-11. `-ups`: Show available undo paths.
-12. `-duh`: Delete undo history older than the given seconds.
-13. `-duhd`: Delete undo history older than the given days.
+* `-ns`: Name string, simply new name for files. String wrapped with `/` are treated as special rules and expanded to their special meaning.
+* `-rs`: Replace string. Performs regex replace to construct new name.
+* `-ss`: Searches files with matching regex.
+* `-ssf`: Searches files with matching fixed string.
+* `-s`: Sort files.
+* `-fo`: File only mode.
+* `-do`: Directory only mode.
+* `-lo`: Link only mode.
+* `-dp`: Depth of directories (how many subdirs to recurse).
+* `-u`: Undo the last rename operation in the current directory.
+* `-up`: Undo rename from an arbitrary undo path.
+* `-ups`: Show available undo paths.
+* `-duh`: Delete undo history older than the given seconds.
+* `-duhd`: Delete undo history older than the given days.
 
 For a complete list of options and to get a glimpse of what **rnm** is capable of, get a peek at the doc (`rnm.md` or [rnm.html](https://docs.neurobin.org/man/man1/rnm.html)) or man page (`man rnm`).
 
