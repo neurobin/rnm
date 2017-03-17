@@ -15,7 +15,7 @@ It provides an undo functionality to move back unwanted rename operations. Diffe
 
 Simulations can be run instead of actual rename to view the potential outcome as program output on terminal with the *-sim* option.
 
-#Features at a glance:
+# Features at a glance:
 
 1. Rename files/directories/links en masse with dynamically constructed names.
 2. Undo rename.
@@ -38,7 +38,7 @@ Simulations can be run instead of actual rename to view the potential outcome as
 19. Prioritize file, directory or link during sort.
 20. Running simulation.
 
-#New features:
+# New features:
 
 1. Unlimited precision for numbers i.e you can perform base conversion, scientific conversion etc.. on an arbitrarily big number. This functionality is provided by GMP BigNum library (GNU Multi-precession library).
 2. File information is available, e.g modification time, access time, status change time (time string can be formatted using format string e.g `%d-%m-%Y`), permission, owner id, group id, size, block, inode number, mode etc...
@@ -54,15 +54,15 @@ Simulations can be run instead of actual rename to view the potential outcome as
   7. Prioritize link when sorting.
   8. Reverse sort (can be used to reverse the order of a previous sort).
 
-#Features that were dropped:
+# Features that were dropped:
 
 * Multiple regex mode in favor of PCRE2 regex.
 
-#Install:
+# Install:
 
-##Install from pre-built binary:
+## Install from pre-built binary:
 
-###From launchpad PPA:
+### From launchpad PPA:
 
 You can install it in Ubuntu from neurobin PPA (`ppa:neurobin/ppa`).
 
@@ -81,15 +81,15 @@ sudo apt-get update
 sudo apt-get install rnm
 ```
 
-###For others:
+### For others:
 
 You can download a pre-built binary (64 bit, 32 bit, ppc64el) from the [release page](https://github.com/neurobin/rnm/releases) if available. These pre-built binaries depend on `libstdc++6 >= 4.8.4` if not specified otherwise.
 
-##Install from source:
+## Install from source:
 
 Make sure you have a C++ compiler equivalent to GCC-4.8 (`g++-4.8`) or later installed on your system.
 
-####Download dependencies:
+#### Download dependencies:
 To install dependencies run the `prepare.sh` file:
 
 ```sh
@@ -103,7 +103,7 @@ It will download three different projects:
 2. [jpcre2](https://github.com/jpcre2/jpcre2)
 3. [gmplib](https://gmplib.org/)
 
-####Install rnm:
+#### Install rnm:
 After you have all the dependencies at hand, you can simply do:
 
 ```sh
@@ -116,7 +116,8 @@ sudo make install
 ```
 
 <div id="un-install"></div>
-#Uninstall:
+
+# Uninstall:
 
 1. For ubuntu uninstall from software manager.
 2. If you used a pre-built binary, just delete the binary and the man page.
@@ -141,7 +142,7 @@ sudo make install
 For a complete list of options and to get a glimpse of what **rnm** is capable of, get a peek at the doc (`rnm.md` or [rnm.html](https://docs.neurobin.org/man/man1/rnm.html)) or man page (`man rnm`).
 
 <div id="usage"></div>
-#Usage:
+# Usage:
 
 **Simplest example:**
 
@@ -152,7 +153,7 @@ rnm -ns '/fn/ some text to add' oldfile
 ```
 > `/fn/` is a name string rule that expands to file name.
 
-##Indexing
+## Indexing
 
 **Rename all by appending index to file names:**
 
