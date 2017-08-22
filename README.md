@@ -130,9 +130,10 @@ sudo make install
 
 # Uninstall:
 
-1. For ubuntu uninstall from software manager.
-2. If you used a pre-built binary, just delete the binary and the man page.
-3. If you compiled from the source, do `./configure --enable-static --disable-shared --enable-cxx --enable-jit && make && sudo make uninstall`
+1. For Debian, Ubuntu and derivatives, uninstall from software manager.
+2. For Archlinux, uninstall with pacman.
+3. If you used a pre-built binary, just delete the binary and the man page.
+4. If you compiled from the source, do `./configure --prefix=/usr && make && sudo make uninstall`
 
 # Basic options
 
