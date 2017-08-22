@@ -93,33 +93,36 @@ makepkg -i
 
 You can download a pre-built binary (64 bit, 32 bit, ppc64el) from the [release page](https://github.com/neurobin/rnm/releases) if available. These pre-built binaries depend on `libstdc++6 >= 4.8.4` if not specified otherwise.
 
-## Install from source:
+## From source:
 
 Make sure you have a C++ compiler equivalent to GCC-4.8 (`g++-4.8`) or later installed on your system.
 
 #### Download dependencies:
-To install dependencies run the `prepare.sh` file:
 
-```sh
-cd rnm # i.e go inside the rnm project directory
-sh prepare.sh
-```
-
-It will download three different projects:
+It depends on three different libraries:
 
 1. [pcre2](http://pcre.org/)
 2. [jpcre2](https://github.com/jpcre2/jpcre2)
 3. [gmplib](https://gmplib.org/)
+
+To install dependencies run the `prepare.sh` file:
+
+```sh
+cd rnm # i.e go inside the rnm project directory
+#Creating the following directories will prevent prepare.sh from installing the corresponding libraries.
+#mkdir -p gmpxx  # uncomment and run this command if libgmp-dev (gmpxx) is already installed.
+#mkdir -p pcre2  # uncomment and run this command if libpcre2-dev (pcre2) is already installed.
+#mkdir -p jpcre2 # uncomment and run this command if libjpcre2-dev (jpcre2) is already installed.
+sh prepare.sh
+```
 
 #### Install rnm:
 After you have all the dependencies at hand, you can simply do:
 
 ```sh
 autoreconf -f -i #run this one if your automake version is less than 1.15
-./configure --enable-static --disable-shared --enable-cxx --enable-jit
-#--enable-cxx is mandatory, --enable-jit will improve performance (a lot) during pattern matching
+./configure --prefix=/usr
 make
-#Hold tight until it finishes compiling and building **rnm**.
 sudo make install
 ```
 
