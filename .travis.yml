@@ -9,7 +9,7 @@ before_install:
   - sh prepare.sh
 script: 
   - ./autogen.sh
-  - ./configure --enable-static --disable-shared --enable-cxx --enable-jit
+  - ./configure
   - make
   - make test
 
