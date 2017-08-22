@@ -60,9 +60,7 @@ Simulations can be run instead of actual rename to view the potential outcome as
 
 # Install:
 
-## Install from pre-built binary:
-
-### From launchpad PPA:
+## For Ubuntu and derivatives:
 
 You can install it in Ubuntu from neurobin PPA (`ppa:neurobin/ppa`).
 
@@ -81,7 +79,17 @@ sudo apt-get update
 sudo apt-get install rnm
 ```
 
-### For others:
+## For Archlinux:
+
+Install from AUR:
+
+```bash
+git clone https://aur.archlinux.org/rnm.git
+cd rnm
+makepkg -i
+```
+
+## From pre-built binaries:
 
 You can download a pre-built binary (64 bit, 32 bit, ppc64el) from the [release page](https://github.com/neurobin/rnm/releases) if available. These pre-built binaries depend on `libstdc++6 >= 4.8.4` if not specified otherwise.
 
