@@ -11,7 +11,7 @@ if [ ! -d pcre2 ]; then
     make
     sudo make install
     cd -
-    rm -r pcre2
+    rm -rf pcre2
 else
 	echo "pcre2 exists"
 fi
@@ -27,7 +27,7 @@ if [ ! -d jpcre2 ]; then
     make
     sudo make install
     cd -
-    rm -r jpcre2
+    rm -rf jpcre2
 else
 	echo "jpcre2 exists"
 fi
@@ -47,9 +47,8 @@ if [ ! -d gmpxx ]; then
     ./configure --prefix=/usr
     make
     sudo make install
-    make distclean
     cd -
-    rm -r gmpxx
+    rm -rf gmpxx
 else
 	echo "gmpxx exists"
 fi
