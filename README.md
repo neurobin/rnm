@@ -299,8 +299,8 @@ rnm -rs '/\.mp3/\C/g' ./*
 
 Before | After
 ------ | -----
-test_file_123.mp3 | test file 123.MP3
-test_song_456.mp3 | test song 456.MP3
+test_file_123.mp3 | test_file_123.MP3
+test_song_456.mp3 | test_song_456.MP3
 
 > `\C` (capital C) in replace part converts the matched part to uppercase
 
