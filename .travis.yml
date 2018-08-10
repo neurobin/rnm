@@ -1,12 +1,10 @@
 sudo: required
-dist: trusty
+dist: xenial
 language: cpp
 before_install:
-  - sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
   - sudo apt-get update -q
-  - sudo apt-get install g++-6 libgmp-dev -y
-  - CXX=g++-6
-  - mkdir -p gmpxx
+  - sudo apt-get install libgmp-dev libpcre2-dev -y
+  - mkdir -p gmpxx pcre2
   - sh prepare.sh
 script: 
   - ./autogen.sh
