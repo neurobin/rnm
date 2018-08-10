@@ -662,7 +662,7 @@ rnm -ns/f filepath
 **Default  latin fallback :** 55555. After this value Latin conversion will fall back to decimal. You can override this with *-if* option by setting */latin-fallback=6666/* (or some other value). Big Latin number may produce much larger name which in turn may give you error due to limit on length of file names.
 
 #LOG DIR
-~/.cache/neurobin/rnm
+~/.local/share/neurobin/rnm
 
 #EXIT STATUS
 

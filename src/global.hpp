@@ -191,7 +191,7 @@ String CWDN="";
 String CWD="";
 
 
-////getting Linux Home and defining some paths
+////getting Linux Home, data home and defining some paths
 String getUnixHome(){
     char *homedir;
     if ((homedir = getenv("HOME")) == NULL) {
@@ -200,7 +200,15 @@ String getUnixHome(){
     return String(homedir);
 }
 String HOME=getUnixHome();
-String LOG_DIR_PARENT=HOME+"/.cache/neurobin";
+String getUnixDataHome(){
+    char *homedir;
+    if ((homedir = getenv("XDG_DATA_HOME")) == NULL) {
+        return HOME + "/.local/share";
+    }
+    return String(homedir);
+}
+//~ String LOG_DIR_PARENT=HOME+"/.cache/neurobin";
+String LOG_DIR_PARENT = getUnixDataHome() + "/neurobin";
 String LOG_DIR=LOG_DIR_PARENT+"/rnm";
 String LOG_DIR_UNDO=LOG_DIR+"/unrec";
 String ERROR_LOG=LOG_DIR+"/errors.log";
@@ -294,7 +302,7 @@ String sort_type2;
 /// Project Info
 String project_name="rnm";
 String executable_name="rnm";
-String version="4.0.2";
+String version="4.0.3";
 String author_name="Md Jahidul Hamid";
 String author_email="jahidulhamid@yahoo.com";
 String bug_report_url="https://github.com/neurobin/"+project_name+"/issues";
