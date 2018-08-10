@@ -4,8 +4,8 @@ language: cpp
 before_install:
   - sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
   - sudo apt-get update -q
-  - sudo apt-get install g++-5 libgmp-dev -y
-  - CXX=g++-5
+  - sudo apt-get install g++-6 libgmp-dev -y
+  - CXX=g++-6
   - mkdir -p gmpxx
   - sh prepare.sh
 script: 
