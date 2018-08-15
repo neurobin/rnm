@@ -1,6 +1,54 @@
-<p><a href="https://travis-ci.org/neurobin/rnm"><img alt="Build Status" src="https://travis-ci.org/neurobin/rnm.svg?branch=release" /></a></p>
-<div id="description"></div>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title></title>
+  <style type="text/css">code{white-space: pre;}</style>
+  <style type="text/css">
+div.sourceCode { overflow-x: auto; }
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code > span.dt { color: #902000; } /* DataType */
+code > span.dv { color: #40a070; } /* DecVal */
+code > span.bn { color: #40a070; } /* BaseN */
+code > span.fl { color: #40a070; } /* Float */
+code > span.ch { color: #4070a0; } /* Char */
+code > span.st { color: #4070a0; } /* String */
+code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code > span.ot { color: #007020; } /* Other */
+code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code > span.fu { color: #06287e; } /* Function */
+code > span.er { color: #ff0000; font-weight: bold; } /* Error */
+code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+code > span.cn { color: #880000; } /* Constant */
+code > span.sc { color: #4070a0; } /* SpecialChar */
+code > span.vs { color: #4070a0; } /* VerbatimString */
+code > span.ss { color: #bb6688; } /* SpecialString */
+code > span.im { } /* Import */
+code > span.va { color: #19177c; } /* Variable */
+code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code > span.op { color: #666666; } /* Operator */
+code > span.bu { } /* BuiltIn */
+code > span.ex { } /* Extension */
+code > span.pp { color: #bc7a00; } /* Preprocessor */
+code > span.at { color: #7d9029; } /* Attribute */
+code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+  </style>
+</head>
+<body>
+<p><a href="https://travis-ci.org/neurobin/rnm"><img src="https://travis-ci.org/neurobin/rnm.svg?branch=release" alt="Build Status" /></a></p>
+<div id="description">
 
+</div>
 <p>Renames files/directories in bulk. Naming scheme (<em>Name String</em>) can be applied or regex replace can be performed to modify file names on the fly. It uses PCRE2 (revised version of PCRE) regex to provide search (and replace) functionality.</p>
 <p>It provides versatile options to modify names, delete/replace part of it, indexing, case conversion, insert text, insert various file information like modification time, access time, permission etc.., insert parent directory names, working directory name etc.. and many more.</p>
 <p>File search functionality is provided with PCRE2 regex. Fixed string search is also possible.</p>
@@ -9,7 +57,7 @@
 <p>It provides an undo functionality to move back unwanted rename operations. Different <strong>rnm</strong> operation on different directory remembers their own undo history.</p>
 <p>Simulations can be run instead of actual rename to view the potential outcome as program output on terminal with the <em>-sim</em> option.</p>
 <h1 id="features-at-a-glance">Features at a glance:</h1>
-<ol>
+<ol style="list-style-type: decimal">
 <li>Rename files/directories/links en masse with dynamically constructed names.</li>
 <li>Undo rename.</li>
 <li>Names (or name strings) can be taken from a file.</li>
@@ -32,12 +80,12 @@
 <li>Running simulation.</li>
 </ol>
 <h1 id="new-features">New features:</h1>
-<ol>
+<ol style="list-style-type: decimal">
 <li>Unlimited precision for numbers i.e you can perform base conversion, scientific conversion etc.. on an arbitrarily big number. This functionality is provided by GMP BigNum library (GNU Multi-precession library).</li>
 <li>File information is available, e.g modification time, access time, status change time (time string can be formatted using format string e.g <code>%d-%m-%Y</code>), permission, owner id, group id, size, block, inode number, mode etc...</li>
 <li>Inverse search is possible.</li>
 <li>Each regex operation can be associated with either link, file or directory, for example, if a replace string is associated with only file, it will not work on directories or links.</li>
-<li>New sorting methods: </li>
+<li>New sorting methods:</li>
 <li>Sort according to file modification time (recent first).</li>
 <li>Sort according to file access time (recent first).</li>
 <li>Sort according to file status change time (recent first).</li>
@@ -47,66 +95,57 @@
 <li>Prioritize link when sorting.</li>
 <li>Reverse sort (can be used to reverse the order of a previous sort).</li>
 </ol>
-<h1 id="features-that-were-dropped">Features that were dropped:</h1>
-<ul>
-<li>Multiple regex mode in favor of PCRE2 regex.</li>
-</ul>
 <h1 id="install">Install:</h1>
 <h2 id="for-ubuntu-and-derivatives">For Ubuntu and derivatives:</h2>
 <p>You can install it in Ubuntu from neurobin PPA (<code>ppa:neurobin/ppa</code>).</p>
-<pre><code class="sh">sudo add-apt-repository -y ppa:neurobin/ppa
+<pre class="sh"><code>sudo add-apt-repository -y ppa:neurobin/ppa
 sudo apt-get update
-sudo apt-get install rnm
-</code></pre>
-
+sudo apt-get install rnm</code></pre>
 <p>If you are in precise (12.04), you will need to add ubuntu-toolchain repository to make <code>libstdc++6 (&gt;=4.8.4)</code> available:</p>
-<pre><code class="sh">sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
+<pre class="sh"><code>sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
 sudo add-apt-repository -y ppa:neurobin/ppa
 sudo apt-get update
-sudo apt-get install rnm
-</code></pre>
-
+sudo apt-get install rnm</code></pre>
 <h2 id="for-archlinux">For Archlinux:</h2>
 <p>Install from AUR:</p>
-<pre><code class="bash">git clone https://aur.archlinux.org/rnm.git
-cd rnm
-makepkg -i
-</code></pre>
-
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">git</span> clone https://aur.archlinux.org/rnm.git
+<span class="kw">cd</span> rnm
+<span class="kw">makepkg</span> -i</code></pre></div>
+<h2 id="for-macos">For MacOS:</h2>
+<p>Install from <code>neurobin/formula/rnm</code> with <code>brew</code>:</p>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">brew</span> install neurobin/formula/rnm</code></pre></div>
 <h2 id="from-pre-built-binaries">From pre-built binaries:</h2>
 <p>You can download a pre-built binary (64 bit, 32 bit, ppc64el) from the <a href="https://github.com/neurobin/rnm/releases">release page</a> if available. These pre-built binaries depend on <code>libstdc++6 &gt;= 4.8.4</code> if not specified otherwise.</p>
 <h2 id="from-source">From source:</h2>
 <p>Make sure you have a C++ compiler equivalent to GCC-4.8 (<code>g++-4.8</code>) or later installed on your system.</p>
 <h4 id="download-dependencies">Download dependencies:</h4>
 <p>It depends on three different libraries:</p>
-<ol>
+<ol style="list-style-type: decimal">
 <li><a href="http://pcre.org/">pcre2</a></li>
 <li><a href="https://github.com/jpcre2/jpcre2">jpcre2</a></li>
 <li><a href="https://gmplib.org/">gmplib</a></li>
 </ol>
 <p>To install dependencies run the <code>prepare.sh</code> file:</p>
-<pre><code class="sh">cd rnm # i.e go inside the rnm project directory
+<pre class="sh"><code>cd rnm # i.e go inside the rnm project directory
 #Creating the following directories will prevent prepare.sh from installing the corresponding libraries.
 #mkdir -p gmpxx  # uncomment and run this command if libgmp-dev (gmpxx) is already installed.
 #mkdir -p pcre2  # uncomment and run this command if libpcre2-dev (pcre2) is already installed.
 #mkdir -p jpcre2 # uncomment and run this command if libjpcre2-dev (jpcre2) is already installed.
-sh prepare.sh
-</code></pre>
-
+sh prepare.sh</code></pre>
 <h4 id="install-rnm">Install rnm:</h4>
 <p>After you have all the dependencies at hand, you can simply do:</p>
-<pre><code class="sh">autoreconf -f -i #run this one if your automake version is less than 1.15
+<pre class="sh"><code>autoreconf -f -i #run this one if your automake version is less than 1.15
 ./configure --prefix=/usr
 make
-sudo make install
-</code></pre>
+sudo make install</code></pre>
+<div id="un-install">
 
-<div id="un-install"></div>
-
+</div>
 <h1 id="uninstall">Uninstall:</h1>
-<ol>
+<ol style="list-style-type: decimal">
 <li>For Debian, Ubuntu and derivatives, uninstall from software manager.</li>
 <li>For Archlinux, uninstall with pacman.</li>
+<li>For MacOS, uninstall with <code>brew uninstall rnm</code></li>
 <li>If you used a pre-built binary, just delete the binary and the man page.</li>
 <li>If you compiled from the source, do <code>./configure --prefix=/usr &amp;&amp; make &amp;&amp; sudo make uninstall</code></li>
 </ol>
@@ -128,78 +167,70 @@ sudo make install
 <li><code>-duhd</code>: Delete undo history older than the given days.</li>
 </ul>
 <p>For a complete list of options and to get a glimpse of what <strong>rnm</strong> is capable of, get a peek at the doc (<code>rnm.md</code> or <a href="https://docs.neurobin.org/man/man1/rnm.html">rnm.html</a>) or man page (<code>man rnm</code>).</p>
-<div id="usage"></div>
+<div id="usage">
 
+</div>
 <h1 id="usage">Usage:</h1>
 <p><strong>Simplest example:</strong></p>
-<pre><code class="bash">rnm -ns newname oldfile
-#rename by adding something to oldname:
-rnm -ns '/fn/ some text to add' oldfile
-</code></pre>
-
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">rnm</span> -ns newname oldfile
+<span class="co">#rename by adding something to oldname:</span>
+<span class="kw">rnm</span> -ns <span class="st">&#39;/fn/ some text to add&#39;</span> oldfile</code></pre></div>
 <blockquote>
 <p><code>/fn/</code> is a name string rule that expands to file name.</p>
 </blockquote>
 <h2 id="indexing">Indexing</h2>
 <p><strong>Rename all by appending index to file names:</strong></p>
-<pre><code class="bash">rnm -ns '/n/ /i/./e/' ./* -dp -1
-</code></pre>
-
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">rnm</span> -ns <span class="st">&#39;/n/ /i/./e/&#39;</span> ./* -dp -1</code></pre></div>
 <table>
 <thead>
-<tr>
-<th>Before</th>
-<th>After</th>
+<tr class="header">
+<th align="left">Before</th>
+<th align="left">After</th>
 </tr>
 </thead>
 <tbody>
-<tr>
-<td>file.mp3</td>
-<td>file 1.mp3</td>
+<tr class="odd">
+<td align="left">file.mp3</td>
+<td align="left">file 1.mp3</td>
 </tr>
-<tr>
-<td>song.mp3</td>
-<td>song 2.mp3</td>
+<tr class="even">
+<td align="left">song.mp3</td>
+<td align="left">song 2.mp3</td>
 </tr>
-<tr>
-<td>video/song.mp4</td>
-<td>video/song 3.mp4</td>
+<tr class="odd">
+<td align="left">video/song.mp4</td>
+<td align="left">video/song 3.mp4</td>
 </tr>
 </tbody>
 </table>
 <blockquote>
-<p><code>/n/</code> is a name string rule which expands to file name without extension of the current renaming file.
-<code>/e/</code> is a name string rule which expands to file extension.
-<code>/i/</code> is another name string rule which expands to index.
-<code>-dp -1</code> means unlimited depth i.e go to all subdirs.</p>
+<p><code>/n/</code> is a name string rule which expands to file name without extension of the current renaming file. <code>/e/</code> is a name string rule which expands to file extension. <code>/i/</code> is another name string rule which expands to index. <code>-dp -1</code> means unlimited depth i.e go to all subdirs.</p>
 </blockquote>
 <p><strong>Rename all by appending directory wise index to file names:</strong></p>
-<pre><code class="bash">rnm -ns '/n/ /id/./e/' ./* -dp -1
-</code></pre>
-
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">rnm</span> -ns <span class="st">&#39;/n/ /id/./e/&#39;</span> ./* -dp -1</code></pre></div>
 <table>
 <thead>
-<tr>
-<th>Before</th>
-<th>After</th>
+<tr class="header">
+<th align="left">Before</th>
+<th align="left">After</th>
 </tr>
 </thead>
 <tbody>
-<tr>
-<td>dir1/file.mp3</td>
-<td>dir1/file 1.mp3</td>
+<tr class="odd">
+<td align="left">dir1/file.mp3</td>
+<td align="left">dir1/file 1.mp3</td>
 </tr>
-<tr>
-<td>dir1/song.mp3</td>
-<td>dir1/song 2.mp3</td>
+<tr class="even">
+<td align="left">dir1/song.mp3</td>
+<td align="left">dir1/song 2.mp3</td>
 </tr>
-<tr>
-<td>dir2/file.mp3</td>
-<td>dir2/file 1.mp3</td>
+<tr class="odd">
+<td align="left">dir2/file.mp3</td>
+<td align="left">dir2/file 1.mp3</td>
 </tr>
-<tr>
-<td>dir2/song.mp3</td>
-<td>dir2/song 2.mp3</td>
+<tr class="even">
+<td align="left">dir2/song.mp3</td>
+<td align="left">dir2/song 2.mp3</td>
 </tr>
 </tbody>
 </table>
@@ -207,32 +238,30 @@ rnm -ns '/fn/ some text to add' oldfile
 <p><code>/id/</code> is a name string rule which expands to directory index (index inside directory).</p>
 </blockquote>
 <p><strong>Index with leading zeros ( file 001, 002 etc..):</strong></p>
-<pre><code class="bash">rnm -ns '/n/ /id/./e/' -ifl 4 ./*
-</code></pre>
-
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">rnm</span> -ns <span class="st">&#39;/n/ /id/./e/&#39;</span> -ifl 4 ./*</code></pre></div>
 <table>
 <thead>
-<tr>
-<th>Before</th>
-<th>After</th>
+<tr class="header">
+<th align="left">Before</th>
+<th align="left">After</th>
 </tr>
 </thead>
 <tbody>
-<tr>
-<td>file.mp3</td>
-<td>file 0001.mp3</td>
+<tr class="odd">
+<td align="left">file.mp3</td>
+<td align="left">file 0001.mp3</td>
 </tr>
-<tr>
-<td>song.mp3</td>
-<td>song 0002.mp3</td>
+<tr class="even">
+<td align="left">song.mp3</td>
+<td align="left">song 0002.mp3</td>
 </tr>
-<tr>
-<td>...</td>
-<td>...</td>
+<tr class="odd">
+<td align="left">...</td>
+<td align="left">...</td>
 </tr>
-<tr>
-<td>video.mp4</td>
-<td>video 0010.mp4</td>
+<tr class="even">
+<td align="left">video.mp4</td>
+<td align="left">video 0010.mp4</td>
 </tr>
 </tbody>
 </table>
@@ -240,24 +269,22 @@ rnm -ns '/fn/ some text to add' oldfile
 <p><code>-ifl 4</code> sets index field length to 4 and thus remaining space is filled with 0 (by default).</p>
 </blockquote>
 <p><strong>Use custom increment value:</strong></p>
-<pre><code class="bash">rnm -ns '/n/ /id/./e/' -ifl 2 -inc 4 ./*
-</code></pre>
-
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">rnm</span> -ns <span class="st">&#39;/n/ /id/./e/&#39;</span> -ifl 2 -inc 4 ./*</code></pre></div>
 <table>
 <thead>
-<tr>
-<th>Before</th>
-<th>After</th>
+<tr class="header">
+<th align="left">Before</th>
+<th align="left">After</th>
 </tr>
 </thead>
 <tbody>
-<tr>
-<td>file.mp3</td>
-<td>file 01.mp3</td>
+<tr class="odd">
+<td align="left">file.mp3</td>
+<td align="left">file 01.mp3</td>
 </tr>
-<tr>
-<td>song.mp3</td>
-<td>song 05.mp3</td>
+<tr class="even">
+<td align="left">song.mp3</td>
+<td align="left">song 05.mp3</td>
 </tr>
 </tbody>
 </table>
@@ -265,24 +292,22 @@ rnm -ns '/fn/ some text to add' oldfile
 <p><code>-inc 4</code> sets the index increment value to 4.</p>
 </blockquote>
 <p><strong>Decreasing index:</strong></p>
-<pre><code class="bash">rnm -ns '/n/ /-id/./e/' -ifl 3 -inc 4 ./*
-</code></pre>
-
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">rnm</span> -ns <span class="st">&#39;/n/ /-id/./e/&#39;</span> -ifl 3 -inc 4 ./*</code></pre></div>
 <table>
 <thead>
-<tr>
-<th>Before</th>
-<th>After</th>
+<tr class="header">
+<th align="left">Before</th>
+<th align="left">After</th>
 </tr>
 </thead>
 <tbody>
-<tr>
-<td>file.mp3</td>
-<td>file -001.mp3</td>
+<tr class="odd">
+<td align="left">file.mp3</td>
+<td align="left">file -001.mp3</td>
 </tr>
-<tr>
-<td>song.mp3</td>
-<td>song -005.mp3</td>
+<tr class="even">
+<td align="left">song.mp3</td>
+<td align="left">song -005.mp3</td>
 </tr>
 </tbody>
 </table>
@@ -290,24 +315,22 @@ rnm -ns '/fn/ some text to add' oldfile
 <p><code>-inc</code> is always positive, but decremented index can be accessed by appending <code>-</code> in (at beginning) them.</p>
 </blockquote>
 <p><strong>Set starting index:</strong></p>
-<pre><code class="bash">rnm -ns '/n/ /id/./e/' -ifl 3 -inc 4 -si 4 ./*
-</code></pre>
-
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">rnm</span> -ns <span class="st">&#39;/n/ /id/./e/&#39;</span> -ifl 3 -inc 4 -si 4 ./*</code></pre></div>
 <table>
 <thead>
-<tr>
-<th>Before</th>
-<th>After</th>
+<tr class="header">
+<th align="left">Before</th>
+<th align="left">After</th>
 </tr>
 </thead>
 <tbody>
-<tr>
-<td>file.mp3</td>
-<td>file 004.mp3</td>
+<tr class="odd">
+<td align="left">file.mp3</td>
+<td align="left">file 004.mp3</td>
 </tr>
-<tr>
-<td>song.mp3</td>
-<td>song 008.mp3</td>
+<tr class="even">
+<td align="left">song.mp3</td>
+<td align="left">song 008.mp3</td>
 </tr>
 </tbody>
 </table>
@@ -316,77 +339,68 @@ rnm -ns '/fn/ some text to add' oldfile
 </blockquote>
 <h2 id="changemodifyremove-part-of-a-file-name">Change/Modify/remove part of a file name</h2>
 <p><strong>rnm uses PCRE2 regex</strong> to provide regex replace on old filename. The general format for regex replace:</p>
-<pre><code class="bash">'/regex/replace/modifier'
-</code></pre>
-
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="st">&#39;/regex/replace/modifier&#39;</span></code></pre></div>
 <p>where <code>regex</code> is the regex to match in the file name, replace is the string to replace the match with and modifiers are : g (global) i (case insensitive), d (directory), f (file), l (link).</p>
 <p><strong>swap parts:</strong></p>
-<pre><code class="bash">rnm -rs '/(.*)_(.*)\.mp3/\2_\1.mp3/' ./*
-</code></pre>
-
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">rnm</span> -rs <span class="st">&#39;/(.*)_(.*)\.mp3/\2_\1.mp3/&#39;</span> ./*</code></pre></div>
 <table>
 <thead>
-<tr>
-<th>Before</th>
-<th>After</th>
+<tr class="header">
+<th align="left">Before</th>
+<th align="left">After</th>
 </tr>
 </thead>
 <tbody>
-<tr>
-<td>test_file.mp3</td>
-<td>file_test.mp3</td>
+<tr class="odd">
+<td align="left">test_file.mp3</td>
+<td align="left">file_test.mp3</td>
 </tr>
-<tr>
-<td>test_song.mp3</td>
-<td>song_test.mp3</td>
+<tr class="even">
+<td align="left">test_song.mp3</td>
+<td align="left">song_test.mp3</td>
 </tr>
 </tbody>
 </table>
 <blockquote>
-<p><code>-rs</code> takes a replace string of the form <code>/regex/replace/modifier</code>
-<code>\1</code> is captured group one, <code>\2</code> is captured group 2.</p>
+<p><code>-rs</code> takes a replace string of the form <code>/regex/replace/modifier</code> <code>\1</code> is captured group one, <code>\2</code> is captured group 2.</p>
 </blockquote>
 <p><strong>Replace all _ (underscore) to space:</strong></p>
-<pre><code class="bash">rnm -rs '/_/ /g' ./*
-</code></pre>
-
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">rnm</span> -rs <span class="st">&#39;/_/ /g&#39;</span> ./*</code></pre></div>
 <table>
 <thead>
-<tr>
-<th>Before</th>
-<th>After</th>
+<tr class="header">
+<th align="left">Before</th>
+<th align="left">After</th>
 </tr>
 </thead>
 <tbody>
-<tr>
-<td>test_file_123.mp3</td>
-<td>test file 123.mp3</td>
+<tr class="odd">
+<td align="left">test_file_123.mp3</td>
+<td align="left">test file 123.mp3</td>
 </tr>
-<tr>
-<td>test_song_456.mp3</td>
-<td>test song 456.mp3</td>
+<tr class="even">
+<td align="left">test_song_456.mp3</td>
+<td align="left">test song 456.mp3</td>
 </tr>
 </tbody>
 </table>
 <p><strong>Change all .mp3 to .MP3 (uppercase):</strong></p>
-<pre><code class="bash">rnm -rs '/\.mp3/\C/g' ./*
-</code></pre>
-
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">rnm</span> -rs <span class="st">&#39;/\.mp3/\C/g&#39;</span> ./*</code></pre></div>
 <table>
 <thead>
-<tr>
-<th>Before</th>
-<th>After</th>
+<tr class="header">
+<th align="left">Before</th>
+<th align="left">After</th>
 </tr>
 </thead>
 <tbody>
-<tr>
-<td>test_file_123.mp3</td>
-<td>test file 123.MP3</td>
+<tr class="odd">
+<td align="left">test_file_123.mp3</td>
+<td align="left">test_file_123.MP3</td>
 </tr>
-<tr>
-<td>test_song_456.mp3</td>
-<td>test song 456.MP3</td>
+<tr class="even">
+<td align="left">test_song_456.mp3</td>
+<td align="left">test_song_456.MP3</td>
 </tr>
 </tbody>
 </table>
@@ -394,24 +408,22 @@ rnm -ns '/fn/ some text to add' oldfile
 <p><code>\C</code> (capital C) in replace part converts the matched part to uppercase</p>
 </blockquote>
 <p><strong>Change all before <code>_</code> to (lowercase) and all after <code>.</code> to (uppercase):</strong></p>
-<pre><code class="bash">rnm -rs '/.*_/\c/;/.*\./\C/g' ./*
-</code></pre>
-
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">rnm</span> -rs <span class="st">&#39;/.*_/\c/;/.*\./\C/g&#39;</span> ./*</code></pre></div>
 <table>
 <thead>
-<tr>
-<th>Before</th>
-<th>After</th>
+<tr class="header">
+<th align="left">Before</th>
+<th align="left">After</th>
 </tr>
 </thead>
 <tbody>
-<tr>
-<td>TEST_file_123.mp3</td>
-<td>test_file_123.MP3</td>
+<tr class="odd">
+<td align="left">TEST_file_123.mp3</td>
+<td align="left">test_file_123.MP3</td>
 </tr>
-<tr>
-<td>TEST_song_456.mp3</td>
-<td>test_song_456.MP3</td>
+<tr class="even">
+<td align="left">TEST_song_456.mp3</td>
+<td align="left">test_song_456.MP3</td>
 </tr>
 </tbody>
 </table>
@@ -419,75 +431,69 @@ rnm -ns '/fn/ some text to add' oldfile
 <p><code>\c</code> (small c) in replace part converts to lowercase.</p>
 </blockquote>
 <p><strong>Insert .link at the end for files that are symbolic link:</strong></p>
-<pre><code class="bash">rnm -rs '/$/.link/l' ./*
-</code></pre>
-
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">rnm</span> -rs <span class="st">&#39;/$/.link/l&#39;</span> ./*</code></pre></div>
 <blockquote>
 <p>the <em>l</em> modifier tells it to perform the replacement only to symbolic links, other modifiers <em>f</em> and <em>d</em> are available for files and directories respectively.</p>
-<p>rnm comes with the power of PCRE2 regex and thus you can perform almost all kinds of file name modifications using regex replace. Name string rules ( <code>/fn/</code>, <code>/i/</code> etc..) are applicable inside regex or replace part.
-If you have lots of regex replace to perform, you can put them into a file and give the file path with <code>-rs/f</code> option. This option can be given multiple times to add multiple files. <code>-rs</code> option can also be given multiple times to add multiple replace string. Also replace string can be terminated with <code>;</code> to add another replace string after it.</p>
+</blockquote>
+<blockquote>
+<p>rnm comes with the power of PCRE2 regex and thus you can perform almost all kinds of file name modifications using regex replace. Name string rules ( <code>/fn/</code>, <code>/i/</code> etc..) are applicable inside regex or replace part. If you have lots of regex replace to perform, you can put them into a file and give the file path with <code>-rs/f</code> option. This option can be given multiple times to add multiple files. <code>-rs</code> option can also be given multiple times to add multiple replace string. Also replace string can be terminated with <code>;</code> to add another replace string after it.</p>
+</blockquote>
+<blockquote>
 <p>See the doc (rnm.md or <a href="https://docs.neurobin.org/man/man1/rnm.html">rnm.html</a>) or man page for complete details regarding regex replace.</p>
 </blockquote>
 <h2 id="search-for-files-and-rename">Search for files and rename:</h2>
 <h3 id="search-with-regex">Search with regex:</h3>
 <p><strong>Rename .mp3 files to .dummy:</strong></p>
-<pre><code class="bash">rnm -ns '/fn/.dummy' -ss '\.mp3$' ./*
-</code></pre>
-
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">rnm</span> -ns <span class="st">&#39;/fn/.dummy&#39;</span> -ss <span class="st">&#39;\.mp3$&#39;</span> ./*</code></pre></div>
 <table>
 <thead>
-<tr>
-<th>Before</th>
-<th>After</th>
+<tr class="header">
+<th align="left">Before</th>
+<th align="left">After</th>
 </tr>
 </thead>
 <tbody>
-<tr>
-<td>file1.mp3</td>
-<td>file1.mp3.dummy</td>
+<tr class="odd">
+<td align="left">file1.mp3</td>
+<td align="left">file1.mp3.dummy</td>
 </tr>
-<tr>
-<td>file2.mp3</td>
-<td>file2.mp3.dummy</td>
+<tr class="even">
+<td align="left">file2.mp3</td>
+<td align="left">file2.mp3.dummy</td>
 </tr>
-<tr>
-<td>file3.mp4</td>
-<td>file3.mp4</td>
+<tr class="odd">
+<td align="left">file3.mp4</td>
+<td align="left">file3.mp4</td>
 </tr>
 </tbody>
 </table>
 <p><strong>Rename all symbolic links to .link:</strong></p>
-<pre><code class="bash">rnm -ns '/fn/.link' -ss '//l'
-</code></pre>
-
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">rnm</span> -ns <span class="st">&#39;/fn/.link&#39;</span> -ss <span class="st">&#39;//l&#39;</span></code></pre></div>
 <blockquote>
-<p><code>//l</code> and empty search string matches anything in file name.
-the <em>l</em> modifier tells it to match link, other modifiers <em>f</em> and <em>d</em> are available for files and directories respectively.</p>
+<p><code>//l</code> and empty search string matches anything in file name. the <em>l</em> modifier tells it to match link, other modifiers <em>f</em> and <em>d</em> are available for files and directories respectively.</p>
 </blockquote>
 <h3 id="search-with-fixed-string">Search with fixed string:</h3>
 <p><strong>Rename .mp3 files to .dummy:</strong></p>
-<pre><code class="bash">rnm -ns '/fn/.dummy' -ssf '.mp3' ./*
-</code></pre>
-
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">rnm</span> -ns <span class="st">&#39;/fn/.dummy&#39;</span> -ssf <span class="st">&#39;.mp3&#39;</span> ./*</code></pre></div>
 <table>
 <thead>
-<tr>
-<th>Before</th>
-<th>After</th>
+<tr class="header">
+<th align="left">Before</th>
+<th align="left">After</th>
 </tr>
 </thead>
 <tbody>
-<tr>
-<td>file1.mp3</td>
-<td>file1.mp3.dummy</td>
+<tr class="odd">
+<td align="left">file1.mp3</td>
+<td align="left">file1.mp3.dummy</td>
 </tr>
-<tr>
-<td>file2.mp3</td>
-<td>file2.mp3.dummy</td>
+<tr class="even">
+<td align="left">file2.mp3</td>
+<td align="left">file2.mp3.dummy</td>
 </tr>
-<tr>
-<td>file3.mp4</td>
-<td>file3.mp4</td>
+<tr class="odd">
+<td align="left">file3.mp4</td>
+<td align="left">file3.mp4</td>
 </tr>
 </tbody>
 </table>
@@ -496,31 +502,29 @@ the <em>l</em> modifier tells it to match link, other modifiers <em>f</em> and <
 </blockquote>
 <h3 id="inverse-search">Inverse search:</h3>
 <p><strong>Rename all files except .mp3 to .dummy:</strong></p>
-<pre><code class="bash">rnm -ns '/fn/.dummy' -ss '/\.mp3$/!' ./*
-#or with fixed string:
-rnm -ns '/fn/.dummy' -ssf '/.mp3/!' ./*
-#for fixed string search, .mp3 will match at any place in the name
-</code></pre>
-
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">rnm</span> -ns <span class="st">&#39;/fn/.dummy&#39;</span> -ss <span class="st">&#39;/\.mp3$/!&#39;</span> ./*
+<span class="co">#or with fixed string:</span>
+<span class="kw">rnm</span> -ns <span class="st">&#39;/fn/.dummy&#39;</span> -ssf <span class="st">&#39;/.mp3/!&#39;</span> ./*
+<span class="co">#for fixed string search, .mp3 will match at any place in the name</span></code></pre></div>
 <table>
 <thead>
-<tr>
-<th>Before</th>
-<th>After</th>
+<tr class="header">
+<th align="left">Before</th>
+<th align="left">After</th>
 </tr>
 </thead>
 <tbody>
-<tr>
-<td>file1.mp3</td>
-<td>file1.mp3</td>
+<tr class="odd">
+<td align="left">file1.mp3</td>
+<td align="left">file1.mp3</td>
 </tr>
-<tr>
-<td>file2.mp3</td>
-<td>file2.mp3</td>
+<tr class="even">
+<td align="left">file2.mp3</td>
+<td align="left">file2.mp3</td>
 </tr>
-<tr>
-<td>file3.mp4</td>
-<td>file3.mp4.dummy</td>
+<tr class="odd">
+<td align="left">file3.mp4</td>
+<td align="left">file3.mp4.dummy</td>
 </tr>
 </tbody>
 </table>
@@ -529,43 +533,39 @@ rnm -ns '/fn/.dummy' -ssf '/.mp3/!' ./*
 </blockquote>
 <h2 id="sort-and-rename">Sort and rename:</h2>
 <p>There are several sorting mechanisms available:</p>
-<ol>
-<li><code>-s</code>    : default sort (natural sort)</li>
-<li><code>-s/g</code>  : general sort</li>
-<li><code>-s/n</code>  : natural sort</li>
+<ol style="list-style-type: decimal">
+<li><code>-s</code> : default sort (natural sort)</li>
+<li><code>-s/g</code> : general sort</li>
+<li><code>-s/n</code> : natural sort</li>
 <li><code>-s/mt</code> : sort according to file modification time (recent first)</li>
 <li><code>-s/at</code> : sort according to file access time (recent first)</li>
 <li><code>-s/ct</code> : sort according to file status change time (recent first)</li>
 <li><code>-s/sz</code> : sort according to file size (larger first)</li>
-<li><code>-s/d</code>  : prioritize directory when sorting</li>
-<li><code>-s/f</code>  : prioritize file when sorting</li>
+<li><code>-s/d</code> : prioritize directory when sorting</li>
+<li><code>-s/f</code> : prioritize file when sorting</li>
 <li><code>-s/l</code> : prioritize link when sorting</li>
 <li><code>-s/r</code> : reverse the order sorted by above methods.</li>
 </ol>
 <p>The default sort which comes with the option <code>-s</code> is natural sort (<code>-s/n</code>).</p>
-<pre><code class="bash">rnm -ns '/fn/ /id/' -s ./*
-</code></pre>
-
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">rnm</span> -ns <span class="st">&#39;/fn/ /id/&#39;</span> -s ./*</code></pre></div>
 <h2 id="insert-file-information">Insert file information</h2>
 <p><strong>Add file modification time to file name:</strong></p>
-<pre><code class="bash">rnm -ns '/fn/ @ /info-mtime-%d-%m-%Y %H:%I %p/' ./*
-</code></pre>
-
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">rnm</span> -ns <span class="st">&#39;/fn/ @ /info-mtime-%d-%m-%Y %H:%I %p/&#39;</span> ./*</code></pre></div>
 <table>
 <thead>
-<tr>
-<th>Before</th>
-<th>After</th>
+<tr class="header">
+<th align="left">Before</th>
+<th align="left">After</th>
 </tr>
 </thead>
 <tbody>
-<tr>
-<td>file1</td>
-<td>file1 @ 27-01-2017 12:35 AM</td>
+<tr class="odd">
+<td align="left">file1</td>
+<td align="left">file1 @ 27-01-2017 12:35 AM</td>
 </tr>
-<tr>
-<td>file2</td>
-<td>file2 @ 17-01-2017 10:34 PM</td>
+<tr class="even">
+<td align="left">file2</td>
+<td align="left">file2 @ 17-01-2017 10:34 PM</td>
 </tr>
 </tbody>
 </table>
@@ -573,63 +573,59 @@ rnm -ns '/fn/.dummy' -ssf '/.mp3/!' ./*
 <p><code>/info-prop-op/</code> is another name string rule, <code>prop</code> is the property name (mtime, atime, perm, uid etc..) and <code>op</code> is the format (optional).</p>
 </blockquote>
 <p><strong>Add file permission to file name:</strong></p>
-<pre><code class="bash">rnm -ns '/fn/ /info-perm-ls/' ./*
-</code></pre>
-
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">rnm</span> -ns <span class="st">&#39;/fn/ /info-perm-ls/&#39;</span> ./*</code></pre></div>
 <table>
 <thead>
-<tr>
-<th>Before</th>
-<th>After</th>
+<tr class="header">
+<th align="left">Before</th>
+<th align="left">After</th>
 </tr>
 </thead>
 <tbody>
-<tr>
-<td>dir1</td>
-<td>dir1 drwx--x--x</td>
+<tr class="odd">
+<td align="left">dir1</td>
+<td align="left">dir1 drwx--x--x</td>
 </tr>
 </tbody>
 </table>
 <blockquote>
 <p><code>perm</code> is another property for info name string rule, <code>op=ls</code> is for permission resembling to <code>ls</code> command, <code>oct</code> is for octal permission.</p>
+</blockquote>
+<blockquote>
 <p>There are lots of properties available for file info which makes all kinds of file information available. See the docs (rnm.md or <a href="https://docs.neurobin.org/man/man1/rnm.html">rnm.html</a>) or man page for details.</p>
 </blockquote>
 <h1 id="miscellaneous-examples">Miscellaneous examples</h1>
 <h2 id="addinsert-parent-directory-names-to-filename">Add/Insert parent directory names to filename:</h2>
-<pre><code class="bash">rnm -ns '/pd0/-/fn/' dir1/*.png
-</code></pre>
-
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">rnm</span> -ns <span class="st">&#39;/pd0/-/fn/&#39;</span> dir1/*.png</code></pre></div>
 <table>
 <thead>
-<tr>
-<th>Before</th>
-<th>After</th>
+<tr class="header">
+<th align="left">Before</th>
+<th align="left">After</th>
 </tr>
 </thead>
 <tbody>
-<tr>
-<td>dir1/abc.png</td>
-<td>dir1/dir1-abc.png</td>
+<tr class="odd">
+<td align="left">dir1/abc.png</td>
+<td align="left">dir1/dir1-abc.png</td>
 </tr>
 </tbody>
 </table>
 <blockquote>
 <p><code>/pd0/</code> is the immediate parent directory</p>
 </blockquote>
-<pre><code class="bash">rnm -ns '/pd1-0--/-/fn/' dir1/dir0/*.png
-</code></pre>
-
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">rnm</span> -ns <span class="st">&#39;/pd1-0--/-/fn/&#39;</span> dir1/dir0/*.png</code></pre></div>
 <table>
 <thead>
-<tr>
-<th>Before</th>
-<th>After</th>
+<tr class="header">
+<th align="left">Before</th>
+<th align="left">After</th>
 </tr>
 </thead>
 <tbody>
-<tr>
-<td>dir1/dir0/abc.png</td>
-<td>dir1/dir0/dir1-dir0-abc.png</td>
+<tr class="odd">
+<td align="left">dir1/dir0/abc.png</td>
+<td align="left">dir1/dir0/dir1-dir0-abc.png</td>
 </tr>
 </tbody>
 </table>
@@ -637,32 +633,26 @@ rnm -ns '/fn/.dummy' -ssf '/.mp3/!' ./*
 <p><code>/pd1-0--/</code> adds the directory names from <code>/pd1/</code> to <code>/pd0/</code> with a delimiter in-between. <code>/pd0-1- /</code> would become <code>dir0 dir1</code> (here space is the delimiter). The general format is: <code>/pd&lt;from&gt;-&lt;to&gt;-&lt;delimiter&gt;/</code></p>
 </blockquote>
 <h2 id="index-files-by-sorting-them-according-to-modification-time">Index files by sorting them according to modification time:</h2>
-<pre><code class="bash">rnm -ns '/fn/ /ir/' -s/mt ./*
-</code></pre>
-
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">rnm</span> -ns <span class="st">&#39;/fn/ /ir/&#39;</span> -s/mt ./*</code></pre></div>
 <blockquote>
 <p>The above will append index to the filenames by sorting the files according to modification time (recent first). <code>/ir/</code> is reserved-index (index is reserved for skipped files), <code>-s/mt</code> sorts according to mtime.</p>
 </blockquote>
 <h2 id="index-files-by-sorting-them-according-to-size">Index files by sorting them according to size:</h2>
-<pre><code class="bash">rnm -ns '/fn/ /ir/' -s/sz ./*
-</code></pre>
-
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">rnm</span> -ns <span class="st">&#39;/fn/ /ir/&#39;</span> -s/sz ./*</code></pre></div>
 <blockquote>
 <p>The above will append index to the filenames by sorting the files according to size (larger first).</p>
 </blockquote>
 <h2 id="treat-files-directories-links-differently-in-a-single-command-to-rename-files">Treat files, directories, links differently in a single command to rename files:</h2>
-<pre><code class="bash">rnm -rs '/_/-/gf' -rs '/\./-/gd' -rs '/$/.link/l' ./*
-</code></pre>
-
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">rnm</span> -rs <span class="st">&#39;/_/-/gf&#39;</span> -rs <span class="st">&#39;/\./-/gd&#39;</span> -rs <span class="st">&#39;/$/.link/l&#39;</span> ./*</code></pre></div>
 <p>This is what the above command does:</p>
-<ol>
+<ol style="list-style-type: decimal">
 <li>Replace all underscores with hyphen for regular files (<code>/_/-/gf</code>).</li>
 <li>Replace all dot with hyphen for directories (<code>/\./-/gd</code>).</li>
 <li>Give all symbolic links a .link extension (<code>/$/.link/l</code>).</li>
 </ol>
 <h2 id="search-for-files-matching-pattern1-in-their-name-directories-matching-pattern2-and-links-matching-pattern3-and-append-modification-time-with-the-filename">Search for files matching pattern1 in their name, directories matching pattern2 and links matching pattern3 and append modification time with the filename:</h2>
-<pre><code class="bash">rnm -ns '/fn/ /info-mtime-%d-%m-%Y %H:%I %p/' -ss '/pattern1/f' -ss '/pattern2/d' -ss '/pattern3/l' ./*
-</code></pre>
-
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">rnm</span> -ns <span class="st">&#39;/fn/ /info-mtime-%d-%m-%Y %H:%I %p/&#39;</span> -ss <span class="st">&#39;/pattern1/f&#39;</span> -ss <span class="st">&#39;/pattern2/d&#39;</span> -ss <span class="st">&#39;/pattern3/l&#39;</span> ./*</code></pre></div>
 <p><a href="https://docs.neurobin.org/man/man1/rnm.html">rnm user manual</a></p>
 <p><a href="https://neurobin.org/docs/unix/rnm/bulk-rename-in-linux/">Other examples</a></p>
+</body>
+</html>
