@@ -54,10 +54,6 @@ Simulations can be run instead of actual rename to view the potential outcome as
   7. Prioritize link when sorting.
   8. Reverse sort (can be used to reverse the order of a previous sort).
 
-# Features that were dropped:
-
-* Multiple regex mode in favor of PCRE2 regex.
-
 # Install:
 
 ## For Ubuntu and derivatives:
@@ -87,6 +83,14 @@ Install from AUR:
 git clone https://aur.archlinux.org/rnm.git
 cd rnm
 makepkg -i
+```
+
+## For MacOS:
+
+Install from `neurobin/formula/rnm` with `brew`:
+
+```bash
+brew install neurobin/formula/rnm
 ```
 
 ## From pre-built binaries:
@@ -132,8 +136,9 @@ sudo make install
 
 1. For Debian, Ubuntu and derivatives, uninstall from software manager.
 2. For Archlinux, uninstall with pacman.
-3. If you used a pre-built binary, just delete the binary and the man page.
-4. If you compiled from the source, do `./configure --prefix=/usr && make && sudo make uninstall`
+3. For MacOS, uninstall with `brew uninstall rnm`
+4. If you used a pre-built binary, just delete the binary and the man page.
+5. If you compiled from the source, do `./configure --prefix=/usr && make && sudo make uninstall`
 
 # Basic options
 
