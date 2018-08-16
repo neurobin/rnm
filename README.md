@@ -87,10 +87,10 @@ makepkg -i
 
 ## For MacOS:
 
-Install from `neurobin/formula/rnm` with `brew`:
+Install from `neurobin/pkg/rnm` with `brew`:
 
 ```bash
-brew install neurobin/formula/rnm
+brew install neurobin/pkg/rnm
 ```
 
 ## From pre-built binaries:
