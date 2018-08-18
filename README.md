@@ -85,7 +85,7 @@ cd rnm
 makepkg -i
 ```
 
-## For MacOS:
+## Using Homebrew (MacOS) or Linuxbrew (Any Linux distro):
 
 Install from `neurobin/pkg/rnm` with `brew`:
 
