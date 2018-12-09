@@ -47,7 +47,7 @@
 #include <cstdlib>
 #include <ctime>
 #include <csignal>
-#include <sys/sendfile.h>
+//~ #include <sys/sendfile.h> //not available on mac (not POSIX either)
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
