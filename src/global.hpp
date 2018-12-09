@@ -48,6 +48,7 @@
 #include <ctime>
 #include <csignal>
 //~ #include <sys/sendfile.h> //not available on mac (not POSIX either)
+#include <libgen.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
@@ -302,7 +303,7 @@ String sort_type2;
 /// Project Info
 String project_name="rnm";
 String executable_name="rnm";
-String version="4.0.4";
+String version="4.0.5";
 String author_name="Md Jahidul Hamid";
 String author_email="jahidulhamid@yahoo.com";
 String bug_report_url="https://github.com/neurobin/"+project_name+"/issues";
