@@ -1,6 +1,10 @@
 
 ### `4.0.4`: <span class="light-quote">Fri Aug 10 14:07:44 UTC 2018</span>
 
+* Add libgen.h for basename
+
+### `4.0.4`: <span class="light-quote">Fri Aug 10 14:07:44 UTC 2018</span>
+
 * Remove unused non POSIX header sys/sendfile.h that was failing build on mac
 
 ###`4.0.3`: <span class="light-quote">Fri Aug 10 14:07:44 UTC 2018</span>
