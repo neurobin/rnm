@@ -1,172 +1,173 @@
 
 
-### `4.0.6`: <span class="light-quote">Fri 19 Jul 2019 09:56:44 AM UTC</span>
+4.0.6 Fri Jul 19 09:56:44 UTC 2019
 
-* Fix broken f, d, l modifier in replace string
+    * Fix broken f, d, l modifier in replace string
 
-### `4.0.5`: <span class="light-quote">Fri Aug 10 14:07:44 UTC 2018</span>
+4.0.5 Fri Aug 10 14:07:44 UTC 2018
 
-* Add libgen.h for basename
+    * Add libgen.h for basename
 
-### `4.0.4`: <span class="light-quote">Fri Aug 10 14:07:44 UTC 2018</span>
+4.0.4 Fri Aug 10 14:07:44 UTC 2018
 
-* Remove unused non POSIX header sys/sendfile.h that was failing build on mac
+    * Remove unused non POSIX header sys/sendfile.h that was failing build on mac
 
-###`4.0.3`: <span class="light-quote">Fri Aug 10 14:07:44 UTC 2018</span>
+4.0.3 Fri Aug 10 14:07:44 UTC 2018
 
-* Change log dir from ~/.cache to $XDG_DATA_HOME (~/.local/share)
+    * Change log dir from ~/.cache to $XDG_DATA_HOME (~/.local/share)
 
-###`4.0.2`: <span class="light-quote">Sun Mar 12 12:27:53 UTC 2017</span>
+4.0.2 Sun Mar 12 12:27:53 UTC 2017
 
-* Update help menu with missing info.
-* `-q` option includes `--yes`.
-* Add `-duhd` option.
+    * Update help menu with missing info.
+    * `-q` option includes `--yes`.
+    * Add `-duhd` option.
 
-###`4.0.1`: <span class="light-quote">Fri Mar  3 16:14:21 UTC 2017</span>
+4.0.1 Fri Mar  3 16:14:21 UTC 2017
 
-1. Add `-duh` option to delete undo history.
-2. Add `/nsf/` name string rule to access name string from file.
-3. Allow `-ns`, `-rs` and equivalent options with `-ns/f` and `-ns/fn`.
+    1. Add `-duh` option to delete undo history.
+    2. Add `/nsf/` name string rule to access name string from file.
+    3. Allow `-ns`, `-rs` and equivalent options with `-ns/f` and `-ns/fn`.
 
-###`4.0.0`: <span class="light-quote">Sat Jan 28 00:41:48 UTC 2017</span>
+4.0.0 Sat Jan 28 00:41:48 UTC 2017
 
-1. Unlimited precision for indexes.
-2. Access to file information (closes issue #9)
-3. New modifiers f, d, l, ! (closes issue #10)
-4. Remove `-ed` and bring meaningful options `-xd`, `-xf` and `-xl`.
-5. New sorting methods based on file information, mtime, atime, ctime, size and file type.
-6. New name string rule `/info-prop-op/` to access file information.
-7. Remove multi-mode regex and all regex modes in favor of PCRE2 regex.
+    1. Unlimited precision for indexes.
+    2. Access to file information (closes issue #9)
+    3. New modifiers f, d, l, ! (closes issue #10)
+    4. Remove `-ed` and bring meaningful options `-xd`, `-xf` and `-xl`.
+    5. New sorting methods based on file information, mtime, atime, ctime, size and file type.
+    6. New name string rule `/info-prop-op/` to access file information.
+    7. Remove multi-mode regex and all regex modes in favor of PCRE2 regex.
 
 
-###`3.3.2`: <span class="light-quote">Fri Feb 12 14:56:09 UTC 2016</span>
+3.3.2 Fri Feb 12 14:56:09 UTC 2016
 
-1. Added an extra term 'w' for extended /pd/ name string rule which points to the working directory level.
-2. A bug fixed regarding support for multiline regex pattern (which can be generated from multiline filename) in replace string. More details at https://github.com/neurobin/rnm/issues/6
+    1. Added an extra term 'w' for extended /pd/ name string rule which points to the working directory level.
+    2. A bug fixed regarding support for multiline regex pattern (which can be generated from multiline filename) in replace string. More details at https://github.com/neurobin/rnm/issues/6
 
-###`3.3.1`: <span class="light-quote">Sun Dec 20 18:52:22 UTC 2015</span>
+3.3.1 Sun Dec 20 18:52:22 UTC 2015
 
-1. size optimization
+    1. size optimization
 
-###`3.3.0`: <span class="light-quote">Fri Dec 18 19:03:11 UTC 2015</span>
+3.3.0 Fri Dec 18 19:03:11 UTC 2015
 
-1. `-ifp/d` and `-ifp/s` options removed. Numerous options are added to achieve the same effect.
-2. `-if` option added. It can be used to manipulate how the indexes are rendered in it's field.
-3. Support for base conversion of indexes (from base 2 to 36) added.
-4. Support for Latin conversion of indexes added.
-5. Support for extended name string rules.
-6. Support for extended name string rules of /pd/.
-#ChangeLog:
+    1. `-ifp/d` and `-ifp/s` options removed. Numerous options are added to achieve the same effect.
+    2. `-if` option added. It can be used to manipulate how the indexes are rendered in it's field.
+    3. Support for base conversion of indexes (from base 2 to 36) added.
+    4. Support for Latin conversion of indexes added.
+    5. Support for extended name string rules.
+    6. Support for extended name string rules of /pd/.
 
-###`3.2.3`: <span class="light-quote">Sat Nov 21 06:56:10 UTC 2015</span>
 
-1. Manual updated with corrections.
-2. Inconsistency in index field precision fixed.
-3. Two more options added: `-ifp/d` and `-ifp/s`.
-###`1.0.0`: <span class="light-quote">Sat 14 Aug 2015</span>
+3.2.3 Sat Nov 21 06:56:10 UTC 2015
 
-**Birth of rnm**
+    1. Manual updated with corrections.
+    2. Inconsistency in index field precision fixed.
+    3. Two more options added: `-ifp/d` and `-ifp/s`.
     
-###`3.2.2`: <span class="light-quote">Fri Nov 20 16:24:15 UTC 2015</span>
+3.2.2 Fri Nov 20 16:24:15 UTC 2015
 
-1. Bug in index precision fixed (previously index>=100 would become >=1e+02 i.e scientific format)
-2. Follow symbolic link option added.
-###`3.2.1`: <span class="light-quote">Tue Nov  3 09:19:46 UTC 2015</span>
+    1. Bug in index precision fixed (previously index>=100 would become >=1e+02 i.e scientific format)
+    2. Follow symbolic link option added.
 
-1. Natural sort algorithm improved/fixed.
+3.2.1 Tue Nov  3 09:19:46 UTC 2015
 
-###`3.2.0`: <span class="light-quote">Mon Nov 02 18:10:26 UTC 2015</span>
+    1. Natural sort algorithm improved/fixed.
 
-1. Directories can be renamed recursively in subdirectories.
-2. Potential bug fixes.
-3. `-nsf` and `-nsfn` option is removed. Use `-ns/f` or `-ns/fn` instead.
+3.2.0 Mon Nov 02 18:10:26 UTC 2015
 
-###`3.1.3`: <span class="light-quote">Thu Oct 29 11:25:15 UTC 2015</span>
+    1. Directories can be renamed recursively in subdirectories.
+    2. Potential bug fixes.
+    3. `-nsf` and `-nsfn` option is removed. Use `-ns/f` or `-ns/fn` instead.
 
-1. Fix suffix in regex replace in replace string.
-2. Fix index field precision.
-3. Added back-reference isolation with `{}` i.e `\{12}`, `\{1}` etc..
+3.1.3 Thu Oct 29 11:25:15 UTC 2015
 
-###`3.1.2`: <span class="light-quote">Thu Oct 15 17:43:05 UTC 2015</span>
+    1. Fix suffix in regex replace in replace string.
+    2. Fix index field precision.
+    3. Added back-reference isolation with `{}` i.e `\{12}`, `\{1}` etc..
 
-1. `\c` and `\C` is added in replace string rules (used in replace_part) for lowercase-uppercase conversion.
+3.1.2 Thu Oct 15 17:43:05 UTC 2015
 
-###`3.1.1`: <span class="light-quote">Thu Oct 15 13:14:24 UTC 2015</span>
+    1. `\c` and `\C` is added in replace string rules (used in replace_part) for lowercase-uppercase conversion.
 
-1. Multiple search strings or files can now be provided by repeating options.
-2. Multiple replace strings or files can now be provided by repeating options.
-3. Multiple file support for replace string and search string.
-4. Status of skipping files due to existing files with same names is changed to Warning from Error.
+3.1.1 Thu Oct 15 13:14:24 UTC 2015
 
-###`3.1.0`: <span class="light-quote">Thu Oct 15 00:04:43 UTC 2015</span>
+    1. Multiple search strings or files can now be provided by repeating options.
+    2. Multiple replace strings or files can now be provided by repeating options.
+    3. Multiple file support for replace string and search string.
+    4. Status of skipping files due to existing files with same names is changed to Warning from Error.
 
-1. Multiple search string support added.
-2. Multiple replace string support added.
-3. Search strings can be taken from a file.
-4. Replace strings can be taken from a file.
+3.1.0 Thu Oct 15 00:04:43 UTC 2015
 
-###`3.0.6`: <span class="light-quote">Sun Sep 20 16:45:37 UTC 2015</span>
+    1. Multiple search string support added.
+    2. Multiple replace string support added.
+    3. Search strings can be taken from a file.
+    4. Replace strings can be taken from a file.
 
-1. Directory reserved index inconsistency fixed.
-2. Added `-cd` and `-cf` options.
-3. Added sort functionality. `-s` for default (natural) sort, `-s/g` for general sort. `-s/n` for natural sort. `-s/none` for no sort.
+3.0.6 Sun Sep 20 16:45:37 UTC 2015
 
-###`3.0.5`: <span class="light-quote">Sat Sep 19 13:00:59 UTC 2015</span>
+    1. Directory reserved index inconsistency fixed.
+    2. Added `-cd` and `-cf` options.
+    3. Added sort functionality. `-s` for default (natural) sort, `-s/g` for general sort. `-s/n` for natural sort. `-s/none` for no sort.
 
-1. `--` option added. Anything after this option will be taken as file path.
-2. Added warning for multiple defintion of the same option i.e option override.
+3.0.5 Sat Sep 19 13:00:59 UTC 2015
 
-###`3.0.4`: <span class="light-quote">Tue Sep  8 14:04:26 UTC 2015</span>
+    1. `--` option added. Anything after this option will be taken as file path.
+    2. Added warning for multiple defintion of the same option i.e option override.
 
-1. New Name String rule: `/pd/` for parent directory, `/wd/` for working directory.
-2. `/regex/` can be wrtten as `regex` if no modifier is passed.
-3. Directory index bug fixed. 
+3.0.4 Tue Sep  8 14:04:26 UTC 2015
 
-###`3.0.3`: <span class="light-quote">Mon Aug 24 17:01:25 BDT 2015</span>
+    1. New Name String rule: `/pd/` for parent directory, `/wd/` for working directory.
+    2. `/regex/` can be wrtten as `regex` if no modifier is passed.
+    3. Directory index bug fixed. 
 
-Bug fix: inconsistency in reserved directory index.
+3.0.3 Mon Aug 24 17:01:25 BDT 2015
 
-###`3.0.2`: <span class="light-quote">Mon Aug 24 17:01:25 BDT 2015</span>
+    1. Bug fix: inconsistency in reserved directory index.
 
-1. Added POSIX compliant basic and extended regex mode.
-2. Added awk, grep and egrep like regex mode.
-3. Added system locale support in regex.
+3.0.2 Mon Aug 24 17:01:25 BDT 2015
 
-###`3.0.1`: <span class="light-quote">Sat Aug 22 21:28:14 BDT 2015</span>
+    1. Added POSIX compliant basic and extended regex mode.
+    2. Added awk, grep and egrep like regex mode.
+    3. Added system locale support in regex.
 
-1. rnm now can take file or directory name from standard input, i.e if you run rnm without any file or directory path, it will wait for you to type it.
-2. `--force` or `-f` i.e force rename option is back. It will enable some restricted files or directories to be renamed except the root filesystem (`/`).
-3. You no longer need confirmation for renaming single file or directory.
+3.0.1 Sat Aug 22 21:28:14 BDT 2015
 
-###`3.0.0`: <span class="light-quote">Fri Aug 21 12:33:49 BDT 2015</span>
+    1. rnm now can take file or directory name from standard input, i.e if you run rnm without any file or directory path, it will wait for you to type it.
+    2. `--force` or `-f` i.e force rename option is back. It will enable some restricted files or directories to be renamed except the root filesystem (`/`).
+    3. You no longer need confirmation for renaming single file or directory.
 
-1. Code rewritten in C++.
-2. Shell independent.
-3. Portable.
-4. Supports all characters allowed in file/directory name according to POSIX specs.
-5. Regex syntax changed to ECMAScript Regex.
-6. `-rs` option added.
-7. `-iff` option added.
-8. `-ifp` option added.
-9. `-inc` option added.
-10. `-linc` option added.
-11. Renamed option `-li` to `-lv` and `-eli` to `-elv`.
-12. `-shop` and `-sim` (simulation) option added.
-13. New name string rule: `/la/` added.
-14. Removed `-f` (force rename) option.
+3.0.0 Fri Aug 21 12:33:49 BDT 2015
 
-###`2.0.1`: <span class="light-quote">Wed Aug  12 02:36:00 BDT 2015</span>
+    1. Code rewritten in C++.
+    2. Shell independent.
+    3. Portable.
+    4. Supports all characters allowed in file/directory name according to POSIX specs.
+    5. Regex syntax changed to ECMAScript Regex.
+    6. `-rs` option added.
+    7. `-iff` option added.
+    8. `-ifp` option added.
+    9. `-inc` option added.
+    10. `-linc` option added.
+    11. Renamed option `-li` to `-lv` and `-eli` to `-elv`.
+    12. `-shop` and `-sim` (simulation) option added.
+    13. New name string rule: `/la/` added.
+    14. Removed `-f` (force rename) option.
 
-1. Added name modification feature using `sed`.
-2. Added extra Name String Rule `/smn/` or `/rn/`.
+2.0.1 Wed Aug  12 02:36:00 BDT 2015
 
-###`2.0.0`: <span class="light-quote">Sun Aug  9 23:18:00 BDT 2015</span>
+    1. Added name modification feature using `sed`.
+    2. Added extra Name String Rule `/smn/` or `/rn/`.
 
-1. Added undo feature.
-2. Added end index feature and end line number feature.
-3. Added inverse index feature
-4. Added new name string rules for inverse index.
-5. Added `/hist/` as a valid argument for `-nsf` option to take *Name String File* from history.
-6. Logging functionality. Log files are put in $HOME/.neurobin/rnm
-7. Lots of bug fixes.
+2.0.0 Sun Aug  9 23:18:00 BDT 2015
 
+    1. Added undo feature.
+    2. Added end index feature and end line number feature.
+    3. Added inverse index feature
+    4. Added new name string rules for inverse index.
+    5. Added `/hist/` as a valid argument for `-nsf` option to take *Name String File* from history.
+    6. Logging functionality. Log files are put in $HOME/.neurobin/rnm
+    7. Lots of bug fixes.
+
+1.0.0 Sat 14 Aug 2015
+
+    **Birth of rnm**
