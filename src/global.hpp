@@ -303,7 +303,7 @@ String sort_type2;
 /// Project Info
 String project_name="rnm";
 String executable_name="rnm";
-String version="4.0.5";
+String version="4.0.6";
 String author_name="Md Jahidul Hamid";
 String author_email="jahidulhamid@yahoo.com";
 String bug_report_url="https://github.com/neurobin/"+project_name+"/issues";
