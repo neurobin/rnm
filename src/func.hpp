@@ -758,6 +758,12 @@ void processReplaceString(StringArray &rs,const File& file,DirectoryIndex &di){
     ///we now have valid rs_search, rs_replace and rs_mod
     rname=basename(file.path);
     for(size_t i=0;i<rs_search.size();i++){
+        // check for f, d, l modifier
+        if(!file.isValidWithMod(rs_mod[i])){
+            // do not apply this regex on this file
+            //printOutLog("This regex is not applicable to this file: " + file.path);
+            continue;
+        }
         if(stringContains(rs_replace[i],"\\c")||stringContains(rs_replace[i],"\\C")){
             rname=changeCaseAccordingToSS(rname,rs_search[i],rs_replace[i],rs_mod[i],1);
         }
