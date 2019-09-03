@@ -444,6 +444,7 @@ file2 | file2 @ 17-01-2017 10:34 PM
 ```bash
 rnm -ns '/fn/ /info-perm-ls/' ./*
 ```
+
 Before | After
 ------ | -----
 dir1 | dir1 drwx--x--x
@@ -461,6 +462,7 @@ dir1 | dir1 drwx--x--x
 ```bash
 rnm -ns '/pd0/-/fn/' dir1/*.png
 ```
+
 Before | After
 ------ | -----
 dir1/abc.png | dir1/dir1-abc.png
@@ -470,6 +472,7 @@ dir1/abc.png | dir1/dir1-abc.png
 ```bash
 rnm -ns '/pd1-0--/-/fn/' dir1/dir0/*.png
 ```
+
 Before | After
 ------ | -----
 dir1/dir0/abc.png | dir1/dir0/dir1-dir0-abc.png
@@ -481,6 +484,7 @@ dir1/dir0/abc.png | dir1/dir0/dir1-dir0-abc.png
 ```bash
 rnm -ns '/fn/ /ir/' -s/mt ./*
 ```
+
 > The above will append index to the filenames by sorting the files according to modification time (recent first). `/ir/` is reserved-index (index is reserved for skipped files), `-s/mt` sorts according to mtime.
 
 ## Index files by sorting them according to size:
@@ -488,6 +492,7 @@ rnm -ns '/fn/ /ir/' -s/mt ./*
 ```bash
 rnm -ns '/fn/ /ir/' -s/sz ./*
 ```
+
 > The above will append index to the filenames by sorting the files according to size (larger first).
 
 ## Treat files, directories, links differently in a single command to rename files:
@@ -495,6 +500,7 @@ rnm -ns '/fn/ /ir/' -s/sz ./*
 ```bash
 rnm -rs '/_/-/gf' -rs '/\./-/gd' -rs '/$/.link/l' ./*
 ```
+
 This is what the above command does:
 
 1. Replace all underscores with hyphen for regular files (`/_/-/gf`).
