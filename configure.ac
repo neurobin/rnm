@@ -1,5 +1,5 @@
 include([ax_cxx_compile_stdcxx.m4])
-AC_INIT([rnm], [4.0.6], [http://github.com/neurobin/rnm/issues])
+AC_INIT([rnm], [4.0.7], [http://github.com/neurobin/rnm/issues])
 #AC_CONFIG_AUX_DIR([.])
 #prefix="/usr"
 AC_CONFIG_SRCDIR([src/main.cpp])
