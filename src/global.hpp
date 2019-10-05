@@ -384,7 +384,7 @@ Options:\n\
   -up            : Undo from a undo path\n\
   -ups           : Show available undo paths\n\
   -q             : Quiet operation (includes -y).\n\
-  -qq            : Suprress even errors\n\
+  -qq            : Suppress even errors\n\
   -f             : Apply force.\n\
   -ff            : Super force.\n\
                    Bypass all restrictions.\n\
