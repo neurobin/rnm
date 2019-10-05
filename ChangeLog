@@ -1,5 +1,9 @@
 
 
+4.0.7 Sat 05 Oct 2019 07:33:00 AM UTC
+
+    * Fix typo (#25)
+
 4.0.6 Fri Jul 19 09:56:44 UTC 2019
 
     * Fix broken f, d, l modifier in replace string
