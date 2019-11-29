@@ -93,6 +93,12 @@ Install from `neurobin/pkg/rnm` with `brew`:
 brew install neurobin/pkg/rnm
 ```
 
+If you run into compile error you may try the rnm-g++ formula:
+
+```bash
+brew install neurobin/pkg/rnm-g++
+```
+
 ## From pre-built binaries:
 
 You can download a pre-built binary (64 bit, 32 bit, ppc64el) from the [release page](https://github.com/neurobin/rnm/releases) if available. These pre-built binaries depend on `libstdc++6 >= 4.8.4` if not specified otherwise.
