@@ -44,7 +44,7 @@ Simulations can be run instead of actual rename to view the potential outcome as
 2. File information is available, e.g modification time, access time, status change time (time string can be formatted using format string e.g `%d-%m-%Y`), permission, owner id, group id, size, block, inode number, mode etc...
 3. Inverse search is possible.
 4. Each regex operation can be associated with either link, file or directory, for example, if a replace string is associated with only file, it will not work on directories or links.
-5. New sorting methods: 
+5. New sorting methods:
   1. Sort according to file modification time (recent first).
   2. Sort according to file access time (recent first).
   3. Sort according to file status change time (recent first).
@@ -91,12 +91,6 @@ Install from `neurobin/pkg/rnm` with `brew`:
 
 ```bash
 brew install neurobin/pkg/rnm
-```
-
-If you run into compile error you may try the rnm-g++ formula:
-
-```bash
-brew install neurobin/pkg/rnm-g++
 ```
 
 ## From pre-built binaries:
@@ -522,6 +516,3 @@ rnm -ns '/fn/ /info-mtime-%d-%m-%Y %H:%I %p/' -ss '/pattern1/f' -ss '/pattern2/d
 [rnm user manual](https://docs.neurobin.org/man/man1/rnm.html)
 
 [Other examples](https://neurobin.org/docs/unix/rnm/bulk-rename-in-linux/)
-
-
-
