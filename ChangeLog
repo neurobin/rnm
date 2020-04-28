@@ -1,5 +1,9 @@
 
 
+4.0.8 Tue 28 Apr 2020 04:32:53 PM UTC
+
+    * Fix build due to unavailable function memrchr for MacOS and others like FreeBSD, Minix etc..
+
 4.0.7 Sat 05 Oct 2019 07:33:00 AM UTC
 
     * Fix typo (#25)
