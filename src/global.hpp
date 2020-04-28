@@ -2,7 +2,7 @@
  * Bulk rename utility for Unix (rnm)
  * Author: Md. Jahidul Hamid <jahidulhamid@yahoo.com>
  * Copyright (C) 2015-2017 by Md. Jahidul Hamid <jahidulhamid@yahoo.com>
- *   
+ *
  * This software is provided 'as-is', without any express or implied
  * warranty.  In no event will the authors be held liable for any damages
  * arising from the use of this software.
@@ -21,13 +21,13 @@
  * ********************************************************************/
 /***********************************************************************
  * Global conventions:
- * 
+ *
  * * Always use absolute paths (mind the undo option uses full path).
  * * Try to skip files with warning (not error).
- * 
+ *
  * ********************************************************************/
- 
- 
+
+
 #ifndef __GLOBALS_H
 #define __GLOBALS_H
 
@@ -55,7 +55,7 @@
 #include <fcntl.h>
 #include <pwd.h>
 #include <cctype>
-#include <cstddef> 
+#include <cstddef>
 #include <dirent.h>
 #include <map>
 #include <cmath>
@@ -87,7 +87,7 @@
 #ifndef RNM_RELEASE
 #define LOG(a) std::cout<<a<<"\n";
 #else
-#define LOG(a) 
+#define LOG(a)
 #endif
 
 
@@ -303,7 +303,7 @@ String sort_type2;
 /// Project Info
 String project_name="rnm";
 String executable_name="rnm";
-String version="4.0.7";
+String version="4.0.8";
 String author_name="Md Jahidul Hamid";
 String author_email="jahidulhamid@yahoo.com";
 String bug_report_url="https://github.com/neurobin/"+project_name+"/issues";

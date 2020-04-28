@@ -2,7 +2,7 @@
  * Bulk rename utility for Unix (rnm)
  * Author: Md. Jahidul Hamid <jahidulhamid@yahoo.com>
  * Copyright (C) 2015-2017 by Md. Jahidul Hamid <jahidulhamid@yahoo.com>
- *   
+ *
  * This software is provided 'as-is', without any express or implied
  * warranty.  In no event will the authors be held liable for any damages
  * arising from the use of this software.
@@ -21,14 +21,14 @@
  * ********************************************************************/
 /***********************************************************************
  * Global conventions:
- * 
+ *
  * * Always use absolute paths (mind the undo option uses full path).
  * * IFP can't be 0 by default. Make it -1 (disabled).
  * * Try to skip files with warning (not error).
  * * Exit with exit status 1 in case of error.
- * 
+ *
  * ********************************************************************/
- 
+
 #ifndef FUNC_HPP
 #define FUNC_HPP
 
@@ -45,20 +45,20 @@ bool Rename(const String& oldn,const String& newn,DirectoryIndex &di){
     }
     else {
         if(!simulation){
-            
+
             if(rename(oldn.c_str(),newn.c_str()) == 0){
                 if(CWD == oldn){
                     //undo depends on current directory, but the current directory itself has been renamed
                     String signature = getPathSignature(newn);
-                    
+
                     //recreate lock files
                     RNM_LOCK_FILE = RNM_LOCK_FILE_BKP + signature;
                     openLockFile(futil::lock_op::ImmediateLock, true); //closing is done automatically
-                    
+
                     //change original undo file names
                     RNM_FILE_LOG_L = RNM_FILE_LOG_L_BKP + signature;
                     RNM_FILE_LOG_R = RNM_FILE_LOG_R_BKP + signature;
-                    
+
                 }
                 appendToRFLTMP(oldn,newn);
                 current_index+=inc;
@@ -223,7 +223,7 @@ void parseIndexFlags(const String& s){
             er=false;
             continue;
         }
-        
+
         if(existsInMap(INDEX_FLAGS_M, tokens[i])){
             INDEX_FLAGS |= INDEX_FLAGS_M[tokens[i]];
             er=false;
@@ -284,7 +284,7 @@ void parseSearchString(String ss, size_t index){
             if(!fixed_ss[index])
             printErrorLog("Invalid search regex: "+ss+"\nNote that "+path_delim+" is not allowed inside regex. \n\
             Format: '"+path_delim+"regex(No"+path_delim+")"+path_delim+"modifier;' or 'regex(No"+path_delim+")'");
-            else 
+            else
             printErrorLog("Invalid search string: "+ss+"\nNote that "+path_delim+" is not allowed in a string. \n\
             Format: '"+path_delim+"string(No"+path_delim+")"+path_delim+"modifier;' or 'string(No"+path_delim+")'");
             Exit(1);
@@ -339,19 +339,19 @@ String processInfoNameStringRule(const String& ns, const File& file,const String
     else
         errorExit("Delimiter mismatch during info name stirng parse, please file a bug report, run with -v option to see bug report url");
     m.match();
-        
+
     String tot, prop, op;
     for(size_t i=0;i<v.size();++i){
         //~ std::cout<<"0: "<<v[i][0]<<"\t1: "<<v[i][1]<<"\t2: "<<v[i][2]<<"\n";
         tot = v[i][0];
         prop = toLower0(v[i][1]);
         op = v[i][2];
-        
+
         if(!delim2.empty()){///This tells us to convert the delim based rules to delim2 based rules, no further processing
             res = replaceString(res, tot, replaceStringAll(tot,delim,delim2));
             continue;
         }
-        
+
         if("mtime" == prop){
             res = replaceString(res, tot, sanitizeStringForRegex(formatTime(file.mtime, op.empty()?dtf:op), sanitize));
         } else if("mtime,gmt" == prop){
@@ -455,7 +455,7 @@ String processExtendedNameString_d(const String& ns,std::map<String,Double>& ns_
         m.setRegexObject(&multi_nre2).match();
     else
         errorExit("Delimiter mismatch during extended name string parse, please file a bug report, run with -v option to see bug report url");
-        
+
     for(size_t i=0;i<vn.size();++i){
         String total = vn[i]["total"],rule = vn[i]["rule"], exn = vn[i]["exn"], exv = vn[i]["exv"];
         if(!existsInMap(ns_rules, vn[i]["rule"])) {
@@ -511,7 +511,7 @@ String processExtendedPdNameStringRule(const String& ns, const File& file, const
         m.setRegexObject(&multi_pdre2).match();
     else
         errorExit("Delimiter mismatch during /pd/ name string parse, please file a bug report, run with -v option to see bug report url");
-        
+
     for(size_t i=0;i<vn.size();++i){
         String pd_name_c;
         String total = vn[i]["total"],rule = vn[i]["rule"], si = vn[i]["si"], ei = vn[i]["ei"], delim=vn[i]["delim"];
@@ -551,7 +551,7 @@ String processExtendedPdNameStringRule(const String& ns, const File& file, const
         ///Handle empty si and ei, this must be the end of si_int and ei_int modification
         if(si.empty())si="0";
         if(ei.empty())ei=si;
-        
+
         //~ std::cout<<si<<ei;
         ///Get the range in integer
         Int siint(si);
@@ -562,7 +562,7 @@ String processExtendedPdNameStringRule(const String& ns, const File& file, const
             for(Int i=siint;i<=eiint;i++){
                 ///if si ei both empty and delim is not empty, then it is an invalid rule
                 //~ if(si==""&&ei==""&&delim!="")continue;    ///must continue
-                if(i>pd_max || i<0)break;                 ///Overflow, break will suffice 
+                if(i>pd_max || i<0)break;                 ///Overflow, break will suffice
                 if(!pd_name_c.empty())pd_name_c+=delim+pd_names[i.get_ui()];
                 else pd_name_c+=pd_names[i.get_ui()];
             }
@@ -615,7 +615,7 @@ String parseNameString(const String& ns,const File& file,DirectoryIndex &di, con
     ns_rules_s["wd"]=CWDN;
     if(!ns.empty()){
         for(auto const& ent : ns_rules_s){
-            ///ent.first is the key, ent.second is the value    
+            ///ent.first is the key, ent.second is the value
             if(!delim2.empty()){
                 name = replaceStringAll(name,delim+ent.first+delim,delim2+ent.first+delim2);
                 continue;
@@ -625,7 +625,7 @@ String parseNameString(const String& ns,const File& file,DirectoryIndex &di, con
             name=replaceStringAll(name,delim+ent.first+delim,tmp);
         }
         //~ for(auto const& ent : ns_rules){
-            //~ ///ent.first is the key, ent.second is the value    
+            //~ ///ent.first is the key, ent.second is the value
             //~ if(delim2!=""){name=replaceStringAll(name,delim+ent.first+delim,delim2+ent.first+delim2);continue;}
             //~ String tmp = toString(ent.second,index_field_length);
             //~ if(sanitize){tmp=sanitizeRegexString(tmp);}
@@ -633,10 +633,10 @@ String parseNameString(const String& ns,const File& file,DirectoryIndex &di, con
         //~ }
         ///Process /pd/ along with extended pd name string rules
         name=processExtendedPdNameStringRule(name,file,delim,delim2,sanitize);  ///file must be the full path
-        
-        ///process /info-../ 
+
+        ///process /info-../
         name = processInfoNameStringRule(name,file,delim,delim2,sanitize);
-        
+
         ///for name string rules like /i-b16/, b16 stands for base 16
         ///this should be the last rules to parse
         name=processExtendedNameString_d(name,ns_rules,di.IFL,delim,delim2,sanitize,ignore_err);
@@ -672,7 +672,7 @@ void parseReplaceString(const StringArray &rs,const File& file,DirectoryIndex &d
             ///rs[i] may contain name string rules
             ///We must strip the first slash from it before sending it for name string processing.
             //~ std::cout<<name<<"\n";
-            if(name[0] == '/') 
+            if(name[0] == '/')
                 name = name.substr(1, String::npos);
             else
                 errorExit("Invalid replace string format: "+rs[i]);
@@ -718,10 +718,10 @@ void parseReplaceString(const StringArray &rs,const File& file,DirectoryIndex &d
                 rs_replace.push_back(processReplacementString(rep));
                 validateModifier(mod, RR_MOD_ALL, "replace string in " + rs[i]);
                 rs_mod.push_back(mod);
-                
-                
+
+
             }
-        } else 
+        } else
             errorExit("Invalid replace string format: "+rs[i]);
     }
 
@@ -733,7 +733,7 @@ String changeCaseAccordingToSS(String s,const String& search,const String& repla
         printWarningLog("Invalid case definition: "+replace+" Only \\c or \\C is allowed");
         return s;
     }
-    
+
     jp::Regex re(search, modifier+"S");
     jp::RegexReplace rr(&re);
     rr.setSubject(&s)
@@ -796,9 +796,9 @@ void incrementReservedIndexes(DirectoryIndex &di){
 File doRename(const File& file,DirectoryIndex &di){
     bool not_skipped=true;
     File file_to_return = file;
-    
+
     if(isInvalidFile(file)){return file_to_return;}
-    
+
     if(ss_search.size()!=0){
         if(!isComplyingToSearchString(file)){
             return file_to_return;
@@ -807,7 +807,7 @@ File doRename(const File& file,DirectoryIndex &di){
     String oldn=basename(file.path);
     String dir=dirname(file.path);
     String name;
-    
+
     //process name string file and calculate ns_name
     if(!name_string_file.empty()){
         if(current_line_pos<nsflist.size()){
@@ -820,9 +820,9 @@ File doRename(const File& file,DirectoryIndex &di){
             Exit(0);
         }
     }
-    
+
     if(replace_string.size()!=0){processReplaceString(replace_string,file,di);}
-    
+
     if(!name_string.empty()){ //ns is the first priority
         name=parseNameString(name_string,file,di,path_delim, "",0);
     } else if(replace_string.size()!=0){ //rs is prioritized over ns/f
@@ -833,11 +833,11 @@ File doRename(const File& file,DirectoryIndex &di){
         printErrorLog("One of the options: -ns or -nsf or -rs is mandatory");
         Exit(1);
     }
-    
+
     ///sanitize name by removing invalid name string rules and path delimiter
     name=removeInvalidNameStringRules(name);
     name=stripPathDelimiter(name);
-    
+
     if(!name.empty()){
         if(!quiet&&!ALL_YES){std::cout<< NEW_LINE+file.path+"    ---->    [...]"+path_delim+name+NEW_LINE;}
         ///do rename
@@ -882,24 +882,24 @@ File doRename(const File& file,DirectoryIndex &di){
 
 
 
-void startInDepthRenamingTaskOnDirectory(const String& dir,String base_dir=base_dir){
+void startInDepthRenamingTaskOnDirectory(const String& dir,String base_dir_=base_dir){
     FileArray files;
     getFilesFromDir(files,dir);
     directory_count++;
     DirectoryIndex di;
-    
+
     for(size_t i=0;i<files.size();i++){
         if(di.directory_index>end_index && !infinite_end_index){continue;}
         String file=files[i].path;
 
-        if(childDepth(base_dir,file)>depth && depth >=0){continue;}
+        if(childDepth(base_dir_,file)>depth && depth >=0){continue;}
         String parent="";
         String src_name="";
         if(!files[i]){printWarningLog("No such file or directory: "+file);continue;}
         src_name=basename(file);
         parent=dirname(file);
         CPDN=getParentDirectoryName(file);
-    
+
         if(files[i].isDir()){
             if(exclude_directory){
                 if(count_directory){incrementReservedIndexes(di);}
@@ -913,7 +913,7 @@ void startInDepthRenamingTaskOnDirectory(const String& dir,String base_dir=base_
                 src_name=basename(file);
                 parent=dirname(file);
                 CPDN=getParentDirectoryName(file);
-                if(childDepth(base_dir,file)<=depth || depth<0){
+                if(childDepth(base_dir_,file)<=depth || depth<0){
                     startInDepthRenamingTaskOnDirectory(file);
                 }
             }
@@ -949,7 +949,7 @@ void startInDepthRenamingTaskOnDirectory(const String& dir,String base_dir=base_
 
 
 void startTask(FileArray& files){
-    
+
     directory_count++;
     DirectoryIndex di;
 
@@ -1006,7 +1006,7 @@ void startTask(FileArray& files){
             printWarningLog("Not a valid file or directory: "+ files[i].path);
             continue;
         }
-        
+
     }
 }
 

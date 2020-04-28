@@ -2,7 +2,7 @@
  * Bulk rename utility for Unix (rnm)
  * Author: Md. Jahidul Hamid <jahidulhamid@yahoo.com>
  * Copyright (C) 2015 by Md. Jahidul Hamid <jahidulhamid@yahoo.com>
- *   
+ *
  * This software is provided 'as-is', without any express or implied
  * warranty.  In no event will the authors be held liable for any damages
  * arising from the use of this software.
@@ -21,15 +21,15 @@
  * ********************************************************************/
 /***********************************************************************
  * Global conventions:
- * 
+ *
  * * Always use absolute paths (mind the undo option uses full path).
  * * IFP can't be 0 by default. Make it -1 (disabled).
  * * Try to skip files with warning (not error).
  * * Exit with exit status 1 in case of error.
- * 
+ *
  * ********************************************************************/
- 
- 
+
+
 #include "func.hpp"
 
 
@@ -60,22 +60,22 @@ int main(int argc, char* argv[]) {
         RNM_FILE_LOG_R += signature;
         //~ RNM_FILE_LOG_L_TMP += signature;
         //~ RNM_FILE_LOG_R_TMP += signature;
-        
+
         //prepare logs
         prepareLogDir();
         openLogFiles();
         //~ openTmpFiles();
         openLockFile();
-        
+
         ///FileArray
         FileArray files;
 
-        
+
         //////////////////////////////// Opt parse////////////////////////////////////////////
-        
+
         StringArray args;
         for(int i = 1; i < argc; i++){args.push_back(argv[i]);}
-        
+
         bool skipcount=false;
         bool noopt=false;
         { //Scope for the following objects
@@ -96,7 +96,7 @@ int main(int argc, char* argv[]) {
         Options rs_file_obj("-rs/f","--replace-string-file");
         Options dp_obj("-dp","--depth");
         Options if_obj("-if","--index-flags");
-        
+
         for(int i = 0; i < (int)args.size(); i++){
             if(skipcount){skipcount=false;continue;}
             String opt=toLower(String(args[i]));
@@ -127,23 +127,23 @@ int main(int argc, char* argv[]) {
                 }else if(opt=="-lo"||opt=="--link-only"){
                   link_only=true;
                 } else if(opt=="-xd"||opt=="--exclude-directory"){
-                  exclude_directory=true; 
+                  exclude_directory=true;
                 } else if(opt=="-xf"||opt=="--exclude-file"){
-                  exclude_file=true; 
+                  exclude_file=true;
                 } else if(opt=="-xl"||opt=="--exclude-link"){
-                  exclude_link=true; 
+                  exclude_link=true;
                 } else if(opt=="-inc"||opt=="--increment"){
                   checkArgAvailability(args,i+1);
                   inc = getPositiveNumberOrExit("Increment Value","\nNegative increment i.e decrement will be available using name string rule:\n\
                 /-i/, /-ir/, /-id/ etc..\n",args[i+1]);
-                  skipcount=true; 
+                  skipcount=true;
                   inc_obj.count++;
                   if(inc_obj.count>1){printWarningLog("Increment value overwritten");}
                 } else if(opt=="-linc"||opt=="--line-increment"){
                   checkArgAvailability(args,i+1);
                   linc = getPositiveIntOrExit("Line Increment Value",args[i+1]);
                   if(linc<1) errorExit("Line increment can not be less than 1");
-                  skipcount=true; 
+                  skipcount=true;
                   linc_obj.count++;
                   if(linc_obj.count>1){printWarningLog("Line increment value overwritten");}
                 } else if(opt=="-i"||opt=="-si"||opt=="--index"||opt=="--start-index"){
@@ -155,7 +155,7 @@ int main(int argc, char* argv[]) {
                   reverse_index_rd=start_index;
                   DIRECTORY_INDEX=start_index;
                   DIRECTORY_REVERSE_INDEX=start_index;
-                  skipcount=true; 
+                  skipcount=true;
                   si_obj.count++;
                   if(si_obj.count>1){printWarningLog("Start index overwritten");}
                 } else if(opt=="-ei"||opt=="--end-index"){
@@ -174,64 +174,64 @@ int main(int argc, char* argv[]) {
                 } else if(opt=="-ifl"||opt=="--index-field-length"){
                   checkArgAvailability(args,i+1);
                   index_field_length=getPositiveIntOrExit("Index field length",args[i+1]);
-                  skipcount=true; 
+                  skipcount=true;
                   ifl_obj.count++;
                   if(ifl_obj.count>1){printWarningLog("Index field length overwritten");}
                 } else if(opt=="-ifp"||opt=="--index-field-precision"){
                   checkArgAvailability(args,i+1);
                   IFP=getPositiveIntOrExit("Index field precision",args[i+1]);
-                  skipcount=true; 
+                  skipcount=true;
                   ifp_obj.count++;
                   if(ifp_obj.count>1){printWarningLog("Index field precision overwritten");}
                 } else if(opt=="-iff"||opt=="--index-field-filler"){
                   checkArgAvailability(args,i+1);
                   IFF=getSingleCharacterStringOrExit("Index field filler",args[i+1]);
                   IFF=replaceStringAll(IFF,"\\","");
-                  skipcount=true; 
+                  skipcount=true;
                   iff_obj.count++;
                   if(iff_obj.count>1){printWarningLog("Index field filler overwritten");}
                 } else if(opt=="-ns"||opt=="--name-string"){
                   checkArgAvailability(args,i+1);
                   name_string=args[i+1];
-                  skipcount=true; 
+                  skipcount=true;
                   ns_obj.count++;
                   if(ns_obj.count>1){printWarningLog("Name string overwritten");}
                 } else if(opt=="-ns/f"||opt=="--name-string-file"){
                   checkArgAvailability(args,i+1);
                   name_string_file=args[i+1];
-                  skipcount=true; 
+                  skipcount=true;
                   nsf_obj.count++;
                   if(nsf_obj.count>1){printErrorLog("Only one name string file is allowed");Exit(1);}
                 } else if(opt=="-ns/fn"||opt=="--name-string-file-null-terminated"){
                   checkArgAvailability(args,i+1);
                   name_string_file=args[i+1];
                   nsf_n=true;
-                  skipcount=true; 
+                  skipcount=true;
                   nsf_obj.count++;
                   if(nsf_obj.count>1){printErrorLog("Only one name string file is allowed");Exit(1);}
                 } else if(opt=="-l"||opt=="-sl"||opt=="--line"||opt=="--start-line"){
-                  checkArgAvailability(args,i+1); 
+                  checkArgAvailability(args,i+1);
                   start_line=getPositiveIntOrExit("Start Line",args[i+1]);
-                  skipcount=true; 
+                  skipcount=true;
                   sl_obj.count++;
                   if(sl_obj.count>1){printWarningLog("Start line overwritten");}
                 } else if(opt=="-el"||opt=="--end-line"){
-                  checkArgAvailability(args,i+1); 
+                  checkArgAvailability(args,i+1);
                   end_line=getPositiveIntOrExit("End Line",args[i+1]);
-                  skipcount=true; 
+                  skipcount=true;
                   el_obj.count++;
                   if(el_obj.count>1){printWarningLog("End line overwritten");}
                 } else if(opt=="-ss"||opt=="--search-string"){
                   checkArgAvailability(args,i+1);
                   search_string.push_back(args[i+1]);
                   fixed_ss.push_back(false);
-                  skipcount=true; 
+                  skipcount=true;
                   ss_obj.count++;
                   ///multple is allowed
                 } else if(opt=="-ss/f"||opt=="--search-string-file"){
                   checkArgAvailability(args,i+1);
                   search_string_file=args[i+1];
-                  skipcount=true; 
+                  skipcount=true;
                   if(File(search_string_file).isFile()){
                     StringArray temp=getLineFromFileAndReturnVector(search_string_file);
                     ///append temp to search_string
@@ -250,7 +250,7 @@ int main(int argc, char* argv[]) {
                   checkArgAvailability(args,i+1);
                   search_string.push_back(args[i+1]);
                   fixed_ss.push_back(true);
-                  skipcount=true; 
+                  skipcount=true;
                   ss_obj.count++;
                   ///multple is allowed
                 } else if(opt=="-ssf/f"||opt=="--search-string-fixed-file"){
@@ -274,7 +274,7 @@ int main(int argc, char* argv[]) {
                 } else if(opt=="-rs"||opt=="--replace-string"){
                   checkArgAvailability(args,i+1);
                   replace_string.push_back(args[i+1]);
-                  skipcount=true; 
+                  skipcount=true;
                   rs_obj.count++;
                   ///multple is allowed
                 } else if(opt=="-rs/f"||opt=="--replace-string-file"){
@@ -292,21 +292,21 @@ int main(int argc, char* argv[]) {
                   rs_file_obj.count++;
                   ///multple is allowed
                 } else if(opt=="-dp"||opt=="--depth"){
-                  checkArgAvailability(args,i+1); 
+                  checkArgAvailability(args,i+1);
                   depth=getIntOrExit("Depth",args[i+1]);
                   //~ if(depth<0){depth=std::numeric_limits<size_t>::max();}
-                  skipcount=true; 
+                  skipcount=true;
                   dp_obj.count++;
                   if(dp_obj.count>1){printWarningLog("Directory depth overwritten");}
                 } else if(opt=="-cd"||opt=="--count-directory"){
-                  count_directory=true; 
+                  count_directory=true;
                 } else if(opt=="-cf"||opt=="--count-file"){
-                  count_file=true; 
+                  count_file=true;
                 } else if(opt=="-cl"||opt=="--count-link"){
-                  count_link=true; 
+                  count_link=true;
                 } else if(opt=="-s"||opt=="--sort"){
                   sort=true;
-                  sort_type="default"; 
+                  sort_type="default";
                 } else if(opt=="-s/g"||opt=="--sort/general"){
                   sort=true;
                   sort_type="general";
@@ -343,20 +343,20 @@ int main(int argc, char* argv[]) {
                   all_yes=true;
                   ALL_YES=true;
                 } else if(opt=="-fl"||opt=="--follow-link"){
-                  follow_symlink=true; 
+                  follow_symlink=true;
                 } else if(opt=="-nfl"||opt=="--no-follow-link"){
-                  follow_symlink=false; 
+                  follow_symlink=false;
                 } else if(opt=="-f"||opt=="--force"){
-                  force=true; 
+                  force=true;
                 } else if(opt=="-ff"||opt=="--force-force"){
                   super_force=true;
                   force=true;
                 } else if(opt=="-u"||opt=="--undo"){
-                  undo=true; 
+                  undo=true;
                   force=true;
                   super_force=true;
                 } else if(opt=="-up"||opt=="--undo-path"){
-                  undo=true; 
+                  undo=true;
                   force=true;
                   super_force=true;
                   checkArgAvailability(args,i+1);
@@ -381,18 +381,18 @@ int main(int argc, char* argv[]) {
                   skipcount=true;
                   return 0;
                 } else if(opt=="-sim"||opt=="--simulation"){
-                  simulation=true; 
+                  simulation=true;
                 } else if(opt=="--"){
-                  noopt=true; 
+                  noopt=true;
                 } else if(opt[0]=='-'){
                   printErrorLog("Invalid Option: "+opt);
-                  Exit(1); 
+                  Exit(1);
                 } else {
-                    files.push_back(File(args[i])); 
+                    files.push_back(File(args[i]));
                 }
 
             } else {
-                files.push_back(File(args[i])); 
+                files.push_back(File(args[i]));
             }
         }
       } //objects from Options class are destroyed here
@@ -405,17 +405,17 @@ int main(int argc, char* argv[]) {
             Exit(0);
         }
 
-        
-        
+
+
         /////////////////////////////////// Various checks///////////////////////////////////////
-        
+
         if(file_only&&directory_only){printErrorLog("File Only and Directory Only, both can't be true at the same time");Exit(1);}
         if(file_only&&link_only){printErrorLog("File Only and Link Only, both can't be true at the same time");Exit(1);}
         if(link_only&&directory_only){printErrorLog("Link Only and Directory Only, both can't be true at the same time");Exit(1);}
         //~ if(file_only&&exclude_directory){printWarningLog("File Only mode is prioritized over Exclude Directory mode");}
         //~ if(simulation&&quiet){printWarningLog("Quiet option won't have any effect with simulation mode");}
-        
-        
+
+
         if(files.size()<=0){
             String filename_from_stdin;
             signal(SIGINT, unsafeExitSignalHandler); //agressive exit needed
@@ -426,21 +426,21 @@ int main(int argc, char* argv[]) {
         }
         if(files.size()==1){if(files[0].isFile() || files[0].isLink() || depth==0){single_mode=true;}}
         if(simulation){quiet=false;}
-        
-        
+
+
         if(name_string=="" && name_string_file=="" && replace_string.size()==0){
             printErrorLog("One of the options: -ns or -nsf or -rs is mandatory");
             Exit(1);
             }
         if(search_string.size()!=0){
             for(size_t i=0;i<search_string.size();i++){
-                    parseSearchString(search_string[i],i); 
+                    parseSearchString(search_string[i],i);
             }
         ///search_string and fixed_ss will no longer be uesed. Better free up some memory
         search_string.clear();fixed_ss.clear();
         }
-        
-        
+
+
         if(!name_string_file.empty()){
             //~ if(!name_string.empty()){
                 //~ errorExit("-ns or equivalent options can not be given with -ns/f or -ns/fn");
@@ -451,19 +451,19 @@ int main(int argc, char* argv[]) {
             } else{
                 getNameListFromFile(nsflist,name_string_file,start_line.get_ui(),end_line.get_ui(),0);
             }
-        
+
         }
 
-        
+
         ////////////////////////////////// Various checks end here//////////////////////////////
-        
+
         ///Sort file if sort is true
         if(sort){sortVector(files);}
         START_TIME = timeNow();
         startTask(files);
-        
+
         showResult();
-        
+
         cleanup(true);
     } catch (const Except& e){
         //result is shown by exit
@@ -474,4 +474,3 @@ int main(int argc, char* argv[]) {
     }
    return 0;
 }
-

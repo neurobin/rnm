@@ -2,7 +2,7 @@
  * Bulk rename utility for Unix (rnm)
  * Author: Md. Jahidul Hamid <jahidulhamid@yahoo.com>
  * Copyright (C) 2015 by Md. Jahidul Hamid <jahidulhamid@yahoo.com>
- *   
+ *
  * This software is provided 'as-is', without any express or implied
  * warranty.  In no event will the authors be held liable for any damages
  * arising from the use of this software.
@@ -21,14 +21,14 @@
  * ********************************************************************/
 /***********************************************************************
  * Global conventions:
- * 
+ *
  * * Always use absolute paths (mind the undo option uses full path).
  * * IFP can't be 0 by default. Make it -1 (disabled).
  * * Try to skip files with warning (not error).
  * * Exit with exit status 1 in case of error.
- * 
+ *
  * ********************************************************************/
- 
+
 
 #ifndef __INOUT_HPP
 #define __INOUT_HPP
@@ -141,7 +141,7 @@ void printWarningLog0(String str, const String& fn, size_t line){
     ERROR_LOG_F<<str+"\t\t\t\t@"+dt;
 }
 
-    
+
 void printOutLog(const String& str){
     if(!quiet) std::cout<<NEW_LINE+str+NEW_LINE;
     time_t now = time(0);
@@ -158,7 +158,7 @@ void errorExit0(const String& s, const String& fn, size_t line, bool cleanfs){
 
 //~ String copyFile(const String& src, const String& dest){
     //~ int outfd = open(dest.c_str(),O_RDWR);
-    //~ int infd = open(src.c_str(),O_RDWR);          
+    //~ int infd = open(src.c_str(),O_RDWR);
     //~ struct stat stat_buf ;
     //~ fstat(infd,&stat_buf);
     //~ Uint size = sendfile(outfd,infd,0,stat_buf.st_size);
@@ -183,11 +183,11 @@ void finalizeRFL(){
         RNM_FILE_LOG_L_F.open(RNM_FILE_LOG_L, std::ios::binary | std::ios::out);
         RNM_FILE_LOG_L_F<<CWD<<'\0';
         RNM_FILE_LOG_L_F<<RNM_FILE_LOG_L_S;
-        
+
         RNM_FILE_LOG_R_F.open(RNM_FILE_LOG_R, std::ios::binary | std::ios::out);
         RNM_FILE_LOG_R_F<<CWD<<'\0';
         RNM_FILE_LOG_R_F<<RNM_FILE_LOG_R_S;
-        
+
         RNM_FILE_LOG_L_F.close();
         RNM_FILE_LOG_R_F.close();
     }
@@ -297,7 +297,7 @@ StringArray getLineFromFileAndReturnVector(const String& filename){
         list.push_back(line);
     }
     file.close();
-    
+
     return list;
 }
 
@@ -339,7 +339,7 @@ void getNameListFromFile(StringArray& nlist, const String& filename, Uint si, Ui
             lc_list.push_back(i);
         }
     }
-    
+
 }
 
 
@@ -365,7 +365,7 @@ void Exit(int a, bool cleanfs){
 
 bool isImmediateChild(const File& prevf,const File& newf){
         if(prevf.path==dirname(newf.path))return true;
-        else return false; 
+        else return false;
 }
 
 
@@ -398,9 +398,9 @@ bool compareNatG(const File& a, const File& b){
     return (a.path<b.path);
 }
 
-    
+
 void sortVector(FileArray& files){
-    if(sort_type=="natural") std::sort(files.begin(), files.end(), compareNatV); 
+    if(sort_type=="natural") std::sort(files.begin(), files.end(), compareNatV);
     else if(sort_type=="general")std::sort(files.begin(), files.end(), compareNatG);
     else if(sort_type=="none");
     else if(sort_type == "mtime") std::sort(files.begin(), files.end(), [](const File& a, const File& b){return a.mtime>b.mtime;});
@@ -408,13 +408,13 @@ void sortVector(FileArray& files){
     else if(sort_type == "ctime") std::sort(files.begin(), files.end(), [](const File& a, const File& b){return a.ctime>b.ctime;});
     else if(sort_type == "size")  std::sort(files.begin(), files.end(), [](const File& a, const File& b){return a.size >b.size; });
     else{std::sort(files.begin(), files.end(), compareNatV);}
-    
+
     if(!sort_type2.empty()){
         if(sort_type2 == "directory") std::stable_sort(files.begin(), files.end(), [](const File& a, const File& b){return a.isDir() >b.isDir(); });
         else if(sort_type2 == "file") std::stable_sort(files.begin(), files.end(), [](const File& a, const File& b){return a.isFile()>b.isFile();});
         else if(sort_type2 == "link") std::stable_sort(files.begin(), files.end(), [](const File& a, const File& b){return a.isLink()>b.isLink();});
     }
-    
+
     ///reverse the sort if reverse_sort is true
     if(reverse_sort){std::reverse(files.begin(), files.end());}
 }
@@ -425,13 +425,13 @@ void getFilesFromDir(FileArray& files, const String& file){
     struct dirent *ent;
     if ((dir = opendir (file.c_str())) != NULL) {
         while ((ent = readdir (dir)) != NULL) {
-            
+
             String filename=file+path_delim+ent->d_name;
             if(basename(filename)=="." || basename(filename)==".."){continue;}
             files.push_back(File(filename));
         }
         closedir (dir);
-    } 
+    }
     else {
         printErrorLog((String(strerror(errno))+": "+file).c_str());
     }
@@ -443,12 +443,12 @@ void getFilesFromDir(FileArray& files, const String& file){
 bool isInvalidFile(const File& f){
     String file = f.path;
     bool status=false;
-    
+
     if(CWD==f.path && !force){
         status = true;
         printWarningLog("renaming working directory not permitted. If you insist, try applying force.");
     }
-    
+
     StringArray invf={HOME,
         "/bin","/usr","/usr/bin","/tmp",
         "/dev","/etc","/proc","/home",
@@ -464,7 +464,7 @@ bool isInvalidFile(const File& f){
             }
         }
     }
-    
+
     //these are not permitted even with force
     if(!super_force){
         if(file==root_filesystem){status=true;printWarningLog("rename not permitted: "+file);}
@@ -472,8 +472,8 @@ bool isInvalidFile(const File& f){
         if(file==LOG_DIR){status=true;printWarningLog("rename not permitted: "+file);}
         if(file==LOG_DIR_UNDO){status=true;printWarningLog("rename not permitted: "+file);}
     }
-    
-    
+
+
     return status;
 }
 
@@ -500,7 +500,7 @@ void showResult(){
     msg += " " + toStringWithFloatingPointDigit(s, '4') + " second" + (s>1?"s":"");
     printOutLog(msg);
     if(!quiet && simulation) std::cout<< " (simulation)"+NEW_LINE;
-    
+
 }
 
 

@@ -10,7 +10,7 @@
     //~ if(a) return std::string(1,a);
     //~ return std::string();
     //~ }
-    
+
 
 
 //~ void signalHandler( int signum ) {
@@ -43,32 +43,30 @@ int main(){
     //~ NameList names;
     //~ linc=4;
     //~ getNameListFromFile(names,"list",98 ,1,1);
-    
+
     //~ for(size_t i=0;i<names.size();++i){
         //~ std::cout<<names[i]<<"\n";
     //~ }
-    
+
     //~ std::string encrypted = encryptDecrypt("kylewbanks.com");
     //~ std::cout << "Encrypted:" << encrypted << "\n";
-    
+
     //~ std::string decrypted = encryptDecrypt(encrypted);
     //~ std::cout << "Decrypted:" << decrypted << "\n";
     std::string s1 = "I am a stri/ng\n of multiline///\n\r";
     std::string s2 = "ds";
     std::string s3 = "fjlsdj flje l;fkjdsl fj";
-    
+
     std::cout<<"en: "<<std::hash<String>{}(s1)<<"\n\n";
     std::cout<<"en: "<<std::hash<String>{}(s1)<<"\n\n";
     //~ std::cout<<"de: "<<un_hash( rhash( s1))<<"\n\n";
-    
+
     //~ sleep(1);
-    
+
     //~ for(size_t i=0;i<512;++i) std::cout<<char(i^='/');
-    
-    
+
+
     //~ main();
-    
+
     return 0;
 }
-
-

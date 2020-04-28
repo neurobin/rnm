@@ -2,7 +2,7 @@
  * Bulk rename utility for Unix (rnm)
  * Author: Md. Jahidul Hamid <jahidulhamid@yahoo.com>
  * Copyright (C) 2015 by Md. Jahidul Hamid <jahidulhamid@yahoo.com>
- *   
+ *
  * This software is provided 'as-is', without any express or implied
  * warranty.  In no event will the authors be held liable for any damages
  * arising from the use of this software.
@@ -21,14 +21,14 @@
  * ********************************************************************/
 /***********************************************************************
  * Global conventions:
- * 
+ *
  * * Always use absolute paths (mind the undo option uses full path).
  * * IFP can't be 0 by default. Make it -1 (disabled).
  * * Try to skip files with warning (not error).
  * * Exit with exit status 1 in case of error.
- * 
+ *
  * ********************************************************************/
- 
+
 
 #ifndef __STRUTILS_HPP
 #define __STRUTILS_HPP
@@ -174,7 +174,7 @@ String replaceStringAllWithDelims(String s,const String& rep, const String& deli
 }
 
 
-    
+
 String stripPathDelimiter(const String& s){
     return replaceStringAll(s,path_delim,"");
 }
@@ -248,7 +248,7 @@ String fixIFL(const String& s, const Int& ifl, const String& iff, IOFormatFlag f
     if(s[0] == '-') {
         if(ifl <= s.length()-1) return s;
         oss_buffer<<s.substr(1,String::npos);
-        return "-"+oss_buffer.str(); 
+        return "-"+oss_buffer.str();
     } else {
         if(ifl <= s.length()) return s;
         oss_buffer<<s;
@@ -368,7 +368,7 @@ String toString(const Double& x, Ush base, Int ifl, const Int& prec, const Strin
             s = convertBase(x,10,ifl,prec,iff,flags);
         }
     } else if((flags & std::ios::scientific)!=0){
-        s = convertToScientific(x,ifl,prec,iff,flags); 
+        s = convertToScientific(x,ifl,prec,iff,flags);
     } else{
         s = convertBase(x,base,ifl,prec,iff,flags);
     }
@@ -377,7 +377,7 @@ String toString(const Double& x, Ush base, Int ifl, const Int& prec, const Strin
 }
 
 
-String getSizeByUnit(   const Double& x, 
+String getSizeByUnit(   const Double& x,
                         Double unit, //if unit is 0, we will find a suitable unit
                         bool add_unit_s = true,
                         Ush base = NUM_BASE_DEFAULT,
@@ -411,7 +411,7 @@ String getSizeByUnit(   const Double& x,
 String dirname(const String& file){
     std::size_t found = file.find_last_of(path_delim);
     return file.substr(0,found);
-    
+
 }
 
 

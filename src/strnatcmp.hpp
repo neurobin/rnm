@@ -22,10 +22,10 @@
 
 /***********************************************************************
  * Now let's make some changes:
- * 
+ *
  * 1. std::string support
  * 2. usable with std::sort and std::vectors
- * 
+ *
  * ********************************************************************/
 
 #ifndef __STRNATCMP_HPP
@@ -58,7 +58,7 @@ static inline nat_char nat_toupper(nat_char a){
 
 static int compare_right(nat_char const *a, nat_char const *b){
      int bias = 0;
-     
+
      /* The longest run of digits wins.  That aside, the greatest
 	value wins, but we can't know that it will until we've scanned
 	both numbers to know that they have the same magnitude, so we
