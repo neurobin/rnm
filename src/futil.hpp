@@ -2,7 +2,7 @@
  * futil (File utility)
  * Author: Md. Jahidul Hamid <jahidulhamid@yahoo.com>
  * Copyright (C) 2016 -2017 by Md. Jahidul Hamid <jahidulhamid@yahoo.com>
- *   
+ *
  * This software is provided 'as-is', without any express or implied
  * warranty.  In no event will the authors be held liable for any damages
  * arising from the use of this software.
@@ -23,7 +23,7 @@
 
 #ifndef __FUTIL_HPP
 #define __FUTIL_HPP
- 
+
 #include <unistd.h>
 #include <fcntl.h>
 #include <cstdio>
@@ -59,7 +59,7 @@ namespace futil{
         bool locked;
         int status;
         FILE* f;
-        
+
         void init(){
             fd = 0;
             f = 0;
@@ -69,40 +69,40 @@ namespace futil{
             lock_status = 0;
             locked = false;
         }
-        
+
         public:
-        
+
         FileStream(){init();}
         FileStream(const std::string& s, const std::string& modes){
             init();
             open(s, modes);
         }
-        
+
         virtual ~FileStream(){
             close();
         }
-        
+
         void open(const std::string& s, const std::string& modes){
             close();
             f = ::fopen(s.c_str(), modes.c_str());
             if(f) fd = ::fileno(f);
             status = errno;
         }
-        
+
         int getStatus() const{
             return status;
         }
-        
+
         FILE* getFilePointer()const{
             return f;
         }
-        
+
         int getFileDescriptor()const{
             return fd;
         }
-        
-        bool operator!() const { 
-            return (f == 0); 
+
+        bool operator!() const {
+            return (f == 0);
         }
         explicit operator bool() const {
             return (f != 0);
@@ -130,7 +130,7 @@ namespace futil{
             //~ std::cout<<"unlocked\n";
             return (ret != -1);
         }
-        
+
         void close(){
             unLock();
             if(f) ::fclose(f);
@@ -163,7 +163,7 @@ namespace futil{
             return *this;
         }
     };
-    
+
 }
 
 #endif

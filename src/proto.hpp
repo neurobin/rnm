@@ -2,7 +2,7 @@
  * Bulk rename utility for Unix (rnm)
  * Author: Md. Jahidul Hamid <jahidulhamid@yahoo.com>
  * Copyright (C) 2015 by Md. Jahidul Hamid <jahidulhamid@yahoo.com>
- *   
+ *
  * This software is provided 'as-is', without any express or implied
  * warranty.  In no event will the authors be held liable for any damages
  * arising from the use of this software.
@@ -21,14 +21,14 @@
  * ********************************************************************/
 /***********************************************************************
  * Global conventions:
- * 
+ *
  * * Always use absolute paths (mind the undo option uses full path).
  * * IFP can't be 0 by default. Make it -1 (disabled).
  * * Try to skip files with warning (not error).
  * * Exit with exit status 1 in case of error.
- * 
+ *
  * ********************************************************************/
- 
+
 
 #ifndef __PROTO_HPP
 #define __PROTO_HPP

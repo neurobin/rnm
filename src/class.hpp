@@ -2,7 +2,7 @@
  * Bulk rename utility for Unix (rnm)
  * Author: Md. Jahidul Hamid <jahidulhamid@yahoo.com>
  * Copyright (C) 2015 by Md. Jahidul Hamid <jahidulhamid@yahoo.com>
- *   
+ *
  * This software is provided 'as-is', without any express or implied
  * warranty.  In no event will the authors be held liable for any damages
  * arising from the use of this software.
@@ -21,20 +21,42 @@
  * ********************************************************************/
 /***********************************************************************
  * Global conventions:
- * 
+ *
  * * Always use absolute paths (mind the undo option uses full path).
  * * IFP can't be 0 by default. Make it -1 (disabled).
  * * Try to skip files with warning (not error).
  * * Exit with exit status 1 in case of error.
- * 
+ *
  * ********************************************************************/
- 
+
 
 #ifndef __CLASS_HPP
 #define __CLASS_HPP
 
 #include "global.hpp"
 //~ #include "strutils.hpp"
+
+const void * my_memrchr(const void *s, int c, size_t n){
+    /*
+     * Copyright (c) 2007 Todd C. Miller <Todd.Miller@courtesan.com>
+     *
+     * Permission to use, copy, modify, and distribute this function for any
+     * purpose with or without fee is hereby granted, provided that the above
+     * copyright notice and this permission notice appear in all copies.
+     */
+
+    const unsigned char *cp;
+
+    if (n != 0) {
+        cp = (unsigned char *)s + n;
+        do {
+            if (*(--cp) == (unsigned char)c)
+                return((void *)cp);
+        } while (--n != 0);
+    }
+    return(NULL);
+}
+
 
 char * normalizePath(const char* pwd, const char * src, char* res) {
 	Uint res_len;
@@ -65,7 +87,7 @@ char * normalizePath(const char* pwd, const char * src, char* res) {
 		switch(len) {
 		case 2:
 			if (ptr[0] == '.' && ptr[1] == '.') {
-				const char * slash = (char*)memrchr(res, '/', res_len);
+				const char * slash = (const char*)my_memrchr(res, '/', res_len);
 				if (slash != NULL) {
 					res_len = slash - res;
 				}
@@ -83,7 +105,7 @@ char * normalizePath(const char* pwd, const char * src, char* res) {
 
 		if (res_len != 1)
 			res[res_len++] = '/';
-		
+
 		memcpy(&res[res_len], ptr, len);
 		res_len += len;
 	}
@@ -153,7 +175,7 @@ String lsperms(int mode)
 struct DirectoryIndex{
     Double directory_index,directory_index_rd,directory_reverse_index,directory_reverse_index_rd;
     Int IFL;
-    
+
     DirectoryIndex(){
         init();
         directory_index=DIRECTORY_INDEX;
@@ -161,8 +183,8 @@ struct DirectoryIndex{
         directory_reverse_index=DIRECTORY_REVERSE_INDEX;
         directory_reverse_index_rd=DIRECTORY_REVERSE_INDEX;
         }
-        
-        
+
+
     DirectoryIndex(const Double& di, const Double& dri){
         init();
         directory_index=di;
@@ -170,8 +192,8 @@ struct DirectoryIndex{
         directory_reverse_index=dri;
         directory_reverse_index_rd=dri;
         }
-        
-        
+
+
     DirectoryIndex(const Double& di){
         init();
         directory_index=di;
@@ -179,13 +201,13 @@ struct DirectoryIndex{
         directory_reverse_index=di;
         directory_reverse_index_rd=di;
         }
-    
-    
+
+
     private:
     void init(){
         IFL = index_field_length;
     }
-    
+
 };
 
 
@@ -194,7 +216,7 @@ struct DirectoryIndex{
 class Options{
     private:
         std::string value1,value2,value3,value4;
-        
+
     public:
         short count;
         Options(std::string v1)                               {value1=v1;value2="";value3="";value4="";count=0;}
@@ -205,8 +227,8 @@ class Options{
         std::string getValue2(){return value2;}
         std::string getValue3(){return value3;}
         std::string getValue4(){return value4;}
-    
-    
+
+
 
 
 };
@@ -216,7 +238,7 @@ struct File {
     private:
     //~ bool isfile;
     //~ bool isdir;
-    
+
     public:
     char type;      //'f': file, 'd': directory, 'l': link, 0 (NULL): non-existent
     time_t atime;   //file access time (st_atime)
@@ -232,12 +254,12 @@ struct File {
     Uint blksize;   //blocksize for file system I/O (st_blksize)
     Uint blocks;    //number of 512B blocks allocated (st_blocks)
     String path;    //Absolute path (Absolute path is essential for the undo operation)
-    
+
     //permission
     String perm_oct;
     String perm_ls;
     String perm;
-    
+
     void init() {
         type = 0;
         atime = 0;
@@ -249,7 +271,7 @@ struct File {
         //~ isfile = false;
         //~ isdir = false;
         }
-    
+
     File(const String& file) {
         init(); //initialize vars
         char abspath[FILENAME_MAX+1];
@@ -272,7 +294,7 @@ struct File {
             else if(S_ISDIR(finfo.st_mode)) { type = 'd'; }
             else if(S_ISLNK(finfo.st_mode)) { type = 'l'; }
             //no else needed
-            
+
             atime = finfo.st_atime;
             mtime = finfo.st_mtime;
             ctime = finfo.st_ctime;
@@ -285,7 +307,7 @@ struct File {
             size = finfo.st_size;
             blksize = finfo.st_blksize;
             blocks = finfo.st_blocks;
-            
+
             //get permission
             char mybuff[50];
             sprintf(mybuff,"%#o",finfo.st_mode);
@@ -295,27 +317,27 @@ struct File {
             perm = perm_oct;
         }
     }
-    
-    bool operator!() const { 
+
+    bool operator!() const {
         return (type == 0);
     }
-    
+
     explicit operator bool() const {
         return (type != 0);
     }
-    
+
     bool isFile() const {
         return (type == 'f');
     }
-    
+
     bool isDir() const{
         return (type == 'd');
     }
-    
+
     bool isLink() const{
         return (type == 'l');
     }
-    
+
     bool isValidWithMod(const String& mod) const{
         if(type == 0)  return false;
         size_t len = mod.length();
@@ -329,7 +351,7 @@ struct File {
             }
         }
         //if f, d, l neither was present, it will pass the test by default.
-        if(flag == len) return true; 
+        if(flag == len) return true;
         else return false;
     }
 };
