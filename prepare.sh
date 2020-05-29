@@ -45,7 +45,7 @@ if [ ! -d gmpxx ]; then
 	tar -xf gmpxx.tar.gz -C gmpxx --strip-components=1 && rm gmpxx.tar.gz
     cd gmpxx
     autoreconf -f -i
-    ./configure --prefix=/usr
+    ./configure --prefix=/usr --enable-cxx
     make
     sudo make install
     cd -
