@@ -469,7 +469,7 @@ int main(int argc, char* argv[]) {
         //result is shown by exit
         return e.status;
     } catch( ... ) {
-        // ensure destuctors of auto objects are called
+        // ensure destructors of auto objects are called
         return 4;
     }
    return 0;

@@ -701,17 +701,17 @@ void parseReplaceString(const StringArray &rs,const File& file,DirectoryIndex &d
                 ///do name string parse if ns was detected
                 if(ns_used){
                     ///convert second delim to path_delim for ns rules
-                    se = parseNameString(se,file,di,second_delim,path_delim, false);
-                    rep = parseNameString(rep,file,di,second_delim,path_delim, false);
+                    se = parseNameString(se,file,di,second_delim,path_delim,0, true);
+                    rep = parseNameString(rep,file,di,second_delim,path_delim,0, true);
                     ///decode second delim
                     se=decodeWithDelim(se,second_delim);
                     rep=decodeWithDelim(rep,second_delim);
                     ///do the ns parsing
                     ///ns rules in se must be sanitized
-                    se = parseNameString(se,file,di,path_delim,"",'s');
+                    se = parseNameString(se,file,di,path_delim,"",'s', true);
                     ///                                         ^must be empty
                     //~ std::cout<<"###: "<<se;
-                    rep = parseNameString(rep,file,di,path_delim,"", 'r');
+                    rep = parseNameString(rep,file,di,path_delim,"", 'r', true);
                     ///                                           ^must be empty
                 }
                 rs_search.push_back(se);
